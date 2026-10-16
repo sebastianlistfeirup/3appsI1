@@ -107,6 +107,12 @@ export function assessHoldout(input: {
     );
   if (!input.completionActivity.trim())
     throw new Error("Vælg den aktivitet, som dokumenterer sagens afslutning.");
+  if (
+    !input.dataset.rows.some((row) => row.activity === input.completionActivity)
+  )
+    throw new Error(
+      "Den afsluttende aktivitet findes ikke i datagrundlaget. Vælg dens præcise navn.",
+    );
   const runs = input.runs;
   if (
     runs.length < 30 ||

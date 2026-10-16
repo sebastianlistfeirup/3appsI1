@@ -114,6 +114,15 @@ describe("Independent holdout contract", () => {
       assessHoldout({ ...input, runs: input.runs.slice(0, 29) }),
     ).toThrow("30");
   });
+  it("rejects an unknown completion activity instead of treating it as zero output", async () => {
+    const awaitedInput = await setup();
+    expect(() =>
+      assessHoldout({
+        ...awaitedInput,
+        completionActivity: "Aktivitet med slåfejl",
+      }),
+    ).toThrow("findes ikke");
+  });
   it("does not mix planned waiting with activity queues", async () => {
     const input = await setup();
     input.model.nodes.splice(2, 0, {

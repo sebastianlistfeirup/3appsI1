@@ -1,0 +1,84 @@
+{
+  "executedAt": "2026-10-16T20:59:05.285Z",
+  "results": [
+    {
+      "viewport": "desktop",
+      "test": "Changing units or mapping invalidates preview; quality export records exact source hash and unit",
+      "passed": true
+    },
+    {
+      "viewport": "desktop",
+      "test": "The same file can be selected again",
+      "passed": true
+    },
+    {
+      "viewport": "desktop",
+      "test": "Cancel a real 100,000-row worker import immediately; saved dataset survives without late result",
+      "passed": true,
+      "bytes": 5877828
+    },
+    {
+      "viewport": "desktop",
+      "test": "Replacing an active large import keeps new source; native activity suggestions stay bounded and searchable",
+      "passed": true
+    },
+    {
+      "viewport": "desktop",
+      "test": "Holdout confirmations reset for a different saved dataset",
+      "passed": true
+    },
+    {
+      "viewport": "tablet",
+      "test": "Changing units or mapping invalidates preview; quality export records exact source hash and unit",
+      "passed": true
+    },
+    {
+      "viewport": "tablet",
+      "test": "The same file can be selected again",
+      "passed": true
+    },
+    {
+      "viewport": "tablet",
+      "test": "Cancel a real 100,000-row worker import immediately; saved dataset survives without late result",
+      "passed": true,
+      "bytes": 5877828
+    },
+    {
+      "viewport": "tablet",
+      "test": "Replacing an active large import keeps new source; native activity suggestions stay bounded and searchable",
+      "passed": true
+    },
+    {
+      "viewport": "tablet",
+      "test": "Holdout confirmations reset for a different saved dataset",
+      "passed": true
+    },
+    {
+      "viewport": "mobile",
+      "test": "Changing units or mapping invalidates preview; quality export records exact source hash and unit",
+      "passed": true
+    },
+    {
+      "viewport": "mobile",
+      "test": "The same file can be selected again",
+      "passed": true
+    },
+    {
+      "viewport": "mobile",
+      "test": "Cancel a real 100,000-row worker import immediately; saved dataset survives without late result",
+      "passed": true,
+      "bytes": 5877828
+    },
+    {
+      "viewport": "mobile",
+      "test": "Replacing an active large import keeps new source; native activity suggestions stay bounded and searchable",
+      "passed": true
+    },
+    {
+      "viewport": "mobile",
+      "test": "Holdout confirmations reset for a different saved dataset",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

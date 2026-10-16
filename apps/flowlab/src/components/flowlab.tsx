@@ -252,6 +252,7 @@ export default function FlowLab() {
       );
       worker.current = w;
       w.onmessage = (event) => {
+        if (worker.current !== w) return;
         const message = event.data;
         if (message.type === "pair") {
           pendingRun.current?.baselineRuns.push(message.baseline);
@@ -280,6 +281,7 @@ export default function FlowLab() {
         }
       };
       w.onerror = () => {
+        if (worker.current !== w) return;
         setRunning(false);
         setError(
           "Beregningsprocessen kunne ikke gennemføres. Seneste resultat er bevaret.",
@@ -414,6 +416,11 @@ export default function FlowLab() {
       if (file.size > 20 * 1024 * 1024)
         throw new Error("Modelpakken må højst være 20 MB.");
       const parsed = validateDocument(JSON.parse(await file.text()));
+      worker.current?.terminate();
+      worker.current = null;
+      pendingRun.current = null;
+      setRunning(false);
+      setPartial(null);
       update({ ...parsed, comparison: null, holdout: null });
       autoRan.current = false;
       notify(

@@ -89,3 +89,30 @@ it("does not treat inherited mapping properties as columns", () => {
   });
   expect(result.rows[0]).toEqual({ case_id: "a", started_at: "0" });
 });
+
+it("accepts a UTF-8 BOM before a quoted header across stream chunks", () => {
+  const rows: string[][] = [];
+  const parser = new CsvParser(",", (row) => rows.push(row));
+  for (const chunk of ["", "\uFEFF", '"case_id",started_at\na,0'])
+    parser.write(chunk);
+  parser.finish();
+  expect(rows).toEqual([
+    ["case_id", "started_at"],
+    ["a", "0"],
+  ]);
+});
+
+it("rejects oversized and multiline identifiers without changing their contents", () => {
+  const result = parseCsv(
+    `case_id,activity,started_at\n${"a".repeat(101)},Step,0\nvalid,"two\nlines",0\nokay,Step,0`,
+    { unit: "seconds" },
+  );
+  expect(result.excludedRows).toBe(2);
+  expect(result.issues.map((issue) => issue.field)).toEqual([
+    "case_id",
+    "activity",
+  ]);
+  expect(result.rows).toEqual([
+    { case_id: "okay", activity: "Step", started_at: "0" },
+  ]);
+});

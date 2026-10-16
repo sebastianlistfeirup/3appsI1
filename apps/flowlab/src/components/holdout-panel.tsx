@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { ActivityPicker } from "./activity-picker";
 import {
   ArrowDownToLine,
   BadgeCheck,
@@ -54,11 +55,16 @@ export default function HoldoutPanel({
           : String(
               (parsedStart + windowMs) / (unit === "seconds" ? 1000 : 60000),
             );
-  const activities = [
-      ...new Set(
-        dataset?.result.rows.map((row) => row.activity).filter(Boolean) ?? [],
-      ),
-    ].sort(),
+  const activities = useMemo(
+      () =>
+        [
+          ...new Set(
+            dataset?.result.rows.map((row) => row.activity).filter(Boolean) ??
+              [],
+          ),
+        ].sort(),
+      [dataset],
+    ),
     selected = completion || (activities.length === 1 ? activities[0] : "");
   const stale =
     assessment &&
@@ -153,20 +159,12 @@ export default function HoldoutPanel({
                 onChange={(event) => setEnd(event.target.value)}
               />
             </label>
-            <label>
-              Aktivitet, der afslutter sagen
-              <select
-                value={selected}
-                onChange={(event) => setCompletion(event.target.value)}
-              >
-                <option value="">Vælg afsluttende aktivitet…</option>
-                {activities.map((activity) => (
-                  <option key={activity} value={activity}>
-                    {activity}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <ActivityPicker
+              label="Aktivitet, der afslutter sagen"
+              value={selected}
+              options={activities}
+              onChange={setCompletion}
+            />
           </div>
           <p className="field-hint">
             Perioden skal matche baseline-målevinduet på{" "}

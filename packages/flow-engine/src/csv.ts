@@ -35,6 +35,7 @@ export interface CsvImport {
 }
 export class CsvParser {
   private current = "";
+  private firstCharacter = true;
   private row: string[] = [];
   private quoted = false;
   private quotePending = false;
@@ -47,6 +48,10 @@ export class CsvParser {
   ) {}
   write(chunk: string) {
     for (const char of chunk) {
+      if (this.firstCharacter) {
+        this.firstCharacter = false;
+        if (char === "\uFEFF") continue;
+      }
       if (this.skipLf) {
         this.skipLf = false;
         if (char === "\n") continue;
@@ -226,6 +231,20 @@ export function createCsvImporter(options: {
       );
     if (!row.case_id)
       issue("case_id", "Sags-id mangler; rækken kan ikke knyttes til en sag.");
+    for (const field of [
+      "case_id",
+      "case_type",
+      "activity",
+      "resource_group",
+      "event_id",
+    ]) {
+      const value = row[field];
+      if (value && (value.length > 100 || /[\u0000-\u001f\u007f]/.test(value)))
+        issue(
+          field,
+          "Id og navne må højst være 100 tegn og må ikke indeholde linjeskift eller kontroltegn.",
+        );
+    }
     const times: Record<string, number | null> = {};
     for (const field of ["arrived_at", "started_at", "finished_at"]) {
       times[field] = parseTimestamp(row[field] ?? "", options.unit ?? "iso");

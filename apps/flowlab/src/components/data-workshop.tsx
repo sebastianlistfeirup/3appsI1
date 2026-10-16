@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import {
   AlertTriangle,
   ArrowDownToLine,
@@ -26,6 +26,7 @@ import {
 import { downloadFile } from "@tre/persistence";
 import { formatNumber, type Dataset } from "../lib/document";
 import HoldoutPanel from "./holdout-panel";
+import { ActivityPicker } from "./activity-picker";
 export default function DataWorkshop({
   dataset,
   model,
@@ -61,9 +62,23 @@ export default function DataWorkshop({
       model.nodes.find((n) => n.kind === "activity")?.id ?? "",
     );
   const input = useRef<HTMLInputElement>(null),
-    worker = useRef<Worker | null>(null);
+    worker = useRef<Worker | null>(null),
+    fileSelection = useRef(0);
   useEffect(() => () => worker.current?.terminate(), []);
+  const invalidateAnalysis = () => {
+    worker.current?.terminate();
+    worker.current = null;
+    setProgress(null);
+    setResult(null);
+    setSha256("");
+    setExclude(false);
+  };
   const loadFile = async (next: File) => {
+    const selection = ++fileSelection.current;
+    invalidateAnalysis();
+    setFile(null);
+    setHeaders([]);
+    setMapping({});
     setError("");
     setResult(null);
     setExclude(false);
@@ -77,6 +92,7 @@ export default function DataWorkshop({
       return;
     }
     const text = await next.slice(0, 4096).text();
+    if (selection !== fileSelection.current) return;
     let columns: string[] = [];
     const parser = new CsvParser(inferDelimiter(text), (row) => {
       if (!columns.length)
@@ -98,7 +114,7 @@ export default function DataWorkshop({
     setFile(next);
   };
   const analyze = () => {
-    if (!file) return;
+    if (!file || worker.current) return;
     const mapped = Object.values(mapping).filter(Boolean);
     if (new Set(mapped).size !== mapped.length) {
       setError("To kolonner må ikke mappes til samme felt.");
@@ -112,6 +128,7 @@ export default function DataWorkshop({
     );
     worker.current = w;
     w.onmessage = (event) => {
+      if (worker.current !== w) return;
       if (event.data.type === "progress") setProgress(event.data.progress);
       else if (event.data.type === "result") {
         setResult(event.data.result);
@@ -127,6 +144,8 @@ export default function DataWorkshop({
       }
     };
     w.onerror = () => {
+      if (worker.current !== w) return;
+      worker.current = null;
       setError("Import-worker kunne ikke startes. Genindlæs og prøv igen.");
       setProgress(null);
       w.terminate();
@@ -135,25 +154,37 @@ export default function DataWorkshop({
   };
   const current = result ?? dataset?.result,
     currentUnit = result ? unit : (dataset?.unit ?? unit),
-    activityOptions = [
-      ...new Set(
-        current?.rows.map((row) => row.activity).filter(Boolean) ?? [],
-      ),
-    ].sort(),
+    activityOptions = useMemo(
+      () =>
+        [
+          ...new Set(
+            current?.rows.map((row) => row.activity).filter(Boolean) ?? [],
+          ),
+        ].sort(),
+      [current],
+    ),
     activity =
       observedActivity ||
       (activityOptions.length === 1 ? activityOptions[0] : ""),
-    durations =
-      current?.rows
-        .filter((row) => !activityOptions.length || row.activity === activity)
-        .flatMap((row) => {
-          const start = parseTimestamp(row.started_at ?? "", currentUnit),
-            end = parseTimestamp(row.finished_at ?? "", currentUnit);
-          return start !== null && end !== null && end > start
-            ? [end - start]
-            : [];
-        }) ?? [],
-    median = percentile(durations, 0.5);
+    durations = useMemo(
+      () =>
+        current?.rows
+          .filter((row) => !activityOptions.length || row.activity === activity)
+          .flatMap((row) => {
+            const start = parseTimestamp(row.started_at ?? "", currentUnit),
+              end = parseTimestamp(row.finished_at ?? "", currentUnit);
+            return start !== null && end !== null && end > start
+              ? [end - start]
+              : [];
+          }) ?? [],
+      [current, currentUnit, activityOptions, activity],
+    ),
+    median = useMemo(() => percentile(durations, 0.5), [durations]),
+    selectedTarget = model.nodes.some(
+      (node) => node.id === target && node.kind === "activity",
+    )
+      ? target
+      : (model.nodes.find((node) => node.kind === "activity")?.id ?? "");
   return (
     <div className="data-workshop">
       <div className="section-heading">
@@ -189,6 +220,7 @@ export default function DataWorkshop({
             aria-label="Vælg CSV-fil"
             onChange={(e) => {
               const f = e.target.files?.[0];
+              e.target.value = "";
               if (f) void loadFile(f).catch((e) => setError(e.message));
             }}
           />
@@ -223,7 +255,11 @@ export default function DataWorkshop({
                 Tidsformat
                 <select
                   value={unit}
-                  onChange={(e) => setUnit(e.target.value as typeof unit)}
+                  disabled={progress !== null}
+                  onChange={(e) => {
+                    invalidateAnalysis();
+                    setUnit(e.target.value as typeof unit);
+                  }}
                 >
                   <option value="iso">ISO-dato med eksplicit tidszone</option>
                   <option value="seconds">Sekunder fra periodens start</option>
@@ -239,12 +275,14 @@ export default function DataWorkshop({
                   <span>{header}</span>
                   <select
                     value={mapping[header] ?? ""}
-                    onChange={(e) =>
+                    disabled={progress !== null}
+                    onChange={(e) => {
+                      invalidateAnalysis();
                       setMapping({
                         ...mapping,
                         [header]: e.target.value as CsvMapping[string],
-                      })
-                    }
+                      });
+                    }}
                   >
                     <option value="">Udelad kolonne</option>
                     {CSV_FIELDS.map((field) => (
@@ -271,7 +309,12 @@ export default function DataWorkshop({
               <span>{Math.round(progress * 100)} %</span>
               <button
                 className="text-button"
-                onClick={() => worker.current?.postMessage({ type: "cancel" })}
+                onClick={() => {
+                  invalidateAnalysis();
+                  setError(
+                    "Importen er afbrudt. Dit gemte datagrundlag er bevaret.",
+                  );
+                }}
               >
                 Afbryd
               </button>
@@ -288,9 +331,19 @@ export default function DataWorkshop({
           <div className="section-title">
             <h3>3. Se hvad data kan fortælle</h3>
             <span className="small-badge">
-              {current ? "Ikke kalibreret" : "Afventer data"}
+              {result
+                ? "Kontrolleret forhåndsvisning"
+                : dataset
+                  ? "Gemt datagrundlag"
+                  : "Afventer data"}
             </span>
           </div>
+          {file && !result && dataset && (
+            <p className="notice-text">
+              Viser det gemte grundlag {dataset.name}. Kontrollér den nye fil,
+              før du bruger dens data.
+            </p>
+          )}
           {current ? (
             <>
               <div className="data-stat-grid">
@@ -415,7 +468,19 @@ export default function DataWorkshop({
                   onClick={() =>
                     downloadFile(
                       "flowlab-datakvalitet.json",
-                      JSON.stringify({ ...current, rows: undefined }, null, 2),
+                      JSON.stringify(
+                        {
+                          source: {
+                            name: result ? file?.name : dataset?.name,
+                            sha256: result ? sha256 : dataset?.sha256,
+                            unit: currentUnit,
+                          },
+                          ...current,
+                          rows: undefined,
+                        },
+                        null,
+                        2,
+                      ),
                     )
                   }
                 >
@@ -448,7 +513,8 @@ export default function DataWorkshop({
             <div>
               <h3>Fra observation til antagelse</h3>
               <p>
-                {durations.length} positive aktivitetsvarigheder · median{" "}
+                {result ? file?.name : dataset?.name} · {durations.length}{" "}
+                positive aktivitetsvarigheder · median{" "}
                 {median === null
                   ? "—"
                   : `${formatNumber(median / 60000, 1)} min`}
@@ -458,25 +524,17 @@ export default function DataWorkshop({
           </div>
           <div className="calibrate-row">
             {activityOptions.length > 0 && (
-              <label>
-                Observeret aktivitet
-                <select
-                  value={activity}
-                  onChange={(event) => setObservedActivity(event.target.value)}
-                >
-                  <option value="">Vælg observationer…</option>
-                  {activityOptions.map((name) => (
-                    <option key={name} value={name}>
-                      {name}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <ActivityPicker
+                label="Observeret aktivitet"
+                value={activity}
+                options={activityOptions}
+                onChange={setObservedActivity}
+              />
             )}
             <label>
               Aktivitet i alternativet
               <select
-                value={target}
+                value={selectedTarget}
                 onChange={(e) => setTarget(e.target.value)}
               >
                 {model.nodes
@@ -491,12 +549,14 @@ export default function DataWorkshop({
             <button
               className="button secondary"
               disabled={
-                !median || !target || (!!result?.excludedRows && !exclude)
+                !median ||
+                !selectedTarget ||
+                (!!result?.excludedRows && !exclude)
               }
               onClick={() => {
                 if (median)
                   onCalibrate(
-                    target,
+                    selectedTarget,
                     Math.round(median),
                     result ? sha256 : dataset!.sha256,
                   );
