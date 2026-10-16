@@ -1,0 +1,10 @@
+{
+  "taskId": "L01-L02-flowlab-core",
+  "status": "CORE_WORKS_LOCAL_DEMO",
+  "written": ["deterministic DES engine", "Danish responsive editor", "paired scenarios", "actual metrics and charts", "streaming CSV workshop", "local version persistence", "PDF/JSON/CSV/ZIP report export"],
+  "executed": ["typecheck", "29 domain/report tests", "production build", "Chromium desktop/tablet/mobile journeys", "10000 cases / 20 nodes / 30 runs benchmark"],
+  "verified": ["FL-AT01", "FL-AT02", "FL-AT03", "FL-AT04", "FL-AT05", "FL-AT06", "FL-AT07", "FL-AT08", "FL-AT09", "FL-AT10", "FL-AT12", "two-tab local revision conflict"],
+  "connected": ["local IndexedDB", "Web Worker simulation", "Web Worker CSV parsing"],
+  "evidence": ["reports/flowlab/build.txt", "reports/flowlab/engine-tests.txt", "reports/flowlab/browser-check.json", "reports/flowlab/journey-check.json", "reports/flowlab/desktop-model.png", "reports/flowlab/tablet-model.png", "reports/flowlab/mobile-model.png", "reports/flowlab/benchmark-30.json", "reports/flowlab/verified-report.pdf"],
+  "limitations": ["No cloud tenant access, auth or billing; FL-AT11 not yet proven", "No automatic calibration", "Chromium only at this checkpoint", "Standard PDF fonts; embedding follows"]
+}

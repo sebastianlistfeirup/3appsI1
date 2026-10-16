@@ -1,0 +1,135 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 4046 >>
+stream
+1.000 1.000 1.000 rg 0 0 595 842 re f
+0.000 0.494 0.514 rg 0 834 595 8 re f
+BT /F2 16 Tf 0.000 0.494 0.514 rg 1 0 0 1 42 794 Tm (FLOWLAB) Tj ET
+BT /F1 9 Tf 0.392 0.475 0.459 rg 1 0 0 1 393 796 Tm (BESLUTNINGSRAPPORT) Tj ET
+BT /F1 8 Tf 0.392 0.475 0.459 rg 1 0 0 1 42 34 Tm (flow-des/1.0.0 · Eksempel / lokal model) Tj ET
+BT /F1 8 Tf 0.392 0.475 0.459 rg 1 0 0 1 514 34 Tm (1 / 2) Tj ET
+BT /F2 27 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 743 Tm (Medlemsservice) Tj ET
+BT /F1 11 Tf 0.392 0.475 0.459 rg 1 0 0 1 42 718 Tm (Baseline vs. En ekstra sagsbehandler) Tj ET
+BT /F1 10 Tf 0.392 0.475 0.459 rg 1 0 0 1 42 696 Tm (30 parrede replikationer · 8 timer · 2026-10-16) Tj ET
+0.933 0.961 0.937 rg 42 610 511 64 re f
+BT /F2 8 Tf 0.000 0.494 0.514 rg 1 0 0 1 57 652 Tm (HYPOTESE) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 57 633 Tm (En ekstra sagsbehandler reducerer ventetid og restkø. Den simulerede effekt skal ) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 57 618 Tm (vurderes op imod den ekstra lønkapacitet. ) Tj ET
+BT /F2 16 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 580 Tm (Resultat af sammenligningen) Tj ET
+BT /F1 9 Tf 0.392 0.475 0.459 rg 1 0 0 1 42 560 Tm (Middelværdi på tværs af kørsler. Gennemløbstid: middel af run-medianer.) Tj ET
+BT /F2 8 Tf 0.392 0.475 0.459 rg 1 0 0 1 42 530 Tm (MÅLING) Tj ET
+BT /F2 8 Tf 0.392 0.475 0.459 rg 1 0 0 1 220 530 Tm (BASELINE) Tj ET
+BT /F2 8 Tf 0.392 0.475 0.459 rg 1 0 0 1 325 530 Tm (ALTERNATIV) Tj ET
+BT /F2 8 Tf 0.392 0.475 0.459 rg 1 0 0 1 431 530 Tm (FORSKEL) Tj ET
+0.969 0.976 0.973 rg 38 489 519 32 re f
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 46 504 Tm (Afsluttede sager) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 220 504 Tm (75,3) Tj ET
+BT /F2 10 Tf 0.000 0.494 0.514 rg 1 0 0 1 325 504 Tm (91,9) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 431 504 Tm (+16,7) Tj ET
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 46 468 Tm (Gennemløbstid) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 220 468 Tm (70,9 min) Tj ET
+BT /F2 10 Tf 0.000 0.494 0.514 rg 1 0 0 1 325 468 Tm (32,0 min) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 431 468 Tm (-38,9 min) Tj ET
+0.969 0.976 0.973 rg 38 417 519 32 re f
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 46 432 Tm (Ventetid) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 220 432 Tm (51,0 min) Tj ET
+BT /F2 10 Tf 0.000 0.494 0.514 rg 1 0 0 1 325 432 Tm (13,0 min) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 431 432 Tm (-38,0 min) Tj ET
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 46 396 Tm (Restkø) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 220 396 Tm (24,7) Tj ET
+BT /F2 10 Tf 0.000 0.494 0.514 rg 1 0 0 1 325 396 Tm (8) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 431 396 Tm (-16,7) Tj ET
+0.969 0.976 0.973 rg 38 345 519 32 re f
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 46 360 Tm (Udnyttelse) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 220 360 Tm (79,4 %) Tj ET
+BT /F2 10 Tf 0.000 0.494 0.514 rg 1 0 0 1 325 360 Tm (77,2 %) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 431 360 Tm (-2,2 pp) Tj ET
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 46 324 Tm (Omkostning) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 220 324 Tm (9.320 kr.) Tj ET
+BT /F2 10 Tf 0.000 0.494 0.514 rg 1 0 0 1 325 324 Tm (11.600 kr.) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 431 324 Tm (+2.280 kr.) Tj ET
+0.969 0.976 0.973 rg 38 273 519 32 re f
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 46 288 Tm (SLA overholdt) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 220 288 Tm (87,9 %) Tj ET
+BT /F2 10 Tf 0.000 0.494 0.514 rg 1 0 0 1 325 288 Tm (100,0 %) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 431 288 Tm (+12,1 pp) Tj ET
+BT /F2 16 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 220 Tm (Din beslutning) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 198 Tm (Vi afprøver én ekstra sagsbehandler i en afgrænset periode og validerer ventetid og ) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 183 Tm (restkø. ) Tj ET
+BT /F1 9 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 101 Tm (Resultaterne er simulerede og er ikke dokumentation for realiserede gevinster. ) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 3073 >>
+stream
+1.000 1.000 1.000 rg 0 0 595 842 re f
+0.000 0.494 0.514 rg 0 834 595 8 re f
+BT /F2 16 Tf 0.000 0.494 0.514 rg 1 0 0 1 42 794 Tm (FLOWLAB) Tj ET
+BT /F1 9 Tf 0.392 0.475 0.459 rg 1 0 0 1 393 796 Tm (BESLUTNINGSRAPPORT) Tj ET
+BT /F1 8 Tf 0.392 0.475 0.459 rg 1 0 0 1 42 34 Tm (flow-des/1.0.0 · Eksempel / lokal model) Tj ET
+BT /F1 8 Tf 0.392 0.475 0.459 rg 1 0 0 1 514 34 Tm (2 / 2) Tj ET
+BT /F2 24 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 743 Tm (Antagelser & usikkerhed) Tj ET
+BT /F1 11 Tf 0.392 0.475 0.459 rg 1 0 0 1 42 710 Tm (10.–90.-percentil af alternativ minus baseline) Tj ET
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 678 Tm (Afsluttede sager) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 240 678 Tm (9,7 til 25 \(30 par\)) Tj ET
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 653 Tm (Gennemløbstid) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 240 653 Tm (-60,7 min til -12,2 min \(30 par\)) Tj ET
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 628 Tm (Ventetid) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 240 628 Tm (-57,6 min til -18,0 min \(30 par\)) Tj ET
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 603 Tm (Restkø) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 240 603 Tm (-25 til -9,7 \(30 par\)) Tj ET
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 578 Tm (Udnyttelse) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 240 578 Tm (-8,5 pp til 3,4 pp \(30 par\)) Tj ET
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 553 Tm (Omkostning) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 240 553 Tm (2.280 kr. til 2.280 kr. \(30 par\)) Tj ET
+BT /F2 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 528 Tm (SLA overholdt) Tj ET
+BT /F1 10 Tf 0.090 0.204 0.227 rg 1 0 0 1 240 528 Tm (0,0 pp til 29,0 pp \(30 par\)) Tj ET
+BT /F2 16 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 473 Tm (Ændrede input) Tj ET
+BT /F1 9 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 451 Tm (resources.0.capacity: 3 -> 4 ) Tj ET
+BT /F2 16 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 366 Tm (Læs tallene med omtanke) Tj ET
+BT /F1 9 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 344 Tm (• Resultaterne er simulerede og er ikke dokumentation for realiserede gevinster. ) Tj ET
+BT /F1 9 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 325.5 Tm (• 10.–90.-percentilen er simulationsspredning for parrede forskelle, ikke et ) Tj ET
+BT /F1 9 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 312 Tm (konfidensinterval for virkeligheden. ) Tj ET
+BT /F1 9 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 293.5 Tm (• Gennemløbs- og ventetider omfatter kun afsluttede sager. Restkøen vises særskilt. ) Tj ET
+BT /F1 9 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 275 Tm (• Modellen er ikke automatisk kalibreret mod faktisk drift. Ingen kundedata eller ) Tj ET
+BT /F1 9 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 261.5 Tm (cloudintegration er tilkoblet. ) Tj ET
+BT /F2 13 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 231 Tm (Reproducerbarhed) Tj ET
+BT /F1 9 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 211 Tm (Motor: flow-des/1.0.0. Modelversion: 1. Målevindue: 0–28800000 ms. Fuld model, samtlige seeds, ) Tj ET
+BT /F1 9 Tf 0.090 0.204 0.227 rg 1 0 0 1 42 197.5 Tm (run-metrics, køkurver og inputdiff findes i JSON-pakken. ) Tj ET
+endstream
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000127 00000 n 
+0000000224 00000 n 
+0000000326 00000 n 
+0000000462 00000 n 
+0000004560 00000 n 
+0000004696 00000 n 
+trailer
+<< /Size 9 /Root 1 0 R >>
+startxref
+7821
+%%EOF

@@ -5,8 +5,8 @@ Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
  RUN  v5.0.5 /workspace/3apps-flowlab
 
 
- Test Files  2 passed (2)
-      Tests  24 passed (24)
-   Start at  19:40:18
-   Duration  288ms (tests 53%, import 34%, transform 9%, worker 3%)
+ Test Files  3 passed (3)
+      Tests  29 passed (29)
+   Start at  20:05:21
+   Duration  609ms (tests 68%, import 25%, transform 6%, worker 2%)
 

@@ -1,0 +1,113 @@
+FLOWLAB                                                                            BESLUTNINGSRAPPORT
+
+
+
+
+Medlemsservice
+Baseline vs. En ekstra sagsbehandler
+
+30 parrede replikationer · 8 timer · 2026-10-16
+
+
+
+    HYPOTESE
+
+    En ekstra sagsbehandler reducerer ventetid og restkø. Den simulerede effekt skal
+    vurderes op imod den ekstra lønkapacitet.
+
+
+Resultat af sammenligningen
+Middelværdi på tværs af kørsler. Gennemløbstid: middel af run-medianer.
+
+
+MÅLING                                      BASELINE                  ALTERNATIV         FORSKEL
+
+
+ Afsluttede sager                           75,3                      91,9               +16,7
+
+
+ Gennemløbstid                              70,9 min                  32,0 min           -38,9 min
+
+
+ Ventetid                                   51,0 min                  13,0 min           -38,0 min
+
+
+ Restkø                                     24,7                      8                  -16,7
+
+
+ Udnyttelse                                 79,4 %                    77,2 %             -2,2 pp
+
+
+ Omkostning                                 9.320 kr.                 11.600 kr.         +2.280 kr.
+
+
+ SLA overholdt                              87,9 %                    100,0 %            +12,1 pp
+
+
+
+
+Din beslutning
+Vi afprøver én ekstra sagsbehandler i en afgrænset periode og validerer ventetid og
+restkø.
+
+
+
+
+Resultaterne er simulerede og er ikke dokumentation for realiserede gevinster.
+
+
+
+
+flow-des/1.0.0 · Eksempel / lokal model                                                                 1/2
+FLOWLAB                                                                               BESLUTNINGSRAPPORT
+
+
+
+
+Antagelser & usikkerhed
+10.–90.-percentil af alternativ minus baseline
+
+Afsluttede sager                                   9,7 til 25 (30 par)
+
+Gennemløbstid                                      -60,7 min til -12,2 min (30 par)
+
+Ventetid                                           -57,6 min til -18,0 min (30 par)
+
+Restkø                                             -25 til -9,7 (30 par)
+
+Udnyttelse                                         -8,5 pp til 3,4 pp (30 par)
+
+Omkostning                                         2.280 kr. til 2.280 kr. (30 par)
+
+SLA overholdt                                      0,0 pp til 29,0 pp (30 par)
+
+
+
+
+Ændrede input
+resources.0.capacity: 3 -> 4
+
+
+
+
+Læs tallene med omtanke
+• Resultaterne er simulerede og er ikke dokumentation for realiserede gevinster.
+
+• 10.–90.-percentilen er simulationsspredning for parrede forskelle, ikke et
+konfidensinterval for virkeligheden.
+
+• Gennemløbs- og ventetider omfatter kun afsluttede sager. Restkøen vises særskilt.
+
+• Modellen er ikke automatisk kalibreret mod faktisk drift. Ingen kundedata eller
+cloudintegration er tilkoblet.
+
+
+Reproducerbarhed
+Motor: flow-des/1.0.0. Modelversion: 1. Målevindue: 0–28800000 ms. Fuld model, samtlige seeds,
+run-metrics, køkurver og inputdiff findes i JSON-pakken.
+
+
+
+
+flow-des/1.0.0 · Eksempel / lokal model                                                                    2/2
+

@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-16T20:04:02.859Z",
+  "checks": [
+    "Initial comparison completed from engine with 30 paired seeds.",
+    "Capacity edit marks prior result stale; keyboard undo restores 4.",
+    "Edited model reruns; immutable version saved and listed.",
+    "CSV negative duration rejected at exact row; explicit exclusion required; cleaned data persisted.",
+    "Explicit data-to-model transfer uses actual 15-second observed median, remains uncalibrated.",
+    "Two-tab revision conflict is visible and reload resolves it without silent overwrite.",
+    "FL-AT12: every rendered PDF baseline/scenario KPI matches underlying JSON run_metrics; ZIP includes same 30 seeds.",
+    "Report decision survives browser reload.",
+    "Empty versions and validation error states inspected at desktop, tablet and mobile; no horizontal overflow."
+  ],
+  "errors": []
+}
