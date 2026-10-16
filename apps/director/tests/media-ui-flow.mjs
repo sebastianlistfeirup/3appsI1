@@ -4,6 +4,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
+import { createHash } from "node:crypto";
 const require = createRequire(import.meta.url),
   axe = createRequire(require.resolve("@axe-core/playwright"))(
     "axe-core",
@@ -80,6 +81,33 @@ const browser = await { chromium, firefox, webkit }[engine].launch(
       }
     : { headless: true },
 );
+const fixtureBytes = await fs.readFile(`${dir}/Eget klip.mp4`);
+await fs.copyFile(
+  `${dir}/Eget klip.mp4`,
+  `reports/director/${engine}-media-input.mp4`,
+);
+const diagnostic = {
+  engine,
+  browserVersion: browser.version(),
+  executablePath: chromiumExecutable ?? "Playwright default headless shell",
+  ffmpegVersion: (await run("ffmpeg", ["-version"])).split("\n")[0],
+  inputSha256: createHash("sha256").update(fixtureBytes).digest("hex"),
+  inputMetadata: JSON.parse(
+    await run("ffprobe", [
+      "-v",
+      "error",
+      "-show_streams",
+      "-show_format",
+      "-of",
+      "json",
+      `${dir}/Eget klip.mp4`,
+    ]),
+  ),
+  browserCapabilities: null,
+  mediaErrors: [],
+  failure: null,
+  verifiedAt: new Date().toISOString(),
+};
 try {
   const page = await browser.newPage({
       viewport: { width: 1440, height: 900 },
@@ -120,7 +148,20 @@ try {
   };
   page.setDefaultTimeout(15000);
   page.on("pageerror", (e) => errors.push(e.message));
+  page.on("console", (message) => {
+    if (message.text().startsWith("Director media import failed"))
+      diagnostic.mediaErrors.push(message.text());
+  });
   await page.goto(directorUrl);
+  diagnostic.browserCapabilities = await page.evaluate(() => {
+    const media = document.createElement("video");
+    return {
+      userAgent: navigator.userAgent,
+      h264: media.canPlayType('video/mp4; codecs="avc1.64001f"'),
+      aac: media.canPlayType('audio/mp4; codecs="mp4a.40.2"'),
+      vp9opus: media.canPlayType('video/webm; codecs="vp9, opus"'),
+    };
+  });
   await expect(page.locator(".shot-thumbnail img")).toHaveCount(5, {
     timeout: 30000,
   });
@@ -330,6 +371,7 @@ try {
   );
   console.log("Director media UI flow passed", engine);
 } catch (error) {
+  diagnostic.failure = String(error);
   const page = browser.contexts()[0]?.pages()[0];
   if (page) {
     console.error(
@@ -342,5 +384,9 @@ try {
   }
   throw error;
 } finally {
+  await fs.writeFile(
+    `reports/director/${engine}-media-diagnostic.json`,
+    JSON.stringify(diagnostic, null, 2),
+  );
   await browser.close();
 }

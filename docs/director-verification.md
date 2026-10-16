@@ -59,3 +59,13 @@ The socket is inside the private directory; no TCP listener is created. This env
 These exercise actual local video/audio decoding, an advancing trimmed video clock, running WebAudio, measured PCM energy, voice-driven music gain reduction, pause, exact-frame seeking and the halfway crossfade. Browser codec support is tested, not inferred from MIME metadata. Each media gate also scans the audio dialog and desktop/tablet/mobile preview for axe WCAG2A/2AA/2.1AA violations.
 
 Do not build into the same `.next` output while a browser acceptance gate is running against that development server. Finish the build, then launch the server used by the gate. Evidence is written under `reports/director`; generated render job directories stay ignored.
+
+## Diagnosing real codec differences
+
+`media-ui-flow.mjs` saves its exact generated MP4 input, SHA-256, ffprobe metadata, FFmpeg version, browser version, `canPlayType` values and media-error diagnostics before import. Failed CI runs can therefore preserve and replay the actual failing bytes. The files are named `<engine>-media-input.mp4` and `<engine>-media-diagnostic.json` under `reports/director`.
+
+```sh
+pnpm exec node apps/director/tests/codec-probe.mjs reports/director/chromium-media-input.mp4
+```
+
+This standalone probe tries the system Chromium when present, Playwright's default headless browser and its full Chrome for Testing executable, and records actual metadata and a decoded video frame. On this Debian13 environment all three opened the same H.264/AAC fixture; the full media UI flow also passed both pinned Playwright variants. An initial Ubuntu24.04 CI run rejected its locally generated MP4, so an operating-system/FFmpeg/browser difference remains under investigation. No assertion is disabled and no browser/codec limitation is inferred only from `canPlayType`.

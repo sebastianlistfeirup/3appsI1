@@ -1,0 +1,35 @@
+{
+  "engine": "chromium",
+  "rendered": false,
+  "checks": [
+    "real browser MP4/WAV import",
+    "source trim and own clip audio",
+    "voice/music timing and fades",
+    "running WebAudio context and measured nonzero PCM",
+    "actual music gain reduced by voice energy",
+    "source video clock advances",
+    "pause freezes frame",
+    "scrub positions crossfade at 50%"
+  ],
+  "metadata": null,
+  "accessibility": [
+    {
+      "name": "audio-dialog",
+      "violations": []
+    },
+    {
+      "name": "desktop-preview",
+      "violations": []
+    },
+    {
+      "name": "tablet-preview",
+      "violations": []
+    },
+    {
+      "name": "mobile-preview",
+      "violations": []
+    }
+  ],
+  "pageErrors": [],
+  "verifiedAt": "2026-10-16T21:14:33.588Z"
+}

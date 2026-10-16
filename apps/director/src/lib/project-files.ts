@@ -218,6 +218,16 @@ export async function importMedia(
         else resolve(Math.floor(el.duration * 24));
       };
       el.onerror = () => {
+        console.warn(
+          "Director media import failed",
+          JSON.stringify({
+            mime: declaredMime,
+            code: el.error?.code,
+            message: el.error?.message,
+            networkState: el.networkState,
+            readyState: el.readyState,
+          }),
+        );
         clearTimeout(timeout);
         URL.revokeObjectURL(url);
         reject(Error("Browseren kan ikke åbne dette medie"));
