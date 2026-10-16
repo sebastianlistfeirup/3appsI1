@@ -104,6 +104,14 @@ export const deliveryDraftSchema = deliveryDraftFieldsSchema.extend({
   runId: idSchema,
   updatedAt: timestamp,
 });
+export const reviewDraftFieldsSchema = z.object({
+  comment: z.string().max(5000),
+  checkedCriteria: z.array(idSchema).max(40),
+});
+export const reviewDraftSchema = reviewDraftFieldsSchema.extend({
+  deliveryId: idSchema,
+  updatedAt: timestamp,
+});
 export const projectSchema = z.object({
   id: idSchema,
   name: z.string().min(1).max(100),
@@ -120,6 +128,7 @@ export const projectSchema = z.object({
   deliveries: z.array(deliverySchema).max(1000),
   reviews: z.array(reviewSchema).max(2000),
   deliveryDrafts: z.array(deliveryDraftSchema).max(1000).optional(),
+  reviewDrafts: z.array(reviewDraftSchema).max(1000).optional(),
   activity: z
     .array(
       z.object({
@@ -150,6 +159,7 @@ export type Delivery = z.infer<typeof deliverySchema>;
 export type Review = z.infer<typeof reviewSchema>;
 export type Brief = z.infer<typeof briefSchema>;
 export type DeliveryDraftFields = z.infer<typeof deliveryDraftFieldsSchema>;
+export type ReviewDraftFields = z.infer<typeof reviewDraftFieldsSchema>;
 export const uid = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
 export const now = () => new Date().toISOString();
 
@@ -179,6 +189,30 @@ export function assertProject(project: Project): Project {
     throw new Error("Et run må kun aflevere én uforanderlig leverance.");
   if (duplicate((project.deliveryDrafts ?? []).map((draft) => draft.runId)))
     throw new Error("Et run må kun have én afleveringskladde.");
+  if (duplicate((project.reviewDrafts ?? []).map((draft) => draft.deliveryId)))
+    throw new Error("En leverance må kun have én reviewkladde.");
+  for (const draft of project.reviewDrafts ?? []) {
+    const delivery = project.deliveries.find(
+      (item) => item.id === draft.deliveryId,
+    );
+    if (
+      !delivery ||
+      project.reviews.some((item) => item.deliveryId === draft.deliveryId)
+    )
+      throw new Error(
+        "En reviewkladde skal høre til en leverance uden et endeligt review.",
+      );
+    if (
+      duplicate(draft.checkedCriteria) ||
+      draft.checkedCriteria.some(
+        (id) =>
+          !delivery.checks.some((check) => check.id === id && check.passed),
+      )
+    )
+      throw new Error(
+        "Reviewkladden indeholder ugyldige eller dublerede acceptkrav.",
+      );
+  }
   for (const draft of project.deliveryDrafts ?? []) {
     const run = project.runs.find((candidate) => candidate.id === draft.runId);
     if (!run || !["awaiting_upload", "cancelled"].includes(run.state))
@@ -262,6 +296,15 @@ export function assertProject(project: Project): Project {
     const delivery = project.deliveries.find((x) => x.id === review.deliveryId);
     if (!delivery) throw new Error("Et review mangler sin leverance.");
     if (
+      duplicate(review.checkedCriteria) ||
+      review.checkedCriteria.some(
+        (id) => !delivery.checks.some((check) => check.id === id),
+      )
+    )
+      throw new Error(
+        "Reviewet indeholder ugyldige eller dublerede acceptkrav.",
+      );
+    if (
       review.decision === "accepted" &&
       delivery.checks.some(
         (check) => !check.passed || !review.checkedCriteria.includes(check.id),
@@ -324,6 +367,17 @@ function assertMutable(p: Project) {
 }
 
 export function assertProjectUpdate(previous: Project, next: Project): void {
+  for (const prior of previous.reviewDrafts ?? []) {
+    if (
+      !next.reviewDrafts?.some(
+        (draft) => draft.deliveryId === prior.deliveryId,
+      ) &&
+      !next.reviews.some((review) => review.deliveryId === prior.deliveryId)
+    )
+      throw new Error(
+        "En reviewkladde kan først fjernes, når reviewet er afleveret.",
+      );
+  }
   for (const draft of next.deliveryDrafts ?? []) {
     const priorRun = previous.runs.find((run) => run.id === draft.runId);
     if (
@@ -894,6 +948,31 @@ export function isStale(p: Project, d: Delivery) {
 export function latestReview(p: Project, deliveryId: string) {
   return p.reviews.filter((r) => r.deliveryId === deliveryId).at(-1);
 }
+export function saveReviewDraft(
+  p: Project,
+  deliveryId: string,
+  fields: ReviewDraftFields,
+): Project {
+  assertMutable(p);
+  const draft = reviewDraftSchema.parse({
+    ...fields,
+    deliveryId,
+    updatedAt: now(),
+  });
+  const next = {
+    ...p,
+    revision: p.revision + 1,
+    reviewDrafts: [
+      ...(p.reviewDrafts ?? []).filter(
+        (item) => item.deliveryId !== deliveryId,
+      ),
+      draft,
+    ],
+  };
+  assertProject(next);
+  assertProjectBudget(next);
+  return next;
+}
 export function reviewDelivery(
   p: Project,
   deliveryId: string,
@@ -909,7 +988,10 @@ export function reviewDelivery(
   const run = p.runs.find((x) => x.id === d.runId)!;
   if (input.reviewer === run.adapterId || input.reviewer === run.id)
     throw new Error("Et run kan ikke acceptere sig selv.");
-  if (input.checkedCriteria.some((id) => !d.checks.some((c) => c.id === id)))
+  if (
+    new Set(input.checkedCriteria).size !== input.checkedCriteria.length ||
+    input.checkedCriteria.some((id) => !d.checks.some((c) => c.id === id))
+  )
     throw new Error("Reviewet henviser til et ukendt acceptkrav.");
   if (input.decision === "accepted") {
     if (d.checks.some((c) => !c.passed))
@@ -929,9 +1011,12 @@ export function reviewDelivery(
     deliveryId,
     createdAt: now(),
   });
-  let next = {
+  let next: Project = {
     ...p,
     reviews: [...p.reviews, review],
+    reviewDrafts: p.reviewDrafts?.filter(
+      (draft) => draft.deliveryId !== deliveryId,
+    ),
     runs: p.runs.map((r) =>
       r.id === run.id
         ? {

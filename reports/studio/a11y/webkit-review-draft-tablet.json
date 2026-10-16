@@ -1,0 +1,16 @@
+{
+  "verifiedAt": "2026-10-16T23:30:50.864Z",
+  "label": "webkit-review-draft-tablet",
+  "engine": {
+    "name": "axe-core",
+    "version": "4.11.4"
+  },
+  "environment": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+    "windowWidth": 1024,
+    "windowHeight": 768,
+    "orientationAngle": 0,
+    "orientationType": "landscape-primary"
+  },
+  "violations": []
+}

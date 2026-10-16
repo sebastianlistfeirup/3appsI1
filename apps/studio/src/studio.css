@@ -4586,3 +4586,39 @@ button {
     width: 100%;
   }
 }
+
+.review-draft-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 12px 0 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #675472;
+}
+.review-draft-status svg {
+  flex-shrink: 0;
+}
+.review-draft-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.review-draft-tools .text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  padding: 6px 0;
+  min-height: 32px;
+}
+.review-draft-warning {
+  padding: 10px 12px;
+  background: #fff2dc;
+  color: #704a16;
+  border-radius: 9px;
+  font-size: 12px;
+  line-height: 1.6;
+}

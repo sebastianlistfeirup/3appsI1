@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T23:15:39.669245+00:00",
+  "updatedAt": "2026-10-16T23:32:24.957238+00:00",
   "status": "building",
   "activeTasks": [
     "F06-remote-ci",
-    "F11-durable-upload-verification",
-    "L18-resources-and-calendars",
-    "D15-complete-caption-and-audio-evidence"
+    "S13-workspace-portability",
+    "L19-cost-reconciliation",
+    "D16-render-capabilities"
   ],
   "profile": "demo",
   "connectedIntegrations": [],

@@ -1,31 +1,27 @@
 "use client";
+import { ReviewDecision } from "./review-decision";
+import type { SaveState } from "@tre/persistence";
 import { sandboxDocument } from "../lib/preview";
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { compareText, comparisonInput, contextRows } from "../lib/comparison";
 import Link from "./local-link";
 import {
   ArrowDownToLine,
   ArrowLeft,
   ArrowRight,
-  Check,
   CheckCircle2,
   ChevronDown,
   Code2,
   Columns2,
   FileText,
   Layers3,
-  MessageSquare,
   Monitor,
   ShieldCheck,
   Smartphone,
 } from "lucide-react";
 import { downloadFile } from "@tre/persistence";
-import {
-  artifactBytes,
-  isStale,
-  latestReview,
-  reviewDelivery,
-} from "../lib/model";
+import { artifactBytes, isStale, latestReview } from "../lib/model";
 import {
   AssetIcon,
   Badge,
@@ -33,7 +29,6 @@ import {
   Empty,
   Notice,
   bytesLabel,
-  formatDate,
 } from "./primitives";
 import type { ProjectActions } from "./studio-app";
 import { PanelHeading } from "./workspace-panels";
@@ -44,11 +39,14 @@ export function ReviewPanel({
   deliveryId,
   onExport,
   exporting,
+  storage,
 }: ProjectActions & {
   deliveryId?: string;
   onExport: () => void;
   exporting: boolean;
+  storage: { saveState: SaveState };
 }) {
+  const router = useRouter();
   const delivery =
     project.deliveries.find((d) => d.id === deliveryId) ??
     (!deliveryId
@@ -58,15 +56,9 @@ export function ReviewPanel({
   const [tab, setTab] = useState<"preview" | "diff" | "files">("preview");
   const [view, setView] = useState<"new" | "old" | "split">("new");
   const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
-  const [comment, setComment] = useState("");
-  const [checked, setChecked] = useState<string[]>([]);
-  const [ack, setAck] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [outputId, setOutputId] = useState<string | null>(null);
   useEffect(() => {
-    setComment("");
-    setChecked([]);
-    setAck(false);
     setTab("preview");
     setOutputId(null);
     setView("new");
@@ -107,35 +99,8 @@ export function ReviewPanel({
     outputs.find((a) => a.kind === "code") ??
     outputs[0]!;
   const previous = comparisonInput(project, delivery, primary);
-  const review = latestReview(project, delivery.id);
   const stale = isStale(project, delivery);
-  const canAccept =
-    comment.trim() &&
-    delivery.checks.every((c) => c.passed && checked.includes(c.id)) &&
-    (!stale || ack);
   const index = project.deliveries.indexOf(delivery) + 1;
-  function decide(decision: "accepted" | "changes_requested") {
-    try {
-      const next = reviewDelivery(project, delivery!.id, {
-        decision,
-        reviewer: "Mig",
-        comment: comment.trim(),
-        checkedCriteria: checked,
-        acknowledgedStale: ack,
-      });
-      if (!update(() => next)) return;
-      notify(
-        decision === "accepted"
-          ? "Leverancen er accepteret. Dit review og alle filversioner er bevaret."
-          : "En ny rettelsesopgave er oprettet med din kommentar.",
-      );
-    } catch (e) {
-      notify(
-        e instanceof Error ? e.message : "Review kunne ikke gemmes.",
-        true,
-      );
-    }
-  }
   const renderPreview = (old: boolean) => {
     const a = old ? previous : primary;
     if (!a)
@@ -149,7 +114,11 @@ export function ReviewPanel({
       return (
         <iframe
           title={old ? "Før: tidligere version" : "Efter: ny version"}
-          srcDoc={sandboxDocument(a.content)}
+          srcDoc={sandboxDocument(
+            a.encoding === "utf8"
+              ? a.content
+              : new TextDecoder().decode(artifactBytes(a)),
+          )}
           sandbox=""
         />
       );
@@ -193,7 +162,7 @@ export function ReviewPanel({
           <select
             value={delivery.id}
             onChange={(e) => {
-              window.location.href = `/projects/${project.id}/review/${e.target.value}`;
+              router.push(`/projects/${project.id}/review/${e.target.value}`);
             }}
           >
             {project.deliveries.map((d, i) => (
@@ -502,128 +471,14 @@ export function ReviewPanel({
           </div>
         </section>
         <aside className="review-inspector">
-          <section className="review-checklist">
-            <div className="inspector-heading">
-              <div className="review-symbol">
-                <CheckCircle2 size={22} />
-              </div>
-              <div>
-                <h2>{review ? "Dit review er gemt." : "Klar til dit blik."}</h2>
-                <p>
-                  {review
-                    ? "Resultatet og historien er bevaret."
-                    : "Tag stilling til det færdige arbejde."}
-                </p>
-              </div>
-            </div>
-            <div className="inspector-divider" />
-            <span className="small-label">
-              ACCEPTKRAV{" "}
-              <span>
-                {review ? review.checkedCriteria.length : checked.length}/
-                {delivery.checks.length}
-              </span>
-            </span>
-            <div className="checklist-items">
-              {delivery.checks.map((check, i) => (
-                <div
-                  key={check.id}
-                  className={!check.passed ? "check-failed" : ""}
-                >
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={
-                        review
-                          ? review.checkedCriteria.includes(check.id)
-                          : checked.includes(check.id)
-                      }
-                      disabled={Boolean(review) || !check.passed}
-                      onChange={(e) =>
-                        setChecked((c) =>
-                          e.target.checked
-                            ? [...c, check.id]
-                            : c.filter((x) => x !== check.id),
-                        )
-                      }
-                    />
-                    <span>{check.label}</span>
-                  </label>
-                  {!check.passed && (
-                    <small>Kontrolpunkt fejlede · kræver rettelse</small>
-                  )}
-                  <details>
-                    <summary>Se grundlag</summary>
-                    <p>{check.evidence}</p>
-                  </details>
-                </div>
-              ))}
-            </div>
-            {review ? (
-              <div
-                className={`review-decision ${review.decision === "accepted" ? "accepted" : "requested"}`}
-              >
-                <CheckCircle2 size={22} />
-                <strong>
-                  {review.decision === "accepted"
-                    ? "Accepteret af dig"
-                    : "Rettelse ønsket"}
-                </strong>
-                <p>{review.comment}</p>
-                <small>{formatDate(review.createdAt)}</small>
-                {review.decision === "changes_requested" && (
-                  <Link href={`/projects/${project.id}/tasks`}>
-                    Se rettelsesopgaven <ArrowRight size={14} />
-                  </Link>
-                )}
-              </div>
-            ) : (
-              <>
-                <div className="inspector-divider" />
-                <label className="review-comment">
-                  DIN VURDERING
-                  <textarea
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    rows={4}
-                    maxLength={5000}
-                    placeholder="Hvad har du gennemgået? Er noget stadig usikkert?"
-                  />
-                </label>
-                {stale && (
-                  <label className="checkbox-row stale-confirm">
-                    <input
-                      type="checkbox"
-                      checked={ack}
-                      onChange={(e) => setAck(e.target.checked)}
-                    />
-                    <span>
-                      Jeg accepterer eksplicit leverancen med dens ældre input.
-                    </span>
-                  </label>
-                )}
-                <button
-                  className="button primary accept-button"
-                  disabled={!canAccept}
-                  onClick={() => decide("accepted")}
-                >
-                  <Check size={17} /> Acceptér leverance
-                </button>
-                <button
-                  className="button secondary request-button"
-                  disabled={!comment.trim()}
-                  onClick={() => decide("changes_requested")}
-                >
-                  <MessageSquare size={16} /> Bed om en rettelse
-                </button>
-                <p className="review-hint">
-                  {!comment.trim()
-                    ? "Gennemgå kravene og tilføj din vurdering."
-                    : "Dit review bliver knyttet til denne præcise version."}
-                </p>
-              </>
-            )}
-          </section>
+          <ReviewDecision
+            key={`${project.id}:${delivery.id}`}
+            project={project}
+            deliveryId={delivery.id}
+            update={update}
+            notify={notify}
+            storage={storage}
+          />
           <section className="input-details">
             <button
               onClick={() => setShowDetails((s) => !s)}

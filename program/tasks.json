@@ -297,6 +297,39 @@
       "verification": ["node apps/director/tests/archive-flow.mjs"],
       "status": "verified-local",
       "allowed_paths": ["apps/director"]
+    },
+    {
+      "id": "S12",
+      "app": "studio",
+      "goal": "Durable per-delivery review drafts and strict stale-input acknowledgment",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm exec playwright test tests/e2e/studio-review-drafts.spec.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/studio"]
+    },
+    {
+      "id": "L18",
+      "app": "flowlab",
+      "goal": "Resource pools, wages and atomic calendar editing",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/resource-editor-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/flowlab"]
+    },
+    {
+      "id": "D15",
+      "app": "director",
+      "goal": "Complete timed captions and measured render quality",
+      "dependencies": ["F00"],
+      "verification": [
+        "node --import tsx apps/director/tests/caption-render-smoke.mjs"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/director"]
     }
   ]
 }

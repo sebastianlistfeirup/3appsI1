@@ -486,6 +486,7 @@ export function StudioApp() {
                     />
                   ) : section === "review" ? (
                     <ReviewPanel
+                      storage={{ saveState: store.saveState }}
                       project={project}
                       update={update}
                       notify={notify}

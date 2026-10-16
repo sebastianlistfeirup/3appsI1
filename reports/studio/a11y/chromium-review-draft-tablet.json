@@ -1,0 +1,16 @@
+{
+  "verifiedAt": "2026-10-16T23:28:04.436Z",
+  "label": "chromium-review-draft-tablet",
+  "engine": {
+    "name": "axe-core",
+    "version": "4.11.4"
+  },
+  "environment": {
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36",
+    "windowWidth": 1024,
+    "windowHeight": 768,
+    "orientationAngle": 0,
+    "orientationType": "landscape-primary"
+  },
+  "violations": []
+}
