@@ -187,6 +187,11 @@ try {
         ["exec", "tsx", "apps/flowlab/tests/time-profile-check.ts"],
         { FLOWLAB_BROWSER: browser },
       );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/experiment-settings-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
     }
     await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
     await run("node", ["apps/flowlab/tests/canvas-check.mjs"]);
