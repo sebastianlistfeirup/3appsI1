@@ -1,0 +1,228 @@
+{
+  "engine": "firefox",
+  "startedAt": "2026-10-16T21:51:29.021Z",
+  "phase": "completed",
+  "steps": [
+    {
+      "phase": "launch browser",
+      "at": "2026-10-16T21:51:29.021Z"
+    },
+    {
+      "phase": "new page",
+      "at": "2026-10-16T21:51:29.638Z"
+    },
+    {
+      "phase": "navigate and initial frames",
+      "at": "2026-10-16T21:51:31.054Z"
+    },
+    {
+      "phase": "read initial saved project",
+      "at": "2026-10-16T21:51:32.732Z"
+    },
+    {
+      "phase": "import and position model 1: fixtures/director-textured-crate.glb",
+      "at": "2026-10-16T21:51:32.842Z"
+    },
+    {
+      "phase": "import and position model 2: fixtures/director-jpeg-crate.glb",
+      "at": "2026-10-16T21:51:33.953Z"
+    },
+    {
+      "phase": "verify immutable imports",
+      "at": "2026-10-16T21:51:35.149Z"
+    },
+    {
+      "phase": "capture actual textured frame",
+      "at": "2026-10-16T21:51:35.244Z"
+    },
+    {
+      "phase": "screenshot textured models",
+      "at": "2026-10-16T21:51:36.099Z"
+    },
+    {
+      "phase": "reject corrupt PNG stream",
+      "at": "2026-10-16T21:51:36.387Z"
+    },
+    {
+      "phase": "reject forged texture manifest",
+      "at": "2026-10-16T21:51:36.942Z"
+    },
+    {
+      "phase": "download project ZIP",
+      "at": "2026-10-16T21:51:37.610Z"
+    },
+    {
+      "phase": "reimport project ZIP",
+      "at": "2026-10-16T21:51:38.301Z"
+    },
+    {
+      "phase": "reload and verify saved project",
+      "at": "2026-10-16T21:51:39.144Z"
+    },
+    {
+      "phase": "remove model and retain immutable scene",
+      "at": "2026-10-16T21:51:40.027Z"
+    },
+    {
+      "phase": "undo removal",
+      "at": "2026-10-16T21:51:40.624Z"
+    },
+    {
+      "phase": "write verified results",
+      "at": "2026-10-16T21:51:40.944Z"
+    },
+    {
+      "phase": "close browser",
+      "at": "2026-10-16T21:51:40.946Z"
+    },
+    {
+      "phase": "completed",
+      "at": "2026-10-16T21:51:41.788Z"
+    }
+  ],
+  "console": [
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()"
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* AllowWebgl2:false restricts context creation on this system. ()\" {file: \"http://localhost:3002/_next/static/chunks/1340v5p9osx6-.js\" line: 342}]"
+    }
+  ],
+  "pageErrors": [],
+  "externalRequests": [],
+  "browserVersion": "157.0"
+}
