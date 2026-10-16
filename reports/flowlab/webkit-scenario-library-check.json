@@ -1,0 +1,55 @@
+{
+  "executedAt": "2026-10-16T22:07:53.691Z",
+  "browser": "webkit",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "checks": [
+        "Unsaved scenario auto-archives before opening a saved alternative",
+        "Reload preserves both hypotheses, seeds and models",
+        "Baseline copy starts a new idea without losing prior alternatives",
+        "Fresh template preserves datasets, history, seed and decision draft",
+        "Actual backup contains previous scenarios and both data versions",
+        "Search and no-result state work",
+        "At 30 snapshots, switching and saving preserve all existing work until explicit cleanup",
+        "WCAG2AA/21AA violations 0; no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "height": 768,
+      "checks": [
+        "Unsaved scenario auto-archives before opening a saved alternative",
+        "Reload preserves both hypotheses, seeds and models",
+        "Baseline copy starts a new idea without losing prior alternatives",
+        "Fresh template preserves datasets, history, seed and decision draft",
+        "Actual backup contains previous scenarios and both data versions",
+        "Search and no-result state work",
+        "At 30 snapshots, switching and saving preserve all existing work until explicit cleanup",
+        "WCAG2AA/21AA violations 0; no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "checks": [
+        "Unsaved scenario auto-archives before opening a saved alternative",
+        "Reload preserves both hypotheses, seeds and models",
+        "Baseline copy starts a new idea without losing prior alternatives",
+        "Fresh template preserves datasets, history, seed and decision draft",
+        "Actual backup contains previous scenarios and both data versions",
+        "Search and no-result state work",
+        "At 30 snapshots, switching and saving preserve all existing work until explicit cleanup",
+        "WCAG2AA/21AA violations 0; no viewport overflow"
+      ],
+      "axeViolations": 0
+    }
+  ],
+  "errors": []
+}

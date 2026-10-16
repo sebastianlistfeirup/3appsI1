@@ -1,0 +1,1201 @@
+{
+  "schemaVersion": 1,
+  "baseline": {
+    "schemaVersion": 1,
+    "id": "membership-service",
+    "revision": 1,
+    "name": "Medlemsservice",
+    "description": "Hvad sker der med restkøen, hvis vi tilføjer én medarbejder i sagsbehandlingen?",
+    "evidence": "synthetic",
+    "horizon": 28800000,
+    "observationStart": 0,
+    "maxEvents": 100000,
+    "sla": 7200000,
+    "fixedAutomationCost": 0,
+    "arrivals": {
+      "type": "poisson",
+      "meanInterval": 288000,
+      "maxCases": 250,
+      "initialBacklog": 0
+    },
+    "nodes": [
+      {
+        "id": "arrival",
+        "label": "Nye henvendelser",
+        "kind": "source",
+        "position": {
+          "x": 0,
+          "y": 145
+        },
+        "variableCost": 0,
+        "maxVisits": 20
+      },
+      {
+        "id": "process",
+        "label": "Sagsbehandling",
+        "kind": "activity",
+        "position": {
+          "x": 230,
+          "y": 145
+        },
+        "duration": {
+          "type": "triangular",
+          "min": 480000,
+          "mode": 960000,
+          "max": 1800000
+        },
+        "resourceId": "advisors",
+        "variableCost": 0,
+        "maxVisits": 20
+      },
+      {
+        "id": "route",
+        "label": "Kvalitetstjek?",
+        "kind": "decision",
+        "position": {
+          "x": 460,
+          "y": 145
+        },
+        "variableCost": 0,
+        "maxVisits": 20
+      },
+      {
+        "id": "check",
+        "label": "Kvalitetskontrol",
+        "kind": "activity",
+        "position": {
+          "x": 460,
+          "y": -80
+        },
+        "duration": {
+          "type": "triangular",
+          "min": 180000,
+          "mode": 300000,
+          "max": 600000
+        },
+        "resourceId": "quality",
+        "variableCost": 0,
+        "maxVisits": 20
+      },
+      {
+        "id": "done",
+        "label": "Afsluttet sag",
+        "kind": "sink",
+        "position": {
+          "x": 700,
+          "y": 145
+        },
+        "variableCost": 0,
+        "maxVisits": 20
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "source": "arrival",
+        "target": "process"
+      },
+      {
+        "id": "e2",
+        "source": "process",
+        "target": "route"
+      },
+      {
+        "id": "e3",
+        "source": "route",
+        "target": "check",
+        "weight": 0.3
+      },
+      {
+        "id": "e4",
+        "source": "route",
+        "target": "done",
+        "weight": 0.7
+      },
+      {
+        "id": "e5",
+        "source": "check",
+        "target": "done"
+      }
+    ],
+    "resources": [
+      {
+        "id": "advisors",
+        "label": "Sagsbehandlere",
+        "capacity": 3,
+        "hourlyCost": 285,
+        "calendar": []
+      },
+      {
+        "id": "quality",
+        "label": "Kvalitetsteam",
+        "capacity": 1,
+        "hourlyCost": 310,
+        "calendar": []
+      }
+    ]
+  },
+  "scenario": {
+    "schemaVersion": 1,
+    "id": "membership-service",
+    "revision": 1,
+    "name": "Medlemsservice",
+    "description": "Hvad sker der med restkøen, hvis vi tilføjer én medarbejder i sagsbehandlingen?",
+    "evidence": "synthetic",
+    "horizon": 28800000,
+    "observationStart": 0,
+    "maxEvents": 100000,
+    "sla": 7200000,
+    "fixedAutomationCost": 0,
+    "arrivals": {
+      "type": "poisson",
+      "meanInterval": 288000,
+      "maxCases": 250,
+      "initialBacklog": 0
+    },
+    "nodes": [
+      {
+        "id": "arrival",
+        "label": "Nye henvendelser",
+        "kind": "source",
+        "position": {
+          "x": 0,
+          "y": 145
+        },
+        "variableCost": 0,
+        "maxVisits": 20
+      },
+      {
+        "id": "process",
+        "label": "Sagsbehandling",
+        "kind": "activity",
+        "position": {
+          "x": 230,
+          "y": 145
+        },
+        "duration": {
+          "type": "triangular",
+          "min": 480000,
+          "mode": 960000,
+          "max": 1800000
+        },
+        "resourceId": "advisors",
+        "variableCost": 0,
+        "maxVisits": 20
+      },
+      {
+        "id": "route",
+        "label": "Kvalitetstjek?",
+        "kind": "decision",
+        "position": {
+          "x": 460,
+          "y": 145
+        },
+        "variableCost": 0,
+        "maxVisits": 20
+      },
+      {
+        "id": "check",
+        "label": "Kvalitetskontrol",
+        "kind": "activity",
+        "position": {
+          "x": 460,
+          "y": -80
+        },
+        "duration": {
+          "type": "triangular",
+          "min": 180000,
+          "mode": 300000,
+          "max": 600000
+        },
+        "resourceId": "quality",
+        "variableCost": 0,
+        "maxVisits": 20
+      },
+      {
+        "id": "done",
+        "label": "Afsluttet sag",
+        "kind": "sink",
+        "position": {
+          "x": 700,
+          "y": 145
+        },
+        "variableCost": 0,
+        "maxVisits": 20
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "source": "arrival",
+        "target": "process"
+      },
+      {
+        "id": "e2",
+        "source": "process",
+        "target": "route"
+      },
+      {
+        "id": "e3",
+        "source": "route",
+        "target": "check",
+        "weight": 0.3
+      },
+      {
+        "id": "e4",
+        "source": "route",
+        "target": "done",
+        "weight": 0.7
+      },
+      {
+        "id": "e5",
+        "source": "check",
+        "target": "done"
+      }
+    ],
+    "resources": [
+      {
+        "id": "advisors",
+        "label": "Sagsbehandlere",
+        "capacity": 4,
+        "hourlyCost": 285,
+        "calendar": []
+      },
+      {
+        "id": "quality",
+        "label": "Kvalitetsteam",
+        "capacity": 1,
+        "hourlyCost": 310,
+        "calendar": []
+      }
+    ]
+  },
+  "scenarioName": "En ekstra sagsbehandler",
+  "hypothesis": "En ekstra sagsbehandler reducerer ventetid og restkø. Den simulerede effekt skal vurderes op imod den ekstra lønkapacitet.",
+  "decision": "Denne beslutningskladde og datagrundlaget skal overleve et skabelonskift.",
+  "baseSeed": 3322,
+  "versions": [
+    {
+      "id": "e25d6068-6fc8-4c18-ae45-36ca93346b02",
+      "label": "Version 3",
+      "savedAt": "2026-10-16T22:07:23.993Z",
+      "baseline": {
+        "schemaVersion": 1,
+        "id": "membership-service",
+        "revision": 1,
+        "name": "Medlemsservice",
+        "description": "Hvad sker der med restkøen, hvis vi tilføjer én medarbejder i sagsbehandlingen?",
+        "evidence": "synthetic",
+        "horizon": 28800000,
+        "observationStart": 0,
+        "maxEvents": 100000,
+        "sla": 7200000,
+        "fixedAutomationCost": 0,
+        "arrivals": {
+          "type": "poisson",
+          "meanInterval": 288000,
+          "maxCases": 250,
+          "initialBacklog": 0
+        },
+        "nodes": [
+          {
+            "id": "arrival",
+            "label": "Nye henvendelser",
+            "kind": "source",
+            "position": {
+              "x": 0,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "process",
+            "label": "Sagsbehandling",
+            "kind": "activity",
+            "position": {
+              "x": 230,
+              "y": 145
+            },
+            "duration": {
+              "type": "triangular",
+              "min": 480000,
+              "mode": 960000,
+              "max": 1800000
+            },
+            "resourceId": "advisors",
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "route",
+            "label": "Kvalitetstjek?",
+            "kind": "decision",
+            "position": {
+              "x": 460,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "check",
+            "label": "Kvalitetskontrol",
+            "kind": "activity",
+            "position": {
+              "x": 460,
+              "y": -80
+            },
+            "duration": {
+              "type": "triangular",
+              "min": 180000,
+              "mode": 300000,
+              "max": 600000
+            },
+            "resourceId": "quality",
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "done",
+            "label": "Afsluttet sag",
+            "kind": "sink",
+            "position": {
+              "x": 700,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": "arrival",
+            "target": "process"
+          },
+          {
+            "id": "e2",
+            "source": "process",
+            "target": "route"
+          },
+          {
+            "id": "e3",
+            "source": "route",
+            "target": "check",
+            "weight": 0.3
+          },
+          {
+            "id": "e4",
+            "source": "route",
+            "target": "done",
+            "weight": 0.7
+          },
+          {
+            "id": "e5",
+            "source": "check",
+            "target": "done"
+          }
+        ],
+        "resources": [
+          {
+            "id": "advisors",
+            "label": "Sagsbehandlere",
+            "capacity": 3,
+            "hourlyCost": 285,
+            "calendar": []
+          },
+          {
+            "id": "quality",
+            "label": "Kvalitetsteam",
+            "capacity": 1,
+            "hourlyCost": 310,
+            "calendar": []
+          }
+        ]
+      },
+      "scenario": {
+        "schemaVersion": 1,
+        "id": "membership-service",
+        "revision": 1,
+        "name": "Medlemsservice",
+        "description": "Hvad sker der med restkøen, hvis vi tilføjer én medarbejder i sagsbehandlingen?",
+        "evidence": "synthetic",
+        "horizon": 28800000,
+        "observationStart": 0,
+        "maxEvents": 100000,
+        "sla": 7200000,
+        "fixedAutomationCost": 0,
+        "arrivals": {
+          "type": "poisson",
+          "meanInterval": 288000,
+          "maxCases": 250,
+          "initialBacklog": 0
+        },
+        "nodes": [
+          {
+            "id": "arrival",
+            "label": "Nye henvendelser",
+            "kind": "source",
+            "position": {
+              "x": 0,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "process",
+            "label": "Sagsbehandling",
+            "kind": "activity",
+            "position": {
+              "x": 230,
+              "y": 145
+            },
+            "duration": {
+              "type": "triangular",
+              "min": 480000,
+              "mode": 960000,
+              "max": 1800000
+            },
+            "resourceId": "advisors",
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "route",
+            "label": "Kvalitetstjek?",
+            "kind": "decision",
+            "position": {
+              "x": 460,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "check",
+            "label": "Kvalitetskontrol",
+            "kind": "activity",
+            "position": {
+              "x": 460,
+              "y": -80
+            },
+            "duration": {
+              "type": "triangular",
+              "min": 180000,
+              "mode": 300000,
+              "max": 600000
+            },
+            "resourceId": "quality",
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "done",
+            "label": "Afsluttet sag",
+            "kind": "sink",
+            "position": {
+              "x": 700,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": "arrival",
+            "target": "process"
+          },
+          {
+            "id": "e2",
+            "source": "process",
+            "target": "route"
+          },
+          {
+            "id": "e3",
+            "source": "route",
+            "target": "check",
+            "weight": 0.3
+          },
+          {
+            "id": "e4",
+            "source": "route",
+            "target": "done",
+            "weight": 0.7
+          },
+          {
+            "id": "e5",
+            "source": "check",
+            "target": "done"
+          }
+        ],
+        "resources": [
+          {
+            "id": "advisors",
+            "label": "Sagsbehandlere",
+            "capacity": 3,
+            "hourlyCost": 285,
+            "calendar": []
+          },
+          {
+            "id": "quality",
+            "label": "Kvalitetsteam",
+            "capacity": 1,
+            "hourlyCost": 310,
+            "calendar": []
+          }
+        ]
+      },
+      "context": {
+        "scenarioName": "Samme kapacitet som i dag",
+        "hypothesis": "Kontrollér det uændrede udgangspunkt før næste ændring.",
+        "baseSeed": 3322
+      }
+    },
+    {
+      "id": "7482ecf7-5631-43a3-9923-6aaa486ddde9",
+      "label": "Version 2",
+      "savedAt": "2026-10-16T22:07:22.601Z",
+      "baseline": {
+        "schemaVersion": 1,
+        "id": "membership-service",
+        "revision": 1,
+        "name": "Medlemsservice",
+        "description": "Hvad sker der med restkøen, hvis vi tilføjer én medarbejder i sagsbehandlingen?",
+        "evidence": "synthetic",
+        "horizon": 28800000,
+        "observationStart": 0,
+        "maxEvents": 100000,
+        "sla": 7200000,
+        "fixedAutomationCost": 0,
+        "arrivals": {
+          "type": "poisson",
+          "meanInterval": 288000,
+          "maxCases": 250,
+          "initialBacklog": 0
+        },
+        "nodes": [
+          {
+            "id": "arrival",
+            "label": "Nye henvendelser",
+            "kind": "source",
+            "position": {
+              "x": 0,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "process",
+            "label": "Sagsbehandling",
+            "kind": "activity",
+            "position": {
+              "x": 230,
+              "y": 145
+            },
+            "duration": {
+              "type": "triangular",
+              "min": 480000,
+              "mode": 960000,
+              "max": 1800000
+            },
+            "resourceId": "advisors",
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "route",
+            "label": "Kvalitetstjek?",
+            "kind": "decision",
+            "position": {
+              "x": 460,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "check",
+            "label": "Kvalitetskontrol",
+            "kind": "activity",
+            "position": {
+              "x": 460,
+              "y": -80
+            },
+            "duration": {
+              "type": "triangular",
+              "min": 180000,
+              "mode": 300000,
+              "max": 600000
+            },
+            "resourceId": "quality",
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "done",
+            "label": "Afsluttet sag",
+            "kind": "sink",
+            "position": {
+              "x": 700,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": "arrival",
+            "target": "process"
+          },
+          {
+            "id": "e2",
+            "source": "process",
+            "target": "route"
+          },
+          {
+            "id": "e3",
+            "source": "route",
+            "target": "check",
+            "weight": 0.3
+          },
+          {
+            "id": "e4",
+            "source": "route",
+            "target": "done",
+            "weight": 0.7
+          },
+          {
+            "id": "e5",
+            "source": "check",
+            "target": "done"
+          }
+        ],
+        "resources": [
+          {
+            "id": "advisors",
+            "label": "Sagsbehandlere",
+            "capacity": 3,
+            "hourlyCost": 285,
+            "calendar": []
+          },
+          {
+            "id": "quality",
+            "label": "Kvalitetsteam",
+            "capacity": 1,
+            "hourlyCost": 310,
+            "calendar": []
+          }
+        ]
+      },
+      "scenario": {
+        "schemaVersion": 1,
+        "id": "membership-service",
+        "revision": 1,
+        "name": "Medlemsservice",
+        "description": "Hvad sker der med restkøen, hvis vi tilføjer én medarbejder i sagsbehandlingen?",
+        "evidence": "synthetic",
+        "horizon": 28800000,
+        "observationStart": 0,
+        "maxEvents": 100000,
+        "sla": 7200000,
+        "fixedAutomationCost": 0,
+        "arrivals": {
+          "type": "poisson",
+          "meanInterval": 288000,
+          "maxCases": 250,
+          "initialBacklog": 0
+        },
+        "nodes": [
+          {
+            "id": "arrival",
+            "label": "Nye henvendelser",
+            "kind": "source",
+            "position": {
+              "x": 0,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "process",
+            "label": "Sagsbehandling",
+            "kind": "activity",
+            "position": {
+              "x": 230,
+              "y": 145
+            },
+            "duration": {
+              "type": "triangular",
+              "min": 480000,
+              "mode": 960000,
+              "max": 1800000
+            },
+            "resourceId": "advisors",
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "route",
+            "label": "Kvalitetstjek?",
+            "kind": "decision",
+            "position": {
+              "x": 460,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "check",
+            "label": "Kvalitetskontrol",
+            "kind": "activity",
+            "position": {
+              "x": 460,
+              "y": -80
+            },
+            "duration": {
+              "type": "triangular",
+              "min": 180000,
+              "mode": 300000,
+              "max": 600000
+            },
+            "resourceId": "quality",
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "done",
+            "label": "Afsluttet sag",
+            "kind": "sink",
+            "position": {
+              "x": 700,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": "arrival",
+            "target": "process"
+          },
+          {
+            "id": "e2",
+            "source": "process",
+            "target": "route"
+          },
+          {
+            "id": "e3",
+            "source": "route",
+            "target": "check",
+            "weight": 0.3
+          },
+          {
+            "id": "e4",
+            "source": "route",
+            "target": "done",
+            "weight": 0.7
+          },
+          {
+            "id": "e5",
+            "source": "check",
+            "target": "done"
+          }
+        ],
+        "resources": [
+          {
+            "id": "advisors",
+            "label": "Sagsbehandlere",
+            "capacity": 5,
+            "hourlyCost": 285,
+            "calendar": []
+          },
+          {
+            "id": "quality",
+            "label": "Kvalitetsteam",
+            "capacity": 1,
+            "hourlyCost": 310,
+            "calendar": []
+          }
+        ]
+      },
+      "context": {
+        "scenarioName": "Fem sagsbehandlere",
+        "hypothesis": "Prøv fem kolleger og vurder den ekstra lønkapacitet.",
+        "baseSeed": 3322
+      }
+    },
+    {
+      "id": "saved-a",
+      "label": "Version 1",
+      "savedAt": "1970-01-01T00:00:00.000Z",
+      "baseline": {
+        "schemaVersion": 1,
+        "id": "membership-service",
+        "revision": 1,
+        "name": "Medlemsservice",
+        "description": "Hvad sker der med restkøen, hvis vi tilføjer én medarbejder i sagsbehandlingen?",
+        "evidence": "synthetic",
+        "horizon": 28800000,
+        "observationStart": 0,
+        "maxEvents": 100000,
+        "sla": 7200000,
+        "fixedAutomationCost": 0,
+        "arrivals": {
+          "type": "poisson",
+          "meanInterval": 288000,
+          "maxCases": 250,
+          "initialBacklog": 0
+        },
+        "nodes": [
+          {
+            "id": "arrival",
+            "label": "Nye henvendelser",
+            "kind": "source",
+            "position": {
+              "x": 0,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "process",
+            "label": "Sagsbehandling",
+            "kind": "activity",
+            "position": {
+              "x": 230,
+              "y": 145
+            },
+            "duration": {
+              "type": "triangular",
+              "min": 480000,
+              "mode": 960000,
+              "max": 1800000
+            },
+            "resourceId": "advisors",
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "route",
+            "label": "Kvalitetstjek?",
+            "kind": "decision",
+            "position": {
+              "x": 460,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "check",
+            "label": "Kvalitetskontrol",
+            "kind": "activity",
+            "position": {
+              "x": 460,
+              "y": -80
+            },
+            "duration": {
+              "type": "triangular",
+              "min": 180000,
+              "mode": 300000,
+              "max": 600000
+            },
+            "resourceId": "quality",
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "done",
+            "label": "Afsluttet sag",
+            "kind": "sink",
+            "position": {
+              "x": 700,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": "arrival",
+            "target": "process"
+          },
+          {
+            "id": "e2",
+            "source": "process",
+            "target": "route"
+          },
+          {
+            "id": "e3",
+            "source": "route",
+            "target": "check",
+            "weight": 0.3
+          },
+          {
+            "id": "e4",
+            "source": "route",
+            "target": "done",
+            "weight": 0.7
+          },
+          {
+            "id": "e5",
+            "source": "check",
+            "target": "done"
+          }
+        ],
+        "resources": [
+          {
+            "id": "advisors",
+            "label": "Sagsbehandlere",
+            "capacity": 3,
+            "hourlyCost": 285,
+            "calendar": []
+          },
+          {
+            "id": "quality",
+            "label": "Kvalitetsteam",
+            "capacity": 1,
+            "hourlyCost": 310,
+            "calendar": []
+          }
+        ]
+      },
+      "scenario": {
+        "schemaVersion": 1,
+        "id": "membership-service",
+        "revision": 1,
+        "name": "Medlemsservice",
+        "description": "Hvad sker der med restkøen, hvis vi tilføjer én medarbejder i sagsbehandlingen?",
+        "evidence": "synthetic",
+        "horizon": 28800000,
+        "observationStart": 0,
+        "maxEvents": 100000,
+        "sla": 7200000,
+        "fixedAutomationCost": 0,
+        "arrivals": {
+          "type": "poisson",
+          "meanInterval": 288000,
+          "maxCases": 250,
+          "initialBacklog": 0
+        },
+        "nodes": [
+          {
+            "id": "arrival",
+            "label": "Nye henvendelser",
+            "kind": "source",
+            "position": {
+              "x": 0,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "process",
+            "label": "Sagsbehandling",
+            "kind": "activity",
+            "position": {
+              "x": 230,
+              "y": 145
+            },
+            "duration": {
+              "type": "triangular",
+              "min": 480000,
+              "mode": 960000,
+              "max": 1800000
+            },
+            "resourceId": "advisors",
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "route",
+            "label": "Kvalitetstjek?",
+            "kind": "decision",
+            "position": {
+              "x": 460,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "check",
+            "label": "Kvalitetskontrol",
+            "kind": "activity",
+            "position": {
+              "x": 460,
+              "y": -80
+            },
+            "duration": {
+              "type": "triangular",
+              "min": 180000,
+              "mode": 300000,
+              "max": 600000
+            },
+            "resourceId": "quality",
+            "variableCost": 0,
+            "maxVisits": 20
+          },
+          {
+            "id": "done",
+            "label": "Afsluttet sag",
+            "kind": "sink",
+            "position": {
+              "x": 700,
+              "y": 145
+            },
+            "variableCost": 0,
+            "maxVisits": 20
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": "arrival",
+            "target": "process"
+          },
+          {
+            "id": "e2",
+            "source": "process",
+            "target": "route"
+          },
+          {
+            "id": "e3",
+            "source": "route",
+            "target": "check",
+            "weight": 0.3
+          },
+          {
+            "id": "e4",
+            "source": "route",
+            "target": "done",
+            "weight": 0.7
+          },
+          {
+            "id": "e5",
+            "source": "check",
+            "target": "done"
+          }
+        ],
+        "resources": [
+          {
+            "id": "advisors",
+            "label": "Sagsbehandlere",
+            "capacity": 4,
+            "hourlyCost": 285,
+            "calendar": []
+          },
+          {
+            "id": "quality",
+            "label": "Kvalitetsteam",
+            "capacity": 1,
+            "hourlyCost": 310,
+            "calendar": []
+          }
+        ]
+      },
+      "context": {
+        "scenarioName": "Fire sagsbehandlere",
+        "hypothesis": "Fire kolleger skal afkorte ventetiden uden at ændre arbejdsgangen.",
+        "baseSeed": 113
+      }
+    }
+  ],
+  "dataset": {
+    "id": "data-current",
+    "name": "preserved.csv",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "importedAt": "1970-01-01T00:00:00.000Z",
+    "unit": "seconds",
+    "result": {
+      "headers": [
+        "case_id",
+        "started_at",
+        "finished_at"
+      ],
+      "preview": [
+        {
+          "case_id": "a",
+          "started_at": "0",
+          "finished_at": "60"
+        }
+      ],
+      "rows": [
+        {
+          "case_id": "a",
+          "started_at": "0",
+          "finished_at": "60"
+        }
+      ],
+      "rowCount": 1,
+      "excludedRows": 0,
+      "issues": [],
+      "issueCount": 0,
+      "warnings": [],
+      "durationMs": [
+        60000
+      ],
+      "observedStart": 0,
+      "observedEnd": 60000
+    }
+  },
+  "datasetHistory": [
+    {
+      "id": "older-data",
+      "name": "older.csv",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "importedAt": "1970-01-01T00:00:00.000Z",
+      "unit": "seconds",
+      "result": {
+        "headers": [
+          "case_id",
+          "started_at",
+          "finished_at"
+        ],
+        "preview": [
+          {
+            "case_id": "a",
+            "started_at": "0",
+            "finished_at": "60"
+          }
+        ],
+        "rows": [
+          {
+            "case_id": "a",
+            "started_at": "0",
+            "finished_at": "60"
+          }
+        ],
+        "rowCount": 1,
+        "excludedRows": 0,
+        "issues": [],
+        "issueCount": 0,
+        "warnings": [],
+        "durationMs": [
+          60000
+        ],
+        "observedStart": 0,
+        "observedEnd": 60000
+      }
+    }
+  ],
+  "comparison": null,
+  "comparisonContext": null,
+  "holdout": null,
+  "trainingDataHashes": []
+}

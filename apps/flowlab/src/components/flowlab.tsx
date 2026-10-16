@@ -68,7 +68,6 @@ import {
 import { createReport, reportPdf, reportZip } from "../lib/report";
 import {
   appendVersion,
-  restoreVersion,
   workspaceCopy,
   workspaceError,
   versionBytes,
@@ -82,6 +81,12 @@ import {
   ResultsPanel,
 } from "./results";
 import DataWorkshop from "./data-workshop";
+import ScenarioLibrary from "./scenario-library";
+import {
+  alternativeFromBaseline,
+  openSavedScenario,
+  openTemplateInWorkspace,
+} from "../lib/scenarios";
 import { replaceDataset } from "../lib/datasets";
 const ModelCanvas = dynamic(() => import("./model-canvas"), {
   ssr: false,
@@ -455,6 +460,63 @@ export default function FlowLab() {
     pendingRun.current = null;
     setRunning(false);
     setPartial(null);
+  };
+  const activateScenario = (versionId: string) => {
+    try {
+      const source = currentDoc.current;
+      const target = source.versions.find(
+        (version) => version.id === versionId,
+      );
+      const result = openSavedScenario(
+        source,
+        versionId,
+        crypto.randomUUID(),
+        new Date().toISOString(),
+      );
+      stopSimulation();
+      update(result.document);
+      notify(
+        `${target?.label ?? "Scenariet"} er indlæst. ${result.archived ? `Dit tidligere udkast er bevaret i ${result.archived.label}. ` : ""}${target?.context ? "Hypotese og seed følger med." : "Dette ældre snapshot indeholder kun modellerne."} Fortryd er tilgængelig.`,
+      );
+    } catch (error) {
+      setError(workspaceError(error));
+    }
+  };
+  const openFreshTemplate = () => {
+    try {
+      const result = openTemplateInWorkspace(
+        currentDoc.current,
+        initialDocument(),
+        crypto.randomUUID(),
+        new Date().toISOString(),
+      );
+      stopSimulation();
+      autoRan.current = false;
+      update(result.document);
+      setSelected("process");
+      go("model");
+      notify(
+        `Skabelonen er åbnet. ${result.archived ? `Dit udkast er bevaret i ${result.archived.label}. ` : ""}Data, historik og beslutningskladde er bevaret.`,
+      );
+    } catch (error) {
+      setError(workspaceError(error));
+    }
+  };
+  const createAlternative = () => {
+    try {
+      const result = alternativeFromBaseline(
+        currentDoc.current,
+        crypto.randomUUID(),
+        new Date().toISOString(),
+      );
+      stopSimulation();
+      update(result.document);
+      notify(
+        `Et nyt alternativ er kopieret fra baseline. ${result.archived ? `Dit tidligere udkast er bevaret i ${result.archived.label}. ` : ""}Giv din nye idé et navn og en hypotese.`,
+      );
+    } catch (error) {
+      setError(workspaceError(error));
+    }
   };
   const workspaceTask = (operation: "import" | "export", file?: File) => {
     if (workspaceWorker.current) return;
@@ -1188,13 +1250,7 @@ export default function FlowLab() {
                     </div>
                     <button
                       className="button secondary"
-                      onClick={() => {
-                        update({
-                          ...doc,
-                          scenario: structuredClone(doc.baseline),
-                        });
-                        notify("Alternativet er kopieret fra baseline.");
-                      }}
+                      onClick={createAlternative}
                     >
                       <Copy size={16} />
                       Kopiér baseline
@@ -1336,6 +1392,11 @@ export default function FlowLab() {
                       </button>
                     </section>
                   </div>
+                  <ScenarioLibrary
+                    versions={doc.versions}
+                    onSave={saveVersion}
+                    onOpen={activateScenario}
+                  />
                 </div>
               )}
               {tab === "data" && (
@@ -1642,16 +1703,7 @@ export default function FlowLab() {
                       </p>
                       <button
                         className="button primary"
-                        onClick={() => {
-                          stopSimulation();
-                          autoRan.current = false;
-                          update(initialDocument());
-                          setSelected("process");
-                          go("model");
-                          notify(
-                            "Skabelonen er åbnet. Dit tidligere arbejde kan gendannes med Fortryd.",
-                          );
-                        }}
+                        onClick={openFreshTemplate}
                       >
                         Åbn frisk skabelon
                         <ArrowRight size={15} />
@@ -1722,12 +1774,7 @@ export default function FlowLab() {
                             </span>
                             <button
                               className="text-button"
-                              onClick={() => {
-                                update(restoreVersion(doc, v));
-                                notify(
-                                  `${v.label} er indlæst${v.context ? " med hypotese og fælles seed" : ". Dette ældre snapshot indeholder kun modellerne"}. Fortryd er tilgængelig.`,
-                                );
-                              }}
+                              onClick={() => activateScenario(v.id)}
                             >
                               Gendan
                               <ArrowRight size={14} />
@@ -1757,9 +1804,9 @@ export default function FlowLab() {
                         <History size={28} />
                         <h3>Bevar et godt udgangspunkt.</h3>
                         <p>
-                          Gem en version før næste eksperiment. De seneste 30
+                          Gem en version før næste eksperiment. Op til 30
                           snapshots bevares lokalt, inden for 16 MB. Eksportér
-                          arbejdsrummet, før du rydder op.
+                          arbejdsrummet, før du selv fjerner ældre versioner.
                         </p>
                       </div>
                     )}

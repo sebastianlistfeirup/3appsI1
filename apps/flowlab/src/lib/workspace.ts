@@ -28,6 +28,13 @@ export function importWorkspace(text: string): FlowDocument {
     comparisonContext: null,
     holdout: null,
   });
+  if (
+    new Set(doc.versions.map((version) => version.id)).size !==
+    doc.versions.length
+  )
+    throw new Error(
+      "Modelversionernes id’er må ikke gentages. Hver gemt version skal kunne åbnes og fjernes entydigt.",
+    );
   const datasets = [doc.dataset, ...doc.datasetHistory].filter(
     (dataset) => dataset !== null,
   );
@@ -92,6 +99,10 @@ export function appendVersion(
   id: string,
   savedAt: string,
 ): { snapshot: ModelSnapshot; versions: ModelSnapshot[] } {
+  if (doc.versions.length >= 30)
+    throw new Error(
+      "Alle 30 versionspladser er i brug. Eksportér arbejdsrummet, og fjern et ældre snapshot, før du gemmer en ny version. Ingen gemte versioner er fjernet.",
+    );
   const sequence =
     Math.max(
       0,
@@ -107,7 +118,7 @@ export function appendVersion(
     scenario: structuredClone(doc.scenario),
     context: experimentContext(doc),
   };
-  const versions = [snapshot, ...doc.versions].slice(0, 30);
+  const versions = [snapshot, ...doc.versions];
   if (versionBytes(versions) > MAX_VERSION_BYTES)
     throw new Error(
       "Versionslageret har en grænse på 16 MB. Eksportér arbejdsrummet, og fjern et tidligere snapshot, før du gemmer et nyt. Dine modeller er bevaret.",

@@ -128,14 +128,26 @@ describe("Workspace recovery contract", () => {
       "ukendte felter",
     );
   });
-  it("keeps snapshot labels increasing after the 30-version retention boundary", () => {
+  it("keeps all 30 snapshots until explicit removal and continues numbering after cleanup", () => {
     const doc = initialDocument();
-    for (let i = 1; i <= 35; i++)
+    for (let i = 1; i <= 30; i++)
       doc.versions = appendVersion(
         doc,
         String(i),
         new Date(0).toISOString(),
       ).versions;
+    expect(() => appendVersion(doc, "31", new Date(0).toISOString())).toThrow(
+      "Ingen gemte versioner er fjernet",
+    );
+    expect(doc.versions.at(-1)?.label).toBe("Version 1");
+    for (let i = 31; i <= 35; i++) {
+      doc.versions = doc.versions.slice(0, -1);
+      doc.versions = appendVersion(
+        doc,
+        String(i),
+        new Date(0).toISOString(),
+      ).versions;
+    }
     expect(doc.versions).toHaveLength(30);
     expect(doc.versions[0].label).toBe("Version 35");
     expect(doc.versions.at(-1)?.label).toBe("Version 6");
