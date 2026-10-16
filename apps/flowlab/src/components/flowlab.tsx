@@ -242,6 +242,7 @@ export default function FlowLab() {
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
       if (
+        document.querySelector("dialog[open]") ||
         !(event.ctrlKey || event.metaKey) ||
         (event.target instanceof HTMLElement &&
           ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName))

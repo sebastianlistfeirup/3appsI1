@@ -1660,6 +1660,227 @@ td strong {
 .input-diff-run {
   margin-top: 15px;
 }
+.arrival-editor-trigger {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  margin: 10px 0;
+}
+.arrival-dialog {
+  box-sizing: border-box;
+  width: min(840px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 28px;
+  color: var(--text);
+  background: #fff;
+  box-shadow: 0 30px 100px #17343a30;
+}
+.arrival-dialog::backdrop {
+  background: #17343a65;
+  backdrop-filter: blur(3px);
+}
+.arrival-dialog-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.arrival-dialog-heading h2 {
+  font-size: 25px;
+  line-height: 1.25;
+  letter-spacing: -0.6px;
+  margin: 7px 0 9px;
+}
+.arrival-dialog-heading p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+.arrival-dialog-heading > button {
+  flex-shrink: 0;
+}
+.arrival-dialog label {
+  font-size: 13px;
+  margin-top: 0;
+}
+.arrival-dialog input,
+.arrival-dialog select {
+  min-height: 40px;
+  font-size: 14px;
+  padding: 9px 11px;
+}
+.arrival-dialog .field-hint {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.arrival-dialog .arrival-mode {
+  max-width: 350px;
+  margin-bottom: 16px;
+}
+.arrival-poisson-fields {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+.arrival-counts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #edf6f3;
+  border: 1px solid #d6e8e2;
+  border-radius: 9px;
+  margin: 18px 0 10px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.arrival-counts svg {
+  flex-shrink: 0;
+}
+.arrival-list {
+  max-height: 280px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  margin-top: 10px;
+}
+.arrival-list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.arrival-list-row:last-child {
+  border-bottom: 0;
+}
+.arrival-list-row.selected {
+  background: #eaf5f3;
+}
+.arrival-list-row > div:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.arrival-list-row strong {
+  display: block;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.arrival-list-row span {
+  display: block;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.arrival-row-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+}
+.arrival-row-actions button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.arrival-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0 22px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.arrival-pagination > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.arrival-pagination label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 0;
+}
+.arrival-pagination input {
+  width: 62px;
+  padding: 6px;
+  margin: 0;
+}
+.arrival-pagination button {
+  font-size: 12px;
+  padding: 8px;
+}
+.arrival-dialog .arrival-case-form {
+  border-top: 1px solid var(--line);
+  padding-top: 21px;
+}
+.arrival-dialog .arrival-case-form h3 {
+  font-size: 17px;
+  margin: 0 0 16px;
+}
+.arrival-case-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+.arrival-case-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.arrival-dialog-footer {
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.arrival-dialog-footer > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 14px;
+}
+@media (max-width: 760px) {
+  .arrival-dialog {
+    width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+    padding: 21px 18px;
+    border-radius: 13px;
+  }
+  .arrival-dialog-heading h2 {
+    font-size: 23px;
+  }
+  .arrival-case-fields,
+  .arrival-poisson-fields {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .arrival-list-row {
+    gap: 9px;
+    padding: 11px;
+  }
+  .arrival-row-actions {
+    gap: 4px;
+  }
+  .arrival-row-actions button {
+    width: 32px;
+  }
+  .arrival-dialog-footer > div {
+    flex-direction: column-reverse;
+  }
+  .arrival-dialog .arrival-dialog-heading > button {
+    width: 28px;
+  }
+}
 .data-columns {
   display: grid;
   grid-template-columns: 0.9fr 1.2fr;

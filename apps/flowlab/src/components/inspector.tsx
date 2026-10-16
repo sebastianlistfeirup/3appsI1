@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import {
   Plus,
   SlidersHorizontal,
@@ -10,6 +11,7 @@ import {
 import type { FlowModel, FlowNode, Distribution } from "@tre/flow-engine";
 import { nodeIcons, nodeLabels } from "./model-canvas";
 import { formatNumber } from "../lib/document";
+import ArrivalEditor from "./arrival-editor";
 export default function Inspector({
   model,
   selected,
@@ -23,6 +25,7 @@ export default function Inspector({
   onChange: (next: FlowModel) => void;
   onClose: () => void;
 }) {
+  const [arrivalEditorOpen, setArrivalEditorOpen] = useState(false);
   const node = model.nodes.find((n) => n.id === selected);
   if (!node)
     return (
@@ -205,9 +208,26 @@ export default function Inspector({
             </>
           ) : (
             <p className="field-hint">
-              {model.arrivals.cases.length} eksplicitte ankomster. Redigeres
-              gennem modelimport.
+              {model.arrivals.cases.length.toLocaleString("da-DK")} eksplicitte
+              ankomster med bestemte tidspunkter og sagstyper.
             </p>
+          )}
+          <button
+            className="button secondary arrival-editor-trigger"
+            onClick={() => setArrivalEditorOpen(true)}
+          >
+            Rediger ankomster
+          </button>
+          {arrivalEditorOpen && (
+            <ArrivalEditor
+              model={model}
+              variant={variant}
+              onClose={() => setArrivalEditorOpen(false)}
+              onApply={(arrivals) => {
+                onChange({ ...model, arrivals });
+                setArrivalEditorOpen(false);
+              }}
+            />
           )}
         </>
       )}

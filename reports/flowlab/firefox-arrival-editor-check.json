@@ -1,0 +1,172 @@
+{
+  "executedAt": "2026-10-16T23:04:16.782Z",
+  "browser": "firefox",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "checks": [
+        "Cancel and Escape preserve original list and return focus",
+        "Duplicate id and unfinished row prevent apply; pending fields cannot be overwritten",
+        "Exact time edits, cohort counts and strict horizon boundary verified in real export",
+        "Model undo blocked behind modal; normal undo restores method and all cases",
+        "Reload preserves four manually edited cases",
+        "Case-type routing takes actual fast activity from 90000 to 120000 ms",
+        "1000-case list has at most 20 rows with direct page/search and stable id edit",
+        "Poisson total-case budget validated before apply",
+        "Switching Poisson to an empty manual list gives actual zero arrivals and unavailable time metrics"
+      ],
+      "metrics": {
+        "throughput": 3,
+        "completedBeforeWindow": 0,
+        "throughputPerHour": 36,
+        "backlog": 0,
+        "arrived": 3,
+        "active": 0,
+        "waiting": 0,
+        "plannedWait": 0,
+        "aborted": 0,
+        "leadTime": {
+          "mean": 140000,
+          "median": 150000,
+          "p90": 174000,
+          "count": 3
+        },
+        "queueTime": {
+          "mean": 50000,
+          "median": 60000,
+          "p90": 84000,
+          "count": 3
+        },
+        "plannedWaitTime": {
+          "mean": 0,
+          "median": 0,
+          "p90": 0,
+          "count": 3
+        },
+        "utilization": 0.9,
+        "cost": 8.333333333333332,
+        "salaryCost": 8.333333333333332,
+        "variableCost": 0,
+        "slaMet": 1,
+        "slaCompleted": 0.3333333333333333,
+        "slaKnownBacklogBreaches": 0,
+        "slaUnknownBacklog": 0
+      },
+      "routedMedian": 90000,
+      "axeViolations": 0
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "height": 768,
+      "checks": [
+        "Cancel and Escape preserve original list and return focus",
+        "Duplicate id and unfinished row prevent apply; pending fields cannot be overwritten",
+        "Exact time edits, cohort counts and strict horizon boundary verified in real export",
+        "Model undo blocked behind modal; normal undo restores method and all cases",
+        "Reload preserves four manually edited cases",
+        "Case-type routing takes actual fast activity from 90000 to 120000 ms",
+        "1000-case list has at most 20 rows with direct page/search and stable id edit",
+        "Poisson total-case budget validated before apply",
+        "Switching Poisson to an empty manual list gives actual zero arrivals and unavailable time metrics"
+      ],
+      "metrics": {
+        "throughput": 3,
+        "completedBeforeWindow": 0,
+        "throughputPerHour": 36,
+        "backlog": 0,
+        "arrived": 3,
+        "active": 0,
+        "waiting": 0,
+        "plannedWait": 0,
+        "aborted": 0,
+        "leadTime": {
+          "mean": 140000,
+          "median": 150000,
+          "p90": 174000,
+          "count": 3
+        },
+        "queueTime": {
+          "mean": 50000,
+          "median": 60000,
+          "p90": 84000,
+          "count": 3
+        },
+        "plannedWaitTime": {
+          "mean": 0,
+          "median": 0,
+          "p90": 0,
+          "count": 3
+        },
+        "utilization": 0.9,
+        "cost": 8.333333333333332,
+        "salaryCost": 8.333333333333332,
+        "variableCost": 0,
+        "slaMet": 1,
+        "slaCompleted": 0.3333333333333333,
+        "slaKnownBacklogBreaches": 0,
+        "slaUnknownBacklog": 0
+      },
+      "routedMedian": 90000,
+      "axeViolations": 0
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "checks": [
+        "Cancel and Escape preserve original list and return focus",
+        "Duplicate id and unfinished row prevent apply; pending fields cannot be overwritten",
+        "Exact time edits, cohort counts and strict horizon boundary verified in real export",
+        "Model undo blocked behind modal; normal undo restores method and all cases",
+        "Reload preserves four manually edited cases",
+        "Case-type routing takes actual fast activity from 90000 to 120000 ms",
+        "1000-case list has at most 20 rows with direct page/search and stable id edit",
+        "Poisson total-case budget validated before apply",
+        "Switching Poisson to an empty manual list gives actual zero arrivals and unavailable time metrics"
+      ],
+      "metrics": {
+        "throughput": 3,
+        "completedBeforeWindow": 0,
+        "throughputPerHour": 36,
+        "backlog": 0,
+        "arrived": 3,
+        "active": 0,
+        "waiting": 0,
+        "plannedWait": 0,
+        "aborted": 0,
+        "leadTime": {
+          "mean": 140000,
+          "median": 150000,
+          "p90": 174000,
+          "count": 3
+        },
+        "queueTime": {
+          "mean": 50000,
+          "median": 60000,
+          "p90": 84000,
+          "count": 3
+        },
+        "plannedWaitTime": {
+          "mean": 0,
+          "median": 0,
+          "p90": 0,
+          "count": 3
+        },
+        "utilization": 0.9,
+        "cost": 8.333333333333332,
+        "salaryCost": 8.333333333333332,
+        "variableCost": 0,
+        "slaMet": 1,
+        "slaCompleted": 0.3333333333333333,
+        "slaKnownBacklogBreaches": 0,
+        "slaUnknownBacklog": 0
+      },
+      "routedMedian": 90000,
+      "axeViolations": 0
+    }
+  ],
+  "errors": []
+}
