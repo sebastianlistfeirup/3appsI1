@@ -132,6 +132,8 @@ function stop(child: ChildProcess, signal: NodeJS.Signals) {
 await mkdir("reports/ci", { recursive: true });
 try {
   if (enabled("studio")) {
+    await run("pnpm", ["exec", "tsx", "tools/backend/check-failure-exit.ts"]);
+    await run("pnpm", ["test:http"]);
     await start("studio", 3000);
     await run("pnpm", ["exec", "playwright", "test", "tests/e2e"]);
     await run("node", ["tools/browser/studio-a11y.cjs"]);
@@ -190,6 +192,11 @@ try {
       await run(
         "pnpm",
         ["exec", "tsx", "apps/flowlab/tests/experiment-settings-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/input-differences-check.ts"],
         { FLOWLAB_BROWSER: browser },
       );
     }

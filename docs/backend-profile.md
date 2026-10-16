@@ -50,3 +50,7 @@ A separate [actual backup/restore drill](backup-restore.md) now passes locally a
 ## Private immutable files
 
 The optional API now supports [private local artifacts and one-minute download links](private-artifacts.md). It rechecks current membership on redemption and verifies exact size and SHA-256 before delivery. Real filesystem and PostgreSQL fixtures cover concurrency, corruption, foreign tenants, revoked membership and expiry. Browser cloud uploads and remote storage are still unconnected.
+
+## Full production HTTP boundary
+
+[The actual HTTP proof](backend-http-proof.md) starts the built Next server, an HTTPS JWKS fixture and the separate worker against real restricted PostgreSQL logins. It verifies the whole request-to-result path and signed private download over actual sockets, with normal TLS verification. The identity service is explicitly synthetic and local; hosted login and browser cloud synchronization remain separate work.

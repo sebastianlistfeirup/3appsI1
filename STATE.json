@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T22:55:55.032044+00:00",
+  "updatedAt": "2026-10-16T23:00:00.802205+00:00",
   "status": "building",
   "activeTasks": [
     "F06-remote-ci",
@@ -18,6 +18,7 @@
     "Local FFmpeg H.264/AAC",
     "Two-cluster PostgreSQL and immutable-file restore",
     "Separate worker reconnect after actual idle session termination",
-    "Private local immutable objects and signed links with current RLS membership"
+    "Private local immutable objects and signed links with current RLS membership",
+    "Production Next HTTP \u2192 certificate-validated HTTPS JWKS \u2192 RLS \u2192 separate worker \u2192 signed private file"
   ]
 }

@@ -252,6 +252,15 @@
       ],
       "status": "verified-local",
       "allowed_paths": ["apps/flowlab"]
+    },
+    {
+      "id": "F10",
+      "app": "foundation",
+      "goal": "Production Next HTTP through actual TLS JWKS, RLS, worker and private download",
+      "dependencies": ["F09"],
+      "verification": ["pnpm test:http"],
+      "status": "verified-local",
+      "allowed_paths": ["tools", "docs", "reports"]
     }
   ]
 }

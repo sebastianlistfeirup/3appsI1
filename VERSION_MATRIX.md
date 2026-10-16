@@ -23,6 +23,6 @@ Recorded from the working environment and lockfile on 2026-10-16. Exact dependen
 | idb                          | 8.0.4          | IndexedDB transactions                                        |
 | FFmpeg / ffprobe             | 7.1.5          | Verified local H.264/AAC export, frame count and audio checks |
 
-The local OS is Debian 13 x64. Browser executables are installed by Playwright; Chromium can use `PLAYWRIGHT_CHROMIUM_EXECUTABLE` or an existing `/usr/bin/chromium`. Firefox and WebKit were actually launched and tested. The development container required unprivileged library extraction for WebKit; this workaround is described in the Studio checkpoint. CI installs dependencies using Playwright's standard `--with-deps` flow instead.
+The local OS is Debian 13 x64. Browser executables are installed by Playwright; The default Chromium is the pinned Playwright build; an alternative is used only when `PLAYWRIGHT_CHROMIUM_EXECUTABLE` is explicitly set. Firefox and WebKit were actually launched and tested. The development container required unprivileged library extraction for WebKit; this workaround is described in the Studio checkpoint. CI installs dependencies using Playwright's standard `--with-deps` flow instead.
 
 Hosted Supabase, live providers, Stripe and a production supervisor have no verified connection/version in this delivery. Package availability does not establish an operational integration.

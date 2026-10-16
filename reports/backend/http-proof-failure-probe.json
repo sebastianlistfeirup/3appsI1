@@ -1,0 +1,16 @@
+{
+  "startedAt": "2026-10-16T23:00:55.250Z",
+  "finishedAt": "2026-10-16T23:00:56.931Z",
+  "status": "failed",
+  "failureProbe": true,
+  "failureReason": "Intentional failure after real services became ready.",
+  "checks": [
+    "API response is not cached",
+    "Unauthenticated request rejected before contacting identity server",
+    "Next fetched real JWKS through certificate-validated HTTPS",
+    "Actual Studio document validator created the project"
+  ],
+  "cleanup": "completed",
+  "poolErrors": 0,
+  "cloudConnected": false
+}

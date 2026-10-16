@@ -20,7 +20,8 @@
     "test:db": "tsx tools/database/run-tests.ts",
     "test:restore": "tsx tools/database/restore-drill.ts",
     "test:browser": "tsx tools/ci/browser-suite.ts",
-    "test:a11y:studio": "node tools/browser/studio-a11y.cjs"
+    "test:a11y:studio": "node tools/browser/studio-a11y.cjs",
+    "test:http": "tsx tools/backend/http-proof.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.11.1",

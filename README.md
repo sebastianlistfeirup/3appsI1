@@ -68,13 +68,15 @@ pnpm test:db
 # Med PostgreSQL 17+ klientværktøjer installeret:
 pnpm test:restore
 pnpm build
+# Faktisk HTTP/TLS/JWT/worker/fildownload i isolerede lokale processer:
+pnpm test:http
 pnpm exec playwright install --with-deps chromium firefox webkit
 pnpm test:browser
 ```
 
 Browserkontrollerne bruger de fastlåste Playwright-browsere. En anden Chromium kan kun vælges med den eksplicitte variabel `PLAYWRIGHT_CHROMIUM_EXECUTABLE`. Browserpakken kræver også `ffmpeg`, `ffprobe` og `pdftotext` fra Poppler. Firefox-lydtesten kræver en lydtjeneste; brug den dokumenterede [lokale PulseAudio-testopsætning](docs/director-verification.md#render-and-recovery-gate) på en Linux-server uden lydkort. Luk lokale appservere før `pnpm test:browser`, som starter sine egne produktionsbuilds på port 3000–3002. GitHub Actions kører de samme gates og gemmer rapporter. Ét fejlet check stopper kørslen; tests, der ikke er udført, mærkes ikke som bestået.
 
-`test:db` opretter en isoleret lokal PostgreSQL 17.10-instans, kører de rigtige migrationer og tester RLS, budgetter, pg-boss, revisioner og leases. Den rører ikke en ekstern database. [Backendprofilen](docs/backend-profile.md) beskriver det verificerede fundament og de forbindelser, der stadig mangler.
+`test:db` opretter en isoleret lokal PostgreSQL 17.10-instans, kører de rigtige migrationer og tester RLS, budgetter, pg-boss, revisioner og leases. Den rører ikke en ekstern database. [HTTP-prøven](docs/backend-http-proof.md) kører desuden hele server-/worker-/filforløbet over rigtige forbindelser. [Backendprofilen](docs/backend-profile.md) beskriver det verificerede fundament og de forbindelser, der stadig mangler.
 
 ## Find rundt
 
