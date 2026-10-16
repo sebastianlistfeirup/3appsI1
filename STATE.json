@@ -1,9 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T19:40:00Z",
+  "updatedAt": "2026-10-16T20:00:21.092089+00:00",
   "status": "building",
   "activeTasks": [
-    "F00"
+    "F03-data-jobs",
+    "S09-browser",
+    "L01-flowlab-core",
+    "D05-animatic"
   ],
   "profile": "demo",
   "connectedIntegrations": []

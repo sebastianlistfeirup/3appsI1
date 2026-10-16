@@ -9,3 +9,5 @@
 `downloadFile(filename, content: BlobPart, mime?)` creates a local download. App validates domain data before imports. Workspace package entrypoints contain TypeScript source and are transpiled by Next.
 
 Coordinator owns this package and root config. Send proposed changes to coordinator.
+
+On initial storage/schema failure, `ready` stays false and `error` is set. Render `error` with retry/export before a loading branch. Do not show invalid or unpersisted sample data as saved.

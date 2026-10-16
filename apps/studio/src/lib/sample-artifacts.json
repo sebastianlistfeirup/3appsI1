@@ -1,0 +1,62 @@
+[
+  {
+    "id": "menu-v1",
+    "artifactId": "menu",
+    "version": 1,
+    "name": "quest-menu.html",
+    "content": "<!DOCTYPE html><html lang=\"da\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"><title>Realmread · Quest menu</title><style>*{box-sizing:border-box}body{margin:0;color:#f3ebd7;font-family:Georgia,serif;background:#163a34}.scene{position:relative;min-height:100vh;overflow:hidden}.landscape{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,31,29,.85),transparent 75%),linear-gradient(0deg,rgba(9,27,24,.6),transparent 55%)}main{position:relative;padding:9% 9%;min-height:100vh;display:flex;flex-direction:column;align-items:flex-start;justify-content:center}.eyebrow{font:10px Arial,sans-serif;letter-spacing:.3em;color:#c3b887}.logo{font-size:clamp(24px,6vw,56px);letter-spacing:.14em;font-weight:400;margin:20px 0 7px}.subtitle{font:italic 12px Georgia,serif;color:#c1cab8;margin-bottom:30px}.menu{display:grid;gap:14px;font-size:14px;letter-spacing:.05em}.selected{color:#e9c988}.quest{position:absolute;right:5%;bottom:9%;width:35%;padding:16px;border:1px solid #a793594d;background:#102c27b5;backdrop-filter:blur(8px);border-radius:3px}.quest small{font:8px Arial,sans-serif;color:#d8bc7c;letter-spacing:.15em}.quest strong{display:block;font-size:13px;font-weight:400;margin:9px 0}.quest p{font:10px/1.5 Arial,sans-serif;color:#bdc8b8;margin:0}.bottom{position:absolute;left:9%;bottom:6%;font:8px Arial,sans-serif;letter-spacing:.15em;color:#9daea0}@media(max-width:500px){.quest{width:43%;padding:12px}.quest strong{font-size:11px}.quest p{font-size:8px}}</style><div class=\"scene\"><div class=\"landscape\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 960 600\"><defs><linearGradient id=\"sky\" x2=\"0\" y2=\"1\"><stop stop-color=\"#8b9f9b\"/><stop offset=\"1\" stop-color=\"#d3c9a8\"/></linearGradient><linearGradient id=\"mount\" x2=\"1\" y2=\"1\"><stop stop-color=\"#46645f\"/><stop offset=\"1\" stop-color=\"#183d38\"/></linearGradient><radialGradient id=\"glow\"><stop stop-color=\"#e9d8a8\" stop-opacity=\".8\"/><stop offset=\"1\" stop-color=\"#e9d8a8\" stop-opacity=\"0\"/></radialGradient></defs><path fill=\"url(#sky)\" d=\"M0 0h960v600H0z\"/><circle fill=\"url(#glow)\" cx=\"630\" cy=\"170\" r=\"280\"/><circle fill=\"#e9dfba\" cx=\"630\" cy=\"170\" r=\"39\"/><path fill=\"#7f9690\" d=\"M0 390 120 200 210 280 320 90 420 240 560 160 720 310 850 150 960 300v300H0z\"/><path fill=\"#66817a\" d=\"m0 470 240-240 100 110 140-155 170 210 190-130 120 120v215H0z\"/><path fill=\"url(#mount)\" d=\"m0 430 170-75 130 110 150-90 180 90 180-100 150 60v175H0z\"/><path fill=\"#143831\" d=\"m0 530 180-45 270 65 100-10 130-40 280 25v75H0z\"/><path fill=\"#aab0a0\" opacity=\".4\" d=\"m500 600 85-100-30-30 55-40-25 38 45 26-55 106z\"/><g fill=\"#1b4239\"><path d=\"m75 460 30-150 30 150h-17l21 45H70l20-45zM810 470l38-195 38 195h-20l25 50h-90l26-50zM900 510l26-130 26 130h-14l17 34h-60l17-34z\"/></g><g fill=\"#e1d0a3\" opacity=\".65\"><circle cx=\"440\" cy=\"470\" r=\"2\"/><circle cx=\"425\" cy=\"494\" r=\"1\"/><circle cx=\"725\" cy=\"405\" r=\"2\"/></g></svg></div><div class=\"shade\"></div><main><div class=\"eyebrow\">ET NYT KAPITEL VENTER</div><h1 class=\"logo\">REALMREAD</h1><p class=\"subtitle\">Historierne finder deres vej.</p><div class=\"menu\"><span class=\"selected\">◇ &nbsp; Fortsæt rejsen</span><span>Ny fortælling</span><span>Indstillinger</span></div></main><div class=\"bottom\">SYNTETISK DEMOPROJEKT · STUDIO ONE</div></div></html>",
+    "encoding": "utf8",
+    "sha256": "b2f0c5d5ef424325908ebb8f523abb46db1468f00a9489cfa0804885a8ccfb91",
+    "bytes": 3366,
+    "mime": "text/html",
+    "kind": "code",
+    "provenance": "Originalt syntetisk sample, skabt til denne app",
+    "rights": "owned",
+    "createdAt": "2026-10-16T18:00:00.000Z"
+  },
+  {
+    "id": "menu-v2",
+    "artifactId": "menu",
+    "version": 2,
+    "name": "quest-menu.html",
+    "content": "<!DOCTYPE html><html lang=\"da\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"><title>Realmread · Quest menu</title><style>*{box-sizing:border-box}body{margin:0;color:#f3ebd7;font-family:Georgia,serif;background:#163a34}.scene{position:relative;min-height:100vh;overflow:hidden}.landscape{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,31,29,.85),transparent 75%),linear-gradient(0deg,rgba(9,27,24,.6),transparent 55%)}main{position:relative;padding:9% 9%;min-height:100vh;display:flex;flex-direction:column;align-items:flex-start;justify-content:center}.eyebrow{font:10px Arial,sans-serif;letter-spacing:.3em;color:#c3b887}.logo{font-size:clamp(24px,6vw,56px);letter-spacing:.14em;font-weight:400;margin:20px 0 7px}.subtitle{font:italic 12px Georgia,serif;color:#c1cab8;margin-bottom:30px}.menu{display:grid;gap:14px;font-size:14px;letter-spacing:.05em}.selected{color:#e9c988}.quest{position:absolute;right:5%;bottom:9%;width:35%;padding:16px;border:1px solid #a793594d;background:#102c27b5;backdrop-filter:blur(8px);border-radius:3px}.quest small{font:8px Arial,sans-serif;color:#d8bc7c;letter-spacing:.15em}.quest strong{display:block;font-size:13px;font-weight:400;margin:9px 0}.quest p{font:10px/1.5 Arial,sans-serif;color:#bdc8b8;margin:0}.bottom{position:absolute;left:9%;bottom:6%;font:8px Arial,sans-serif;letter-spacing:.15em;color:#9daea0}@media(max-width:500px){.quest{width:43%;padding:12px}.quest strong{font-size:11px}.quest p{font-size:8px}}</style><div class=\"scene\"><div class=\"landscape\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 960 600\"><defs><linearGradient id=\"sky\" x2=\"0\" y2=\"1\"><stop stop-color=\"#8b9f9b\"/><stop offset=\"1\" stop-color=\"#d3c9a8\"/></linearGradient><linearGradient id=\"mount\" x2=\"1\" y2=\"1\"><stop stop-color=\"#46645f\"/><stop offset=\"1\" stop-color=\"#183d38\"/></linearGradient><radialGradient id=\"glow\"><stop stop-color=\"#e9d8a8\" stop-opacity=\".8\"/><stop offset=\"1\" stop-color=\"#e9d8a8\" stop-opacity=\"0\"/></radialGradient></defs><path fill=\"url(#sky)\" d=\"M0 0h960v600H0z\"/><circle fill=\"url(#glow)\" cx=\"630\" cy=\"170\" r=\"280\"/><circle fill=\"#e9dfba\" cx=\"630\" cy=\"170\" r=\"39\"/><path fill=\"#7f9690\" d=\"M0 390 120 200 210 280 320 90 420 240 560 160 720 310 850 150 960 300v300H0z\"/><path fill=\"#66817a\" d=\"m0 470 240-240 100 110 140-155 170 210 190-130 120 120v215H0z\"/><path fill=\"url(#mount)\" d=\"m0 430 170-75 130 110 150-90 180 90 180-100 150 60v175H0z\"/><path fill=\"#143831\" d=\"m0 530 180-45 270 65 100-10 130-40 280 25v75H0z\"/><path fill=\"#aab0a0\" opacity=\".4\" d=\"m500 600 85-100-30-30 55-40-25 38 45 26-55 106z\"/><g fill=\"#1b4239\"><path d=\"m75 460 30-150 30 150h-17l21 45H70l20-45zM810 470l38-195 38 195h-20l25 50h-90l26-50zM900 510l26-130 26 130h-14l17 34h-60l17-34z\"/></g><g fill=\"#e1d0a3\" opacity=\".65\"><circle cx=\"440\" cy=\"470\" r=\"2\"/><circle cx=\"425\" cy=\"494\" r=\"1\"/><circle cx=\"725\" cy=\"405\" r=\"2\"/></g></svg></div><div class=\"shade\"></div><main><div class=\"eyebrow\">ET NYT KAPITEL VENTER</div><h1 class=\"logo\">REALMREAD</h1><p class=\"subtitle\">Historierne finder deres vej.</p><div class=\"menu\"><span class=\"selected\">◇ &nbsp; Fortsæt rejsen</span><span>Ny fortælling</span><span>Indstillinger</span></div></main><aside class=\"quest\"><small>◇ &nbsp; AKTIV QUEST</small><strong>Lyset ved den gamle bro</strong><p>Find arkivaren i tågedalen.<br>Kapitel 03 · 2 af 4 spor fundet</p></aside><div class=\"bottom\">SYNTETISK DEMOPROJEKT · STUDIO ONE</div></div></html>",
+    "encoding": "utf8",
+    "sha256": "712e9d1865fa599be50701d1b50fee8f6c0de13bb1879e80f095e1ae46971534",
+    "bytes": 3543,
+    "mime": "text/html",
+    "kind": "code",
+    "provenance": "Originalt syntetisk sample, skabt til denne app",
+    "rights": "owned",
+    "createdAt": "2026-10-16T18:00:00.000Z"
+  },
+  {
+    "id": "design-v1",
+    "artifactId": "design",
+    "version": 1,
+    "name": "taagedalen.svg",
+    "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 960 600\"><defs><linearGradient id=\"sky\" x2=\"0\" y2=\"1\"><stop stop-color=\"#8b9f9b\"/><stop offset=\"1\" stop-color=\"#d3c9a8\"/></linearGradient><linearGradient id=\"mount\" x2=\"1\" y2=\"1\"><stop stop-color=\"#46645f\"/><stop offset=\"1\" stop-color=\"#183d38\"/></linearGradient><radialGradient id=\"glow\"><stop stop-color=\"#e9d8a8\" stop-opacity=\".8\"/><stop offset=\"1\" stop-color=\"#e9d8a8\" stop-opacity=\"0\"/></radialGradient></defs><path fill=\"url(#sky)\" d=\"M0 0h960v600H0z\"/><circle fill=\"url(#glow)\" cx=\"630\" cy=\"170\" r=\"280\"/><circle fill=\"#e9dfba\" cx=\"630\" cy=\"170\" r=\"39\"/><path fill=\"#7f9690\" d=\"M0 390 120 200 210 280 320 90 420 240 560 160 720 310 850 150 960 300v300H0z\"/><path fill=\"#66817a\" d=\"m0 470 240-240 100 110 140-155 170 210 190-130 120 120v215H0z\"/><path fill=\"url(#mount)\" d=\"m0 430 170-75 130 110 150-90 180 90 180-100 150 60v175H0z\"/><path fill=\"#143831\" d=\"m0 530 180-45 270 65 100-10 130-40 280 25v75H0z\"/><path fill=\"#aab0a0\" opacity=\".4\" d=\"m500 600 85-100-30-30 55-40-25 38 45 26-55 106z\"/><g fill=\"#1b4239\"><path d=\"m75 460 30-150 30 150h-17l21 45H70l20-45zM810 470l38-195 38 195h-20l25 50h-90l26-50zM900 510l26-130 26 130h-14l17 34h-60l17-34z\"/></g><g fill=\"#e1d0a3\" opacity=\".65\"><circle cx=\"440\" cy=\"470\" r=\"2\"/><circle cx=\"425\" cy=\"494\" r=\"1\"/><circle cx=\"725\" cy=\"405\" r=\"2\"/></g></svg>",
+    "encoding": "utf8",
+    "sha256": "3ed16eb59188a6051f2aff22f2da8be159fc4564d60ceb3d50a6a7e8fbff6c89",
+    "bytes": 1356,
+    "mime": "image/svg+xml",
+    "kind": "design",
+    "provenance": "Originalt syntetisk sample, skabt til denne app",
+    "rights": "owned",
+    "createdAt": "2026-10-16T18:00:00.000Z"
+  },
+  {
+    "id": "notes-v1",
+    "artifactId": "notes",
+    "version": 1,
+    "name": "review-guide.md",
+    "content": "# Review af questindikator\n\nDette er en syntetisk eksempelproduktion.\n\n1. Åbn før/efter-preview.\n2. Kontrollér at aktiv quest er læsbar.\n3. Kontrollér mobilvisningen.\n\nIntet eksternt build eller AI-kald er kørt af denne demo.",
+    "encoding": "utf8",
+    "sha256": "feb0ae74381a59a3ce69ab26f742679cabd6be8c860a0a466ea88d6a1f370043",
+    "bytes": 231,
+    "mime": "text/markdown",
+    "kind": "evidence",
+    "provenance": "Originalt syntetisk sample, skabt til denne app",
+    "rights": "owned",
+    "createdAt": "2026-10-16T18:00:00.000Z"
+  }
+]
