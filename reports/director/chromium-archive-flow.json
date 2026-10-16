@@ -1,0 +1,84 @@
+{
+  "engine": "chromium",
+  "phases": [
+    {
+      "name": "seed real original media and immutable history",
+      "at": "2026-10-16T22:58:51.724Z"
+    },
+    {
+      "name": "cancel a pending real worker and retain the whole film",
+      "at": "2026-10-16T22:58:56.378Z"
+    },
+    {
+      "name": "export more than 15 MB through the actual bundled worker",
+      "at": "2026-10-16T22:58:59.219Z"
+    },
+    {
+      "name": "import v2 as an independent film and compare every semantic field",
+      "at": "2026-10-16T22:59:00.596Z"
+    },
+    {
+      "name": "reject corrupt bytes and worker startup failure without losing either film",
+      "at": "2026-10-16T22:59:05.901Z"
+    },
+    {
+      "name": "import the original v1 archive format",
+      "at": "2026-10-16T22:59:10.042Z"
+    },
+    {
+      "name": "passed",
+      "at": "2026-10-16T22:59:10.835Z"
+    }
+  ],
+  "checks": [
+    "A real bundled worker exports >10 MiB of original media, with four unique content-addressed files; repeated GLB/frame versions are stored once; project data stays unchanged; event-loop heartbeats continue",
+    "Cancellation terminates its actual worker without mutation; malformed bytes and controlled worker startup failure retain both films; v2 roundtrip preserves all semantic fields except independent project identity/revision; legacy v1 imports successfully"
+  ],
+  "accessibility": [
+    {
+      "name": "desktop-pending-archive",
+      "violations": []
+    },
+    {
+      "name": "tablet-pending-archive",
+      "violations": []
+    },
+    {
+      "name": "mobile-pending-archive",
+      "violations": []
+    }
+  ],
+  "pageErrors": [],
+  "sources": [
+    {
+      "bytes": 8118003,
+      "sha256": "acae3975bfc1cea4c05b46accd89f7d5a69874ffd2990f3488163ea058fcc586"
+    },
+    {
+      "bytes": 8118415,
+      "sha256": "cc99cea4fb14515a2024e2f3b634976442d8bbf472e018c6506e60bf405cab84"
+    }
+  ],
+  "performance": {
+    "heartbeats": 33,
+    "maxGapMs": 56.19999999925494
+  },
+  "archive": {
+    "bytes": 16331882,
+    "expandedBytes": 22833408,
+    "uniqueOriginals": 4
+  },
+  "worker": {
+    "created": 5,
+    "terminated": 5,
+    "live": 0,
+    "requests": [
+      "export",
+      "export",
+      "import",
+      "import",
+      "import"
+    ]
+  },
+  "verifiedAt": "2026-10-16T22:59:10.835Z"
+}

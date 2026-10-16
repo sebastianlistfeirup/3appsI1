@@ -1646,7 +1646,6 @@ h1 {
   justify-content: center;
   padding: 30px;
   background: #0a1019c9;
-  backdrop-filter: blur(7px);
 }
 .modal {
   width: 570px;
@@ -4592,5 +4591,41 @@ button.wordmark {
   .location-palette-heading > span {
     font-size: 11px;
     letter-spacing: 0.7px;
+  }
+}
+
+.archive-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 20px;
+  padding: 14px;
+  border: 1px solid #725b44;
+  background: #302a24;
+  border-radius: 6px;
+  color: #eed2b4;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.archive-progress .button {
+  flex-shrink: 0;
+}
+.toast button {
+  color: inherit;
+  padding: 6px 8px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: transparent;
+  font: inherit;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .archive-progress {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .toast:has(button) {
+    flex-wrap: wrap;
   }
 }

@@ -103,3 +103,17 @@ LIBRARY_ENGINE=webkit node apps/director/tests/large-library-flow.mjs
 
 Testen bruger >20 MB ægte, seedede PNG-originaler og validerer, at covers er
 små afledte filer, mens originaldokumenter og recovery-download er uændrede.
+
+Workerbaseret projektpakke, deduplikation og fuld import/eksport:
+
+```bash
+node apps/director/tests/archive-flow.mjs
+ARCHIVE_ENGINE=firefox node apps/director/tests/archive-flow.mjs
+ARCHIVE_ENGINE=webkit node apps/director/tests/archive-flow.mjs
+```
+
+Hver gate bruger >15 MB originale PNG-filer, GLB og immutable versioner;
+beviser rigtig worker, afbrydelse, originale hashes, komplet v2-roundtrip,
+v1-kompatibilitet og bevaret arbejde ved fejl. Lokal watchdog er fire
+minutter; en fem minutters CI-command-timeout er et passende ekstra loft.
+Se `docs/director-project-archive.md` for format, grænser og afgrænsninger.

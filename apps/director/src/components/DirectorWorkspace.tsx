@@ -24,7 +24,9 @@ import {
   type ProductionSummary,
 } from "../lib/productions";
 import DirectorEditor from "./DirectorEditor";
-import { importPackage, verifyMedia } from "../lib/project-files";
+import { verifyMedia, validateProjectTextures } from "../lib/project-files";
+import { importProjectArchive } from "../lib/archive-client";
+import { useArchiveTask } from "../lib/use-archive-task";
 const pointer = "director-active-production";
 export default function DirectorWorkspace() {
   const [active, setActive] = useState<string | null>(null),
@@ -37,6 +39,7 @@ export default function DirectorWorkspace() {
     [query, setQuery] = useState(""),
     [title, setTitle] = useState(""),
     [template, setTemplate] = useState<"empty" | "sample">("empty");
+  const archive = useArchiveTask(setBusy);
   const generation = useRef(0),
     libraryRead = useRef<AbortController | null>(null),
     heading = useRef<HTMLHeadingElement>(null),
@@ -111,6 +114,7 @@ export default function DirectorWorkspace() {
     try {
       await fn();
     } catch (e) {
+      if (e instanceof DOMException && e.name === "AbortError") return;
       setError(
         e instanceof Error && e.name === "QuotaExceededError"
           ? "Browserens lager er fuldt. Hent sikkerhedskopier, eller frigør plads på enheden. Dine eksisterende film er bevaret."
@@ -139,9 +143,13 @@ export default function DirectorWorkspace() {
       if (file.size > 100 * 1024 * 1024)
         throw Error("Projektet må højst være 100 MB");
       const project = file.name.toLowerCase().endsWith(".zip")
-        ? await importPackage(await file.arrayBuffer())
+        ? await archive.run(async (options) =>
+            importProjectArchive(await file.arrayBuffer(), options),
+          )
         : parseProject(JSON.parse(await file.text()));
-      await verifyMedia(project);
+      if (file.name.toLowerCase().endsWith(".zip"))
+        await validateProjectTextures(project);
+      else await verifyMedia(project);
       const next = await createProduction(project.title, "sample", project);
       open(next.key);
     });
@@ -467,6 +475,9 @@ export default function DirectorWorkspace() {
         <div className="toast working" role="status">
           <Sparkles size={16} />
           <span>{busy}</span>
+          {archive.active && (
+            <button onClick={archive.cancel}>Afbryd projektpakke</button>
+          )}
         </div>
       )}
     </div>

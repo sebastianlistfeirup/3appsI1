@@ -81,14 +81,18 @@ import {
   ShotHistoryPanel,
 } from "./VersionPanels";
 import { SequencePreview } from "./SequencePreview";
+import {
+  exportProjectArchive,
+  importProjectArchive,
+} from "../lib/archive-client";
+import { useArchiveTask } from "../lib/use-archive-task";
 import { PreviewAudio } from "../lib/preview-audio";
 import { renderFrame } from "../lib/scene-renderer";
 import {
-  exportPackage,
-  importPackage,
   importMedia,
   importGlb,
   verifyMedia,
+  validateProjectTextures,
 } from "../lib/project-files";
 
 type Tab = "scene" | "storyboard" | "story";
@@ -242,6 +246,7 @@ export default function DirectorEditor({
   const fileRef = useRef<HTMLInputElement>(null),
     mediaRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const archive = useArchiveTask(setBusy);
   const current = useRef(p);
   current.current = p;
   const shots = orderedShots(p),
@@ -513,9 +518,12 @@ export default function DirectorEditor({
     try {
       await fn();
     } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "Handlingen kunne ikke gennemføres",
-      );
+      if (e instanceof DOMException && e.name === "AbortError")
+        setNotice(e.message);
+      else
+        setError(
+          e instanceof Error ? e.message : "Handlingen kunne ikke gennemføres",
+        );
     } finally {
       setBusy("");
     }
@@ -656,10 +664,14 @@ export default function DirectorEditor({
       if (file.size > 100 * 1024 * 1024)
         throw Error("Projektet må højst være 100 MB");
       const next = file.name.toLowerCase().endsWith(".zip")
-        ? await importPackage(await file.arrayBuffer())
+        ? await archive.run(async (options) =>
+            importProjectArchive(await file.arrayBuffer(), options),
+          )
         : parseProject(JSON.parse(await file.text()));
       if (file.size > 100 * 1024 * 1024) throw Error("Projektet er for stort");
-      await verifyMedia(next);
+      if (file.name.toLowerCase().endsWith(".zip"))
+        await validateProjectTextures(next);
+      else await verifyMedia(next);
       commit(
         () => next,
         "Projektet er åbnet. Din tidligere version kan gendannes med Fortryd.",
@@ -754,7 +766,9 @@ export default function DirectorEditor({
       if (kind === "zip")
         downloadFile(
           `${slug}-v${project.revision}.zip`,
-          (await exportPackage(project)) as Uint8Array<ArrayBuffer>,
+          (await archive.run((options) =>
+            exportProjectArchive(project, options),
+          )) as Uint8Array<ArrayBuffer>,
           "application/zip",
         );
       if (kind === "pdf") {
@@ -2193,6 +2207,9 @@ export default function DirectorEditor({
             <Check size={15} />
           )}
           <span>{busy || notice}</span>
+          {archive.active && !modal && (
+            <button onClick={archive.cancel}>Afbryd projektpakke</button>
+          )}
         </div>
       )}
       {modal && (
@@ -2256,6 +2273,14 @@ export default function DirectorEditor({
                 </IconButton>
               </div>
             )}
+            {archive.active && (
+              <div className="archive-progress" role="status">
+                <span>{busy}</span>
+                <button className="button secondary" onClick={archive.cancel}>
+                  Afbryd projektpakke
+                </button>
+              </div>
+            )}
             {modal === "location" ? (
               <LocationPanel
                 scene={p.draft}
@@ -2300,7 +2325,7 @@ export default function DirectorEditor({
                     <span>
                       <strong>Komplet projektpakke</strong>
                       <small>
-                        ZIP med scener, tidslinje og indlejrede medier
+                        ZIP med scener, tidslinje og alle originale medier
                       </small>
                     </span>
                     <Download size={16} />

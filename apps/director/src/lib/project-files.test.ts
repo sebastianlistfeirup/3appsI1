@@ -77,9 +77,24 @@ describe("Portable project and media safety", () => {
         rights: "owned",
       },
     ];
-    await expect(importPackage(buffer(await exportPackage(p)))).rejects.toThrow(
-      "checksum",
-    );
+    const bytes = strToU8(JSON.stringify(p));
+    await expect(
+      importPackage(
+        buffer(
+          zipSync({
+            "project.json": bytes,
+            "manifest.json": strToU8(
+              JSON.stringify({
+                format: "director-project-package",
+                version: 1,
+                sha256: await sha256(bytes),
+              }),
+            ),
+          }),
+        ),
+      ),
+    ).rejects.toThrow("checksum");
+    await expect(exportPackage(p)).rejects.toThrow("checksum");
   });
   it("checks PNG image allocation limits from headers before decoding", () => {
     const bytes = new Uint8Array(24);

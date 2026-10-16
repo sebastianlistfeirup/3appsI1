@@ -3,129 +3,33 @@ import {
   disposeModelResources,
   validateGlbImages,
 } from "./glb-resources";
-import { unzipSync, zipSync, strFromU8, strToU8 } from "fflate";
+import { sha256, dataUrlBytes } from "./binary";
+import { verifyProjectMedia } from "./project-validation";
 import {
   inspectRaster,
   inspectGlb,
   type GlbAsset,
-  parseProject,
   type Project,
   type Media,
 } from "@tre/scene-format";
-export async function sha256(bytes: Uint8Array) {
-  return [
-    ...new Uint8Array(
-      await crypto.subtle.digest("SHA-256", bytes as Uint8Array<ArrayBuffer>),
-    ),
-  ]
-    .map((v) => v.toString(16).padStart(2, "0"))
-    .join("");
-}
-export async function exportPackage(project: Project) {
-  const bytes = strToU8(JSON.stringify(parseProject(project)));
-  const manifest = {
-    format: "director-project-package",
-    version: 1,
-    project: "project.json",
-    sha256: await sha256(bytes),
-    media: project.media.map((m) => ({
-      id: m.id,
-      sha256: m.sha256,
-      bytes: m.bytes,
-    })),
-    note: "Originale medier og kameraframes er indlejret i projektfilen. Ingen ekstern download kræves.",
-  };
-  return zipSync(
-    {
-      "project.json": bytes,
-      "manifest.json": strToU8(JSON.stringify(manifest, null, 2)),
-    },
-    { level: 6 },
-  );
-}
-export async function importPackage(buffer: ArrayBuffer): Promise<Project> {
-  if (buffer.byteLength > 100 * 1024 * 1024)
-    throw Error("Projektpakken må højst være 100 MB");
-  let total = 0;
-  let count = 0;
-  const files = unzipSync(new Uint8Array(buffer), {
-    filter(file) {
-      count++;
-      total += file.originalSize;
-      if (
-        count > 2 ||
-        !["project.json", "manifest.json"].includes(file.name) ||
-        file.originalSize > 150 * 1024 * 1024 ||
-        total > 151 * 1024 * 1024
-      )
-        throw Error("Ugyldig eller for stor projektpakke");
-      return true;
-    },
-  });
-  if (!files["project.json"] || !files["manifest.json"])
-    throw Error("Projekt og manifest mangler");
-  const manifest = JSON.parse(strFromU8(files["manifest.json"]));
-  if (
-    manifest.format !== "director-project-package" ||
-    manifest.version !== 1 ||
-    manifest.sha256 !== (await sha256(files["project.json"]))
-  )
-    throw Error("Projektpakkens checksum matcher ikke");
-  const project = parseProject(JSON.parse(strFromU8(files["project.json"])));
-  await verifyMedia(project);
-  return project;
-}
+export { sha256, dataUrlBytes } from "./binary";
+export { exportPackage, importPackage } from "./project-archive";
 export async function verifyMedia(project: Project) {
-  const checked = new Map<
-    string,
-    { url: string; bytes: number; triangles: number; textureBytes: number }
-  >();
+  await verifyProjectMedia(project);
+  await validateProjectTextures(project);
+}
+/** Decode textures after a worker has already checked all file hashes and geometry. */
+export async function validateProjectTextures(project: Project) {
+  if (typeof document === "undefined") return;
+  const checked = new Set<string>();
   for (const scene of [...project.scenes, project.draft])
     for (const asset of scene.assets) {
-      const prior = checked.get(asset.sha256);
-      if (
-        prior &&
-        prior.url === asset.dataUrl &&
-        prior.bytes === asset.bytes &&
-        prior.triangles === asset.triangles &&
-        prior.textureBytes === asset.textureBytes
-      )
-        continue;
-      const bytes = dataUrlBytes(asset.dataUrl);
-      if (
-        bytes.length !== asset.bytes ||
-        (await sha256(bytes)) !== asset.sha256
-      )
-        throw Error(`GLB-filen ${asset.name} matcher ikke dens checksum`);
-      const info = inspectGlb(new Uint8Array(bytes).buffer);
-      if (
-        info.triangles !== asset.triangles ||
-        info.textureBytes !== asset.textureBytes
-      )
-        throw Error("GLB-geometri matcher ikke manifestet");
-      if (info.images.length && typeof document !== "undefined")
-        await validateGlbImages(new Uint8Array(bytes).buffer, info);
-      checked.set(asset.sha256, {
-        url: asset.dataUrl,
-        bytes: asset.bytes,
-        triangles: asset.triangles,
-        textureBytes: asset.textureBytes,
-      });
+      if (checked.has(asset.dataUrl)) continue;
+      const buffer = dataUrlBytes(asset.dataUrl).buffer;
+      const info = inspectGlb(buffer);
+      if (info.images.length) await validateGlbImages(buffer, info);
+      checked.add(asset.dataUrl);
     }
-  for (const shot of project.shots)
-    if (shot.frame) inspectRaster(dataUrlBytes(shot.frame));
-  for (const media of project.media) {
-    const bytes = dataUrlBytes(media.dataUrl);
-    if (
-      bytes.byteLength !== media.bytes ||
-      (await sha256(bytes)) !== media.sha256
-    )
-      throw Error(`Mediefilen ${media.name} matcher ikke dens checksum`);
-  }
-}
-export function dataUrlBytes(value: string) {
-  const decoded = atob(value.slice(value.indexOf(",") + 1));
-  return Uint8Array.from(decoded, (c) => c.charCodeAt(0));
 }
 export function fileDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {

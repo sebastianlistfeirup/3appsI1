@@ -1,0 +1,84 @@
+{
+  "engine": "firefox",
+  "phases": [
+    {
+      "name": "seed real original media and immutable history",
+      "at": "2026-10-16T23:01:10.570Z"
+    },
+    {
+      "name": "cancel a pending real worker and retain the whole film",
+      "at": "2026-10-16T23:01:13.654Z"
+    },
+    {
+      "name": "export more than 15 MB through the actual bundled worker",
+      "at": "2026-10-16T23:01:15.900Z"
+    },
+    {
+      "name": "import v2 as an independent film and compare every semantic field",
+      "at": "2026-10-16T23:01:18.037Z"
+    },
+    {
+      "name": "reject corrupt bytes and worker startup failure without losing either film",
+      "at": "2026-10-16T23:01:23.589Z"
+    },
+    {
+      "name": "import the original v1 archive format",
+      "at": "2026-10-16T23:01:26.380Z"
+    },
+    {
+      "name": "passed",
+      "at": "2026-10-16T23:01:27.488Z"
+    }
+  ],
+  "checks": [
+    "A real bundled worker exports >10 MiB of original media, with four unique content-addressed files; repeated GLB/frame versions are stored once; project data stays unchanged; event-loop heartbeats continue",
+    "Cancellation terminates its actual worker without mutation; malformed bytes and controlled worker startup failure retain both films; v2 roundtrip preserves all semantic fields except independent project identity/revision; legacy v1 imports successfully"
+  ],
+  "accessibility": [
+    {
+      "name": "desktop-pending-archive",
+      "violations": []
+    },
+    {
+      "name": "tablet-pending-archive",
+      "violations": []
+    },
+    {
+      "name": "mobile-pending-archive",
+      "violations": []
+    }
+  ],
+  "pageErrors": [],
+  "sources": [
+    {
+      "bytes": 8085216,
+      "sha256": "35f753720cfc8ff2de53a9198e9a19df040cccf7d25f814aa797732c934cdabe"
+    },
+    {
+      "bytes": 8085485,
+      "sha256": "db04595e83b479ed2b7d46f3597533f35808b8972f6399e2908abec0bd3cd2b5"
+    }
+  ],
+  "performance": {
+    "heartbeats": 33,
+    "maxGapMs": 37
+  },
+  "archive": {
+    "bytes": 16318862,
+    "expandedBytes": 23448397,
+    "uniqueOriginals": 4
+  },
+  "worker": {
+    "created": 5,
+    "terminated": 5,
+    "live": 0,
+    "requests": [
+      "export",
+      "export",
+      "import",
+      "import",
+      "import"
+    ]
+  },
+  "verifiedAt": "2026-10-16T23:01:27.488Z"
+}
