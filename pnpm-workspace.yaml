@@ -4,6 +4,7 @@ packages:
   - services/*
 
 allowBuilds:
+  '@embedded-postgres/linux-x64': true
   esbuild: true
   sharp: true
 
@@ -19,4 +20,3 @@ minimumReleaseAgeExclude:
   - '@next/swc-win32-x64-msvc@16.4.2'
   - lucide-react@1.58.0
   - next@16.4.2
-
