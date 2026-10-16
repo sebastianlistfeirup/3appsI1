@@ -1,0 +1,44 @@
+{
+  "engine": "firefox",
+  "checks": [
+    "new independent empty production with first real character/captured shot",
+    "original film unchanged",
+    "deep duplicate with new project identity and pinned shot references",
+    "last project restored after reload",
+    "new sample gets five actual frames",
+    "malformed import preserves library; valid project import creates independent new film",
+    "future schema retained for raw backup",
+    "search empty and responsive layouts",
+    "quota during creation preserves every existing project",
+    "own-media-only film retains its media and null camera frame on import, reload and bulk camera capture",
+    "rejecting flush prevents project switch and allows unsaved-copy download"
+  ],
+  "accessibility": [
+    {
+      "name": "initial-library",
+      "violations": []
+    },
+    {
+      "name": "desktop-library",
+      "violations": []
+    },
+    {
+      "name": "tablet-library",
+      "violations": []
+    },
+    {
+      "name": "mobile-library",
+      "violations": []
+    },
+    {
+      "name": "mobile-no-results",
+      "violations": []
+    },
+    {
+      "name": "mobile-quota-error",
+      "violations": []
+    }
+  ],
+  "pageErrors": [],
+  "verifiedAt": "2026-10-16T21:26:58.849Z"
+}

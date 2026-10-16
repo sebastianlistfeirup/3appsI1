@@ -180,10 +180,16 @@ function Frame({ project, shot }: { project: Project; shot: Shot }) {
     </div>
   );
 }
-export default function DirectorEditor() {
+export default function DirectorEditor({
+  documentKey = "production",
+  onOpenProductions,
+}: {
+  documentKey?: string;
+  onOpenProductions?: (project: Project | null) => void;
+}) {
   const storage = usePersistentDocument<Project>(
     "director",
-    "production",
+    documentKey,
     createSampleProject,
     parseProject,
   );
@@ -393,7 +399,11 @@ export default function DirectorEditor() {
     };
   }, [modal]);
   useEffect(() => {
-    const id = localStorage.getItem("director-last-render");
+    const id =
+      localStorage.getItem(`director-last-render:${documentKey}`) ??
+      (documentKey === "production"
+        ? localStorage.getItem("director-last-render")
+        : null);
     if (id && /^[a-f0-9-]{36}$/.test(id))
       fetch(`/api/exports/${id}`)
         .then((r) => {
@@ -492,44 +502,69 @@ export default function DirectorEditor() {
       setBusy("");
     }
   };
-  const capture = async (all = false) =>
+  const openProductions = () =>
+    act("Gemmer filmen før skift …", async () => {
+      setPlaying(false);
+      await storage.flush();
+      onOpenProductions?.(current.current);
+    });
+  const capture = async (all = false, missingOnly = false) =>
     act(all ? "Tager kameraframes …" : "Tager kameraframe …", async () => {
       const base = current.current;
+      const target = all
+        ? orderedShots(base).filter(
+            (s) => !s.mediaId && (!missingOnly || !s.frame),
+          )
+        : shot
+          ? [shot]
+          : [];
+      if (!target.length) {
+        setNotice(
+          "Der er ingen kameraframes at opdatere. Egne medier er bevaret.",
+        );
+        return;
+      }
       const snapshot = clone(base);
-      let next = publishScene(snapshot);
-      const target = all ? orderedShots(next) : shot ? [shot] : [];
-      for (const s of target) {
+      let next = missingOnly ? snapshot : publishScene(snapshot);
+      const selectedIndex = next.sequence.indexOf(shot?.id ?? "");
+      for (const [index, s] of target.entries()) {
+        if (all)
+          setBusy(`Tager kameraframe ${index + 1} af ${target.length} …`);
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        const scene = missingOnly ? sceneForShot(next, s) : next.draft;
         const camera = all
-          ? (next.draft.cameras.find((c) => c.id === s.cameraId) ?? cam)
+          ? (scene.cameras.find((c) => c.id === s.cameraId) ?? cam)
           : cam;
-        const captured = await renderFrame(next.draft, camera, mode);
-        const oldIndex = next.sequence.indexOf(s.id);
+        const captured = await renderFrame(scene, camera, mode);
         next = reviseShot(next, s.id, {
-          sceneVersionId: next.draft.id,
+          sceneVersionId: scene.id,
           cameraId: camera.id,
           frame: captured.frame,
           frameMode: captured.mode,
           frameRenderer: RENDERER_VERSION,
           mediaId: null,
+          sourceIn: 0,
+          clipAudio: false,
         });
-        if (!all) setSelectedShot(next.sequence[oldIndex]);
       }
       if (
         current.current !== base &&
         JSON.stringify(current.current) !== JSON.stringify(base)
       )
         throw Error("Scenen ændrede sig under frame-optagelsen. Prøv igen.");
+      if (selectedIndex >= 0) setSelectedShot(next.sequence[selectedIndex]);
       commit(
         () => next,
         all
-          ? "Alle indstillinger er gemt som nye shotversioner."
+          ? "Kameraframes er gemt som nye shotversioner. Egne medier er bevaret."
           : "Kameraframe og sceneversion er gemt.",
       );
     });
   useEffect(() => {
     if (!storage.ready || initialCapture.current) return;
     initialCapture.current = true;
-    if (!p.shots.some((s) => s.frame)) void capture(true);
+    if (orderedShots(p).some((s) => !s.mediaId && !s.frame))
+      void capture(true, true);
   }, [storage.ready]);
   const addShot = () =>
     commit((next) => {
@@ -718,7 +753,7 @@ export default function DirectorEditor() {
       if (!response.ok)
         throw Error(data.error ?? "Eksporten kunne ikke startes");
       setRenderJob(data);
-      localStorage.setItem("director-last-render", data.id);
+      localStorage.setItem(`director-last-render:${documentKey}`, data.id);
     });
   if (!storage.ready)
     return (
@@ -731,6 +766,14 @@ export default function DirectorEditor() {
             <button className="button primary" onClick={() => storage.reload()}>
               Prøv at åbne igen
             </button>
+            {onOpenProductions && (
+              <button
+                className="button secondary"
+                onClick={() => onOpenProductions(null)}
+              >
+                Åbn produktionsbibliotek
+              </button>
+            )}
             <p>
               Aktivér lokal browserlagring, eller åbn appen i en almindelig
               browserfane.
@@ -787,12 +830,23 @@ export default function DirectorEditor() {
       </aside>
       <div className="main-shell" inert={Boolean(modal)}>
         <header className="app-header">
-          <div className="wordmark">
+          <button
+            className="wordmark"
+            aria-label="Director · produktioner"
+            onClick={openProductions}
+            disabled={!!busy || !onOpenProductions}
+          >
             DIRECTOR<span>FILMVÆRKSTED</span>
-          </div>
+          </button>
           <span className="header-divider" />
           <div className="breadcrumb">
-            Produktioner <ChevronRight size={12} />
+            <button
+              onClick={openProductions}
+              disabled={!!busy || !onOpenProductions}
+            >
+              Produktioner
+            </button>{" "}
+            <ChevronRight size={12} />
             <strong>{p.title}</strong>
           </div>
           <div className="header-actions">
@@ -856,8 +910,10 @@ export default function DirectorEditor() {
         <div className="production-heading">
           <div>
             <div className="eyebrow">
-              <span className="tiny-square" /> SAMPLEPRODUKTION{" "}
-              <span className="muted">/</span> SCIENCE FICTION
+              <span className="tiny-square" />{" "}
+              {p.id === "station_07" ? "SAMPLEPRODUKTION" : "DIN PRODUKTION"}{" "}
+              <span className="muted">/</span>{" "}
+              {p.id === "station_07" ? "SCIENCE FICTION" : "FILMVÆRKSTED"}
             </div>
             <h1>
               {p.title}
@@ -1178,7 +1234,11 @@ export default function DirectorEditor() {
                 >
                   <Camera size={15} />
                   <span>
-                    {reviewing ? "Tilbage til scene" : "Gem indstilling"}
+                    {reviewing
+                      ? "Tilbage til scene"
+                      : shot?.mediaId
+                        ? "Erstat med kameraframe"
+                        : "Gem indstilling"}
                   </span>
                 </button>
               </div>

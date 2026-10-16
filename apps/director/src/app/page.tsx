@@ -1,4 +1,4 @@
-import DirectorEditor from "../components/DirectorEditor";
+import DirectorWorkspace from "../components/DirectorWorkspace";
 export default function Page() {
-  return <DirectorEditor />;
+  return <DirectorWorkspace />;
 }

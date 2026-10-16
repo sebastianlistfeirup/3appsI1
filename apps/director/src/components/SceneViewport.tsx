@@ -129,6 +129,7 @@ export function SceneViewport({
         );
         disposeScene(world);
         renderer.dispose();
+        if (!renderer.domElement.isConnected) renderer.forceContextLoss();
       };
     } catch {
       setFailed(true);
