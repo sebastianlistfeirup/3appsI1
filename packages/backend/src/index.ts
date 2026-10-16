@@ -3,6 +3,12 @@ import { z } from "zod";
 import { DomainError, type AppKey } from "@tre/contracts";
 import { verifyBearer, type AuthConfig } from "@tre/auth";
 import {
+  ArtifactDownloadSigner,
+  objectKey,
+  type ObjectDescriptor,
+  type PrivateObjectStore,
+} from "@tre/storage";
+import {
   Pool,
   withTrustedUser,
   assertRuntimePrincipal,
@@ -13,7 +19,9 @@ import {
   archiveProject,
   requestJob,
   getJob,
+  getArtifact,
   cancelJob,
+  type ArtifactRow,
   type Json,
   type JobRow,
 } from "@tre/database";
@@ -24,6 +32,7 @@ export interface BackendConfig {
   validateDocument: (value: unknown) => Json;
   createDocument: (name: string) => Json;
   validateUpdate?: (previous: Json, next: Json) => void;
+  storage?: { store: PrivateObjectStore; signer: ArtifactDownloadSigner };
   log?: (event: {
     requestId: string;
     app: AppKey;
@@ -147,6 +156,31 @@ function response(body: unknown, status = 200, requestId?: string) {
     },
   });
 }
+function artifactDescriptor(row: ArtifactRow): ObjectDescriptor {
+  const descriptor = {
+    workspaceId: row.workspace_id,
+    projectId: row.project_id,
+    artifactVersionId: row.id,
+    sha256: row.sha256,
+    bytes: Number(row.bytes),
+  };
+  if (row.storage_key !== objectKey(descriptor))
+    throw new DomainError(
+      "OBJECT_REFERENCE",
+      "Filens lagerreference stemmer ikke. Den er ikke udleveret.",
+      409,
+    );
+  return descriptor;
+}
+function requireStorage(config: BackendConfig) {
+  if (!config.storage)
+    throw new DomainError(
+      "STORAGE_NOT_CONNECTED",
+      "Det private fillager er ikke tilsluttet.",
+      503,
+    );
+  return config.storage;
+}
 /** Standard Request/Response makes the same authorization path testable against real Postgres.
  * The caller supplies the app's domain validator; configuration never accepts a client user ID. */
 export function createBackendHandler(config: BackendConfig) {
@@ -165,10 +199,36 @@ export function createBackendHandler(config: BackendConfig) {
           "Denne oprindelse er ikke tilladt.",
           403,
         );
-      const identity = await verifyBearer(
-        request.headers.get("authorization"),
-        config.auth,
-      );
+      const parts = url.pathname
+          .slice(prefix.length)
+          .split("/")
+          .filter(Boolean),
+        method = request.method;
+      const isDownload =
+        parts.length === 3 &&
+        parts[0] === "artifacts" &&
+        parts[2] === "download" &&
+        ["GET", "HEAD"].includes(method);
+      // This narrow capability is accepted only by the immutable file endpoint.
+      // It never authenticates workspace/project/job operations.
+      const download = isDownload
+        ? (() => {
+            if (url.searchParams.size !== 1 || !url.searchParams.has("token"))
+              throw new DomainError(
+                "INVALID_DOWNLOAD_LINK",
+                "Downloadlinket er ugyldigt eller udløbet. Hent et nyt fra projektet.",
+                401,
+              );
+            return requireStorage(config).signer.verify(
+              url.searchParams.get("token")!,
+              config.app,
+              parts[1]!,
+            );
+          })()
+        : undefined;
+      const identity =
+        download ??
+        (await verifyBearer(request.headers.get("authorization"), config.auth));
       principal ??= assertRuntimePrincipal(config.pool, "authenticated").catch(
         (error) => {
           principal = undefined;
@@ -176,22 +236,85 @@ export function createBackendHandler(config: BackendConfig) {
         },
       );
       await principal;
-      const parts = url.pathname
-          .slice(prefix.length)
-          .split("/")
-          .filter(Boolean),
-        method = request.method;
+      if (download) {
+        const descriptor = await withTrustedUser(
+          config.pool,
+          identity.userId,
+          async (c) => {
+            // Recheck current membership on redemption, including revoked users.
+            const row = await getArtifact(c, download.artifactVersionId);
+            await getProject(c, row.project_id, config.app);
+            const current = artifactDescriptor(row);
+            if (
+              current.workspaceId !== download.workspaceId ||
+              current.projectId !== download.projectId ||
+              current.sha256 !== download.sha256 ||
+              current.bytes !== download.bytes
+            )
+              throw new DomainError(
+                "OBJECT_REFERENCE",
+                "Downloadlinkets filreference stemmer ikke.",
+                409,
+              );
+            return current;
+          },
+        );
+        // Release the database connection before filesystem I/O. Verify every
+        // byte before creating a response; corrupted data never reaches clients.
+        const bytes =
+          await requireStorage(config).store.readVerified(descriptor);
+        return new Response(method === "HEAD" ? null : Uint8Array.from(bytes), {
+          headers: {
+            "Content-Type": "application/octet-stream",
+            "Content-Disposition": `attachment; filename="artifact-${descriptor.artifactVersionId}.bin"`,
+            "Content-Length": String(bytes.byteLength),
+            "Cache-Control": "no-store",
+            "X-Content-Type-Options": "nosniff",
+            "Content-Security-Policy": "sandbox; default-src 'none'",
+            "Referrer-Policy": "no-referrer",
+            "X-Request-Id": requestId,
+          },
+        });
+      }
       // Receive and bound the body before opening a database transaction.
       const body = ["POST", "PATCH"].includes(method)
         ? await readJson(
             request,
-            parts[0] === "workspaces" ||
+            ["workspaces", "artifacts"].includes(parts[0] ?? "") ||
               ["archive", "cancel"].includes(parts[2] ?? "")
               ? 2000
               : 1_000_000,
           )
         : undefined;
       return await withTrustedUser(config.pool, identity.userId, async (c) => {
+        if (
+          parts.length === 3 &&
+          parts[0] === "artifacts" &&
+          parts[2] === "download-link" &&
+          method === "POST"
+        ) {
+          z.object({}).strict().parse(body);
+          const row = await getArtifact(c, id.parse(parts[1]));
+          await getProject(c, row.project_id, config.app);
+          const descriptor = artifactDescriptor(row);
+          const { token, expiresAt } = requireStorage(config).signer.issue({
+            ...descriptor,
+            app: config.app,
+            userId: identity.userId,
+          });
+          return response(
+            {
+              download: {
+                url: `${prefix}artifacts/${descriptor.artifactVersionId}/download?token=${token}`,
+                expiresAt,
+                sha256: descriptor.sha256,
+                bytes: descriptor.bytes,
+              },
+            },
+            200,
+            requestId,
+          );
+        }
         if (parts.length === 1 && parts[0] === "workspaces") {
           if (method === "GET") {
             const rows = (

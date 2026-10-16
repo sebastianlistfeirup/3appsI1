@@ -1,0 +1,16 @@
+{
+  "name": "@tre/storage",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tre/contracts": "workspace:*",
+    "zod": "4.6.7"
+  }
+}

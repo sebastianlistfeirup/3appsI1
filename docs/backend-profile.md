@@ -25,7 +25,7 @@ Migrations run with a migration administrator. Runtime credentials must be separ
 
 Provision non-superuser login principals with membership in the indicated role; do not give them application-table ownership, `BYPASSRLS`, `CREATEROLE` or migration credentials. `withTrustedUser` sets an already verified user ID and is **not** an authentication function. `@tre/auth` verifies asymmetric ES256/RS256 JWT signatures, issuer, audience, UUID subject and expiration against explicit keys. The Supabase adapter uses its HTTPS JWKS endpoint; no remote identity endpoint was called during synthetic tests.
 
-Install the pinned queue schema once with `installQueue` using migration credentials. Runtime pg-boss instances use `migrate:false`. Run the separate process with `pnpm --filter @tre/worker start` after supplying the three URLs. Do not put these secrets in `NEXT_PUBLIC_*` variables or commit them. Process supervision, private object storage, production rate limits, credential rotation and a restore rehearsal must be configured before a connected release.
+Install the pinned queue schema once with `installQueue` using migration credentials. Runtime pg-boss instances use `migrate:false`. Run the separate process with `pnpm --filter @tre/worker start` after supplying the three URLs. Do not put these secrets in `NEXT_PUBLIC_*` variables or commit them. Process supervision, remote private object storage, production rate limits, credential rotation and a hosted restore rehearsal must be configured before a connected release.
 
 ## Evidence limits
 
@@ -46,3 +46,7 @@ The worker subscribes to idle `pg.Pool` errors before startup checks. An interru
 The process integration fixture terminates the actual idle PostgreSQL sessions, proves the same worker process remains alive, and then completes a new job. The previous result and its idempotency key remain intact, with exactly two total results and two zero-cost usage events. `reports/database/worker-reconnect.json` records the actual connection classes terminated. This exercises connection loss, not a complete hosted database restart. The pre-fix fixture exited with status 1; the idle pool emitted an unhandled `error` event.
 
 A separate [actual backup/restore drill](backup-restore.md) now passes locally and on GitHub. Production backup scheduling and a hosted restore rehearsal remain unconfigured.
+
+## Private immutable files
+
+The optional API now supports [private local artifacts and one-minute download links](private-artifacts.md). It rechecks current membership on redemption and verifies exact size and SHA-256 before delivery. Real filesystem and PostgreSQL fixtures cover concurrency, corruption, foreign tenants, revoked membership and expiry. Browser cloud uploads and remote storage are still unconnected.

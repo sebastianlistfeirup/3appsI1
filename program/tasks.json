@@ -188,6 +188,37 @@
       "verification": ["node apps/director/tests/locations-flow.mjs"],
       "status": "verified-local",
       "allowed_paths": ["apps/director"]
+    },
+    {
+      "id": "F09",
+      "app": "foundation",
+      "goal": "Private immutable files and short signed read links with membership recheck",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm test:db tests/integration/artifact-download.test.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["packages", "apps/studio", "docs", "reports"]
+    },
+    {
+      "id": "L14",
+      "app": "flowlab",
+      "goal": "Time-tail metrics with explicit observation counts and planned waiting",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/time-profile-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/flowlab"]
+    },
+    {
+      "id": "D12",
+      "app": "director",
+      "goal": "Bounded sequential library thumbnails with cancellation",
+      "dependencies": ["F00"],
+      "verification": ["node apps/director/tests/large-library-flow.mjs"],
+      "status": "verified-local",
+      "allowed_paths": ["apps/director"]
     }
   ]
 }

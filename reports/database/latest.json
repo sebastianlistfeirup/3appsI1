@@ -1,6 +1,6 @@
 {
-  "started": "2026-10-16T22:25:38.519Z",
-  "finished": "2026-10-16T22:25:55.981Z",
+  "started": "2026-10-16T22:40:17.242Z",
+  "finished": "2026-10-16T22:40:34.500Z",
   "postgresVersion": "PostgreSQL 17.10 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit",
   "migrations": [
     "0001_foundation.sql",

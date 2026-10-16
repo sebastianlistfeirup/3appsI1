@@ -2,6 +2,7 @@ import "server-only";
 import { createBackendHandler, disconnectedBackend } from "@tre/backend";
 import { Pool } from "@tre/database";
 import { supabaseAuthConfig } from "@tre/auth";
+import { ArtifactDownloadSigner, LocalPrivateObjectStore } from "@tre/storage";
 import {
   newProjectDocument,
   validateProjectDocument,
@@ -21,6 +22,22 @@ export async function studioBackend(request: Request): Promise<Response> {
         identityOrigin = process.env.SUPABASE_URL;
       if (!connectionString || !identityOrigin) return disconnectedBackend();
       const auth = supabaseAuthConfig(identityOrigin);
+      const objectRoot = process.env.TRE_PRIVATE_OBJECT_DIR,
+        signingKey = process.env.TRE_ARTIFACT_SIGNING_KEY;
+      if (
+        Boolean(objectRoot) !== Boolean(signingKey) ||
+        (signingKey && !/^[a-f0-9]{64}$/.test(signingKey))
+      )
+        return disconnectedBackend();
+      const storage =
+        objectRoot && signingKey
+          ? {
+              store: new LocalPrivateObjectStore(objectRoot),
+              signer: new ArtifactDownloadSigner(
+                Buffer.from(signingKey, "hex"),
+              ),
+            }
+          : undefined;
       const pool = new Pool({
         connectionString,
         max: 6,
@@ -37,6 +54,7 @@ export async function studioBackend(request: Request): Promise<Response> {
       globalBackend.__treStudioBackend = createBackendHandler({
         pool,
         auth,
+        storage,
         app: "studio",
         createDocument: newProjectDocument,
         validateDocument: validateProjectDocument,

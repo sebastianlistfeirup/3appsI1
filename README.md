@@ -79,7 +79,7 @@ Browserkontrollerne bruger de fastlåste Playwright-browsere. En anden Chromium 
 - `apps/studio`, `apps/flowlab`, `apps/director`: uafhængige apps og builds.
 - `packages/flow-engine`, `packages/scene-format`: testbare domænekerner.
 - `packages/persistence`: lokal lagring, konfliktbeskyttelse og regressionstests.
-- `packages/database`, `packages/jobs`, `packages/auth`, `packages/backend`: serverfundament og verificerede kontrakter.
+- `packages/database`, `packages/jobs`, `packages/auth`, `packages/backend`, `packages/storage`: serverfundament og verificerede kontrakter.
 - `services/worker`: separat jobproces og lokal Director-CLI.
 - `migrations`: additive PostgreSQL-migrationer.
 - `docs/spec`: tekstudtræk fra den brugerleverede PDF; autoritativ kilde for opgaven.

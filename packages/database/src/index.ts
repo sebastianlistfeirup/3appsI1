@@ -260,9 +260,22 @@ export async function getJob(client: PoolClient, id: string): Promise<JobRow> {
     throw new DomainError("NOT_FOUND", "Jobbet findes ikke.", 404);
   return result.rows[0];
 }
-export async function getArtifact(client: PoolClient, id: string) {
+export interface ArtifactRow {
+  id: string;
+  workspace_id: string;
+  project_id: string;
+  storage_key: string;
+  sha256: string;
+  mime: string;
+  bytes: string;
+  rights_status: "owned" | "licensed" | "unknown";
+}
+export async function getArtifact(
+  client: PoolClient,
+  id: string,
+): Promise<ArtifactRow> {
   uuid.parse(id);
-  const result = await client.query(
+  const result = await client.query<ArtifactRow>(
     "select id,workspace_id,project_id,storage_key,sha256,mime,bytes,rights_status from app.artifact_versions where id=$1",
     [id],
   );

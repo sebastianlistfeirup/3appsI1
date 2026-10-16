@@ -9,6 +9,7 @@ const config: NextConfig = {
     "@tre/backend",
     "@tre/database",
     "@tre/auth",
+    "@tre/storage",
   ],
   poweredByHeader: false,
   allowedDevOrigins: ["127.0.0.1"],

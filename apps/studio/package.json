@@ -21,6 +21,7 @@
     "@tre/ui": "workspace:*",
     "@tre/backend": "workspace:*",
     "@tre/database": "workspace:*",
-    "@tre/auth": "workspace:*"
+    "@tre/auth": "workspace:*",
+    "@tre/storage": "workspace:*"
   }
 }

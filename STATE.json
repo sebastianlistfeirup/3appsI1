@@ -1,22 +1,23 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T22:30:47.756728+00:00",
+  "updatedAt": "2026-10-16T22:42:50.555156+00:00",
   "status": "building",
   "activeTasks": [
     "F06-remote-ci",
-    "F09-private-artifacts",
-    "L14-tail-metrics",
-    "D12-library-thumbnails"
+    "S11-asset-lineage",
+    "L15-experiment-limits",
+    "D13-webkit-decoded-frame"
   ],
   "profile": "demo",
   "connectedIntegrations": [],
   "verifiedLocalServices": [
     "PostgreSQL 17.10",
     "pg-boss 12.38.0",
-    "Asymmetric JWT → API → RLS",
+    "Asymmetric JWT \u2192 API \u2192 RLS",
     "Separate worker process restart",
     "Local FFmpeg H.264/AAC",
     "Two-cluster PostgreSQL and immutable-file restore",
-    "Separate worker reconnect after actual idle session termination"
+    "Separate worker reconnect after actual idle session termination",
+    "Private local immutable objects and signed links with current RLS membership"
   ]
 }
