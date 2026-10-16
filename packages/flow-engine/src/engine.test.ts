@@ -8,6 +8,7 @@ import {
   validateModel,
   compareModels,
   assertReportReady,
+  assembleComparison,
   seedList,
   type FlowModel,
 } from "./index";
@@ -20,6 +21,138 @@ const run = (model = goldenModel(), seed = 2026) =>
     trace: true,
   });
 describe("FlowLab numerical contract", () => {
+  it("bounded timelines retain exact capacity, costs and all completions", () => {
+    const model = goldenModel();
+    const result = simulate({
+      schemaVersion: 1,
+      engineVersion: ENGINE_VERSION,
+      model,
+      seed: 2026,
+      timelineLimit: 1,
+    });
+    expect(result.resourceTimelines).toHaveLength(1);
+    expect(result.warningCodes).toContain("timeline_limit");
+    expect(result.metrics).toEqual(run(model).metrics);
+    expect(result.resources).toEqual(run(model).resources);
+  });
+  it("unfinished planned waiting records elapsed time rather than future duration", () => {
+    const model = goldenModel();
+    model.horizon = 60000;
+    model.nodes[1] = {
+      ...model.nodes[1],
+      kind: "wait",
+      resourceId: undefined,
+      duration: { type: "fixed", value: 90000 },
+    };
+    const result = run(model);
+    expect(result.cases[0].plannedWait).toBe(60000);
+    expect(result.metrics.throughput).toBe(0);
+    expect(result.metrics.backlog).toBe(1);
+    expect(result.metrics.plannedWaitTime.mean).toBe(null);
+  });
+  it("explicit case identifiers do not implicitly change warmup cohorts", () => {
+    const model = goldenModel();
+    model.arrivals = {
+      type: "explicit",
+      cases: [{ id: "backlog-customer-1", time: 0, caseType: "standard" }],
+    };
+    expect(run(model).cases[0].cohort).toBe("observation");
+  });
+  it("simultaneous overload remains bounded and keeps stable FCFS", () => {
+    const model = goldenModel();
+    model.horizon = 1000;
+    model.maxEvents = 100000;
+    model.nodes[1].duration = { type: "fixed", value: 100 };
+    model.arrivals = {
+      type: "explicit",
+      cases: Array.from({ length: 10000 }, (_, i) => ({
+        id: `case-${String(i).padStart(5, "0")}`,
+        time: 0,
+        caseType: "standard",
+      })).reverse(),
+    };
+    const result = run(model);
+    expect(result.status).toBe("completed");
+    expect(result.metrics).toMatchObject({
+      throughput: 10,
+      backlog: 9990,
+      utilization: 1,
+    });
+    expect(result.eventCount).toBeLessThan(21000);
+    expect(
+      result.cases.filter((c) => c.status === "completed").map((c) => c.id),
+    ).toEqual(
+      Array.from(
+        { length: 10 },
+        (_, i) => `case-${String(i).padStart(5, "0")}`,
+      ),
+    );
+  });
+  it("a completion exactly at the horizon counts; an arrival there does not", () => {
+    const model = goldenModel();
+    model.horizon = 90000;
+    model.arrivals = {
+      type: "explicit",
+      cases: [
+        { id: "a", time: 0, caseType: "standard" },
+        { id: "b", time: 90000, caseType: "standard" },
+      ],
+    };
+    expect(run(model).metrics).toMatchObject({
+      arrived: 1,
+      throughput: 1,
+      backlog: 0,
+      utilization: 1,
+    });
+  });
+  it("a fully captured trace has no truncation warning", () => {
+    const model = goldenModel();
+    const size = run(model).trace.length;
+    expect(
+      simulate({
+        schemaVersion: 1,
+        engineVersion: ENGINE_VERSION,
+        model,
+        seed: 2026,
+        trace: true,
+        traceLimit: size,
+      }).warningCodes,
+    ).not.toContain("trace_limit");
+  });
+  it("rejects mixed run versions, duplicate seeds and altered report aggregates", async () => {
+    const model = goldenModel();
+    const result = run(model);
+    expect(() =>
+      assembleComparison(
+        model,
+        model,
+        [2026, 2026],
+        [result, result],
+        [result, result],
+      ),
+    ).toThrow("forskellige");
+    expect(() =>
+      assembleComparison(
+        model,
+        model,
+        [2026],
+        [{ ...result, engineVersion: "old" }],
+        [result],
+      ),
+    ).toThrow("motorversion");
+    expect(() =>
+      assembleComparison(
+        model,
+        model,
+        [2026],
+        [{ ...result, modelRevision: model.revision + 1 }],
+        [result],
+      ),
+    ).toThrow("modelversion");
+    const comparison = await compareModels(model, model);
+    comparison.metrics[0].baseline = 999;
+    expect(() => assertReportReady(comparison)).toThrow();
+  });
   it("FL-AT01: exact FCFS starts, completions, waiting, lead time and utilization", () => {
     const r = run();
     expect(r.status).toBe("completed");

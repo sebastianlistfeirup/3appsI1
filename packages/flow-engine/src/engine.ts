@@ -105,6 +105,7 @@ export interface SimulationInput {
   seed: number;
   trace?: boolean;
   traceLimit?: number;
+  timelineLimit?: number;
 }
 type Event = {
   time: number;
@@ -180,26 +181,41 @@ export function summarize(values: number[]): MetricSummary {
 }
 const overlap = (a: number, b: number, start: number, end: number) =>
   Math.max(0, Math.min(b, end) - Math.max(a, start));
-function intervals(pool: ResourcePool, horizon: number) {
-  return pool.calendar.length
-    ? [...pool.calendar].sort((a, b) => a.start - b.start)
-    : [{ start: 0, end: horizon }];
+type WorkInterval = { start: number; end: number };
+function intervals(pool: ResourcePool, horizon: number): WorkInterval[] {
+  return (
+    pool.calendar.length
+      ? [...pool.calendar].sort((a, b) => a.start - b.start)
+      : [{ start: 0, end: horizon }]
+  )
+    .filter((s) => s.start < horizon)
+    .map((s) => ({ start: s.start, end: Math.min(s.end, horizon) }));
 }
-function isOpen(pool: ResourcePool, time: number, horizon: number) {
-  return intervals(pool, horizon).some((i) => i.start <= time && time < i.end);
+function firstInterval(slots: WorkInterval[], time: number) {
+  let low = 0,
+    high = slots.length;
+  while (low < high) {
+    const middle = (low + high) >>> 1;
+    if (slots[middle].end <= time) low = middle + 1;
+    else high = middle;
+  }
+  return low;
 }
-function workPlan(
-  pool: ResourcePool,
-  time: number,
-  duration: number,
-  horizon: number,
-) {
+function isOpen(slots: WorkInterval[], time: number) {
+  const slot = slots[firstInterval(slots, time)];
+  return !!slot && slot.start <= time && time < slot.end;
+}
+function workPlan(slots: WorkInterval[], time: number, duration: number) {
   let remaining = duration;
-  const segments: { start: number; end: number }[] = [];
-  for (const slot of intervals(pool, horizon)) {
-    const start = Math.max(time, slot.start);
-    if (start >= slot.end || remaining === 0) continue;
-    const used = Math.min(remaining, slot.end - start);
+  const segments: WorkInterval[] = [];
+  for (
+    let i = firstInterval(slots, time);
+    i < slots.length && remaining > 0;
+    i++
+  ) {
+    const slot = slots[i],
+      start = Math.max(time, slot.start),
+      used = Math.min(remaining, slot.end - start);
     segments.push({ start, end: start + used });
     remaining -= used;
   }
@@ -207,6 +223,16 @@ function workPlan(
     finish: remaining === 0 ? segments[segments.length - 1].end : Infinity,
     segments,
   };
+}
+function workingTime(slots: WorkInterval[], start: number, end: number) {
+  let total = 0;
+  for (
+    let i = firstInterval(slots, start);
+    i < slots.length && slots[i].start < end;
+    i++
+  )
+    total += overlap(slots[i].start, slots[i].end, start, end);
+  return total;
 }
 /** Pure discrete event simulation. All clock values are integer milliseconds. Window includes completions at horizon, excludes arrivals at horizon. */
 export function simulate(
@@ -218,7 +244,15 @@ export function simulate(
     input.engineVersion !== ENGINE_VERSION ||
     !Number.isSafeInteger(input.seed) ||
     input.seed < 0 ||
-    input.seed > 0xffffffff
+    input.seed > 0xffffffff ||
+    (input.traceLimit !== undefined &&
+      (!Number.isInteger(input.traceLimit) ||
+        input.traceLimit < 1 ||
+        input.traceLimit > 100000)) ||
+    (input.timelineLimit !== undefined &&
+      (!Number.isInteger(input.timelineLimit) ||
+        input.timelineLimit < 1 ||
+        input.timelineLimit > 200000))
   )
     throw new Error("Ukendt schema, motorversion eller ugyldigt seed.");
   const model = parseModel(input.model),
@@ -236,6 +270,12 @@ export function simulate(
     if (!streams.has(name)) streams.set(name, randomStream(input.seed, name));
     return streams.get(name)!;
   };
+  const calendars = new Map(
+    model.resources.map((r) => [r.id, intervals(r, model.horizon)]),
+  );
+  const activeJobs = new Map<string, { poolId: string; start: number }>(),
+    plannedWaitStarts = new Map<string, number>(),
+    completedBusyTime = new Map(model.resources.map((r) => [r.id, 0]));
   const cases = new Map<string, CaseResult>(),
     visits = new Map<string, number>(),
     queue: { caseId: string; nodeId: string; time: number; order: number }[] =
@@ -250,9 +290,16 @@ export function simulate(
     eventCount = 0,
     variableCost = 0,
     status: SimulationResult["status"] = "completed";
+  const scheduledDispatches = new Set<number>();
+  const queuedByPool = new Map(model.resources.map((r) => [r.id, 0]));
   const source = model.nodes.find((n) => n.kind === "source")!;
   const push = (e: Omit<Event, "sequence">) => {
-    if (e.time <= model.horizon) heap.push({ ...e, sequence: sequence++ });
+    if (e.time > model.horizon) return;
+    if (e.kind === "dispatch") {
+      if (scheduledDispatches.has(e.time)) return;
+      scheduledDispatches.add(e.time);
+    }
+    heap.push({ ...e, sequence: sequence++ });
   };
   const log = (
     type: string,
@@ -272,6 +319,7 @@ export function simulate(
         visitId: `${c.id}:${nodeId}:${visits.get(`${c.id}\0${nodeId}`) ?? 0}`,
         ...(duration === undefined ? {} : { duration }),
       });
+    else if (input.trace) warnings.add("trace_limit");
   };
   const arrivals =
     model.arrivals.type === "explicit"
@@ -313,7 +361,7 @@ export function simulate(
         nodeId: source.id,
       });
   for (const r of model.resources)
-    for (const slot of intervals(r, model.horizon))
+    for (const slot of calendars.get(r.id)!)
       push({ time: slot.start, priority: 1, kind: "open", resourceId: r.id });
   for (let i = 0; i <= 72; i++)
     push({
@@ -375,11 +423,23 @@ export function simulate(
       warnings.add("engine_conservation_error");
       status = "failed";
     }
+    if (
+      status === "completed" &&
+      (queue.length !== sample.waiting ||
+        new Set(queue.map((q) => q.caseId)).size !== queue.length ||
+        sample.active !== activeJobs.size ||
+        sample.active !== [...occupied.values()].reduce((a, b) => a + b, 0) ||
+        sample.plannedWait !== plannedWaitStarts.size)
+    ) {
+      warnings.add("engine_conservation_error");
+      status = "failed";
+    }
     if (queueSamples.at(-1)?.time === time)
       queueSamples[queueSamples.length - 1] = sample;
     else queueSamples.push(sample);
   };
   while (heap.length) {
+    if (warnings.has("engine_conservation_error")) break;
     if (signal?.aborted) {
       status = "partial";
       warnings.add("cancelled");
@@ -402,45 +462,59 @@ export function simulate(
       continue;
     }
     if (e.kind === "dispatch") {
-      queue.sort(
-        (a, b) =>
-          a.time - b.time ||
-          (a.caseId < b.caseId
-            ? -1
-            : a.caseId > b.caseId
-              ? 1
-              : a.order - b.order),
+      scheduledDispatches.delete(time);
+      const availablePools = new Set(
+        model.resources
+          .filter(
+            (pool) =>
+              (queuedByPool.get(pool.id) ?? 0) > 0 &&
+              occupied.get(pool.id)! < pool.capacity &&
+              isOpen(calendars.get(pool.id)!, time),
+          )
+          .map((pool) => pool.id),
       );
-      for (let i = 0; i < queue.length;) {
+      for (let i = 0; i < queue.length && availablePools.size > 0;) {
         const q = queue[i],
           n = nodes.get(q.nodeId)!,
           pool = pools.get(n.resourceId!)!;
         if (
           (occupied.get(pool.id) ?? 0) >= pool.capacity ||
-          !isOpen(pool, time, model.horizon)
+          !isOpen(calendars.get(pool.id)!, time)
         ) {
           i++;
           continue;
         }
         queue.splice(i, 1);
+        queuedByPool.set(pool.id, queuedByPool.get(pool.id)! - 1);
         const c = cases.get(q.caseId)!;
         c.status = "active";
         c.queueTime += time - q.time;
         occupied.set(pool.id, occupied.get(pool.id)! + 1);
+        if (
+          occupied.get(pool.id)! >= pool.capacity ||
+          queuedByPool.get(pool.id) === 0
+        )
+          availablePools.delete(pool.id);
         const duration = sampleDuration(
             n.duration!,
             stream(`activity:${n.id}`),
           ),
-          plan = workPlan(pool, time, duration, model.horizon);
+          plan = workPlan(calendars.get(pool.id)!, time, duration);
+        activeJobs.set(c.id, { poolId: pool.id, start: time });
         log("activity_start", c, n.id, duration);
         if (time >= model.observationStart) variableCost += n.variableCost;
-        for (const segment of plan.segments)
+        for (const segment of plan.segments) {
+          if (resourceTimelines.length >= (input.timelineLimit ?? 200000)) {
+            warnings.add("timeline_limit");
+            break;
+          }
           resourceTimelines.push({
             resourceId: pool.id,
             caseId: c.id,
             nodeId: n.id,
             ...segment,
           });
+        }
         push({
           time: plan.finish,
           priority: 0,
@@ -466,7 +540,8 @@ export function simulate(
         plannedWait: 0,
         visitCount: 0,
         cohort:
-          time < model.observationStart || a.id.startsWith("backlog-")
+          time < model.observationStart ||
+          (model.arrivals.type === "poisson" && a.id.startsWith("backlog-"))
             ? "warmup"
             : "observation",
       };
@@ -474,12 +549,25 @@ export function simulate(
       log("arrival", c, n.id);
     }
     if (e.kind === "complete") {
+      const active = activeJobs.get(c.id)!;
+      completedBusyTime.set(
+        active.poolId,
+        completedBusyTime.get(active.poolId)! +
+          workingTime(
+            calendars.get(active.poolId)!,
+            Math.max(active.start, model.observationStart),
+            time,
+          ),
+      );
+      activeJobs.delete(c.id);
       occupied.set(e.resourceId!, occupied.get(e.resourceId!)! - 1);
       log("activity_end", c, n.id);
       c.status = "waiting";
       routeNext(c, n);
       push({ time, priority: 3, kind: "dispatch" });
     } else if (e.kind === "wait_end") {
+      c.plannedWait += time - plannedWaitStarts.get(c.id)!;
+      plannedWaitStarts.delete(c.id);
       log("wait_end", c, n.id);
       c.status = "waiting";
       routeNext(c, n);
@@ -502,15 +590,38 @@ export function simulate(
         log("completed", c, n.id);
       } else if (n.kind === "activity") {
         c.status = "waiting";
-        queue.push({ caseId: c.id, nodeId: n.id, time, order: sequence++ });
-        push({ time, priority: 3, kind: "dispatch" });
+        const entry = { caseId: c.id, nodeId: n.id, time, order: sequence++ };
+        const precedes = (a: typeof entry, b: typeof entry) =>
+          a.time < b.time ||
+          (a.time === b.time &&
+            (a.caseId < b.caseId ||
+              (a.caseId === b.caseId && a.order < b.order)));
+        if (!queue.length || !precedes(entry, queue[queue.length - 1]))
+          queue.push(entry);
+        else {
+          let lo = 0,
+            hi = queue.length;
+          while (lo < hi) {
+            const mid = (lo + hi) >>> 1;
+            if (precedes(entry, queue[mid])) hi = mid;
+            else lo = mid + 1;
+          }
+          queue.splice(lo, 0, entry);
+        }
+        queuedByPool.set(n.resourceId!, queuedByPool.get(n.resourceId!)! + 1);
+        const pool = pools.get(n.resourceId!)!;
+        if (
+          occupied.get(pool.id)! < pool.capacity &&
+          isOpen(calendars.get(pool.id)!, time)
+        )
+          push({ time, priority: 3, kind: "dispatch" });
       } else if (n.kind === "wait") {
         c.status = "planned_wait";
         const duration = sampleDuration(
           n.duration!,
           stream(`activity:${n.id}`),
         );
-        c.plannedWait += duration;
+        plannedWaitStarts.set(c.id, time);
         log("wait_start", c, n.id, duration);
         push({
           time: time + duration,
@@ -529,6 +640,8 @@ export function simulate(
   }
   const measuredUntil = status === "completed" ? model.horizon : time;
   time = measuredUntil;
+  for (const [caseId, start] of plannedWaitStarts)
+    cases.get(caseId)!.plannedWait += measuredUntil - start;
   capture();
   const all = [...cases.values()],
     completed = all.filter(
@@ -541,20 +654,29 @@ export function simulate(
     observed = Math.max(0, measuredUntil - model.observationStart);
   const resources = model.resources.map((pool) => {
     const availableTime =
-      intervals(pool, model.horizon).reduce(
-        (s, slot) =>
-          s +
-          overlap(slot.start, slot.end, model.observationStart, measuredUntil),
-        0,
+      workingTime(
+        calendars.get(pool.id)!,
+        model.observationStart,
+        measuredUntil,
       ) * pool.capacity;
-    const busyTime = resourceTimelines
-      .filter((t) => t.resourceId === pool.id)
-      .reduce(
-        (s, slot) =>
-          s +
-          overlap(slot.start, slot.end, model.observationStart, measuredUntil),
-        0,
-      );
+    const busyTime =
+      completedBusyTime.get(pool.id)! +
+      [...activeJobs.values()]
+        .filter((job) => job.poolId === pool.id)
+        .reduce(
+          (total, job) =>
+            total +
+            workingTime(
+              calendars.get(pool.id)!,
+              Math.max(job.start, model.observationStart),
+              measuredUntil,
+            ),
+          0,
+        );
+    if (busyTime < 0 || busyTime > availableTime) {
+      warnings.add("engine_capacity_error");
+      status = "failed";
+    }
     return {
       id: pool.id,
       label: pool.label,
@@ -573,11 +695,6 @@ export function simulate(
     slaKnownBacklogBreaches = unfinished.filter(
       (c) => measuredUntil - c.arrival > model.sla,
     ).length;
-  if (
-    input.trace &&
-    trace.length >= Math.min(input.traceLimit ?? 10000, 100000)
-  )
-    warnings.add("trace_limit");
   if (model.resources.some((r) => r.capacity === 0))
     warnings.add("zero_capacity");
   return {

@@ -30,6 +30,12 @@ for (const [name, width, height] of [
     () => document.body.innerText.includes("30 parrede replikationer"),
     { timeout: 30000 },
   );
+  if (
+    await page
+      .getByRole("button", { name: "Luk besked", exact: true })
+      .isVisible()
+  )
+    await page.getByRole("button", { name: "Luk besked", exact: true }).click();
   await page.screenshot({
     path: `${evidence}/${name}-model.png`,
     fullPage: true,

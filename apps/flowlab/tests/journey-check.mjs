@@ -23,7 +23,7 @@ await expect(
 log.push("Initial comparison completed from engine with 30 paired seeds.");
 await page.getByLabel("Antal medarbejdere", { exact: true }).fill("5");
 await expect(
-  page.getByText("Modellen er ændret.", { exact: false }),
+  page.getByText("Modellen eller motoren er opdateret.", { exact: false }),
 ).toBeVisible();
 await page
   .getByRole("heading", { name: "Medlemsservice.", exact: true })
@@ -41,22 +41,20 @@ await expect(
   page.getByRole("button", { name: "Kør sammenligning", exact: true }),
 ).toBeVisible();
 await expect(
-  page.getByText("Modellen er ændret.", { exact: false }),
+  page.getByText("Modellen eller motoren er opdateret.", { exact: false }),
 ).toHaveCount(0);
 await page.getByRole("button", { name: "Gem version", exact: true }).click();
 await page.getByRole("button", { name: "Modelbibliotek", exact: true }).click();
 await expect(page.getByText("Version 1", { exact: true })).toBeVisible();
 log.push("Edited model reruns; immutable version saved and listed.");
 await page.getByRole("tab", { name: "Dataværksted", exact: true }).click();
-await page
-  .getByLabel("Vælg CSV-fil", { exact: true })
-  .setInputFiles({
-    name: "syntetisk-kvalitet.csv",
-    mimeType: "text/csv",
-    buffer: Buffer.from(
-      "case_id,started_at,finished_at,event_id\nsample-a,10,5,a\nsample-b,10,20,b\nsample-c,20,40,c",
-    ),
-  });
+await page.getByLabel("Vælg CSV-fil", { exact: true }).setInputFiles({
+  name: "syntetisk-kvalitet.csv",
+  mimeType: "text/csv",
+  buffer: Buffer.from(
+    "case_id,started_at,finished_at,event_id\nsample-a,10,5,a\nsample-b,10,20,b\nsample-c,20,40,c",
+  ),
+});
 await page
   .getByRole("combobox", { name: "Tidsformat", exact: true })
   .selectOption("seconds");
@@ -87,7 +85,7 @@ await page
   .getByRole("button", { name: "Brug median som fast varighed", exact: true })
   .click();
 await expect(
-  page.getByText("Modellen er ændret.", { exact: false }),
+  page.getByText("Modellen eller motoren er opdateret.", { exact: false }),
 ).toBeVisible();
 await page.getByRole("tab", { name: "Model", exact: true }).click();
 await expect(

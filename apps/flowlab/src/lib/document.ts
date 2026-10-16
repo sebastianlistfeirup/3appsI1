@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { comparisonSchema, datasetSchema } from "./validation";
 import {
+  ENGINE_VERSION,
   membershipTemplate,
   modelSchema,
   type FlowModel,
@@ -94,6 +95,7 @@ export const formatMetric = (key: string, n: number | null) =>
 export function comparisonMatches(doc: FlowDocument) {
   return (
     !!doc.comparison &&
+    doc.comparison.engineVersion === ENGINE_VERSION &&
     JSON.stringify(doc.baseline) === JSON.stringify(doc.comparison.baseline) &&
     JSON.stringify(doc.scenario) === JSON.stringify(doc.comparison.scenario)
   );

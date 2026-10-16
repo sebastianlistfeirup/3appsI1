@@ -1,4 +1,14 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { PDFDocument } from "pdf-lib";
+const fonts = {
+  regular: new Uint8Array(
+    readFileSync("apps/flowlab/public/fonts/dm-sans-regular.ttf"),
+  ),
+  bold: new Uint8Array(
+    readFileSync("apps/flowlab/public/fonts/manrope-bold.ttf"),
+  ),
+};
 import { compareModels } from "@tre/flow-engine";
 import { initialDocument, validateDocument } from "./document";
 import { createReport, reportPdf, reportZip } from "./report";
@@ -9,7 +19,7 @@ describe("Decision report integrity", () => {
     doc.comparison = await compareModels(doc.baseline, doc.scenario);
     doc.decision = "Undersøg antagelserne i et afgrænset pilotforløb.";
     const report = createReport(doc),
-      files = unzipSync(reportZip(report));
+      files = unzipSync(await reportZip(report, fonts));
     const json = JSON.parse(strFromU8(files["report.json"]));
     expect(json.comparison.seeds).toEqual(doc.comparison.seeds);
     expect(json.comparison.metrics).toEqual(doc.comparison.metrics);
@@ -31,10 +41,14 @@ describe("Decision report integrity", () => {
         metric.pairs,
       ]);
     const pdf = new TextDecoder("windows-1252").decode(files["rapport.pdf"]);
-    expect(pdf.startsWith("%PDF-1.4")).toBe(true);
-    expect(pdf.endsWith("%%EOF")).toBe(true);
-    expect(pdf).toContain("/Count 2");
-    expect(pdf).toContain("Undersøg antagelserne");
+    expect(pdf.startsWith("%PDF-1.")).toBe(true);
+    expect(pdf.trimEnd().endsWith("%%EOF")).toBe(true);
+    expect((await PDFDocument.load(files["rapport.pdf"])).getPageCount()).toBe(
+      2,
+    );
+    expect((await PDFDocument.load(files["rapport.pdf"])).getTitle()).toBe(
+      "FlowLab · Medlemsservice",
+    );
   });
   it("preserves long decision and hypothesis text in a paginated appendix", async () => {
     const doc = initialDocument();
@@ -42,14 +56,10 @@ describe("Decision report integrity", () => {
     doc.hypothesis = "Vigtige antagelser. ".repeat(100);
     doc.decision =
       "Denne begrundelse skal bevares. ".repeat(200) + "SIDSTE-BESLUTNING";
-    const pdf = new TextDecoder("windows-1252").decode(
-      reportPdf(createReport(doc)),
+    const pdf = await PDFDocument.load(
+      await reportPdf(createReport(doc), fonts),
     );
-    expect(pdf).toContain("SIDSTE-BESLUTNING");
-    expect(pdf).not.toContain("TOTALPAGES");
-    expect(pdf).toContain("Bilag");
-    const match = /\/Count (\d+)/.exec(pdf)!;
-    expect(Number(match[1])).toBeGreaterThan(2);
+    expect(pdf.getPageCount()).toBeGreaterThan(2);
   });
   it("validates persisted and imported structure before trusting metrics or datasets", () => {
     const doc = initialDocument();

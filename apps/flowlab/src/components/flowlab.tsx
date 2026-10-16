@@ -112,6 +112,7 @@ export default function FlowLab() {
     [error, setError] = useState(""),
     [toast, setToast] = useState(""),
     [running, setRunning] = useState(false),
+    [exporting, setExporting] = useState(false),
     [progress, setProgress] = useState({ done: 0, total: 30 }),
     [partial, setPartial] = useState<Comparison | null>(null),
     [showPalette, setShowPalette] = useState(false),
@@ -325,19 +326,21 @@ export default function FlowLab() {
     setTab(next);
     setMobileNav(false);
   };
-  const exportReport = (kind: "pdf" | "zip" | "json") => {
+  const exportReport = async (kind: "pdf" | "zip" | "json") => {
+    if (exporting) return;
+    setExporting(true);
     try {
       const report = createReport(doc);
       if (kind === "pdf")
         downloadFile(
           "FlowLab-beslutningsrapport.pdf",
-          reportPdf(report) as BlobPart,
+          (await reportPdf(report)) as BlobPart,
           "application/pdf",
         );
       else if (kind === "zip")
         downloadFile(
           "FlowLab-beslutningspakke.zip",
-          reportZip(report) as BlobPart,
+          (await reportZip(report)) as BlobPart,
           "application/zip",
         );
       else
@@ -347,6 +350,8 @@ export default function FlowLab() {
       setError(
         e instanceof Error ? e.message : "Rapporten kunne ikke eksporteres.",
       );
+    } finally {
+      setExporting(false);
     }
   };
   const saveVersion = () => {
@@ -374,7 +379,31 @@ export default function FlowLab() {
           : {}),
         ...(kind === "activity" ? { resourceId: model.resources[0]?.id } : {}),
       };
-    changeModel({ ...model, nodes: [...model.nodes, node] });
+    const previous = model.nodes.find((n) => n.id === selected);
+    const outgoing = model.edges.filter((e) => e.source === selected);
+    const insert = kind !== "sink" && previous && outgoing.length === 1;
+    if (previous)
+      node.position = {
+        x: previous.position.x + 80,
+        y: previous.position.y + 190,
+      };
+    changeModel({
+      ...model,
+      nodes: [...model.nodes, node],
+      edges: insert
+        ? [
+            ...model.edges.map((e) =>
+              e.id === outgoing[0].id ? { ...e, target: id } : e,
+            ),
+            {
+              id: crypto.randomUUID(),
+              source: id,
+              target: outgoing[0].target,
+              ...(kind === "decision" ? { weight: 1 } : {}),
+            },
+          ]
+        : model.edges,
+    });
     setSelected(id);
     setInspectorOpen(true);
     setShowPalette(false);
@@ -548,11 +577,13 @@ export default function FlowLab() {
             <div className="heading-actions">
               <button
                 className="button secondary export-button"
-                disabled={!comparisonReady}
+                disabled={!comparisonReady || exporting}
                 onClick={() => exportReport("pdf")}
               >
                 <ArrowDownToLine size={16} />
-                <span>Eksportér rapport</span>
+                <span>
+                  {exporting ? "Forbereder rapport…" : "Eksportér rapport"}
+                </span>
               </button>
               {running ? (
                 <button className="button primary" onClick={cancelRun}>
@@ -635,6 +666,37 @@ export default function FlowLab() {
                     key={id}
                     role="tab"
                     aria-selected={tab === id}
+                    tabIndex={
+                      tab === id ||
+                      (!navigation.some((item) => item.id === tab) &&
+                        id === "model")
+                        ? 0
+                        : -1
+                    }
+                    onKeyDown={(event) => {
+                      const index = navigation.findIndex(
+                        (item) => item.id === id,
+                      );
+                      const next =
+                        event.key === "ArrowRight"
+                          ? (index + 1) % navigation.length
+                          : event.key === "ArrowLeft"
+                            ? (index + navigation.length - 1) %
+                              navigation.length
+                            : event.key === "Home"
+                              ? 0
+                              : event.key === "End"
+                                ? navigation.length - 1
+                                : -1;
+                      if (next < 0) return;
+                      event.preventDefault();
+                      go(navigation[next].id);
+                      const buttons =
+                        event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
+                          '[role="tab"]',
+                        );
+                      buttons?.[next]?.focus();
+                    }}
                     onClick={() => go(id)}
                   >
                     <Icon size={15} />
@@ -663,9 +725,9 @@ export default function FlowLab() {
                 <div className="notice stale-notice">
                   <History size={17} />
                   <p>
-                    Modellen er ændret. Resultater og rapport viser det senest
-                    fuldførte snapshot. Kør igen for at se effekten af dine nye
-                    antagelser.
+                    Modellen eller motoren er opdateret. Resultater og rapport
+                    viser det senest fuldførte snapshot. Kør igen for at se
+                    effekten af dine nye antagelser.
                   </p>
                 </div>
               )}
@@ -1337,7 +1399,7 @@ export default function FlowLab() {
                       </ul>
                       <button
                         className="button primary full"
-                        disabled={!comparisonReady}
+                        disabled={!comparisonReady || exporting}
                         onClick={() => exportReport("zip")}
                       >
                         <ArrowDownToLine size={16} />
@@ -1345,14 +1407,14 @@ export default function FlowLab() {
                       </button>
                       <button
                         className="button secondary full"
-                        disabled={!comparisonReady}
+                        disabled={!comparisonReady || exporting}
                         onClick={() => exportReport("pdf")}
                       >
                         Hent kun PDF
                       </button>
                       <button
                         className="text-button"
-                        disabled={!comparisonReady}
+                        disabled={!comparisonReady || exporting}
                         onClick={() => exportReport("json")}
                       >
                         Hent JSON-grundlag

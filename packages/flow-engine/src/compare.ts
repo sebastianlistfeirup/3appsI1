@@ -118,6 +118,34 @@ export function assembleComparison(
   scenarioRuns: SimulationResult[],
 ): Comparison {
   if (
+    !requestedSeeds.length ||
+    requestedSeeds.length > 100 ||
+    new Set(requestedSeeds).size !== requestedSeeds.length ||
+    requestedSeeds.some(
+      (seed) => !Number.isInteger(seed) || seed < 0 || seed > 0xffffffff,
+    )
+  )
+    throw new Error(
+      "Seedlisten skal indeholde 1–100 forskellige, gyldige seeds.",
+    );
+  for (const [model, runs] of [
+    [baseline, baselineRuns],
+    [scenario, scenarioRuns],
+  ] as const)
+    if (
+      runs.some(
+        (r) =>
+          r.engineVersion !== ENGINE_VERSION ||
+          r.modelId !== model.id ||
+          r.modelRevision !== model.revision ||
+          r.horizon !== model.horizon ||
+          r.observationStart !== model.observationStart,
+      )
+    )
+      throw new Error(
+        "Kørslernes motorversion, modelversion og måleperiode skal passe til deres snapshot.",
+      );
+  if (
     baseline.horizon !== scenario.horizon ||
     baseline.observationStart !== scenario.observationStart
   )
@@ -244,6 +272,23 @@ export async function compareModels(
   );
 }
 export function assertReportReady(comparison: Comparison) {
+  const verified = assembleComparison(
+    comparison.baseline,
+    comparison.scenario,
+    comparison.requestedSeeds,
+    comparison.baselineRuns,
+    comparison.scenarioRuns,
+  );
+  if (
+    comparison.engineVersion !== ENGINE_VERSION ||
+    JSON.stringify(verified.metrics) !== JSON.stringify(comparison.metrics) ||
+    JSON.stringify(verified.seeds) !== JSON.stringify(comparison.seeds) ||
+    JSON.stringify(verified.differences) !==
+      JSON.stringify(comparison.differences)
+  )
+    throw new Error(
+      "Rapportens metrics eller inputdiff stemmer ikke med de underliggende kørsler. Kør sammenligningen igen.",
+    );
   if (
     comparison.status !== "completed" ||
     comparison.seeds.length < 30 ||

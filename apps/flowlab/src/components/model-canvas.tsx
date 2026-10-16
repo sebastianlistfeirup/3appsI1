@@ -1,7 +1,8 @@
 "use client";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import {
   ReactFlow,
+  useNodesState,
   Background,
   Controls,
   Handle,
@@ -78,7 +79,7 @@ export default function ModelCanvas({
   onMove: (id: string, position: { x: number; y: number }) => void;
   onConnect: (c: Connection) => void;
 }) {
-  const nodes = useMemo(
+  const modelNodes = useMemo<ProcessNode[]>(
     () =>
       model.nodes.map((n, index) => ({
         id: n.id,
@@ -106,6 +107,9 @@ export default function ModelCanvas({
       })),
     [model, selected],
   );
+  const [nodes, setNodes, onNodesChange] =
+    useNodesState<ProcessNode>(modelNodes);
+  useEffect(() => setNodes(modelNodes), [modelNodes, setNodes]);
   const edges = useMemo(
     () =>
       model.edges.map((e) => ({
@@ -115,15 +119,15 @@ export default function ModelCanvas({
           type: MarkerType.ArrowClosed,
           width: 14,
           height: 14,
-          color: "#94aaa8",
+          color: "#789387",
         },
-        style: { stroke: "#a6bab5", strokeWidth: 1.7 },
+        style: { stroke: "#789387", strokeWidth: 1.7 },
         label:
           e.caseType ??
           (e.weight !== undefined
             ? `${Math.round(e.weight * 100)} %`
             : undefined),
-        labelStyle: { fill: "#526966", fontSize: 12, fontWeight: 600 },
+        labelStyle: { fill: "#526966", fontSize: 14, fontWeight: 600 },
         labelBgStyle: { fill: "#f7f9f8" },
         labelBgPadding: [7, 5] as [number, number],
       })),
@@ -132,6 +136,16 @@ export default function ModelCanvas({
   return (
     <ReactFlow
       nodes={nodes}
+      onNodesChange={(changes) => {
+        onNodesChange(changes);
+        for (const change of changes)
+          if (
+            change.type === "position" &&
+            change.position &&
+            change.dragging === undefined
+          )
+            onMove(change.id, change.position);
+      }}
       edges={edges}
       nodeTypes={nodeTypes}
       onNodeClick={(_, n) => onSelect(n.id)}

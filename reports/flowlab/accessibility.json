@@ -1,0 +1,117 @@
+{
+  "checkedAt": "2026-10-16T20:24:45.181Z",
+  "standard": [
+    "WCAG 2.0 AA",
+    "WCAG 2.1 AA"
+  ],
+  "checks": [
+    {
+      "viewport": "desktop",
+      "tab": "Model",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "desktop",
+      "tab": "Scenarier",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "desktop",
+      "tab": "Resultater",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "desktop",
+      "tab": "Dataværksted",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "desktop",
+      "tab": "Rapport",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "desktop",
+      "tab": "Modelbibliotek",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "tablet",
+      "tab": "Model",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "tablet",
+      "tab": "Scenarier",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "tablet",
+      "tab": "Resultater",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "tablet",
+      "tab": "Dataværksted",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "tablet",
+      "tab": "Rapport",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "tablet",
+      "tab": "Modelbibliotek",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "mobile",
+      "tab": "Model",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "mobile",
+      "tab": "Scenarier",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "mobile",
+      "tab": "Resultater",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "mobile",
+      "tab": "Dataværksted",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "mobile",
+      "tab": "Rapport",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "viewport": "mobile",
+      "tab": "Modelbibliotek",
+      "overflow": false,
+      "violations": []
+    }
+  ]
+}

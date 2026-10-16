@@ -298,7 +298,12 @@ export default function DataWorkshop({
                   )}
                 </div>
               )}
-              <div className="table-scroll">
+              <div
+                className="table-scroll"
+                role="region"
+                aria-label="Forhåndsvisning af importerede rækker"
+                tabIndex={0}
+              >
                 <table>
                   <thead>
                     <tr>

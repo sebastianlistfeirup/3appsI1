@@ -702,7 +702,13 @@ export default function Inspector({
             <button
               className="text-button"
               onClick={() => {
-                const target = model.nodes.find((n) => n.id !== node.id);
+                const target =
+                  model.nodes.find(
+                    (n) => n.kind === "sink" && n.id !== node.id,
+                  ) ??
+                  model.nodes.find(
+                    (n) => n.id !== node.id && n.kind !== "source",
+                  );
                 if (target)
                   onChange({
                     ...model,
@@ -740,23 +746,25 @@ export default function Inspector({
             )}
         </>
       )}
-      {!["source", "sink"].includes(node.kind) && (
-        <button
-          className="text-button danger delete-node"
-          onClick={() =>
-            onChange({
-              ...model,
-              nodes: model.nodes.filter((n) => n.id !== node.id),
-              edges: model.edges.filter(
-                (e) => e.source !== node.id && e.target !== node.id,
-              ),
-            })
-          }
-        >
-          <Trash2 size={14} />
-          Fjern trin
-        </button>
-      )}
+      {node.kind !== "source" &&
+        (node.kind !== "sink" ||
+          model.nodes.filter((n) => n.kind === "sink").length > 1) && (
+          <button
+            className="text-button danger delete-node"
+            onClick={() =>
+              onChange({
+                ...model,
+                nodes: model.nodes.filter((n) => n.id !== node.id),
+                edges: model.edges.filter(
+                  (e) => e.source !== node.id && e.target !== node.id,
+                ),
+              })
+            }
+          >
+            <Trash2 size={14} />
+            Fjern trin
+          </button>
+        )}
       <div className="inspector-footnote">
         <span className="dot" />
         Syntetiske antagelser. Ikke kalibreret.

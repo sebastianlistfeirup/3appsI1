@@ -1,7 +1,12 @@
 import { z } from "zod";
 
-export const ENGINE_VERSION = "flow-des/1.0.0" as const;
+export const ENGINE_VERSION = "flow-des/1.1.0" as const;
 export const PRNG_VERSION = "mulberry32-fnv1a/1" as const;
+const idSchema = z
+  .string()
+  .min(1)
+  .max(100)
+  .regex(/^[^\u0000-\u001f\u007f]+$/, "Id’er må ikke indeholde kontroltegn.");
 const positiveMs = z
   .number()
   .int()
@@ -28,37 +33,40 @@ const intervalSchema = z.object({
   end: positiveMs,
 });
 export const poolSchema = z.object({
-  id: z.string().min(1).max(80),
+  id: idSchema,
   label: z.string().min(1).max(100),
   capacity: z.number().int().min(0).max(1000),
   hourlyCost: z.number().nonnegative().max(1_000_000),
   calendar: z.array(intervalSchema).max(1000),
 });
 export const nodeSchema = z.object({
-  id: z.string().min(1).max(80),
+  id: idSchema,
   label: z.string().min(1).max(100),
   kind: z.enum(["source", "activity", "decision", "wait", "rework", "sink"]),
-  position: z.object({ x: z.number().finite(), y: z.number().finite() }),
+  position: z.object({
+    x: z.number().min(-1_000_000).max(1_000_000),
+    y: z.number().min(-1_000_000).max(1_000_000),
+  }),
   duration: distributionSchema.optional(),
-  resourceId: z.string().optional(),
+  resourceId: idSchema.optional(),
   variableCost: z.number().nonnegative().max(1_000_000).default(0),
   maxVisits: z.number().int().min(1).max(20).default(20),
 });
 export const edgeSchema = z.object({
-  id: z.string().min(1),
-  source: z.string(),
-  target: z.string(),
+  id: idSchema,
+  source: idSchema,
+  target: idSchema,
   weight: z.number().min(0).max(1).optional(),
-  caseType: z.string().min(1).optional(),
+  caseType: idSchema.optional(),
 });
 export const arrivalSchema = z.object({
-  id: z.string().min(1).max(100),
+  id: idSchema,
   time: z.number().int().nonnegative(),
-  caseType: z.string().default("standard"),
+  caseType: idSchema.default("standard"),
 });
 export const modelSchema = z.object({
   schemaVersion: z.literal(1),
-  id: z.string(),
+  id: idSchema,
   revision: z.number().int().positive(),
   name: z.string().min(1).max(100),
   description: z.string().max(2000),
@@ -135,6 +143,19 @@ export function validateModel(value: unknown): ValidationIssue[] {
       add("edges", "En forbindelse peger på en node, der mangler.", e.source);
   for (const n of m.nodes) {
     const outgoing = m.edges.filter((e) => e.source === n.id);
+    if (n.kind === "source" && m.edges.some((e) => e.target === n.id))
+      add("edges", "Ankomstnoden må ikke have indgående forbindelser.", n.id);
+    if (n.kind !== "activity" && n.variableCost !== 0)
+      add(
+        "variableCost",
+        "Variable besøgsomkostninger angives på aktiviteter.",
+        n.id,
+      );
+    if (
+      n.kind !== "decision" &&
+      outgoing.some((e) => e.weight !== undefined || e.caseType !== undefined)
+    )
+      add("routing", "Routingregler angives kun på beslutningsnoder.", n.id);
     if (n.kind === "sink" && outgoing.length)
       add("edges", "Afslutningen må ikke have udgående forbindelser.", n.id);
     if (n.kind !== "sink" && !outgoing.length)

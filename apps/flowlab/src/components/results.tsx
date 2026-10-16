@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -29,6 +30,7 @@ export function MetricCards({ comparison }: { comparison: Comparison | null }) {
                 <span
                   tabIndex={0}
                   className="tip"
+                  role="img"
                   aria-label={metricDefinitions[key].definition}
                 >
                   <Info size={14} />
@@ -63,6 +65,18 @@ export function MetricCards({ comparison }: { comparison: Comparison | null }) {
   );
 }
 export function QueueChart({ comparison }: { comparison: Comparison }) {
+  const container = useRef<SVGSVGElement>(null),
+    [width, setWidth] = useState(640);
+  useEffect(() => {
+    const element = container.current;
+    if (!element) return;
+    const observer = new ResizeObserver(([entry]) =>
+      setWidth(Math.max(260, Math.round(entry.contentRect.width))),
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  const plotWidth = width - 68;
   const baseline = comparison.baselineRuns[0]?.queueSamples ?? [],
     scenario = comparison.scenarioRuns[0]?.queueSamples ?? [],
     max = Math.max(
@@ -75,7 +89,7 @@ export function QueueChart({ comparison }: { comparison: Comparison }) {
     list
       .map(
         (s, i) =>
-          `${i ? "L" : "M"}${44 + (s.time / horizon) * 572},${190 - (s.waiting / max) * 150}`,
+          `${i ? "L" : "M"}${44 + (s.time / horizon) * plotWidth},${190 - (s.waiting / max) * 150}`,
       )
       .join(" ");
   return (
@@ -98,7 +112,8 @@ export function QueueChart({ comparison }: { comparison: Comparison }) {
         </span>
       </div>
       <svg
-        viewBox="0 0 640 230"
+        ref={container}
+        viewBox={`0 0 ${width} 230`}
         role="img"
         aria-label={`Ventende sager over ${horizon / 3600000} timer. Én af ${comparison.seeds.length} parrede kørsler.`}
         className="queue-chart"
@@ -107,7 +122,7 @@ export function QueueChart({ comparison }: { comparison: Comparison }) {
           <g key={t}>
             <line
               x1={44}
-              x2={616}
+              x2={width - 24}
               y1={190 - t * 150}
               y2={190 - t * 150}
               stroke="#e8eeea"
@@ -119,15 +134,18 @@ export function QueueChart({ comparison }: { comparison: Comparison }) {
           </g>
         ))}
         {[0, 0.25, 0.5, 0.75, 1].map((t) => (
-          <text key={t} x={44 + t * 572} y={218} textAnchor="middle">
+          <text key={t} x={44 + t * plotWidth} y={218} textAnchor="middle">
             {formatNumber((horizon * t) / 3600000, 0)} t
           </text>
         ))}
-        <path d={`${path(scenario)} L616,190 L44,190 Z`} fill="#008c8310" />
+        <path
+          d={`${path(scenario)} L${width - 24},190 L44,190 Z`}
+          fill="#008c8310"
+        />
         <path
           d={path(baseline)}
           fill="none"
-          stroke="#cda66f"
+          stroke="#9b6b35"
           strokeWidth={2.5}
           strokeLinejoin="round"
         />
@@ -243,7 +261,12 @@ export function ResultsPanel({
           </div>
           <Info size={20} />
         </div>
-        <div className="table-scroll">
+        <div
+          className="table-scroll"
+          role="region"
+          aria-label="Sammenligning og simulationsspredning"
+          tabIndex={0}
+        >
           <table>
             <thead>
               <tr>
