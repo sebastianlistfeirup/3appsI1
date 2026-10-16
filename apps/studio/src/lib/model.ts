@@ -40,6 +40,9 @@ export const taskSchema = z.object({
   briefVersion: z.number().int().positive(),
   acceptance: z.array(z.string().max(1000)).max(30),
   owner: z.string().max(100),
+  blockedReason: z.string().max(2000).optional(),
+  correctionOf: idSchema.optional(),
+  replacedBy: idSchema.optional(),
   revision: z.number().int().positive(),
   createdAt: timestamp,
 });
@@ -164,6 +167,29 @@ export function assertProject(project: Project): Project {
   for (const task of project.tasks)
     if (!briefs.has(task.briefVersion))
       throw new Error("En opgave henviser til et ukendt brief.");
+  for (const task of project.tasks) {
+    if (
+      task.correctionOf &&
+      project.tasks.find((t) => t.id === task.correctionOf)?.replacedBy !==
+        task.id
+    )
+      throw new Error("En rettelsesopgave mangler sin oprindelige opgave.");
+    if (
+      task.replacedBy &&
+      (project.tasks.find((t) => t.id === task.replacedBy)?.correctionOf !==
+        task.id ||
+        task.state !== "blocked")
+    )
+      throw new Error(
+        "En erstattet opgave skal bevare sin rettelsesrelation og historiske status.",
+      );
+  }
+  assertAcyclic(
+    project.tasks.map((task) => task.id),
+    project.tasks
+      .filter((task) => task.correctionOf)
+      .map((task) => ({ from: task.correctionOf!, to: task.id })),
+  );
   for (const run of project.runs)
     if (
       !tasks.has(run.taskId) ||
@@ -256,6 +282,22 @@ function assertMutable(p: Project) {
 }
 
 export function assertProjectUpdate(previous: Project, next: Project): void {
+  for (const prior of previous.tasks) {
+    const retained = next.tasks.find((task) => task.id === prior.id);
+    if (
+      retained &&
+      (retained.createdAt !== prior.createdAt ||
+        retained.correctionOf !== prior.correctionOf ||
+        (prior.replacedBy && retained.replacedBy !== prior.replacedBy))
+    )
+      throw new Error(
+        "Opgavens oprindelse og rettelseshistorik kan ikke ændres.",
+      );
+    if (prior.state === "done" && retained?.state !== "done")
+      throw new Error(
+        "En accepteret opgave kan ikke genåbnes. Opret en ny opgave.",
+      );
+  }
   for (const prior of previous.runs) {
     const retained = next.runs.find((run) => run.id === prior.id);
     if (!retained) throw new Error("Historiske runs kan ikke slettes.");
@@ -417,12 +459,56 @@ export function addTask(p: Project, title: string, description = "") {
     `Opgave oprettet: ${title}`,
   );
 }
-export function setTaskState(p: Project, id: string, state: Task["state"]) {
+export function setTaskState(
+  p: Project,
+  id: string,
+  state: Task["state"],
+  reason?: string,
+) {
   assertMutable(p);
   const task = p.tasks.find((t) => t.id === id);
   if (!task) throw new Error("Opgaven findes ikke.");
+  if (task.replacedBy)
+    throw new Error(
+      "Fortsæt med rettelsesopgaven. Det tidligere forløb bliver bevaret.",
+    );
+  if (task.state === "done")
+    throw new Error(
+      "En accepteret opgave kan ikke genåbnes. Opret en ny opgave.",
+    );
+  if (state === task.state) return p;
+  if (state !== "blocked" && state !== "ready")
+    throw new Error(
+      "Opgavens status følger leveringen. Start et forløb, eller gennemgå leverancen.",
+    );
+  const active = p.runs.find(
+    (run) =>
+      run.taskId === id && ["awaiting_upload", "review"].includes(run.state),
+  );
+  if (state === "blocked" && active?.state === "review")
+    throw new Error(
+      "Leverancen venter på dit review. Acceptér den, eller bed om en rettelse.",
+    );
+  if (state === "ready" && task.state !== "blocked")
+    throw new Error(
+      "Annullér den aktive levering, før opgaven gøres klar igen.",
+    );
+  const blockedReason =
+    state === "blocked"
+      ? z
+          .string()
+          .trim()
+          .max(2000)
+          .parse(reason || "Afventer afklaring") || "Afventer afklaring"
+      : undefined;
+  const nextState =
+    state === "ready" && active
+      ? active.state === "review"
+        ? "review"
+        : "in_progress"
+      : state;
   if (
-    state === "in_progress" &&
+    nextState === "in_progress" &&
     p.edges.some(
       (edge) =>
         edge.to === id &&
@@ -430,18 +516,80 @@ export function setTaskState(p: Project, id: string, state: Task["state"]) {
     )
   )
     throw new Error("Afslut først opgavens afhængigheder.");
-  if (state === "done")
-    throw new Error("En opgave afsluttes gennem en accepteret leverance.");
   return event(
     {
       ...p,
       tasks: p.tasks.map((t) =>
-        t.id === id ? { ...t, state, revision: t.revision + 1 } : t,
+        t.id === id
+          ? {
+              ...t,
+              state: nextState,
+              blockedReason,
+              revision: t.revision + 1,
+            }
+          : t,
       ),
     },
-    "task.updated",
-    `Opgave opdateret: ${task.title}`,
+    state === "blocked" ? "task.blocked" : "task.resumed",
+    `${state === "blocked" ? "Opgave blokeret" : "Blokering fjernet"}: ${task.title}`,
   );
+}
+export function editTask(
+  p: Project,
+  id: string,
+  title: string,
+  description: string,
+  expectedRevision: number,
+) {
+  assertMutable(p);
+  const task = p.tasks.find((t) => t.id === id);
+  if (!task) throw new Error("Opgaven findes ikke.");
+  if (task.revision !== expectedRevision)
+    throw new Error(
+      "Opgaven er ændret. Genåbn den aktuelle version før redigering.",
+    );
+  if (
+    task.replacedBy ||
+    !["ready", "blocked"].includes(task.state) ||
+    p.runs.some(
+      (run) =>
+        run.taskId === id && ["awaiting_upload", "review"].includes(run.state),
+    )
+  )
+    throw new Error(
+      "Et igangværende eller afsluttet forløb bevarer sin opgavebeskrivelse. Opret en ny opgave for nye krav.",
+    );
+  const updated = taskSchema.parse({
+    ...task,
+    title: title.trim(),
+    description,
+    revision: task.revision + 1,
+  });
+  return event(
+    { ...p, tasks: p.tasks.map((t) => (t.id === id ? updated : t)) },
+    "task.edited",
+    `Opgave redigeret: ${updated.title}`,
+  );
+}
+function editableDependency(p: Project, from: string, to: string) {
+  const source = p.tasks.find((task) => task.id === from),
+    target = p.tasks.find((task) => task.id === to);
+  if (!source || !target)
+    throw new Error("Afhængigheder skal ligge i samme projekt.");
+  if (source.replacedBy || target.replacedBy)
+    throw new Error(
+      "Vælg rettelsesopgaven i stedet for den erstattede opgave.",
+    );
+  if (
+    !["ready", "blocked"].includes(target.state) ||
+    p.runs.some(
+      (run) =>
+        run.taskId === to && ["awaiting_upload", "review"].includes(run.state),
+    )
+  )
+    throw new Error(
+      "Afhængigheder låses, når opgaven starter. Annullér leveringen før nye afhængigheder.",
+    );
 }
 export function addDependency(p: Project, from: string, to: string) {
   assertMutable(p);
@@ -451,10 +599,24 @@ export function addDependency(p: Project, from: string, to: string) {
     p.tasks.map((x) => x.id),
     edges,
   );
+  editableDependency(p, from, to);
   return event(
     { ...p, edges },
     "task.dependency_added",
     "Afhængighed tilføjet",
+  );
+}
+export function removeDependency(p: Project, from: string, to: string) {
+  assertMutable(p);
+  if (!p.edges.some((edge) => edge.from === from && edge.to === to)) return p;
+  editableDependency(p, from, to);
+  return event(
+    {
+      ...p,
+      edges: p.edges.filter((edge) => edge.from !== from || edge.to !== to),
+    },
+    "task.dependency_removed",
+    "Afhængighed fjernet",
   );
 }
 export function beginManualRun(p: Project, taskId: string, requestId: string) {
@@ -482,6 +644,12 @@ export function beginManualRun(p: Project, taskId: string, requestId: string) {
     throw new Error(
       "En afsluttet opgave kan ikke startes igen. Opret en ny opgave.",
     );
+  if (task.replacedBy)
+    throw new Error(
+      "Start rettelsesopgaven i stedet. Det tidligere forløb er bevaret.",
+    );
+  if (task.state === "blocked")
+    throw new Error("Fjern først opgavens blokering, når årsagen er afklaret.");
   if (
     p.edges.some(
       (e) =>
@@ -559,6 +727,10 @@ export function submitDelivery(
   const run = p.runs.find((x) => x.id === runId);
   if (!run || run.state !== "awaiting_upload")
     throw new Error("Dette run kan ikke modtage en ny leverance.");
+  if (p.tasks.find((task) => task.id === run.taskId)?.state === "blocked")
+    throw new Error(
+      "Fjern først opgavens blokering, før du afleverer resultatet.",
+    );
   const criteria = p.briefVersions.find(
     (b) => b.version === run.briefVersion,
   )!.acceptance;
@@ -682,8 +854,35 @@ export function reviewDelivery(
         : t,
     ),
   };
-  if (input.decision === "changes_requested")
-    next = addTask(next, `Rettelse: ${d.title}`, input.comment);
+  if (input.decision === "changes_requested") {
+    next = addTask(next, `Rettelse: ${d.title}`.slice(0, 300), input.comment);
+    const correction = next.tasks.at(-1)!;
+    next = {
+      ...next,
+      tasks: next.tasks.map((task) =>
+        task.id === correction.id
+          ? { ...task, correctionOf: run.taskId }
+          : task.id === run.taskId
+            ? {
+                ...task,
+                replacedBy: correction.id,
+                blockedReason: "Erstattet af en rettelsesopgave",
+              }
+            : task,
+      ),
+      // Incoming prerequisites remain documented for the old task and are copied
+      // to its replacement. Successors now wait for the corrected delivery.
+      edges: [
+        ...next.edges.map((edge) =>
+          edge.from === run.taskId ? { ...edge, from: correction.id } : edge,
+        ),
+        ...next.edges
+          .filter((edge) => edge.to === run.taskId)
+          .map((edge) => ({ ...edge, to: correction.id })),
+      ],
+    };
+    assertProject(next);
+  }
   return event(
     next,
     `review.${input.decision}`,
@@ -719,7 +918,11 @@ export function cancelRun(p: Project, runId: string) {
       ),
       tasks: p.tasks.map((t) =>
         t.id === run.taskId
-          ? { ...t, state: "ready", revision: t.revision + 1 }
+          ? {
+              ...t,
+              state: t.state === "blocked" ? "blocked" : "ready",
+              revision: t.revision + 1,
+            }
           : t,
       ),
     },

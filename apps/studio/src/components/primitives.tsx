@@ -32,9 +32,9 @@ export function Modal({
     const focusable = () =>
       Array.from(
         panel.querySelectorAll<HTMLElement>(
-          'button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex="0"]',
+          'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex="0"]',
         ),
-      );
+      ).filter((element) => element.getClientRects().length > 0);
     focusable()[0]?.focus();
     const key = (e: KeyboardEvent) => {
       if (e.key === "Escape") close.current();
@@ -42,7 +42,10 @@ export function Modal({
         const nodes = focusable();
         const first = nodes[0];
         const last = nodes.at(-1);
-        if (e.shiftKey && document.activeElement === first) {
+        if (!panel.contains(document.activeElement)) {
+          e.preventDefault();
+          (e.shiftKey ? last : first)?.focus();
+        } else if (e.shiftKey && document.activeElement === first) {
           e.preventDefault();
           last?.focus();
         } else if (!e.shiftKey && document.activeElement === last) {

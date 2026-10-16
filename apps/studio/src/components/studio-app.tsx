@@ -864,7 +864,8 @@ function Overview({
 }) {
   const pending = p.deliveries.filter((d) => !latestReview(p, d.id));
   const accepted = p.reviews.filter((r) => r.decision === "accepted").length;
-  const done = p.tasks.filter((t) => t.state === "done").length;
+  const tasks = p.tasks.filter((t) => !t.replacedBy);
+  const done = tasks.filter((t) => t.state === "done").length;
   const base = `/projects/${p.id}`;
   const d = pending[0] ?? p.deliveries.at(-1);
   const preview =
@@ -898,11 +899,11 @@ function Overview({
         <div>
           <span>PRODUKTION</span>
           <strong>
-            {p.tasks.length}
+            {tasks.length}
             <small>opgaver i dit flow</small>
           </strong>
           <div className="mini-progress">
-            {p.tasks.map((t) => (
+            {tasks.map((t) => (
               <i
                 key={t.id}
                 className={
@@ -933,7 +934,7 @@ function Overview({
             <small>accepterede leverancer</small>
           </strong>
           <span className="stat-note">
-            {done} af {p.tasks.length} opgaver afsluttet
+            {done} af {tasks.length} opgaver afsluttet
           </span>
         </div>
       </div>

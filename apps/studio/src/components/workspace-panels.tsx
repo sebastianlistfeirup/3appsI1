@@ -15,6 +15,7 @@ import {
   History,
   Layers3,
   ListChecks,
+  Pause,
   Plus,
   Search,
   ShieldCheck,
@@ -26,6 +27,7 @@ import { bytesToBase64, decodeUtf8 } from "../lib/limits";
 import {
   addArtifact,
   addDependency,
+  removeDependency,
   addTask,
   artifactBytes,
   artifactSchema,
@@ -33,7 +35,6 @@ import {
   cancelRun,
   latestBrief,
   saveBrief,
-  setTaskState,
   sha256,
   submitDelivery,
   textArtifact,
@@ -53,6 +54,7 @@ import {
   formatDate,
 } from "./primitives";
 import type { ProjectActions } from "./studio-app";
+import { TaskDetails } from "./task-details";
 
 export function BriefPanel({ project, update, notify }: ProjectActions) {
   const brief = latestBrief(project);
@@ -270,7 +272,7 @@ const taskLabels: Record<Task["state"], string> = {
   in_progress: "I gang",
   review: "Til review",
   done: "Afsluttet",
-  blocked: "Afventer rettelse",
+  blocked: "Blokeret",
 };
 export function TasksPanel({ project, update, notify }: ProjectActions) {
   const [creating, setCreating] = useState(false);
@@ -281,7 +283,9 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
   const [to, setTo] = useState("");
   const [view, setView] = useState<"board" | "list">("board");
   const [deliverTask, setDeliverTask] = useState<string | null>(null);
-  const [detail, setDetail] = useState<Task | null>(null);
+  const [detail, setDetail] = useState<string | null>(null);
+  const currentTasks = project.tasks.filter((task) => !task.replacedBy);
+  const historicalTasks = project.tasks.filter((task) => task.replacedBy);
   const columns: Task["state"][] = [
     "ready",
     "in_progress",
@@ -318,7 +322,7 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
         <button
           className="button secondary"
           onClick={() => setDependency(true)}
-          disabled={project.tasks.length < 2}
+          disabled={currentTasks.length < 2}
         >
           <GitBranch size={15} /> Tilføj afhængighed
         </button>
@@ -339,7 +343,7 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
             .filter(
               (s) =>
                 s !== "blocked" ||
-                project.tasks.some((t) => t.state === "blocked"),
+                currentTasks.some((t) => t.state === "blocked"),
             )
             .map((state) => (
               <section className={`task-column column-${state}`} key={state}>
@@ -347,10 +351,10 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
                   <span className={`state-dot state-${state}`} />
                   <h2>{taskLabels[state]}</h2>
                   <span>
-                    {project.tasks.filter((t) => t.state === state).length}
+                    {currentTasks.filter((t) => t.state === state).length}
                   </span>
                 </div>
-                {project.tasks
+                {currentTasks
                   .filter((t) => t.state === state)
                   .map((t) => {
                     const deps = project.edges
@@ -360,7 +364,7 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
                       <article className="task-card" key={t.id}>
                         <button
                           className="task-card-main"
-                          onClick={() => setDetail(t)}
+                          onClick={() => setDetail(t.id)}
                         >
                           <div className="task-id">
                             OPGAVE{" "}
@@ -371,6 +375,11 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
                             <span>BRIEF V{t.briefVersion}</span>
                           </div>
                           <h3>{t.title}</h3>
+                          {t.correctionOf && (
+                            <span className="task-correction-badge">
+                              Rettelsesopgave
+                            </span>
+                          )}
                           <p>{t.description || "Klar til dit næste skridt."}</p>
                         </button>
                         {deps.length > 0 && (
@@ -395,7 +404,7 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
                           {t.state === "review" && (
                             <Link
                               className="text-button"
-                              href={`/projects/${project.id}/review`}
+                              href={`/projects/${project.id}/review/${project.deliveries.find((delivery) => project.runs.some((run) => run.id === delivery.runId && run.taskId === t.id && run.state === "review"))?.id ?? ""}`}
                             >
                               Se review <ArrowUpRight size={13} />
                             </Link>
@@ -407,12 +416,34 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
                       </article>
                     );
                   })}
-                {project.tasks.every((t) => t.state !== state) && (
+                {currentTasks.every((t) => t.state !== state) && (
                   <div className="empty-column">Ingen opgaver her endnu</div>
                 )}
               </section>
             ))}
         </div>
+      )}
+      {historicalTasks.length > 0 && (
+        <details className="task-history">
+          <summary>
+            Bevaret historik · {historicalTasks.length}{" "}
+            {historicalTasks.length === 1
+              ? "erstattet opgave"
+              : "erstattede opgaver"}
+          </summary>
+          <p>
+            Resultater og reviews er bevaret. De nye rettelsesopgaver fører
+            arbejdet videre.
+          </p>
+          {historicalTasks.map((task) => (
+            <button key={task.id} onClick={() => setDetail(task.id)}>
+              <span>{task.title}</span>
+              <small>
+                Se historik <ArrowRight size={13} />
+              </small>
+            </button>
+          ))}
+        </details>
       )}
       <Notice>
         Manuelt flow: Du udfører arbejdet i dine egne værktøjer og afleverer
@@ -492,7 +523,7 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
                 onChange={(e) => setFrom(e.target.value)}
               >
                 <option value="">Vælg opgave</option>
-                {project.tasks.map((t) => (
+                {currentTasks.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.title}
                   </option>
@@ -507,7 +538,7 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
                 onChange={(e) => setTo(e.target.value)}
               >
                 <option value="">Vælg opgave</option>
-                {project.tasks.map((t) => (
+                {currentTasks.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.title}
                   </option>
@@ -518,6 +549,61 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
               <button className="button primary">Gem afhængighed</button>
             </div>
           </form>
+          {project.edges.length > 0 && (
+            <section className="task-detail-section">
+              <h3>Eksisterende afhængigheder</h3>
+              <div className="dependency-list">
+                {project.edges
+                  .filter((edge) =>
+                    currentTasks.some((task) => task.id === edge.to),
+                  )
+                  .map((edge) => {
+                    const source = project.tasks.find(
+                        (task) => task.id === edge.from,
+                      )!,
+                      target = project.tasks.find(
+                        (task) => task.id === edge.to,
+                      )!;
+                    const editable =
+                      ["ready", "blocked"].includes(target.state) &&
+                      !project.runs.some(
+                        (run) =>
+                          run.taskId === target.id &&
+                          ["awaiting_upload", "review"].includes(run.state),
+                      );
+                    return (
+                      <div key={`${edge.from}:${edge.to}`}>
+                        <span>
+                          {source.title}
+                          <ArrowRight size={13} />
+                          {target.title}
+                        </span>
+                        {editable ? (
+                          <button
+                            className="text-button"
+                            aria-label={`Fjern afhængighed: ${source.title} før ${target.title}`}
+                            onClick={() => {
+                              if (
+                                update((value) =>
+                                  removeDependency(value, edge.from, edge.to),
+                                )
+                              )
+                                notify(
+                                  "Afhængigheden er fjernet. Historiske leveringer er bevaret.",
+                                );
+                            }}
+                          >
+                            Fjern
+                          </button>
+                        ) : (
+                          <small>Låst af levering</small>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            </section>
+          )}
         </Modal>
       )}
       {deliverTask && (
@@ -529,46 +615,20 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
           onClose={() => setDeliverTask(null)}
         />
       )}{" "}
-      {detail && (
-        <Modal title={detail.title} onClose={() => setDetail(null)}>
-          <p className="preserve-lines">
-            {detail.description || "Ingen beskrivelse."}
-          </p>
-          <div className="paper-section">
-            <span className="small-label">
-              ACCEPTKRAV FRA BRIEF V{detail.briefVersion}
-            </span>
-            {detail.acceptance.map((a) => (
-              <p key={a}>◇ {a}</p>
-            ))}
-          </div>
-          <Badge kind="purple">{taskLabels[detail.state]}</Badge>
-          {detail.state !== "done" && (
-            <div className="modal-actions">
-              <button
-                className="button secondary"
-                onClick={() => {
-                  if (!update((p) => setTaskState(p, detail.id, "blocked")))
-                    return;
-                  setDetail(null);
-                }}
-              >
-                Markér blokeret
-              </button>
-              {["ready", "in_progress"].includes(detail.state) && (
-                <button
-                  className="button primary"
-                  onClick={() => {
-                    setDeliverTask(detail.id);
-                    setDetail(null);
-                  }}
-                >
-                  Opret manuel levering <ArrowRight size={15} />
-                </button>
-              )}
-            </div>
-          )}
-        </Modal>
+      {detail && project.tasks.some((task) => task.id === detail) && (
+        <TaskDetails
+          key={detail}
+          project={project}
+          taskId={detail}
+          update={update}
+          notify={notify}
+          onClose={() => setDetail(null)}
+          onChooseTask={setDetail}
+          onDeliver={(id) => {
+            setDeliverTask(id);
+            setDetail(null);
+          }}
+        />
       )}
     </>
   );
@@ -1205,12 +1265,22 @@ export function RunsPanel({ project, update, notify }: ProjectActions) {
                         >
                           Annuller
                         </button>
-                        <button
-                          className="button primary small"
-                          onClick={() => setTaskId(run.taskId)}
-                        >
-                          Aflevér resultat <Upload size={14} />
-                        </button>
+                        {project.tasks.find((task) => task.id === run.taskId)
+                          ?.state === "blocked" ? (
+                          <Link
+                            className="button secondary small"
+                            href={`/projects/${project.id}/tasks`}
+                          >
+                            Opgaven er blokeret <Pause size={14} />
+                          </Link>
+                        ) : (
+                          <button
+                            className="button primary small"
+                            onClick={() => setTaskId(run.taskId)}
+                          >
+                            Aflevér resultat <Upload size={14} />
+                          </button>
+                        )}
                       </div>
                     ) : (
                       run.state !== "cancelled" && (
