@@ -17,3 +17,31 @@ STORYBOARD_ENGINE=webkit pnpm exec node apps/director/tests/storyboard-flow.mjs
 ```
 
 The gate needs FFmpeg and Poppler (`pdftotext`, `pdfdetach`, `pdfimages`, `pdftoppm`, `pdfinfo`) and a running local Director server. It does not require the local render API to be enabled.
+
+## Videoframe efter seek
+
+`currentTime`, `readyState` og `seeked` er ikke i sig selv bevis for, hvilket
+billede `drawImage(video)` læser. På GitHub Ubuntu/WebKit kunne alle tre være
+korrekte ved sekund fire, mens PDF'en stadig fik den røde første frame fra
+et klip, som var blåt ved sekund fire. Den præcise fil og native events er
+bevaret i `reports/director/ci-webkit-stale-frame-diagnostic.json`; kildefilens
+SHA-256 er `dd91c7386a3fddf292c3917f6d14a1b867b83f3c612cb735bf2ed1f80988c31d`.
+
+Posterudtræk venter nu på `requestVideoFrameCallback` for det faktisk
+præsenterede billede. Før seek registreres første præsenterede timestamp.
+Det er nødvendigt, fordi vores WebKit/GStreamer-profil rapporterer en H264
+composition-offset på 0,083333 sekund i `mediaTime`, også ved `currentTime=0`.
+Callbacken registreres før `src` sættes, så en varm cache ikke kan præsentere
+frame nul før lytteren er klar. Efter seek accepteres kun en ny præsenteret frame ved det ønskede trim relativt
+til den målte offset, inden for én projektframe. `seeked` alene udløser ingen
+capture. Der afspilles ikke lyd eller startes playback. Deadline og al oprydning
+bevares. En browser uden denne framebekræftelse giver et tydeligt manglende
+billede/advarsel i PDF'en frem for et forkert kamera- eller klipframe.
+
+PDF-manifestet gemmer `decodedMediaTime` og `presentationOffset` sammen med det
+ønskede `sourceFrame` og billedhash. Storyboard-gaten afprøver desuden otte
+kolde/varme videoelementer med skiftevis røde og blå trims, inklusive nul og én
+frames trim. Den kontrollerer faktiske indlejrede JPEG-pixels, native timestamps,
+manifest og uændret projekt. Farvekriteriet skelner rødt fra blåt; det er ikke en
+farvekalibrering (Firefox producerer her rød omtrent [254,24,0]). Den oprindelige
+blå-pixelassertion er uændret.

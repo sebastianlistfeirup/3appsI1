@@ -341,6 +341,8 @@ export async function storyboardPdf(
         ? {
             source: poster.source,
             sourceFrame: poster.sourceFrame,
+            decodedMediaTime: poster.decodedMediaTime ?? null,
+            presentationOffset: poster.presentationOffset ?? null,
             sha256: await sha256(poster.bytes),
             width: 1280,
             height: 720,

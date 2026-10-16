@@ -1,0 +1,666 @@
+[
+  {
+    "opacity": "0",
+    "iteration": 0,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "0",
+    "iteration": 1,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "0",
+    "iteration": 2,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "0",
+    "iteration": 3,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "0",
+    "iteration": 4,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "0.001",
+    "iteration": 0,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "0.001",
+    "iteration": 1,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "0.001",
+    "iteration": 2,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "0.001",
+    "iteration": 3,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "0.001",
+    "iteration": 4,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "1",
+    "iteration": 0,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "1",
+    "iteration": 1,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "1",
+    "iteration": 2,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "1",
+    "iteration": 3,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  },
+  {
+    "opacity": "1",
+    "iteration": 4,
+    "events": [
+      {
+        "kind": "metadata",
+        "time": 0
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 0.083333,
+        "rgb": [
+          253,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "kind": "seeked",
+        "time": 4,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "frame",
+        "time": 4,
+        "mediaTime": 4.083333,
+        "rgb": [
+          0,
+          0,
+          253,
+          255
+        ]
+      },
+      {
+        "kind": "timeout"
+      }
+    ]
+  }
+]

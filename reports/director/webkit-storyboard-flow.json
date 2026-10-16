@@ -7,14 +7,97 @@
     "measured long-token wrapping",
     "embedded JSON manifest preserves original text, immutable versions, timeline and source/poster hashes",
     "PDF export leaves project byte-equivalent",
-    "trim creates new shot version and updates actual thumbnail source time"
+    "trim creates new shot version and updates actual thumbnail source time",
+    "eight alternating cold/warm video posters confirm native presented frame timestamps and actual red/blue pixels, including a one-frame trim"
   ],
   "posterRgb": [
     0,
     0,
     252
   ],
-  "pdfMetadata": "Title:           Blå efter kliptrim · Æøå Ω Привет · storyboard\nAuthor:          Director\nCreator:         Director · lokalt filmværksted\nProducer:        Director / pdf-lib\nCreationDate:    Fri Oct 16 22:26:18 2026 UTC\nModDate:         Fri Oct 16 22:26:18 2026 UTC\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           5\nEncrypted:       no\nPage size:       842 x 595 pts (A4)\nPage rot:        0\nFile size:       113321 bytes\nOptimized:       no\nPDF version:     1.7\n",
+  "repeatedFrames": [
+    {
+      "sourceIn": 0,
+      "decodedMediaTime": 0.083333,
+      "presentationOffset": 0.083333,
+      "rgb": [
+        252,
+        1,
+        0
+      ]
+    },
+    {
+      "sourceIn": 96,
+      "decodedMediaTime": 4.083333,
+      "presentationOffset": 0.083333,
+      "rgb": [
+        0,
+        0,
+        252
+      ]
+    },
+    {
+      "sourceIn": 24,
+      "decodedMediaTime": 1.083333,
+      "presentationOffset": 0.083333,
+      "rgb": [
+        252,
+        1,
+        0
+      ]
+    },
+    {
+      "sourceIn": 96,
+      "decodedMediaTime": 4.083333,
+      "presentationOffset": 0.083333,
+      "rgb": [
+        0,
+        0,
+        252
+      ]
+    },
+    {
+      "sourceIn": 1,
+      "decodedMediaTime": 0.125,
+      "presentationOffset": 0.083333,
+      "rgb": [
+        252,
+        1,
+        0
+      ]
+    },
+    {
+      "sourceIn": 96,
+      "decodedMediaTime": 4.083333,
+      "presentationOffset": 0.083333,
+      "rgb": [
+        0,
+        0,
+        252
+      ]
+    },
+    {
+      "sourceIn": 48,
+      "decodedMediaTime": 2.083333,
+      "presentationOffset": 0.083333,
+      "rgb": [
+        252,
+        1,
+        0
+      ]
+    },
+    {
+      "sourceIn": 96,
+      "decodedMediaTime": 4.083333,
+      "presentationOffset": 0.083333,
+      "rgb": [
+        0,
+        0,
+        252
+      ]
+    }
+  ],
+  "pdfMetadata": "Title:           Blå efter kliptrim · Æøå Ω Привет · storyboard\nAuthor:          Director\nCreator:         Director · lokalt filmværksted\nProducer:        Director / pdf-lib\nCreationDate:    Fri Oct 16 22:48:45 2026 UTC\nModDate:         Fri Oct 16 22:48:45 2026 UTC\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           5\nEncrypted:       no\nPage size:       842 x 595 pts (A4)\nPage rot:        0\nFile size:       113369 bytes\nOptimized:       no\nPDF version:     1.7\n",
   "pageErrors": [],
-  "verifiedAt": "2026-10-16T22:26:22.292Z"
+  "verifiedAt": "2026-10-16T22:48:50.933Z"
 }

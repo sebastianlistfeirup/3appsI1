@@ -172,12 +172,27 @@ page.on("console", (message) => {
   }
 });
 await page.exposeFunction("__directorReportMedia", (event) => {
-  if (diagnostic.events.length < 100) {
+  if (diagnostic.events.length < 250) {
     diagnostic.events.push(event);
     persist();
   }
 });
 await page.addInitScript(() => {
+  const request = HTMLVideoElement.prototype.requestVideoFrameCallback;
+  if (request)
+    HTMLVideoElement.prototype.requestVideoFrameCallback = function (callback) {
+      return request.call(this, (now, metadata) => {
+        void window.__directorReportMedia({
+          event: "presented-frame",
+          at: performance.now(),
+          time: this.currentTime,
+          mediaTime: metadata.mediaTime,
+          presentedFrames: metadata.presentedFrames,
+          seeking: this.seeking,
+        });
+        callback(now, metadata);
+      });
+    };
   for (const event of [
     "loadedmetadata",
     "loadeddata",
@@ -314,6 +329,14 @@ try {
   assert.equal(manifest.shots[0].source.sha256, p.media[0].sha256);
   assert.equal(manifest.shots[0].poster.source, "video");
   assert.equal(manifest.shots[0].poster.sourceFrame, 96);
+  assert.ok(
+    Math.abs(
+      manifest.shots[0].poster.decodedMediaTime -
+        manifest.shots[0].poster.presentationOffset -
+        4,
+    ) <=
+      1 / 24,
+  );
   assert.equal(manifest.shots[0].cameraFrameSha256, null);
   assert.equal(manifest.shots[1].poster.source, "camera");
   assert.deepEqual(manifest.warnings, []);
@@ -379,6 +402,88 @@ try {
     after.shots.find((s) => s.id === after.sequence[0]).sourceIn,
     24,
   );
+  mark("verify repeated cold and warm decoded frames at alternating trims");
+  const repeat = structuredClone(p),
+    trims = [0, 96, 24, 96, 1, 96, 48, 96];
+  repeat.title = "Otte præcise klipframes";
+  repeat.shots = trims.map((sourceIn, index) => ({
+    ...first,
+    id: `decode_${index}`,
+    previousShotId: null,
+    name: `Decode ${index + 1}`,
+    dialogue: "",
+    notes: "",
+    sourceIn,
+    durationFrames: 24,
+    transitionFrames: 0,
+  }));
+  repeat.sequence = repeat.shots.map((shot) => shot.id);
+  repeat.sequenceVersions = [];
+  await page
+    .locator("input[type=file]")
+    .first()
+    .setInputFiles({
+      name: "repeated-frames.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(repeat)),
+    });
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    repeat.title,
+  );
+  await saved();
+  const repeatedBefore = await read();
+  await page.getByRole("button", { name: "Eksportér", exact: true }).click();
+  const repeatDownload = page.waitForEvent("download");
+  await page.locator(".export-options button").first().click();
+  const repeatedPdf = `reports/director/${engine}-repeated-frames-storyboard.pdf`;
+  await (await repeatDownload).saveAs(repeatedPdf);
+  await run("pdfdetach", ["-saveall", "-o", dir, repeatedPdf]);
+  const repeatedManifest = JSON.parse(
+    await fs.readFile(`${dir}/director-manifest.json`, "utf8"),
+  );
+  assert.deepEqual(repeatedManifest.warnings, []);
+  await run("pdfimages", ["-j", repeatedPdf, `${dir}/repeat`]);
+  const repeatedFrames = [];
+  for (const [index, sourceIn] of trims.entries()) {
+    const poster = repeatedManifest.shots[index].poster;
+    const rgb = await run(
+      "ffmpeg",
+      [
+        "-v",
+        "error",
+        "-i",
+        `${dir}/repeat-${String(index).padStart(3, "0")}.jpg`,
+        "-vf",
+        "scale=1:1",
+        "-f",
+        "rawvideo",
+        "-pix_fmt",
+        "rgb24",
+        "pipe:1",
+      ],
+      true,
+    );
+    assert.equal(poster.sourceFrame, sourceIn);
+    assert.ok(
+      Math.abs(
+        poster.decodedMediaTime - poster.presentationOffset - sourceIn / 24,
+      ) <=
+        1 / 24 + 0.000001,
+    );
+    assert.ok(
+      sourceIn < 72
+        ? rgb[0] > 220 && rgb[1] < 40 && rgb[2] < 20
+        : rgb[2] > 220 && rgb[0] < 20 && rgb[1] < 20,
+      `Poster ${index} at frame ${sourceIn} has incorrect pixels: ${[...rgb]}`,
+    );
+    repeatedFrames.push({
+      sourceIn,
+      decodedMediaTime: poster.decodedMediaTime,
+      presentationOffset: poster.presentationOffset,
+      rgb: [...rgb],
+    });
+  }
+  assert.deepEqual(await read(), repeatedBefore);
   assert.deepEqual(errors, []);
   await fs.writeFile(
     `reports/director/${engine}-storyboard-flow.json`,
@@ -393,8 +498,10 @@ try {
           "embedded JSON manifest preserves original text, immutable versions, timeline and source/poster hashes",
           "PDF export leaves project byte-equivalent",
           "trim creates new shot version and updates actual thumbnail source time",
+          "eight alternating cold/warm video posters confirm native presented frame timestamps and actual red/blue pixels, including a one-frame trim",
         ],
         posterRgb: [...rgb],
+        repeatedFrames,
         pdfMetadata: await run("pdfinfo", [path]),
         pageErrors: errors,
         verifiedAt: new Date().toISOString(),
@@ -403,6 +510,9 @@ try {
       2,
     ),
   );
+  await fs.rm(`reports/director/${engine}-storyboard-failure.png`, {
+    force: true,
+  });
   mark("completed");
   console.log("Director storyboard flow passed", engine);
 } catch (error) {

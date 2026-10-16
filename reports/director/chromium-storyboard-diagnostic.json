@@ -72,7 +72,7 @@
       }
     ],
     "format": {
-      "filename": "/tmp/director-storyboard-etVmn6/red-then-blue.mp4",
+      "filename": "/tmp/director-storyboard-wj2xJQ/red-then-blue.mp4",
       "nb_streams": 1,
       "nb_programs": 0,
       "nb_stream_groups": 0,
@@ -94,7 +94,7 @@
   "events": [
     {
       "event": "loadedmetadata",
-      "at": 4556.4000000003725,
+      "at": 3338.9000000003725,
       "tag": "VIDEO",
       "time": 0,
       "duration": 6,
@@ -105,7 +105,7 @@
     },
     {
       "event": "loadeddata",
-      "at": 4574.5,
+      "at": 3340.0999999996275,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -116,7 +116,7 @@
     },
     {
       "event": "seeking",
-      "at": 4616.700000001118,
+      "at": 3356,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -127,7 +127,7 @@
     },
     {
       "event": "seeking",
-      "at": 4619.4000000003725,
+      "at": 3356.2999999988824,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -138,7 +138,7 @@
     },
     {
       "event": "seeked",
-      "at": 4692.9000000003725,
+      "at": 3394.0999999996275,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -149,7 +149,7 @@
     },
     {
       "event": "loadedmetadata",
-      "at": 4855.700000001118,
+      "at": 3474.4000000003725,
       "tag": "VIDEO",
       "time": 0,
       "duration": 6,
@@ -160,7 +160,7 @@
     },
     {
       "event": "loadeddata",
-      "at": 4857.5999999996275,
+      "at": 3474.699999999255,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -171,7 +171,7 @@
     },
     {
       "event": "seeking",
-      "at": 4857.700000001118,
+      "at": 3474.7999999988824,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -182,7 +182,7 @@
     },
     {
       "event": "seeking",
-      "at": 4857.9000000003725,
+      "at": 3474.9000000003725,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -193,7 +193,7 @@
     },
     {
       "event": "seeked",
-      "at": 4926.5,
+      "at": 3506.199999999255,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -204,7 +204,7 @@
     },
     {
       "event": "loadedmetadata",
-      "at": 5512,
+      "at": 3820.5999999996275,
       "tag": "VIDEO",
       "time": 0,
       "duration": 6,
@@ -214,19 +214,38 @@
       "error": null
     },
     {
+      "event": "loadeddata",
+      "at": 3827.199999999255,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 3831.0999999996275,
+      "time": 0,
+      "mediaTime": 0,
+      "presentedFrames": 1,
+      "seeking": false
+    },
+    {
       "event": "seeking",
-      "at": 5512.4000000003725,
+      "at": 3833,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
       "seeking": true,
       "readyState": 1,
-      "networkState": 2,
+      "networkState": 1,
       "error": null
     },
     {
       "event": "seeked",
-      "at": 5540.9000000003725,
+      "at": 3839.9000000003725,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -236,8 +255,16 @@
       "error": null
     },
     {
+      "event": "presented-frame",
+      "at": 3848,
+      "time": 4,
+      "mediaTime": 4,
+      "presentedFrames": 2,
+      "seeking": false
+    },
+    {
       "event": "loadedmetadata",
-      "at": 15881.400000000373,
+      "at": 10449.799999998882,
       "tag": "VIDEO",
       "time": 0,
       "duration": 6,
@@ -248,7 +275,7 @@
     },
     {
       "event": "loadeddata",
-      "at": 15881.900000000373,
+      "at": 10450.299999998882,
       "tag": "VIDEO",
       "time": 1,
       "duration": 6,
@@ -259,7 +286,7 @@
     },
     {
       "event": "seeking",
-      "at": 15892.900000000373,
+      "at": 10463,
       "tag": "VIDEO",
       "time": 1,
       "duration": 6,
@@ -270,7 +297,7 @@
     },
     {
       "event": "seeking",
-      "at": 15899.700000001118,
+      "at": 10463.299999998882,
       "tag": "VIDEO",
       "time": 1,
       "duration": 6,
@@ -281,7 +308,7 @@
     },
     {
       "event": "seeked",
-      "at": 15925.400000000373,
+      "at": 10508.099999999627,
       "tag": "VIDEO",
       "time": 1,
       "duration": 6,
@@ -289,11 +316,945 @@
       "readyState": 4,
       "networkState": 1,
       "error": null
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 10904.199999999255,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 10905.199999999255,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 10905.5,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 10905.799999998882,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 10906,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 10906.199999999255,
+      "tag": "VIDEO",
+      "time": 1,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 10906.199999999255,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 10906.400000000373,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 10906.5,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 10906.699999999255,
+      "tag": "VIDEO",
+      "time": 0.041666,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 10906.900000000373,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 10907,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 10907.099999999627,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 10907.199999999255,
+      "tag": "VIDEO",
+      "time": 2,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 10907.5,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 10907.5,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10919.900000000373,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10920.099999999627,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10922.400000000373,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10922.5,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10922.5,
+      "tag": "VIDEO",
+      "time": 1,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10922.599999999627,
+      "tag": "VIDEO",
+      "time": 1,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10922.599999999627,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10922.699999999255,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10922.699999999255,
+      "tag": "VIDEO",
+      "time": 0.041666,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10922.699999999255,
+      "tag": "VIDEO",
+      "time": 0.041666,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10922.799999998882,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10922.799999998882,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10923.099999999627,
+      "tag": "VIDEO",
+      "time": 2,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10923.199999999255,
+      "tag": "VIDEO",
+      "time": 2,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10923.299999998882,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 10923.5,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 10944.599999999627,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 11005.799999998882,
+      "tag": "VIDEO",
+      "time": 0.041666,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 11108.099999999627,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 11108.299999998882,
+      "tag": "VIDEO",
+      "time": 1,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 11108.400000000373,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 11108.5,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 11108.599999999627,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 11118.199999999255,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 11121.099999999627,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 11121.699999999255,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeking",
+      "at": 11121.900000000373,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 11132.099999999627,
+      "tag": "VIDEO",
+      "time": 2,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 11137.5,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 11298.799999998882,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 1,
+      "networkState": 2,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 11304.400000000373,
+      "time": 0,
+      "mediaTime": 0,
+      "presentedFrames": 1,
+      "seeking": false
+    },
+    {
+      "event": "loadeddata",
+      "at": 11308.400000000373,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 13756.5,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 1,
+      "networkState": 2,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 13773.400000000373,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 13780.900000000373,
+      "time": 0,
+      "mediaTime": 0,
+      "presentedFrames": 1,
+      "seeking": false
+    },
+    {
+      "event": "seeking",
+      "at": 13784,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 13815.900000000373,
+      "time": 4,
+      "mediaTime": 4,
+      "presentedFrames": 2,
+      "seeking": false
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 14676.599999999627,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 1,
+      "networkState": 2,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 14711.099999999627,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 14714.199999999255,
+      "time": 0,
+      "mediaTime": 0,
+      "presentedFrames": 1,
+      "seeking": false
+    },
+    {
+      "event": "seeking",
+      "at": 14715.5,
+      "tag": "VIDEO",
+      "time": 1,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 14739.199999999255,
+      "tag": "VIDEO",
+      "time": 1,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 14747.299999998882,
+      "time": 1,
+      "mediaTime": 1,
+      "presentedFrames": 2,
+      "seeking": false
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 15566.599999999627,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 1,
+      "networkState": 2,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 15572,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 15597.199999999255,
+      "time": 0,
+      "mediaTime": 0,
+      "presentedFrames": 1,
+      "seeking": false
+    },
+    {
+      "event": "seeking",
+      "at": 15599,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 15613.400000000373,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 15614.400000000373,
+      "time": 4,
+      "mediaTime": 4,
+      "presentedFrames": 2,
+      "seeking": false
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 16234.400000000373,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 1,
+      "networkState": 2,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 16244.400000000373,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 16248,
+      "time": 0,
+      "mediaTime": 0,
+      "presentedFrames": 1,
+      "seeking": false
+    },
+    {
+      "event": "seeking",
+      "at": 16253.5,
+      "tag": "VIDEO",
+      "time": 0.041666,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 16259,
+      "tag": "VIDEO",
+      "time": 0.041666,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 16264,
+      "time": 0.041666,
+      "mediaTime": 0,
+      "presentedFrames": 2,
+      "seeking": false
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 17102.5,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 1,
+      "networkState": 2,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 17106.599999999627,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 17114.900000000373,
+      "time": 0,
+      "mediaTime": 0,
+      "presentedFrames": 1,
+      "seeking": false
+    },
+    {
+      "event": "seeking",
+      "at": 17117,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 17130.900000000373,
+      "time": 4,
+      "mediaTime": 4,
+      "presentedFrames": 2,
+      "seeking": true
+    },
+    {
+      "event": "seeked",
+      "at": 17131.400000000373,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 17852.099999999627,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 1,
+      "networkState": 2,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 17866.099999999627,
+      "time": 0,
+      "mediaTime": 0,
+      "presentedFrames": 1,
+      "seeking": false
+    },
+    {
+      "event": "seeking",
+      "at": 17867.599999999627,
+      "tag": "VIDEO",
+      "time": 2,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 2,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 17906.199999999255,
+      "tag": "VIDEO",
+      "time": 2,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 17906.299999998882,
+      "tag": "VIDEO",
+      "time": 2,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 17914,
+      "time": 2,
+      "mediaTime": 2,
+      "presentedFrames": 2,
+      "seeking": false
+    },
+    {
+      "event": "loadedmetadata",
+      "at": 18725.599999999627,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 1,
+      "networkState": 2,
+      "error": null
+    },
+    {
+      "event": "loadeddata",
+      "at": 18737.599999999627,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 18747.799999998882,
+      "time": 0,
+      "mediaTime": 0,
+      "presentedFrames": 1,
+      "seeking": false
+    },
+    {
+      "event": "seeking",
+      "at": 18749.299999998882,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": true,
+      "readyState": 1,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "seeked",
+      "at": 18769,
+      "tag": "VIDEO",
+      "time": 4,
+      "duration": 6,
+      "seeking": false,
+      "readyState": 4,
+      "networkState": 1,
+      "error": null
+    },
+    {
+      "event": "presented-frame",
+      "at": 18798,
+      "time": 4,
+      "mediaTime": 4,
+      "presentedFrames": 2,
+      "seeking": false
     }
   ],
   "console": [],
   "pageErrors": [],
-  "startedAt": "2026-10-16T22:21:32.791Z",
+  "startedAt": "2026-10-16T22:48:10.662Z",
   "phase": "completed",
   "failure": null,
   "capabilities": {

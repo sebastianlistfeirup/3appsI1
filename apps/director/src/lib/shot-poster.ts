@@ -5,6 +5,8 @@ export interface ShotPoster {
   bytes: Uint8Array;
   source: "camera" | "image" | "video";
   sourceFrame: number | null;
+  decodedMediaTime?: number;
+  presentationOffset?: number;
 }
 
 function drawPoster(source: CanvasImageSource, width: number, height: number) {
@@ -42,10 +44,17 @@ export async function shotPoster(
         url = URL.createObjectURL(
           new Blob([dataUrlBytes(media.dataUrl)], { type: media.mime }),
         );
+      const targetTime = shot.sourceIn / project.fps;
       let finished = false,
-        positioned = false;
+        positioned = false,
+        frameReady = false,
+        callbackId: number | undefined,
+        initialMediaTime: number | undefined,
+        decodedMediaTime: number | undefined;
       const cleanup = () => {
         clearTimeout(timer);
+        if (callbackId !== undefined)
+          video.cancelVideoFrameCallback(callbackId);
         video.onloadedmetadata =
           video.onloadeddata =
           video.onseeked =
@@ -59,7 +68,10 @@ export async function shotPoster(
       };
       const done = (error?: Error) => {
         if (finished) return;
-        if (!error && (!positioned || video.seeking || video.readyState < 2))
+        if (
+          !error &&
+          (!positioned || !frameReady || video.seeking || video.readyState < 2)
+        )
           return;
         finished = true;
         try {
@@ -68,6 +80,8 @@ export async function shotPoster(
             bytes: drawPoster(video, video.videoWidth, video.videoHeight),
             source: "video",
             sourceFrame: shot.sourceIn,
+            decodedMediaTime,
+            presentationOffset: initialMediaTime,
           });
         } catch (e) {
           reject(e);
@@ -95,18 +109,49 @@ export async function shotPoster(
       video.setAttribute("aria-hidden", "true");
       video.tabIndex = -1;
       document.body.append(video);
-      video.onloadedmetadata = () => {
-        const time = shot.sourceIn / project.fps;
-        if (!Number.isFinite(video.duration) || time >= video.duration)
-          return done(Error(`Kliptrim ligger uden for ${media.name}`));
-        positioned = true;
-        if (time > 0) video.currentTime = time;
-        else done();
+      const presented: VideoFrameRequestCallback = (_, metadata) => {
+        if (finished) return;
+        callbackId = undefined;
+        if (initialMediaTime === undefined) {
+          // Some WebKit/GStreamer H264 builds report the composition offset
+          // (e.g. two B-frames) in mediaTime. Anchor to the actual first frame
+          // before seeking, rather than trusting currentTime or seeked alone.
+          initialMediaTime = metadata.mediaTime;
+          positioned = true;
+          if (targetTime === 0) {
+            decodedMediaTime = metadata.mediaTime;
+            frameReady = true;
+            done();
+            return;
+          }
+          callbackId = video.requestVideoFrameCallback(presented);
+          video.currentTime = targetTime;
+          return;
+        }
+        if (
+          Math.abs(metadata.mediaTime - initialMediaTime - targetTime) <=
+          1 / project.fps
+        ) {
+          decodedMediaTime = metadata.mediaTime;
+          frameReady = true;
+          done();
+        } else callbackId = video.requestVideoFrameCallback(presented);
       };
-      video.onloadeddata = () => done();
+      video.onloadedmetadata = () => {
+        if (!Number.isFinite(video.duration) || targetTime >= video.duration)
+          return done(Error(`Kliptrim ligger uden for ${media.name}`));
+      };
       video.onseeked = () => done();
+      video.onloadeddata = () => done();
       video.onerror = () =>
         done(Error(`Browseren kan ikke læse klipframe fra ${media.name}`));
+      if (typeof video.requestVideoFrameCallback !== "function")
+        return done(
+          Error("Browseren kan ikke bekræfte det afkodede klipframe"),
+        );
+      // Register before src: a warm cache can present frame zero before the
+      // loadedmetadata handler runs, and a paused video will not repeat it.
+      callbackId = video.requestVideoFrameCallback(presented);
       video.src = url;
     });
   }
