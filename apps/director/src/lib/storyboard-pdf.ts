@@ -311,6 +311,8 @@ export async function storyboardPdf(
       name: shot.name,
       sceneVersionId: scene.id,
       sceneVersion: scene.version,
+      sceneName: scene.name,
+      environment: scene.environment,
       camera: scene.cameras.find((c) => c.id === shot.cameraId),
       rendererVersion: shot.frameRenderer ?? scene.rendererVersion,
       frameMode: media ? media.kind : shot.frameMode,

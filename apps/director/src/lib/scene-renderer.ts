@@ -158,14 +158,113 @@ export function primitive(object: SceneObject) {
   group.scale.fromArray(object.transform.scale);
   return group;
 }
+/** Entirely procedural locations; their exact palette is part of the immutable scene. */
+function buildStudio(scene: THREE.Scene, version: SceneVersion) {
+  const surface = mat(version.environment.groundColor, 0.02, 0.87);
+  surface.side = THREE.DoubleSide;
+  const points: [number, number][] = [[0, 20]];
+  for (let index = 0; index <= 24; index++) {
+    const angle = ((index / 24) * Math.PI) / 2;
+    points.push([3 * (1 - Math.cos(angle)), -6 - 3 * Math.sin(angle)]);
+  }
+  points.push([10, -9]);
+  const positions: number[] = [],
+    indices: number[] = [];
+  for (const [y, z] of points) positions.push(-30, y, z, 30, y, z);
+  for (let index = 0; index < points.length - 1; index++) {
+    const at = index * 2;
+    indices.push(at, at + 2, at + 1, at + 1, at + 2, at + 3);
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(positions, 3),
+  );
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  const backdrop = mesh(geometry, surface);
+  backdrop.castShadow = false;
+  scene.add(backdrop);
+}
+function buildCourtyard(scene: THREE.Scene, version: SceneVersion) {
+  const paving = mat(version.environment.groundColor, 0, 0.92),
+    stone = mat("#b9aa92", 0, 0.9),
+    cap = mat("#d4c4a4", 0, 0.86),
+    dark = mat("#756856", 0, 0.9);
+  scene.add(box(22, 0.15, 22, paving, 0, -0.1, 0));
+  for (let index = -10; index <= 10; index += 2) {
+    scene.add(box(0.014, 0.01, 20, dark, index, -0.019, 0));
+    scene.add(box(20, 0.01, 0.014, dark, 0, -0.019, index));
+  }
+  scene.add(box(6, 3.4, 0.55, stone, -5.1, 1.7, -6));
+  scene.add(box(6, 3.4, 0.55, stone, 5.1, 1.7, -6));
+  scene.add(box(6.1, 0.2, 0.75, cap, -5.1, 3.45, -6));
+  scene.add(box(6.1, 0.2, 0.75, cap, 5.1, 3.45, -6));
+  scene.add(
+    mesh(new THREE.TorusGeometry(2.1, 0.34, 8, 32, Math.PI), cap, 0, 2.4, -6),
+  );
+  for (const x of [-2.1, 2.1]) {
+    scene.add(box(0.65, 2.4, 0.7, cap, x, 1.2, -6));
+    scene.add(box(0.9, 0.2, 0.9, dark, x, 0.1, -6));
+  }
+  for (const x of [-5, 5]) {
+    scene.add(
+      mesh(
+        new THREE.CylinderGeometry(0.55, 0.4, 0.8, 10),
+        mat("#91725c", 0, 0.95),
+        x,
+        0.4,
+        -2.5,
+      ),
+    );
+    scene.add(
+      mesh(new THREE.CylinderGeometry(0.08, 0.12, 1.7, 7), dark, x, 1.4, -2.5),
+    );
+    const crown = mesh(
+      new THREE.IcosahedronGeometry(1.25, 1),
+      mat("#586d4c", 0, 1),
+      x,
+      2.7,
+      -2.5,
+    );
+    crown.scale.set(0.9, 1, 0.85);
+    scene.add(crown);
+  }
+  const landscape = mesh(
+    new THREE.PlaneGeometry(250, 250),
+    mat("#87917a", 0, 1),
+    0,
+    -0.3,
+    -45,
+  );
+  landscape.rotation.x = -Math.PI / 2;
+  scene.add(landscape);
+  for (let index = 0; index < 8; index++) {
+    const hill = mesh(
+      new THREE.SphereGeometry(8 + (index % 3), 12, 8),
+      mat(index % 2 ? "#7d8f7a" : "#657d71", 0, 1),
+      -40 + index * 12,
+      -3,
+      -35 - (index % 3) * 5,
+    );
+    hill.scale.set(1.3, 0.7, 1);
+    hill.castShadow = false;
+    scene.add(hill);
+  }
+}
 export function buildScene(
   version: SceneVersion,
   selectedId?: string,
   grid = false,
 ) {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#18212c");
-  scene.fog = new THREE.FogExp2("#27323c", 0.006);
+  scene.background = new THREE.Color(version.environment.skyColor);
+  scene.fog = new THREE.FogExp2(
+    version.environment.preset === "station"
+      ? "#27323c"
+      : version.environment.skyColor,
+    version.environment.preset === "station" ? 0.006 : 0.012,
+  );
   const ambient = new THREE.HemisphereLight("#a5bac4", "#302d27", 1.8);
   scene.add(ambient);
   const sunlight = new THREE.DirectionalLight(
@@ -184,94 +283,100 @@ export function buildScene(
   const fill = new THREE.DirectionalLight("#adcbdc", 2.2);
   fill.position.set(5, 5, 8);
   scene.add(fill);
-  // A fully procedural station. No stock images, remote textures or hidden assets.
-  const floor = mat("#3e484b", 0.55, 0.45),
-    structure = mat("#34434b", 0.2, 0.65),
-    edge = mat("#6f7975", 0.65, 0.4);
-  scene.add(box(15, 0.3, 15, floor, 0, -0.2, 0));
-  for (let i = -6; i <= 6; i += 2) {
+  if (version.environment.preset === "station") {
+    // A fully procedural station. No stock images, remote textures or hidden assets.
+    const floor = mat(version.environment.groundColor, 0.55, 0.45),
+      structure = mat("#34434b", 0.2, 0.65),
+      edge = mat("#6f7975", 0.65, 0.4);
+    scene.add(box(15, 0.3, 15, floor, 0, -0.2, 0));
+    for (let i = -6; i <= 6; i += 2) {
+      scene.add(
+        box(0.018, 0.008, 14, structure, i, -0.041, 0),
+        box(14, 0.008, 0.018, structure, 0, -0.041, i),
+      );
+    }
     scene.add(
-      box(0.018, 0.008, 14, structure, i, -0.041, 0),
-      box(14, 0.008, 0.018, structure, 0, -0.041, i),
+      box(15, 0.7, 0.5, structure, 0, 0.2, -5),
+      box(15, 0.12, 0.7, edge, 0, 0.61, -5),
     );
-  }
-  scene.add(
-    box(15, 0.7, 0.5, structure, 0, 0.2, -5),
-    box(15, 0.12, 0.7, edge, 0, 0.61, -5),
-  );
-  scene.add(
-    box(0.5, 7, 11, structure, -6, 3, -0.3),
-    box(0.5, 7, 11, structure, 6, 3, -0.3),
-    box(12, 0.5, 1, structure, 0, 5.8, -4.8),
-  );
-  for (const x of [-5.5, -3.6, 3.6, 5.5]) {
-    const pillar = box(0.19, 6, 0.25, edge, x, 2.7, -4.8);
-    pillar.rotation.z = x > 0 ? -0.13 : 0.13;
-    scene.add(pillar);
-  }
-  for (const x of [-5.1, 5.1])
-    scene.add(box(0.04, 4.3, 0.04, emissive("#d9b07c", 1.2), x, 2.7, -4.65));
-  for (const x of [-4.5, 4.5])
-    scene.add(box(0.035, 0.01, 11, emissive("#ab8a5e", 0.5), x, -0.025, 0.5));
-  const horizon = mesh(
-    new THREE.PlaneGeometry(300, 300),
-    mat("#636c6c", 0.05, 1),
-    0,
-    -0.6,
-    -60,
-  );
-  horizon.rotation.x = -Math.PI / 2;
-  horizon.receiveShadow = false;
-  scene.add(horizon);
-  for (let i = 0; i < 23; i++) {
-    const h = 2 + ((i * 17) % 13) * 0.6;
-    const mountain = mesh(
-      new THREE.ConeGeometry(4 + ((i * 7) % 5), h, 4),
-      mat(i % 2 ? "#646c70" : "#737872", 0.05, 1),
-      -65 + i * 6,
-      -0.5 + h / 2,
-      -38 - (i % 4) * 6,
+    scene.add(
+      box(0.5, 7, 11, structure, -6, 3, -0.3),
+      box(0.5, 7, 11, structure, 6, 3, -0.3),
+      box(12, 0.5, 1, structure, 0, 5.8, -4.8),
     );
-    mountain.rotation.y = i * 0.7;
-    scene.add(mountain);
+    for (const x of [-5.5, -3.6, 3.6, 5.5]) {
+      const pillar = box(0.19, 6, 0.25, edge, x, 2.7, -4.8);
+      pillar.rotation.z = x > 0 ? -0.13 : 0.13;
+      scene.add(pillar);
+    }
+    for (const x of [-5.1, 5.1])
+      scene.add(box(0.04, 4.3, 0.04, emissive("#d9b07c", 1.2), x, 2.7, -4.65));
+    for (const x of [-4.5, 4.5])
+      scene.add(box(0.035, 0.01, 11, emissive("#ab8a5e", 0.5), x, -0.025, 0.5));
+    const horizon = mesh(
+      new THREE.PlaneGeometry(300, 300),
+      mat("#636c6c", 0.05, 1),
+      0,
+      -0.6,
+      -60,
+    );
+    horizon.rotation.x = -Math.PI / 2;
+    horizon.receiveShadow = false;
+    scene.add(horizon);
+    for (let i = 0; i < 23; i++) {
+      const h = 2 + ((i * 17) % 13) * 0.6;
+      const mountain = mesh(
+        new THREE.ConeGeometry(4 + ((i * 7) % 5), h, 4),
+        mat(i % 2 ? "#646c70" : "#737872", 0.05, 1),
+        -65 + i * 6,
+        -0.5 + h / 2,
+        -38 - (i % 4) * 6,
+      );
+      mountain.rotation.y = i * 0.7;
+      scene.add(mountain);
+    }
+    const sun = mesh(
+      new THREE.SphereGeometry(5.7, 48, 32),
+      new THREE.MeshBasicMaterial({ color: "#f3d0a0", toneMapped: false }),
+      -17,
+      12,
+      -66,
+    );
+    sun.castShadow = false;
+    scene.add(sun);
+    const planet = mesh(
+      new THREE.SphereGeometry(11, 32, 24),
+      mat("#617478", 0.05, 1),
+      27,
+      28,
+      -110,
+    );
+    planet.castShadow = false;
+    scene.add(planet);
+    const stars = new THREE.BufferGeometry();
+    const coords = [];
+    for (let i = 0; i < 170; i++) {
+      const x = Math.sin(i * 72.31) * 130;
+      const y = 10 + ((i * 19) % 100);
+      coords.push(x, y, -140 - ((i * 13) % 25));
+    }
+    stars.setAttribute("position", new THREE.Float32BufferAttribute(coords, 3));
+    scene.add(
+      new THREE.Points(
+        stars,
+        new THREE.PointsMaterial({
+          color: "#e5ded1",
+          size: 0.16,
+          transparent: true,
+          opacity: 0.55,
+        }),
+      ),
+    );
+  } else if (version.environment.preset === "studio") {
+    buildStudio(scene, version);
+  } else {
+    buildCourtyard(scene, version);
   }
-  const sun = mesh(
-    new THREE.SphereGeometry(5.7, 48, 32),
-    new THREE.MeshBasicMaterial({ color: "#f3d0a0", toneMapped: false }),
-    -17,
-    12,
-    -66,
-  );
-  sun.castShadow = false;
-  scene.add(sun);
-  const planet = mesh(
-    new THREE.SphereGeometry(11, 32, 24),
-    mat("#617478", 0.05, 1),
-    27,
-    28,
-    -110,
-  );
-  planet.castShadow = false;
-  scene.add(planet);
-  const stars = new THREE.BufferGeometry();
-  const coords = [];
-  for (let i = 0; i < 170; i++) {
-    const x = Math.sin(i * 72.31) * 130;
-    const y = 10 + ((i * 19) % 100);
-    coords.push(x, y, -140 - ((i * 13) % 25));
-  }
-  stars.setAttribute("position", new THREE.Float32BufferAttribute(coords, 3));
-  scene.add(
-    new THREE.Points(
-      stars,
-      new THREE.PointsMaterial({
-        color: "#e5ded1",
-        size: 0.16,
-        transparent: true,
-        opacity: 0.55,
-      }),
-    ),
-  );
   for (const object of version.objects) {
     if (object.kind === "glb") continue;
     const group = primitive(object);
@@ -356,7 +461,15 @@ export function renderPlanFrame(version: SceneVersion, camera: Camera) {
   ctx.fillStyle = "#d9d9cc";
   ctx.font = "12px sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText("OBSERVATIONSVINDUE", 400, 63);
+  ctx.fillText(
+    version.environment.preset === "station"
+      ? "OBSERVATIONSVINDUE"
+      : version.environment.preset === "studio"
+        ? "STUDIEBAGVÆG"
+        : "ÅBEN BUEGANG",
+    400,
+    63,
+  );
   const x = (v: number) => 400 + v * 26,
     y = (v: number) => 220 + v * 20;
   for (const object of version.objects) {

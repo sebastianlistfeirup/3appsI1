@@ -1,0 +1,42 @@
+{
+  "engine": "chromium",
+  "browserVersion": "156.0.8078.4",
+  "checks": [
+    "real original preset thumbnails loaded",
+    "unapplied choices leave project intact",
+    "location and palette changes preserve all cast/camera transforms and old versions",
+    "actual new immutable studio and courtyard camera frames",
+    "explicit courtyard 2D plan and captured fallback",
+    "color reset",
+    "reload and ZIP retain environments",
+    "invalid environment rejected without data loss"
+  ],
+  "accessibility": [
+    {
+      "name": "desktop-locations",
+      "violations": []
+    },
+    {
+      "name": "tablet-locations",
+      "violations": []
+    },
+    {
+      "name": "mobile-locations",
+      "violations": []
+    },
+    {
+      "name": "studio-scene",
+      "violations": []
+    },
+    {
+      "name": "courtyard-scene",
+      "violations": []
+    },
+    {
+      "name": "interactive-2d-plan",
+      "violations": []
+    }
+  ],
+  "pageErrors": [],
+  "verifiedAt": "2026-10-16T22:24:02.410Z"
+}

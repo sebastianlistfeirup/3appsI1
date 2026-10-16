@@ -142,8 +142,8 @@ export function SceneViewport({
       <div className="plan-view">
         <svg
           viewBox="0 0 800 450"
-          role="img"
-          aria-label="2D-plan af observationsdækket med objekter og kamera"
+          role="group"
+          aria-label={`2D-plan af ${scene.name} med objekter og kamera`}
         >
           <defs>
             <pattern
@@ -180,7 +180,11 @@ export function SceneViewport({
             fontSize="11"
             letterSpacing="3"
           >
-            OBSERVATIONSVINDUE
+            {scene.environment.preset === "station"
+              ? "OBSERVATIONSVINDUE"
+              : scene.environment.preset === "studio"
+                ? "STUDIEBAGVÆG"
+                : "ÅBEN BUEGANG"}
           </text>
           {scene.objects.map((object) => {
             const x = 400 + object.transform.position[0] * 26;
@@ -191,9 +195,13 @@ export function SceneViewport({
                 role="button"
                 tabIndex={0}
                 aria-label={`Vælg ${object.name}`}
+                aria-pressed={selectedId === object.id}
                 onClick={() => onSelect(object.id)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") onSelect(object.id);
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSelect(object.id);
+                  }
                 }}
                 style={{ cursor: "pointer" }}
               >

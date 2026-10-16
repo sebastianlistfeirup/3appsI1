@@ -79,6 +79,36 @@ export const glbAssetSchema = z.object({
   rights: z.enum(["owned", "licensed", "unknown"]),
 });
 export type GlbAsset = z.infer<typeof glbAssetSchema>;
+export const ENVIRONMENTS = {
+  station: {
+    name: "Observationsdæk",
+    description: "Et rum mellem signaler, stjerner og en fjern horisont.",
+    groundColor: "#3e484b",
+    skyColor: "#18212c",
+  },
+  studio: {
+    name: "Lysstudie",
+    description: "Et roligt, åbent studie med en blød bagvæg.",
+    groundColor: "#a7aaa3",
+    skyColor: "#c8cfcc",
+  },
+  courtyard: {
+    name: "Gårdrum",
+    description: "Varm sten, åbne buer og en lille grøn oase.",
+    groundColor: "#b7a38b",
+    skyColor: "#8eafbb",
+  },
+} as const;
+export const environmentSchema = z.object({
+  preset: z.enum(["station", "studio", "courtyard"]),
+  groundColor: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+  skyColor: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+});
+export type Environment = z.infer<typeof environmentSchema>;
+export function createEnvironment(preset: Environment["preset"]): Environment {
+  const { groundColor, skyColor } = ENVIRONMENTS[preset];
+  return { preset, groundColor, skyColor };
+}
 export const sceneSchema = z
   .object({
     id,
@@ -86,6 +116,7 @@ export const sceneSchema = z
     rendererVersion: z.literal(RENDERER_VERSION),
     version: z.number().int().positive(),
     name: z.string().min(1).max(100),
+    environment: environmentSchema.default(() => createEnvironment("station")),
     objects: z.array(objectSchema).max(40),
     cameras: z.array(cameraSchema).min(1).max(20),
     assets: z.array(glbAssetSchema).max(10).default([]),
@@ -401,7 +432,9 @@ export function affectedShots(p: Project) {
     if (s.mediaId) return false;
     const old = sceneForShot(p, s);
     return (
+      old.name !== p.draft.name ||
       changedObjectIds(old, p.draft).length > 0 ||
+      JSON.stringify(old.environment) !== JSON.stringify(p.draft.environment) ||
       JSON.stringify(old.assets) !== JSON.stringify(p.draft.assets) ||
       JSON.stringify(old.light) !== JSON.stringify(p.draft.light) ||
       JSON.stringify(old.cameras.find((c) => c.id === s.cameraId)) !==
@@ -611,6 +644,7 @@ export function createSampleProject(): Project {
     rendererVersion: RENDERER_VERSION,
     version: 1,
     name: "Observationsdæk · Station 07",
+    environment: createEnvironment("station"),
     objects: [
       object("captain", "Kaptajn Liv", "person", [-1.2, 0, 0], "#c36536"),
       object("engineer", "Tekniker Noa", "person", [1.45, 0, -1.1], "#a8b8ad"),

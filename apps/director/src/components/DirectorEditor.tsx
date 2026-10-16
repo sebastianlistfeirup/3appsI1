@@ -65,12 +65,14 @@ import {
   restoreSequenceVersion,
   restoreShotVersion,
   matchingSequenceVersion,
+  ENVIRONMENTS,
   type Project,
   type Shot,
   type Camera as CameraType,
   type SceneObject,
   type Vector,
 } from "@tre/scene-format";
+import { LocationPanel } from "./LocationPanel";
 import { SceneViewport } from "./SceneViewport";
 import { ShotFrame as Frame } from "./ShotFrame";
 import {
@@ -97,6 +99,7 @@ type Modal =
   | "versions"
   | "sequences"
   | "shotHistory"
+  | "location"
   | null;
 const formatSeconds = (frames: number) =>
   `${(frames / 24).toLocaleString("da-DK", { maximumFractionDigits: 2 })} sek.`;
@@ -1013,17 +1016,18 @@ export default function DirectorEditor({
               </div>
               <button
                 className="location-card"
-                onClick={() => {
-                  setSelectedObject(null);
-                  setInspector("camera");
-                }}
+                onClick={() => setModal("location")}
+                aria-label="Redigér set"
               >
                 <div className="location-icon">
                   <MapPin size={18} />
                 </div>
                 <span>
-                  <strong>Observationsdæk</strong>
-                  <small>Station 07 · scene v{p.draft.version}</small>
+                  <strong>{p.draft.name}</strong>
+                  <small>
+                    {ENVIRONMENTS[p.draft.environment.preset].name} · scene v
+                    {p.draft.version}
+                  </small>
                 </span>
                 <ChevronDown size={14} />
               </button>
@@ -1256,6 +1260,12 @@ export default function DirectorEditor({
                   className={grid ? "is-active" : ""}
                 >
                   <Grid2X2 size={15} />
+                </IconButton>
+                <IconButton
+                  title="Vælg set"
+                  onClick={() => setModal("location")}
+                >
+                  <MapPin size={15} />
                 </IconButton>
                 <span className="viewport-help">
                   Træk for at dreje · scroll for zoom
@@ -1815,7 +1825,11 @@ export default function DirectorEditor({
                 billedsprog tæt på dit set.
               </p>
               <div className="story-facts">
-                <span>01 location</span>
+                <span>
+                  {new Set(shots.map((shot) => sceneForShot(p, shot).name))
+                    .size || 1}{" "}
+                  locations
+                </span>
                 <span>
                   {p.draft.objects.filter((o) => o.kind === "person").length}{" "}
                   karakterer
@@ -2190,7 +2204,7 @@ export default function DirectorEditor({
         >
           <div
             ref={modalRef}
-            className={`modal ${["versions", "sequences", "shotHistory"].includes(modal) ? "wide-modal" : ""}`}
+            className={`modal ${["versions", "sequences", "shotHistory", "location"].includes(modal) ? "wide-modal" : ""}`}
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
@@ -2199,30 +2213,34 @@ export default function DirectorEditor({
               <div>
                 <span className="eyebrow">
                   DIRECTOR /{" "}
-                  {modal === "export"
-                    ? "EKSPORT"
-                    : modal === "import"
-                      ? "MEDIER"
-                      : modal === "versions"
-                        ? "KONTINUITET"
-                        : modal === "sequences"
-                          ? "KLIPNINGER"
-                          : modal === "shotHistory"
-                            ? "SHOTVERSIONER"
-                            : "KOM GODT I GANG"}
+                  {modal === "location"
+                    ? "LOCATIONS"
+                    : modal === "export"
+                      ? "EKSPORT"
+                      : modal === "import"
+                        ? "MEDIER"
+                        : modal === "versions"
+                          ? "KONTINUITET"
+                          : modal === "sequences"
+                            ? "KLIPNINGER"
+                            : modal === "shotHistory"
+                              ? "SHOTVERSIONER"
+                              : "KOM GODT I GANG"}
                 </span>
                 <h2 id="modal-title">
-                  {modal === "export"
-                    ? "Giv fortællingen liv."
-                    : modal === "import"
-                      ? "Dit materiale. Din film."
-                      : modal === "versions"
-                        ? "En scene. Flere versioner."
-                        : modal === "sequences"
-                          ? "Prøv en ny retning."
-                          : modal === "shotHistory"
-                            ? "Behold det gode billede."
-                            : "Fra scene til fortælling."}
+                  {modal === "location"
+                    ? "Dit set. Din stemning."
+                    : modal === "export"
+                      ? "Giv fortællingen liv."
+                      : modal === "import"
+                        ? "Dit materiale. Din film."
+                        : modal === "versions"
+                          ? "En scene. Flere versioner."
+                          : modal === "sequences"
+                            ? "Prøv en ny retning."
+                            : modal === "shotHistory"
+                              ? "Behold det gode billede."
+                              : "Fra scene til fortælling."}
                 </h2>
               </div>
               <IconButton title="Luk dialog" onClick={() => setModal(null)}>
@@ -2238,7 +2256,21 @@ export default function DirectorEditor({
                 </IconButton>
               </div>
             )}
-            {modal === "export" ? (
+            {modal === "location" ? (
+              <LocationPanel
+                scene={p.draft}
+                busy={!!busy}
+                onApply={(name, environment) => {
+                  commit((next) => {
+                    next.draft.name = name;
+                    next.draft.environment = environment;
+                    next.revision++;
+                    return next;
+                  }, "Dit set er gemt. Vælg de kamerashots, der skal følge ændringen.");
+                  setModal(null);
+                }}
+              />
+            ) : modal === "export" ? (
               <>
                 <div className="export-preview">
                   <div>{shot && <Frame project={p} shot={shot} />}</div>

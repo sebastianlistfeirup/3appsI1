@@ -12,6 +12,8 @@ describe("Independent local film documents", () => {
     expect(p.id).not.toBe("station_07");
     expect(p.draft.cameras).toHaveLength(5);
     expect(p.draft.objects).toEqual([]);
+    expect(p.draft.environment.preset).toBe("studio");
+    expect(p.draft.name).toBe("Mit første set");
     expect(p.shots).toEqual([]);
     expect(p.sequence).toEqual([]);
     expect(p.scenes).toEqual([p.draft]);

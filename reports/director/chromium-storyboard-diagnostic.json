@@ -3,7 +3,7 @@
   "browserVersion": "156.0.8078.4",
   "executablePath": "Playwright default headless shell",
   "ffmpegVersion": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers",
-  "inputSha256": "fc77fb3e00d331c73ebb3b0541bf67973d6cf11feaf1ae5bd30a4152ab9235c8",
+  "inputSha256": "dd91c7386a3fddf292c3917f6d14a1b867b83f3c612cb735bf2ed1f80988c31d",
   "inputMetadata": {
     "streams": [
       {
@@ -67,12 +67,12 @@
           "language": "und",
           "handler_name": "VideoHandler",
           "vendor_id": "[0][0][0][0]",
-          "encoder": "Lavc61.19.101 libx264"
+          "encoder": "Lavc60.31.102 libx264"
         }
       }
     ],
     "format": {
-      "filename": "/tmp/director-storyboard-Dq9GN4/red-then-blue.mp4",
+      "filename": "/tmp/director-storyboard-etVmn6/red-then-blue.mp4",
       "nb_streams": 1,
       "nb_programs": 0,
       "nb_stream_groups": 0,
@@ -80,21 +80,21 @@
       "format_long_name": "QuickTime / MOV",
       "start_time": "0.000000",
       "duration": "6.000000",
-      "size": "6442",
-      "bit_rate": "8589",
+      "size": "6443",
+      "bit_rate": "8590",
       "probe_score": 100,
       "tags": {
         "major_brand": "isom",
         "minor_version": "512",
         "compatible_brands": "isomiso2avc1mp41",
-        "encoder": "Lavf61.7.103"
+        "encoder": "Lavf60.16.100"
       }
     }
   },
   "events": [
     {
       "event": "loadedmetadata",
-      "at": 4113.200000001118,
+      "at": 4556.4000000003725,
       "tag": "VIDEO",
       "time": 0,
       "duration": 6,
@@ -105,7 +105,7 @@
     },
     {
       "event": "loadeddata",
-      "at": 4114.800000000745,
+      "at": 4574.5,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -116,7 +116,7 @@
     },
     {
       "event": "seeking",
-      "at": 4156.200000001118,
+      "at": 4616.700000001118,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -127,7 +127,7 @@
     },
     {
       "event": "seeking",
-      "at": 4156.5,
+      "at": 4619.4000000003725,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -138,7 +138,7 @@
     },
     {
       "event": "seeked",
-      "at": 4189.300000000745,
+      "at": 4692.9000000003725,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -149,7 +149,7 @@
     },
     {
       "event": "loadedmetadata",
-      "at": 4333.9000000003725,
+      "at": 4855.700000001118,
       "tag": "VIDEO",
       "time": 0,
       "duration": 6,
@@ -160,7 +160,7 @@
     },
     {
       "event": "loadeddata",
-      "at": 4334.800000000745,
+      "at": 4857.5999999996275,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -171,7 +171,7 @@
     },
     {
       "event": "seeking",
-      "at": 4335.200000001118,
+      "at": 4857.700000001118,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -182,7 +182,7 @@
     },
     {
       "event": "seeking",
-      "at": 4335.5,
+      "at": 4857.9000000003725,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -193,7 +193,7 @@
     },
     {
       "event": "seeked",
-      "at": 4349.200000001118,
+      "at": 4926.5,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -204,7 +204,7 @@
     },
     {
       "event": "loadedmetadata",
-      "at": 4817.60000000149,
+      "at": 5512,
       "tag": "VIDEO",
       "time": 0,
       "duration": 6,
@@ -215,7 +215,7 @@
     },
     {
       "event": "seeking",
-      "at": 4818.5,
+      "at": 5512.4000000003725,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -226,7 +226,7 @@
     },
     {
       "event": "seeked",
-      "at": 4847.4000000003725,
+      "at": 5540.9000000003725,
       "tag": "VIDEO",
       "time": 4,
       "duration": 6,
@@ -237,7 +237,7 @@
     },
     {
       "event": "loadedmetadata",
-      "at": 17098.10000000149,
+      "at": 15881.400000000373,
       "tag": "VIDEO",
       "time": 0,
       "duration": 6,
@@ -248,7 +248,7 @@
     },
     {
       "event": "loadeddata",
-      "at": 17100.300000000745,
+      "at": 15881.900000000373,
       "tag": "VIDEO",
       "time": 1,
       "duration": 6,
@@ -259,7 +259,7 @@
     },
     {
       "event": "seeking",
-      "at": 17195.900000000373,
+      "at": 15892.900000000373,
       "tag": "VIDEO",
       "time": 1,
       "duration": 6,
@@ -270,7 +270,7 @@
     },
     {
       "event": "seeking",
-      "at": 17196.400000000373,
+      "at": 15899.700000001118,
       "tag": "VIDEO",
       "time": 1,
       "duration": 6,
@@ -281,7 +281,7 @@
     },
     {
       "event": "seeked",
-      "at": 17210.200000001118,
+      "at": 15925.400000000373,
       "tag": "VIDEO",
       "time": 1,
       "duration": 6,
@@ -293,7 +293,7 @@
   ],
   "console": [],
   "pageErrors": [],
-  "startedAt": "2026-10-16T22:13:42.529Z",
+  "startedAt": "2026-10-16T22:21:32.791Z",
   "phase": "completed",
   "failure": null,
   "capabilities": {

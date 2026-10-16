@@ -1,5 +1,6 @@
 import {
   createSampleProject,
+  createEnvironment,
   parseProject,
   totalFrames,
   type Project,
@@ -111,6 +112,8 @@ export function freshProduction(
   project.revision = 0;
   if (!source && template === "empty") {
     project.brief = "";
+    project.draft.name = "Mit første set";
+    project.draft.environment = createEnvironment("studio");
     project.draft.objects = [];
     project.draft.cameras = project.draft.cameras.map((camera, index) => ({
       ...camera,

@@ -27,6 +27,9 @@ STORYBOARD_ENGINE=webkit pnpm exec node apps/director/tests/storyboard-flow.mjs
 VERSIONS_ENGINE=chromium pnpm exec node apps/director/tests/versions-flow.mjs
 VERSIONS_ENGINE=firefox pnpm exec node apps/director/tests/versions-flow.mjs
 VERSIONS_ENGINE=webkit pnpm exec node apps/director/tests/versions-flow.mjs
+LOCATION_ENGINE=chromium pnpm exec node apps/director/tests/locations-flow.mjs
+LOCATION_ENGINE=firefox pnpm exec node apps/director/tests/locations-flow.mjs
+LOCATION_ENGINE=webkit pnpm exec node apps/director/tests/locations-flow.mjs
 ```
 
 Cross-browser covers Chromium, Firefox and WebKit with native capabilities and with WebGL explicitly disabled: initial frames, immutable edit, undo, GLB load/capture, reload, modal focus/Escape, storyboard and page errors. Editor flow adds malformed imports, full ZIP/GLB roundtrip, duration/crossfade/reorder and responsive empty/error states. Axe checks ten desktop/mobile views and dialogs against WCAG2A/2AA/2.1AA tags. Automated scans do not constitute a full accessibility certification.

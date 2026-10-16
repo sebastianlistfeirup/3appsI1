@@ -3,7 +3,7 @@
     "name": "system",
     "executable": "/usr/bin/chromium",
     "version": "154.0.8037.57",
-    "input": "/workspace/3apps-director/reports/director/chromium-media-input.mp4",
+    "input": "/workspace/scratch/ci-director-32dad93/reports/director/chromium-storyboard-input.mp4",
     "declared": {
       "h264": "probably",
       "aac": "probably"
@@ -24,7 +24,7 @@
     "name": "playwright-default",
     "executable": "Playwright default",
     "version": "156.0.8078.4",
-    "input": "/workspace/3apps-director/reports/director/chromium-media-input.mp4",
+    "input": "/workspace/scratch/ci-director-32dad93/reports/director/chromium-storyboard-input.mp4",
     "declared": {
       "h264": "probably",
       "aac": "probably"
@@ -45,7 +45,7 @@
     "name": "playwright-full",
     "executable": "/home/agent/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome",
     "version": "156.0.8078.4",
-    "input": "/workspace/3apps-director/reports/director/chromium-media-input.mp4",
+    "input": "/workspace/scratch/ci-director-32dad93/reports/director/chromium-storyboard-input.mp4",
     "declared": {
       "h264": "probably",
       "aac": "probably"

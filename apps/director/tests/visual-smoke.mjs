@@ -63,8 +63,8 @@ for (const [name, width, height] of [
     .click();
   await page.getByRole("button", { name: "2D-plan", exact: true }).click();
   await expect(
-    page.getByRole("img", {
-      name: "2D-plan af observationsdækket med objekter og kamera",
+    page.getByRole("group", {
+      name: "2D-plan af Observationsdæk · Station 07 med objekter og kamera",
     }),
   ).toBeVisible();
   await page.screenshot({
