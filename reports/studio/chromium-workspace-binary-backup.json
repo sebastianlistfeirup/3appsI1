@@ -1,0 +1,16 @@
+{
+  "verifiedAt": "2026-10-16T23:50:31.086Z",
+  "browser": "chromium",
+  "sourceBytes": 12206647,
+  "exportedBytes": 12214888,
+  "originalProjects": 2,
+  "fileBytes": 12200000,
+  "exactOriginalsAfterReload": true,
+  "created": 2,
+  "terminated": 2,
+  "longTasks": [
+    50,
+    95,
+    51
+  ]
+}

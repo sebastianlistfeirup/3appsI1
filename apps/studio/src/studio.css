@@ -1684,6 +1684,226 @@ button {
 .settings-card.full-width {
   grid-column: 1/-1;
 }
+.backup-heading,
+.backup-actions,
+.backup-selection-tools,
+.backup-pagination,
+.backup-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.backup-heading {
+  flex-wrap: nowrap;
+}
+.backup-heading > div {
+  flex: 1;
+  min-width: 0;
+}
+.backup-heading h2 {
+  margin-top: 5px;
+  color: #51405f;
+}
+.backup-icon {
+  background: #eee8f7;
+  color: #705292;
+  padding: 14px;
+  border-radius: 14px;
+  display: flex;
+}
+.backup-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid #e8e1ee;
+  background: #fbf9fd;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+.backup-summary > div {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.backup-summary > div + div {
+  border-left: 1px solid #e8e1ee;
+}
+.backup-summary strong {
+  font-size: 24px;
+  color: #51405f;
+  font-weight: 500;
+}
+.backup-summary span,
+.backup-project-info small,
+.backup-pagination,
+.backup-actions > span,
+.backup-limit,
+.backup-footnote p {
+  font-size: 12px;
+  color: #675472;
+  line-height: 1.7;
+}
+.backup-selection-tools {
+  margin: 18px 0 10px;
+}
+.backup-selection-tools label {
+  flex: 1;
+  min-width: 180px;
+  color: #675472;
+  font-size: 12px;
+}
+.backup-selection-tools input {
+  display: block;
+  margin-top: 6px;
+}
+.backup-selection .text-button,
+.backup-progress .text-button {
+  color: #654980;
+  font-size: 12px;
+  min-height: 36px;
+}
+.backup-projects {
+  border-top: 1px solid #e8e1ee;
+}
+.backup-project {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 4px;
+  border-bottom: 1px solid #eee8f3;
+  cursor: pointer;
+}
+.backup-project input {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin: 0;
+  accent-color: #795795;
+}
+.backup-project-info {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+.backup-project-info strong {
+  color: #51405f;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.backup-pagination {
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.backup-pagination > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.backup-actions {
+  margin-top: 22px;
+}
+.backup-footnote {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f8f5fb;
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 20px;
+  color: #675472;
+}
+.backup-footnote svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.backup-footnote p {
+  margin: 0;
+}
+.backup-progress,
+.backup-message {
+  padding: 15px 17px;
+  margin-top: 16px;
+  border-radius: 10px;
+  background: #f1edf7;
+  color: #584067;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.backup-progress {
+  justify-content: space-between;
+}
+.backup-error {
+  background: #fff1ee;
+  color: #913f39;
+}
+.backup-empty {
+  padding: 20px 4px;
+  color: #675472;
+  font-size: 13px;
+}
+.backup-limit {
+  margin: 18px 0;
+}
+.backup-restored {
+  padding: 26px 0;
+  color: #655373;
+}
+.backup-restored h3 {
+  font-size: 20px;
+  margin: 15px 0;
+  color: #51405f;
+}
+.backup-restored p {
+  font-size: 13px;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+@media (max-width: 640px) {
+  .backup-heading {
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .backup-heading h2 {
+    font-size: 20px;
+  }
+  .backup-icon {
+    padding: 10px;
+  }
+  .backup-heading > .badge {
+    margin-left: 54px;
+  }
+  .backup-summary > div {
+    padding: 14px 9px;
+  }
+  .backup-summary strong {
+    font-size: 18px;
+  }
+  .backup-summary span {
+    font-size: 11px;
+  }
+  .backup-selection-tools label {
+    flex-basis: 100%;
+  }
+  .backup-project {
+    flex-wrap: wrap;
+  }
+  .backup-project-info {
+    flex-basis: calc(100% - 40px);
+  }
+  .backup-project > .badge {
+    margin-left: 31px;
+  }
+  .backup-actions > .button {
+    width: 100%;
+    justify-content: center;
+  }
+}
 .budget-line {
   display: flex;
   justify-content: space-between;
@@ -1695,7 +1915,7 @@ button {
 }
 .budget-line strong {
   font-weight: 500;
-  color: #9572a6;
+  color: #675472;
 }
 .integration-list > div {
   display: flex;
@@ -3793,7 +4013,7 @@ button {
 }
 .settings-card > small {
   font-size: 11px;
-  color: #8b6e9c;
+  color: #675472;
 }
 .budget-line {
   font-size: 12px;
@@ -3801,7 +4021,7 @@ button {
 }
 .integration-list p {
   font-size: 12px;
-  color: #8f749f;
+  color: #675472;
 }
 .integration-list h3 {
   font-size: 14px;

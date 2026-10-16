@@ -49,6 +49,8 @@ Ufærdige manuelle leverancer gemmes som kladder og kan genoptages efter genåbn
 
 Også [ufærdige reviews](docs/studio-review-drafts.md) bevarer kommentarer og afkrydsninger. En kladde godkender aldrig automatisk en levering eller forældet input.
 
+Under Indstillinger kan flere projekter hentes som én [samlet lokal backup](docs/studio-workspace-backup.md). Indlæsning kontrollerer indholdet og bevarer eksisterende projekter som selvstændige originaler.
+
 ### FlowLab
 
 ![FlowLab: model, kapacitet og målte scenarier](reports/flowlab/desktop-model.png)

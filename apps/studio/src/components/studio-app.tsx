@@ -424,9 +424,10 @@ export function StudioApp() {
                 />
               ) : section === "settings" ? (
                 <SettingsPanel
-                  key={store.data.workspace.name}
                   state={store.data}
                   setState={store.setData}
+                  flush={store.flush}
+                  saveState={store.saveState}
                   notify={notify}
                   onImport={() => input.current?.click()}
                 />

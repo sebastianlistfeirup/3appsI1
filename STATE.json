@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T23:32:24.957238+00:00",
+  "updatedAt": "2026-10-16T23:51:47.843959+00:00",
   "status": "building",
   "activeTasks": [
-    "F06-remote-ci",
-    "S13-workspace-portability",
-    "L19-cost-reconciliation",
-    "D16-render-capabilities"
+    "F12-durable-flow-worker",
+    "L21-diagram-readability",
+    "D18-export-library",
+    "F06-fresh-remote-ci"
   ],
   "profile": "demo",
   "connectedIntegrations": [],

@@ -330,6 +330,57 @@
       ],
       "status": "verified-local",
       "allowed_paths": ["apps/director"]
+    },
+    {
+      "id": "S13",
+      "app": "studio",
+      "goal": "Bounded workspace backup and additive import with actual quota recovery",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm exec playwright test tests/e2e/studio-workspace-backup.spec.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/studio"]
+    },
+    {
+      "id": "L19",
+      "app": "flowlab",
+      "goal": "Reconcile resource time and cost in result tables and actual reports",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/cost-profile-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/flowlab"]
+    },
+    {
+      "id": "L20",
+      "app": "flowlab",
+      "goal": "Verified synthetic routing, rework and calendar examples",
+      "dependencies": ["F00"],
+      "verification": ["pnpm exec tsx apps/flowlab/tests/templates-check.ts"],
+      "status": "verified-local",
+      "allowed_paths": ["apps/flowlab"]
+    },
+    {
+      "id": "D16",
+      "app": "director",
+      "goal": "Actual local render capability and actionable setup failures",
+      "dependencies": ["F00"],
+      "verification": [
+        "node --import tsx apps/director/tests/render-profile-smoke.mjs"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/director"]
+    },
+    {
+      "id": "D17",
+      "app": "director",
+      "goal": "Cancel actual media import and release native resources",
+      "dependencies": ["F00"],
+      "verification": ["node apps/director/tests/media-lifecycle-flow.mjs"],
+      "status": "verified-local",
+      "allowed_paths": ["apps/director"]
     }
   ]
 }

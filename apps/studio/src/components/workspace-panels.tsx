@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "./local-link";
 import {
   ArrowDownToLine,
@@ -21,7 +21,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { downloadFile } from "@tre/persistence";
+import { downloadFile, type SaveState } from "@tre/persistence";
 import { bytesToBase64, decodeUtf8 } from "../lib/limits";
 import {
   addArtifact,
@@ -55,6 +55,7 @@ import type { ProjectActions } from "./studio-app";
 import { TaskDetails } from "./task-details";
 import { AssetInspector, AssetMetadataDialog } from "./asset-inspector";
 import { DeliveryDialog, type DraftStorage } from "./delivery-dialog";
+import { WorkspaceBackup } from "./workspace-backup";
 
 export function BriefPanel({ project, update, notify }: ProjectActions) {
   const brief = latestBrief(project);
@@ -1138,13 +1139,18 @@ export function SettingsPanel({
   setState,
   notify,
   onImport,
+  flush,
+  saveState,
 }: {
   state: Studio;
   setState: (fn: (s: Studio) => Studio) => void;
   notify: (s: string, error?: boolean) => void;
   onImport: () => void;
+  flush: () => Promise<void>;
+  saveState: SaveState;
 }) {
   const [name, setName] = useState(state.workspace.name);
+  useEffect(() => setName(state.workspace.name), [state.workspace.name]);
   return (
     <>
       <PanelHeading
@@ -1157,13 +1163,23 @@ export function SettingsPanel({
           <h2>Dit studio</h2>
           <p>Navnet følger dine lokale projekter.</p>
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              setState((s) => ({
-                ...s,
-                workspace: { ...s.workspace, name: name.trim() },
-              }));
-              notify("Workspacenavn gemt.");
+              try {
+                setState((s) => ({
+                  ...s,
+                  workspace: { ...s.workspace, name: name.trim() },
+                }));
+                await flush();
+                notify("Workspacenavn gemt lokalt.");
+              } catch (error) {
+                notify(
+                  error instanceof Error
+                    ? error.message
+                    : "Navnet kunne ikke gemmes.",
+                  true,
+                );
+              }
             }}
           >
             <label>
@@ -1198,6 +1214,12 @@ export function SettingsPanel({
           </div>
           <small>Abonnement og betaling er ikke tilkoblet i demoen.</small>
         </section>
+        <WorkspaceBackup
+          state={state}
+          setState={setState}
+          flush={flush}
+          saveState={saveState}
+        />
         <section className="settings-card full-width">
           <h2>Integrationer</h2>
           <p>
