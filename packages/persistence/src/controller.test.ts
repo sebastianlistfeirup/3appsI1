@@ -126,14 +126,33 @@ describe("Local persistence races and recoverability", () => {
     const controller = new DocumentController(db.store, () => ({ count: 0 }));
     await controller.reload();
     db.store.save = async () => {
-      throw new Error("QuotaExceededError");
+      throw new DOMException(
+        "The quota has been exceeded.",
+        "QuotaExceededError",
+      );
     };
     controller.setData({ count: 99 });
-    await expect(controller.flush()).rejects.toThrow("QuotaExceededError");
+    await expect(controller.flush()).rejects.toThrow(
+      "Browserens lager er fuldt",
+    );
     expect(controller.getSnapshot()).toMatchObject({
       data: { count: 99 },
       saveState: "error",
     });
+    expect(db.disk?.data.count).toBe(1);
+  });
+  it("explains denied browser storage and preserves the current document", async () => {
+    const db = memory(1),
+      controller = new DocumentController(db.store, () => ({ count: 0 }));
+    await controller.reload();
+    db.store.save = async () => {
+      throw new DOMException("Operation is insecure", "SecurityError");
+    };
+    controller.setData({ count: 12 });
+    await expect(controller.flush()).rejects.toThrow(
+      "Browseren blokerer lokal lagring",
+    );
+    expect(controller.getSnapshot().data.count).toBe(12);
     expect(db.disk?.data.count).toBe(1);
   });
   it("prevents stale-tab overwrite and reloads the new saved revision explicitly", async () => {

@@ -27,6 +27,16 @@ export class RevisionConflict extends Error {
     this.name = "RevisionConflict";
   }
 }
+function storageMessage(error: unknown): string {
+  if (error instanceof Error) {
+    if (error.name === "QuotaExceededError")
+      return "Browserens lager er fuldt. Dine seneste ændringer er bevaret her. Eksportér en lokal kopi, før du lukker siden.";
+    if (["SecurityError", "NotAllowedError"].includes(error.name))
+      return "Browseren blokerer lokal lagring. Tillad lagring for denne side, eller eksportér en lokal kopi af dit arbejde.";
+    return error.message;
+  }
+  return "Lokal lagring er ikke tilgængelig. Eksportér en kopi af dit arbejde.";
+}
 export class DocumentController<T> {
   private snapshot: PersistenceSnapshot<T>;
   private listeners = new Set<() => void>();
@@ -67,10 +77,7 @@ export class DocumentController<T> {
     this.blocked = true;
     this.publish({
       saveState: error instanceof RevisionConflict ? "conflict" : "error",
-      error:
-        error instanceof Error
-          ? error.message
-          : "Lokal lagring er ikke tilgængelig. Eksportér en kopi af dit arbejde.",
+      error: storageMessage(error),
     });
   }
   reload = (): Promise<void> => {
