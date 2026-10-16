@@ -204,6 +204,11 @@ try {
         ["exec", "tsx", "apps/flowlab/tests/arrival-editor-check.ts"],
         { FLOWLAB_BROWSER: browser },
       );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/resource-editor-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
     }
     await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
     await run("node", ["apps/flowlab/tests/canvas-check.mjs"]);
