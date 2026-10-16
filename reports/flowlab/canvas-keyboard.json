@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-16T23:14:23.605Z",
+  "checkedAt": "2026-10-16T23:45:16.854Z",
   "checks": [
     "Real pointer drag updates diagram position.",
     "Position persists after reload.",

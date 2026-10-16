@@ -80,6 +80,8 @@ import {
   ResultsPanel,
 } from "./results";
 import DataWorkshop from "./data-workshop";
+import ExampleTemplates from "./example-templates";
+import { createExampleTemplate, type TemplateKey } from "../lib/templates";
 import ScenarioLibrary from "./scenario-library";
 import ExperimentSettings from "./experiment-settings";
 import InputDifferences from "./input-differences";
@@ -489,11 +491,11 @@ export default function FlowLab() {
       setError(workspaceError(error));
     }
   };
-  const openFreshTemplate = () => {
+  const openFreshTemplate = (key: TemplateKey = "membership") => {
     try {
       const result = openTemplateInWorkspace(
         currentDoc.current,
-        initialDocument(),
+        createExampleTemplate(key),
         crypto.randomUUID(),
         new Date().toISOString(),
       );
@@ -914,9 +916,12 @@ export default function FlowLab() {
                       <Sparkles size={20} strokeWidth={1.5} />
                     </span>
                     <div>
-                      <strong>Hvad nu, hvis teamet fik en ekstra hånd?</strong>
+                      <strong>
+                        {doc.scenarioName || "Dit næste alternativ"}
+                      </strong>
                       <p>
-                        Én ændring. To scenarier. Et bedre beslutningsgrundlag.
+                        {doc.hypothesis ||
+                          "Beskriv den antagelse, du vil afprøve, under Scenarier."}
                       </p>
                     </div>
                     <button
@@ -1707,13 +1712,14 @@ export default function FlowLab() {
                       </p>
                       <button
                         className="button primary"
-                        onClick={openFreshTemplate}
+                        onClick={() => openFreshTemplate()}
                       >
                         Åbn frisk skabelon
                         <ArrowRight size={15} />
                       </button>
                     </div>
                   </section>
+                  <ExampleTemplates onOpen={openFreshTemplate} />
                   <div className="data-actions">
                     <button
                       className="button secondary"

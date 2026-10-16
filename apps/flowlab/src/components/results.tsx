@@ -204,6 +204,12 @@ export function ResourceChart({ comparison }: { comparison: Comparison }) {
           ].map((pool) => [pool.id, pool]),
         ).values(),
       ].map((resource) => {
+        const baselinePool = comparison.baseline.resources.find(
+            (pool) => pool.id === resource.id,
+          ),
+          scenarioPool = comparison.scenario.resources.find(
+            (pool) => pool.id === resource.id,
+          );
         const average = (runs: Comparison["baselineRuns"]) => {
           const values = runs
             .map(
@@ -218,7 +224,14 @@ export function ResourceChart({ comparison }: { comparison: Comparison }) {
           b = average(comparison.scenarioRuns);
         return (
           <div className="resource-bars" key={resource.id}>
-            <strong>{resource.label}</strong>
+            <strong>{baselinePool?.label ?? resource.label}</strong>
+            {baselinePool &&
+              scenarioPool &&
+              baselinePool.label !== scenarioPool.label && (
+                <p className="resource-label-change">
+                  Alternativ: {scenarioPool.label}
+                </p>
+              )}
             <div>
               <span>Baseline</span>
               <div className="bar-track">

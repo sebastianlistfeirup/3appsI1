@@ -1,0 +1,732 @@
+{
+  "executedAt": "2026-10-16T23:44:13.293Z",
+  "results": [
+    {
+      "viewport": "desktop",
+      "summaries": [
+        {
+          "template": "routing",
+          "metrics": [
+            {
+              "key": "throughput",
+              "baseline": 11,
+              "scenario": 9,
+              "deltaMean": -2,
+              "deltaMedian": -2,
+              "deltaP10": -2,
+              "deltaP90": -2,
+              "pairs": 30
+            },
+            {
+              "key": "leadTime",
+              "baseline": 2100000,
+              "scenario": 600000,
+              "deltaMean": -1500000,
+              "deltaMedian": -1500000,
+              "deltaP10": -1500000,
+              "deltaP90": -1500000,
+              "pairs": 30
+            },
+            {
+              "key": "queueTime",
+              "baseline": 1090909.0909090901,
+              "scenario": 400000,
+              "deltaMean": -690909.0909090902,
+              "deltaMedian": -690909.0909090908,
+              "deltaP10": -690909.0909090908,
+              "deltaP90": -690909.0909090908,
+              "pairs": 30
+            },
+            {
+              "key": "backlog",
+              "baseline": 1,
+              "scenario": 3,
+              "deltaMean": 2,
+              "deltaMedian": 2,
+              "deltaP10": 2,
+              "deltaP90": 2,
+              "pairs": 30
+            },
+            {
+              "key": "utilization",
+              "baseline": 0.9583333333333329,
+              "scenario": 0.7291666666666667,
+              "deltaMean": -0.2291666666666669,
+              "deltaMedian": -0.22916666666666674,
+              "deltaP10": -0.22916666666666674,
+              "deltaP90": -0.22916666666666674,
+              "pairs": 30
+            },
+            {
+              "key": "cost",
+              "baseline": 1140,
+              "scenario": 1140,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "slaCompleted",
+              "baseline": 0.6363636363636366,
+              "scenario": 0.7777777777777782,
+              "deltaMean": 0.14141414141414146,
+              "deltaMedian": 0.14141414141414144,
+              "deltaP10": 0.14141414141414144,
+              "deltaP90": 0.14141414141414144,
+              "pairs": 30
+            }
+          ],
+          "firstSeed": 1670256963
+        },
+        {
+          "template": "rework",
+          "metrics": [
+            {
+              "key": "throughput",
+              "baseline": 19.833333333333332,
+              "scenario": 20,
+              "deltaMean": 0.16666666666666666,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 1,
+              "pairs": 30
+            },
+            {
+              "key": "leadTime",
+              "baseline": 906421.2333333333,
+              "scenario": 810448.25,
+              "deltaMean": -95972.98333333334,
+              "deltaMedian": -67848,
+              "deltaP10": -213922.99999999997,
+              "deltaP90": -12760.549999999997,
+              "pairs": 30
+            },
+            {
+              "key": "queueTime",
+              "baseline": 38173.706929824555,
+              "scenario": 2002.8733333333332,
+              "deltaMean": -36170.83359649122,
+              "deltaMedian": -15803.9,
+              "deltaP10": -88770.1636842105,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "backlog",
+              "baseline": 0.16666666666666666,
+              "scenario": 0,
+              "deltaMean": -0.16666666666666666,
+              "deltaMedian": 0,
+              "deltaP10": -1,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "utilization",
+              "baseline": 0.5186262924382716,
+              "scenario": 0.4101801604938272,
+              "deltaMean": -0.10844613194444444,
+              "deltaMedian": -0.09697505787037036,
+              "deltaP10": -0.188185712962963,
+              "deltaP90": -0.03832509490740738,
+              "pairs": 30
+            },
+            {
+              "key": "cost",
+              "baseline": 3560,
+              "scenario": 3530.8333333333335,
+              "deltaMean": -29.166666666666668,
+              "deltaMedian": -25,
+              "deltaP10": -50,
+              "deltaP90": -10,
+              "pairs": 30
+            },
+            {
+              "key": "slaCompleted",
+              "baseline": 0.9142105263157895,
+              "scenario": 0.9933333333333333,
+              "deltaMean": 0.07912280701754387,
+              "deltaMedian": 0.07763157894736838,
+              "deltaP10": 0,
+              "deltaP90": 0.15000000000000002,
+              "pairs": 30
+            }
+          ],
+          "firstSeed": 1670256963
+        },
+        {
+          "template": "calendar",
+          "metrics": [
+            {
+              "key": "throughput",
+              "baseline": 4,
+              "scenario": 4,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "leadTime",
+              "baseline": 9900000,
+              "scenario": 11700000,
+              "deltaMean": 1800000,
+              "deltaMedian": 1800000,
+              "deltaP10": 1800000,
+              "deltaP90": 1800000,
+              "pairs": 30
+            },
+            {
+              "key": "queueTime",
+              "baseline": 4500000,
+              "scenario": 4500000,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "backlog",
+              "baseline": 0,
+              "scenario": 0,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "utilization",
+              "baseline": 0.8571428571428574,
+              "scenario": 0.8571428571428574,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "cost",
+              "baseline": 1995,
+              "scenario": 1995,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "slaCompleted",
+              "baseline": 0.5,
+              "scenario": 0.5,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            }
+          ],
+          "firstSeed": 1670256963
+        }
+      ],
+      "violations": [],
+      "checks": [
+        "All three templates open and run actual 30-seed comparisons",
+        "Routing exposes lower completed median alongside increased complex backlog",
+        "Rework preserves unique cases while charging repeated visits and tracking planned wait",
+        "Calendar moves lunch, preserves salary and resumes remaining work",
+        "Previous experiment and decision preserved; undo/redo, durable reload and original template still work",
+        "WCAG2AA/21AA zero, no errors or overflow"
+      ]
+    },
+    {
+      "viewport": "tablet",
+      "summaries": [
+        {
+          "template": "routing",
+          "metrics": [
+            {
+              "key": "throughput",
+              "baseline": 11,
+              "scenario": 9,
+              "deltaMean": -2,
+              "deltaMedian": -2,
+              "deltaP10": -2,
+              "deltaP90": -2,
+              "pairs": 30
+            },
+            {
+              "key": "leadTime",
+              "baseline": 2100000,
+              "scenario": 600000,
+              "deltaMean": -1500000,
+              "deltaMedian": -1500000,
+              "deltaP10": -1500000,
+              "deltaP90": -1500000,
+              "pairs": 30
+            },
+            {
+              "key": "queueTime",
+              "baseline": 1090909.0909090901,
+              "scenario": 400000,
+              "deltaMean": -690909.0909090902,
+              "deltaMedian": -690909.0909090908,
+              "deltaP10": -690909.0909090908,
+              "deltaP90": -690909.0909090908,
+              "pairs": 30
+            },
+            {
+              "key": "backlog",
+              "baseline": 1,
+              "scenario": 3,
+              "deltaMean": 2,
+              "deltaMedian": 2,
+              "deltaP10": 2,
+              "deltaP90": 2,
+              "pairs": 30
+            },
+            {
+              "key": "utilization",
+              "baseline": 0.9583333333333329,
+              "scenario": 0.7291666666666667,
+              "deltaMean": -0.2291666666666669,
+              "deltaMedian": -0.22916666666666674,
+              "deltaP10": -0.22916666666666674,
+              "deltaP90": -0.22916666666666674,
+              "pairs": 30
+            },
+            {
+              "key": "cost",
+              "baseline": 1140,
+              "scenario": 1140,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "slaCompleted",
+              "baseline": 0.6363636363636366,
+              "scenario": 0.7777777777777782,
+              "deltaMean": 0.14141414141414146,
+              "deltaMedian": 0.14141414141414144,
+              "deltaP10": 0.14141414141414144,
+              "deltaP90": 0.14141414141414144,
+              "pairs": 30
+            }
+          ],
+          "firstSeed": 1670256963
+        },
+        {
+          "template": "rework",
+          "metrics": [
+            {
+              "key": "throughput",
+              "baseline": 19.833333333333332,
+              "scenario": 20,
+              "deltaMean": 0.16666666666666666,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 1,
+              "pairs": 30
+            },
+            {
+              "key": "leadTime",
+              "baseline": 906421.2333333333,
+              "scenario": 810448.25,
+              "deltaMean": -95972.98333333334,
+              "deltaMedian": -67848,
+              "deltaP10": -213922.99999999997,
+              "deltaP90": -12760.549999999997,
+              "pairs": 30
+            },
+            {
+              "key": "queueTime",
+              "baseline": 38173.706929824555,
+              "scenario": 2002.8733333333332,
+              "deltaMean": -36170.83359649122,
+              "deltaMedian": -15803.9,
+              "deltaP10": -88770.1636842105,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "backlog",
+              "baseline": 0.16666666666666666,
+              "scenario": 0,
+              "deltaMean": -0.16666666666666666,
+              "deltaMedian": 0,
+              "deltaP10": -1,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "utilization",
+              "baseline": 0.5186262924382716,
+              "scenario": 0.4101801604938272,
+              "deltaMean": -0.10844613194444444,
+              "deltaMedian": -0.09697505787037036,
+              "deltaP10": -0.188185712962963,
+              "deltaP90": -0.03832509490740738,
+              "pairs": 30
+            },
+            {
+              "key": "cost",
+              "baseline": 3560,
+              "scenario": 3530.8333333333335,
+              "deltaMean": -29.166666666666668,
+              "deltaMedian": -25,
+              "deltaP10": -50,
+              "deltaP90": -10,
+              "pairs": 30
+            },
+            {
+              "key": "slaCompleted",
+              "baseline": 0.9142105263157895,
+              "scenario": 0.9933333333333333,
+              "deltaMean": 0.07912280701754387,
+              "deltaMedian": 0.07763157894736838,
+              "deltaP10": 0,
+              "deltaP90": 0.15000000000000002,
+              "pairs": 30
+            }
+          ],
+          "firstSeed": 1670256963
+        },
+        {
+          "template": "calendar",
+          "metrics": [
+            {
+              "key": "throughput",
+              "baseline": 4,
+              "scenario": 4,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "leadTime",
+              "baseline": 9900000,
+              "scenario": 11700000,
+              "deltaMean": 1800000,
+              "deltaMedian": 1800000,
+              "deltaP10": 1800000,
+              "deltaP90": 1800000,
+              "pairs": 30
+            },
+            {
+              "key": "queueTime",
+              "baseline": 4500000,
+              "scenario": 4500000,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "backlog",
+              "baseline": 0,
+              "scenario": 0,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "utilization",
+              "baseline": 0.8571428571428574,
+              "scenario": 0.8571428571428574,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "cost",
+              "baseline": 1995,
+              "scenario": 1995,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "slaCompleted",
+              "baseline": 0.5,
+              "scenario": 0.5,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            }
+          ],
+          "firstSeed": 1670256963
+        }
+      ],
+      "violations": [],
+      "checks": [
+        "All three templates open and run actual 30-seed comparisons",
+        "Routing exposes lower completed median alongside increased complex backlog",
+        "Rework preserves unique cases while charging repeated visits and tracking planned wait",
+        "Calendar moves lunch, preserves salary and resumes remaining work",
+        "Previous experiment and decision preserved; undo/redo, durable reload and original template still work",
+        "WCAG2AA/21AA zero, no errors or overflow"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "summaries": [
+        {
+          "template": "routing",
+          "metrics": [
+            {
+              "key": "throughput",
+              "baseline": 11,
+              "scenario": 9,
+              "deltaMean": -2,
+              "deltaMedian": -2,
+              "deltaP10": -2,
+              "deltaP90": -2,
+              "pairs": 30
+            },
+            {
+              "key": "leadTime",
+              "baseline": 2100000,
+              "scenario": 600000,
+              "deltaMean": -1500000,
+              "deltaMedian": -1500000,
+              "deltaP10": -1500000,
+              "deltaP90": -1500000,
+              "pairs": 30
+            },
+            {
+              "key": "queueTime",
+              "baseline": 1090909.0909090901,
+              "scenario": 400000,
+              "deltaMean": -690909.0909090902,
+              "deltaMedian": -690909.0909090908,
+              "deltaP10": -690909.0909090908,
+              "deltaP90": -690909.0909090908,
+              "pairs": 30
+            },
+            {
+              "key": "backlog",
+              "baseline": 1,
+              "scenario": 3,
+              "deltaMean": 2,
+              "deltaMedian": 2,
+              "deltaP10": 2,
+              "deltaP90": 2,
+              "pairs": 30
+            },
+            {
+              "key": "utilization",
+              "baseline": 0.9583333333333329,
+              "scenario": 0.7291666666666667,
+              "deltaMean": -0.2291666666666669,
+              "deltaMedian": -0.22916666666666674,
+              "deltaP10": -0.22916666666666674,
+              "deltaP90": -0.22916666666666674,
+              "pairs": 30
+            },
+            {
+              "key": "cost",
+              "baseline": 1140,
+              "scenario": 1140,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "slaCompleted",
+              "baseline": 0.6363636363636366,
+              "scenario": 0.7777777777777782,
+              "deltaMean": 0.14141414141414146,
+              "deltaMedian": 0.14141414141414144,
+              "deltaP10": 0.14141414141414144,
+              "deltaP90": 0.14141414141414144,
+              "pairs": 30
+            }
+          ],
+          "firstSeed": 1670256963
+        },
+        {
+          "template": "rework",
+          "metrics": [
+            {
+              "key": "throughput",
+              "baseline": 19.833333333333332,
+              "scenario": 20,
+              "deltaMean": 0.16666666666666666,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 1,
+              "pairs": 30
+            },
+            {
+              "key": "leadTime",
+              "baseline": 906421.2333333333,
+              "scenario": 810448.25,
+              "deltaMean": -95972.98333333334,
+              "deltaMedian": -67848,
+              "deltaP10": -213922.99999999997,
+              "deltaP90": -12760.549999999997,
+              "pairs": 30
+            },
+            {
+              "key": "queueTime",
+              "baseline": 38173.706929824555,
+              "scenario": 2002.8733333333332,
+              "deltaMean": -36170.83359649122,
+              "deltaMedian": -15803.9,
+              "deltaP10": -88770.1636842105,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "backlog",
+              "baseline": 0.16666666666666666,
+              "scenario": 0,
+              "deltaMean": -0.16666666666666666,
+              "deltaMedian": 0,
+              "deltaP10": -1,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "utilization",
+              "baseline": 0.5186262924382716,
+              "scenario": 0.4101801604938272,
+              "deltaMean": -0.10844613194444444,
+              "deltaMedian": -0.09697505787037036,
+              "deltaP10": -0.188185712962963,
+              "deltaP90": -0.03832509490740738,
+              "pairs": 30
+            },
+            {
+              "key": "cost",
+              "baseline": 3560,
+              "scenario": 3530.8333333333335,
+              "deltaMean": -29.166666666666668,
+              "deltaMedian": -25,
+              "deltaP10": -50,
+              "deltaP90": -10,
+              "pairs": 30
+            },
+            {
+              "key": "slaCompleted",
+              "baseline": 0.9142105263157895,
+              "scenario": 0.9933333333333333,
+              "deltaMean": 0.07912280701754387,
+              "deltaMedian": 0.07763157894736838,
+              "deltaP10": 0,
+              "deltaP90": 0.15000000000000002,
+              "pairs": 30
+            }
+          ],
+          "firstSeed": 1670256963
+        },
+        {
+          "template": "calendar",
+          "metrics": [
+            {
+              "key": "throughput",
+              "baseline": 4,
+              "scenario": 4,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "leadTime",
+              "baseline": 9900000,
+              "scenario": 11700000,
+              "deltaMean": 1800000,
+              "deltaMedian": 1800000,
+              "deltaP10": 1800000,
+              "deltaP90": 1800000,
+              "pairs": 30
+            },
+            {
+              "key": "queueTime",
+              "baseline": 4500000,
+              "scenario": 4500000,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "backlog",
+              "baseline": 0,
+              "scenario": 0,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "utilization",
+              "baseline": 0.8571428571428574,
+              "scenario": 0.8571428571428574,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "cost",
+              "baseline": 1995,
+              "scenario": 1995,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            },
+            {
+              "key": "slaCompleted",
+              "baseline": 0.5,
+              "scenario": 0.5,
+              "deltaMean": 0,
+              "deltaMedian": 0,
+              "deltaP10": 0,
+              "deltaP90": 0,
+              "pairs": 30
+            }
+          ],
+          "firstSeed": 1670256963
+        }
+      ],
+      "violations": [],
+      "checks": [
+        "All three templates open and run actual 30-seed comparisons",
+        "Routing exposes lower completed median alongside increased complex backlog",
+        "Rework preserves unique cases while charging repeated visits and tracking planned wait",
+        "Calendar moves lunch, preserves salary and resumes remaining work",
+        "Previous experiment and decision preserved; undo/redo, durable reload and original template still work",
+        "WCAG2AA/21AA zero, no errors or overflow"
+      ]
+    }
+  ],
+  "errors": []
+}
