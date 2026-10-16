@@ -1,0 +1,125 @@
+{
+  "engine": "chromium",
+  "browserVersion": "155.0.8059.0",
+  "executablePath": "/usr/bin/chromium",
+  "ffmpegVersion": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "inputSha256": "dd91c7386a3fddf292c3917f6d14a1b867b83f3c612cb735bf2ed1f80988c31d",
+  "inputMetadata": {
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "h264",
+        "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+        "profile": "High",
+        "codec_type": "video",
+        "codec_tag_string": "avc1",
+        "codec_tag": "0x31637661",
+        "width": 640,
+        "height": 360,
+        "coded_width": 640,
+        "coded_height": 360,
+        "closed_captions": 0,
+        "film_grain": 0,
+        "has_b_frames": 2,
+        "sample_aspect_ratio": "1:1",
+        "display_aspect_ratio": "16:9",
+        "pix_fmt": "yuv420p",
+        "level": 30,
+        "chroma_location": "left",
+        "field_order": "progressive",
+        "refs": 1,
+        "is_avc": "true",
+        "nal_length_size": "4",
+        "id": "0x1",
+        "r_frame_rate": "24/1",
+        "avg_frame_rate": "24/1",
+        "time_base": "1/12288",
+        "start_pts": 0,
+        "start_time": "0.000000",
+        "duration_ts": 73728,
+        "duration": "6.000000",
+        "bit_rate": "5134",
+        "bits_per_raw_sample": "8",
+        "nb_frames": "144",
+        "extradata_size": 47,
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0,
+          "non_diegetic": 0,
+          "captions": 0,
+          "descriptions": 0,
+          "metadata": 0,
+          "dependent": 0,
+          "still_image": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "VideoHandler",
+          "vendor_id": "[0][0][0][0]",
+          "encoder": "Lavc60.31.102 libx264"
+        }
+      }
+    ],
+    "format": {
+      "filename": "/tmp/director-storyboard-oOirqM/red-then-blue.mp4",
+      "nb_streams": 1,
+      "nb_programs": 0,
+      "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+      "format_long_name": "QuickTime / MOV",
+      "start_time": "0.000000",
+      "duration": "6.000000",
+      "size": "6443",
+      "bit_rate": "8590",
+      "probe_score": 100,
+      "tags": {
+        "major_brand": "isom",
+        "minor_version": "512",
+        "compatible_brands": "isomiso2avc1mp41",
+        "encoder": "Lavf60.16.100"
+      }
+    }
+  },
+  "events": [
+    {
+      "event": "error",
+      "at": 4658.299999999988,
+      "tag": "VIDEO",
+      "time": 0,
+      "duration": null,
+      "seeking": false,
+      "readyState": 0,
+      "networkState": 3,
+      "error": {
+        "code": 4,
+        "message": "PipelineStatus::DEMUXER_ERROR_NO_SUPPORTED_STREAMS: FFmpegDemuxer: no supported streams"
+      }
+    }
+  ],
+  "console": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "pageErrors": [],
+  "startedAt": "2026-10-16T22:18:02.039Z",
+  "phase": "seek thumbnail to four seconds",
+  "failure": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 4\nReceived: undefined\n\nCall Log:\n- Timeout 20000ms exceeded while waiting on the predicate",
+  "capabilities": {
+    "h264": "",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+  },
+  "thumbnail": {
+    "missing": true,
+    "placeholders": [
+      "Klippreview kan ikke vises"
+    ]
+  }
+}

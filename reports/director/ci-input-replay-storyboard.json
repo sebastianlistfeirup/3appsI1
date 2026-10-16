@@ -1,0 +1,333 @@
+{
+  "result": {
+    "engine": "chromium",
+    "browser": "156.0.8078.4",
+    "checks": [
+      "actual H264 clip decoded at sourceIn=96 into blue PDF image, not red first frame or stale camera frame",
+      "full long Danish/Greek/Cyrillic dialogue and notes retained across pages",
+      "measured long-token wrapping",
+      "embedded JSON manifest preserves original text, immutable versions, timeline and source/poster hashes",
+      "PDF export leaves project byte-equivalent",
+      "trim creates new shot version and updates actual thumbnail source time"
+    ],
+    "posterRgb": [
+      0,
+      0,
+      253
+    ],
+    "pdfMetadata": "Title:           Bl\u00e5 efter kliptrim \u00b7 \u00c6\u00f8\u00e5 \u03a9 \u041f\u0440\u0438\u0432\u0435\u0442 \u00b7 storyboard\nAuthor:          Director\nCreator:         Director \u00b7 lokalt filmv\u00e6rksted\nProducer:        Director / pdf-lib\nCreationDate:    Fri Oct 16 22:21:38 2026 UTC\nModDate:         Fri Oct 16 22:21:38 2026 UTC\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           5\nEncrypted:       no\nPage size:       842 x 595 pts (A4)\nPage rot:        0\nFile size:       113366 bytes\nOptimized:       no\nPDF version:     1.7\n",
+    "pageErrors": [],
+    "verifiedAt": "2026-10-16T22:21:48.815Z"
+  },
+  "diagnostic": {
+    "engine": "chromium",
+    "browserVersion": "156.0.8078.4",
+    "executablePath": "Playwright default headless shell",
+    "ffmpegVersion": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers",
+    "inputSha256": "dd91c7386a3fddf292c3917f6d14a1b867b83f3c612cb735bf2ed1f80988c31d",
+    "inputMetadata": {
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "h264",
+          "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+          "profile": "High",
+          "codec_type": "video",
+          "codec_tag_string": "avc1",
+          "codec_tag": "0x31637661",
+          "width": 640,
+          "height": 360,
+          "coded_width": 640,
+          "coded_height": 360,
+          "closed_captions": 0,
+          "film_grain": 0,
+          "has_b_frames": 2,
+          "sample_aspect_ratio": "1:1",
+          "display_aspect_ratio": "16:9",
+          "pix_fmt": "yuv420p",
+          "level": 30,
+          "chroma_location": "left",
+          "field_order": "progressive",
+          "refs": 1,
+          "is_avc": "true",
+          "nal_length_size": "4",
+          "id": "0x1",
+          "r_frame_rate": "24/1",
+          "avg_frame_rate": "24/1",
+          "time_base": "1/12288",
+          "start_pts": 0,
+          "start_time": "0.000000",
+          "duration_ts": 73728,
+          "duration": "6.000000",
+          "bit_rate": "5134",
+          "bits_per_raw_sample": "8",
+          "nb_frames": "144",
+          "extradata_size": 47,
+          "disposition": {
+            "default": 1,
+            "dub": 0,
+            "original": 0,
+            "comment": 0,
+            "lyrics": 0,
+            "karaoke": 0,
+            "forced": 0,
+            "hearing_impaired": 0,
+            "visual_impaired": 0,
+            "clean_effects": 0,
+            "attached_pic": 0,
+            "timed_thumbnails": 0,
+            "non_diegetic": 0,
+            "captions": 0,
+            "descriptions": 0,
+            "metadata": 0,
+            "dependent": 0,
+            "still_image": 0,
+            "multilayer": 0
+          },
+          "tags": {
+            "language": "und",
+            "handler_name": "VideoHandler",
+            "vendor_id": "[0][0][0][0]",
+            "encoder": "Lavc60.31.102 libx264"
+          }
+        }
+      ],
+      "format": {
+        "filename": "/tmp/director-storyboard-etVmn6/red-then-blue.mp4",
+        "nb_streams": 1,
+        "nb_programs": 0,
+        "nb_stream_groups": 0,
+        "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+        "format_long_name": "QuickTime / MOV",
+        "start_time": "0.000000",
+        "duration": "6.000000",
+        "size": "6443",
+        "bit_rate": "8590",
+        "probe_score": 100,
+        "tags": {
+          "major_brand": "isom",
+          "minor_version": "512",
+          "compatible_brands": "isomiso2avc1mp41",
+          "encoder": "Lavf60.16.100"
+        }
+      }
+    },
+    "events": [
+      {
+        "event": "loadedmetadata",
+        "at": 4556.4000000003725,
+        "tag": "VIDEO",
+        "time": 0,
+        "duration": 6,
+        "seeking": false,
+        "readyState": 4,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "loadeddata",
+        "at": 4574.5,
+        "tag": "VIDEO",
+        "time": 4,
+        "duration": 6,
+        "seeking": true,
+        "readyState": 1,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "seeking",
+        "at": 4616.700000001118,
+        "tag": "VIDEO",
+        "time": 4,
+        "duration": 6,
+        "seeking": true,
+        "readyState": 1,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "seeking",
+        "at": 4619.4000000003725,
+        "tag": "VIDEO",
+        "time": 4,
+        "duration": 6,
+        "seeking": true,
+        "readyState": 1,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "seeked",
+        "at": 4692.9000000003725,
+        "tag": "VIDEO",
+        "time": 4,
+        "duration": 6,
+        "seeking": false,
+        "readyState": 4,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "loadedmetadata",
+        "at": 4855.700000001118,
+        "tag": "VIDEO",
+        "time": 0,
+        "duration": 6,
+        "seeking": false,
+        "readyState": 4,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "loadeddata",
+        "at": 4857.5999999996275,
+        "tag": "VIDEO",
+        "time": 4,
+        "duration": 6,
+        "seeking": true,
+        "readyState": 1,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "seeking",
+        "at": 4857.700000001118,
+        "tag": "VIDEO",
+        "time": 4,
+        "duration": 6,
+        "seeking": true,
+        "readyState": 1,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "seeking",
+        "at": 4857.9000000003725,
+        "tag": "VIDEO",
+        "time": 4,
+        "duration": 6,
+        "seeking": true,
+        "readyState": 1,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "seeked",
+        "at": 4926.5,
+        "tag": "VIDEO",
+        "time": 4,
+        "duration": 6,
+        "seeking": false,
+        "readyState": 4,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "loadedmetadata",
+        "at": 5512,
+        "tag": "VIDEO",
+        "time": 0,
+        "duration": 6,
+        "seeking": false,
+        "readyState": 1,
+        "networkState": 2,
+        "error": null
+      },
+      {
+        "event": "seeking",
+        "at": 5512.4000000003725,
+        "tag": "VIDEO",
+        "time": 4,
+        "duration": 6,
+        "seeking": true,
+        "readyState": 1,
+        "networkState": 2,
+        "error": null
+      },
+      {
+        "event": "seeked",
+        "at": 5540.9000000003725,
+        "tag": "VIDEO",
+        "time": 4,
+        "duration": 6,
+        "seeking": false,
+        "readyState": 4,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "loadedmetadata",
+        "at": 15881.400000000373,
+        "tag": "VIDEO",
+        "time": 0,
+        "duration": 6,
+        "seeking": false,
+        "readyState": 4,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "loadeddata",
+        "at": 15881.900000000373,
+        "tag": "VIDEO",
+        "time": 1,
+        "duration": 6,
+        "seeking": true,
+        "readyState": 1,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "seeking",
+        "at": 15892.900000000373,
+        "tag": "VIDEO",
+        "time": 1,
+        "duration": 6,
+        "seeking": true,
+        "readyState": 1,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "seeking",
+        "at": 15899.700000001118,
+        "tag": "VIDEO",
+        "time": 1,
+        "duration": 6,
+        "seeking": true,
+        "readyState": 1,
+        "networkState": 1,
+        "error": null
+      },
+      {
+        "event": "seeked",
+        "at": 15925.400000000373,
+        "tag": "VIDEO",
+        "time": 1,
+        "duration": 6,
+        "seeking": false,
+        "readyState": 4,
+        "networkState": 1,
+        "error": null
+      }
+    ],
+    "console": [],
+    "pageErrors": [],
+    "startedAt": "2026-10-16T22:21:32.791Z",
+    "phase": "completed",
+    "failure": null,
+    "capabilities": {
+      "h264": "probably",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36"
+    },
+    "thumbnail": {
+      "currentTime": 4,
+      "duration": 6,
+      "readyState": 4,
+      "seeking": false,
+      "networkState": 1,
+      "error": null
+    }
+  }
+}
