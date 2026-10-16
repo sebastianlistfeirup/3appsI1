@@ -18,6 +18,7 @@ async function run(
   command: string,
   args: string[],
   env: Record<string, string> = {},
+  deadlineMs = 300000,
 ) {
   const label = `${command} ${args.join(" ")}`;
   const started = new Date().toISOString(),
@@ -36,10 +37,12 @@ async function run(
       const timeout = setTimeout(() => {
         timedOut = true;
         outcome = "timed_out";
-        console.error(`[gate] Five-minute deadline exceeded: ${label}`);
+        console.error(
+          `[gate] ${deadlineMs / 60000}-minute deadline exceeded: ${label}`,
+        );
         stop(child, "SIGTERM");
         forceStop = setTimeout(() => stop(child, "SIGKILL"), 3000);
-      }, 300000);
+      }, deadlineMs);
       const cleanup = () => {
         clearTimeout(timeout);
         clearTimeout(forceStop);
@@ -246,6 +249,13 @@ try {
       await run("node", ["apps/director/tests/locations-flow.mjs"], {
         LOCATION_ENGINE: browser,
       });
+      await run(
+        "node",
+        ["--import", "tsx", "apps/director/tests/captions-ui-flow.mjs"],
+        {
+          CAPTION_ENGINE: browser,
+        },
+      );
     }
     await run("node", ["apps/director/tests/editor-flow.mjs"]);
     await run("node", ["apps/director/tests/storage-recovery.mjs"]);
@@ -264,6 +274,12 @@ try {
         DIRECTOR_SKIP_RENDER: "1",
       });
     await run("node", ["apps/director/tests/clip-audio-smoke.mjs"]);
+    await run(
+      "node",
+      ["--import", "tsx", "apps/director/tests/caption-render-smoke.mjs"],
+      {},
+      360000,
+    );
     await run("node", ["apps/director/tests/cancellation-smoke.mjs"]);
   }
 } finally {
