@@ -16,6 +16,7 @@ import {
 import { formatMetric, formatDifference, formatNumber } from "../lib/document";
 import CaseExplorer from "./case-explorer";
 import RunDistribution from "./run-distribution";
+import TimeProfile from "./time-profile";
 export function MetricCards({ comparison }: { comparison: Comparison | null }) {
   return (
     <div className="metric-grid">
@@ -297,6 +298,10 @@ export function ResultsPanel({
         </p>
       )}
       <MetricCards comparison={comparison} />
+      <p className="results-aggregation-note">
+        Overblikket viser gennemsnit på tværs af kørsler. Gennemløbstid er
+        gennemsnittet af hver kørsels median.
+      </p>
       <div className="charts-grid">
         <QueueChart comparison={comparison} />
         <ResourceChart comparison={comparison} />
@@ -352,6 +357,7 @@ export function ResultsPanel({
         </p>
       </div>
       <RunDistribution comparison={comparison} />
+      <TimeProfile comparison={comparison} />
       <div className="panel">
         <h3>Sagerne, du endnu ikke kan se hele udfaldet af</h3>
         <div className="cohort-grid">

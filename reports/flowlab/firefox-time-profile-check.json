@@ -1,0 +1,52 @@
+{
+  "executedAt": "2026-10-16T22:32:49.885Z",
+  "browser": "firefox",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "checks": [
+        "Selecting a real seed shows its median, p90 and exact completed-case count",
+        "All 180 CSV measurements match real report JSON and report ZIP",
+        "Golden FCFS median 120 s and p90 144 s versus parallel p90 90 s",
+        "PDF shows exact p90 and counts with explicit run aggregation",
+        "Planned wait is separate and unfinished cases are excluded",
+        "No completions means unavailable, not zero",
+        "WCAG2AA/21AA violations 0 and no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "height": 768,
+      "checks": [
+        "Selecting a real seed shows its median, p90 and exact completed-case count",
+        "All 180 CSV measurements match real report JSON and report ZIP",
+        "Golden FCFS median 120 s and p90 144 s versus parallel p90 90 s",
+        "PDF shows exact p90 and counts with explicit run aggregation",
+        "Planned wait is separate and unfinished cases are excluded",
+        "No completions means unavailable, not zero",
+        "WCAG2AA/21AA violations 0 and no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "checks": [
+        "Selecting a real seed shows its median, p90 and exact completed-case count",
+        "All 180 CSV measurements match real report JSON and report ZIP",
+        "Golden FCFS median 120 s and p90 144 s versus parallel p90 90 s",
+        "PDF shows exact p90 and counts with explicit run aggregation",
+        "Planned wait is separate and unfinished cases are excluded",
+        "No completions means unavailable, not zero",
+        "WCAG2AA/21AA violations 0 and no viewport overflow"
+      ],
+      "axeViolations": 0
+    }
+  ],
+  "errors": []
+}

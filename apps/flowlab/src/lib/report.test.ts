@@ -30,6 +30,31 @@ describe("Decision report integrity", () => {
     expect(json.comparison.metrics).toEqual(doc.comparison.metrics);
     expect(json.comparison.differences).toEqual(doc.comparison.differences);
     const csv = strFromU8(files["metrics.csv"]).split("\n");
+    const timeRows = strFromU8(files["time-summaries.csv"]).split("\n");
+    expect(timeRows).toHaveLength(181);
+    for (const seed of doc.comparison.seeds)
+      for (const side of ["baseline", "scenario"] as const)
+        for (const metric of [
+          "leadTime",
+          "queueTime",
+          "plannedWaitTime",
+        ] as const) {
+          const summary = doc.comparison[
+            side === "baseline" ? "baselineRuns" : "scenarioRuns"
+          ].find((run) => run.seed === seed)!.metrics[metric];
+          expect(timeRows).toContain(
+            [
+              seed,
+              side,
+              metric,
+              "ms",
+              summary.count,
+              summary.mean,
+              summary.median,
+              summary.p90,
+            ].join(","),
+          );
+        }
     for (const metric of doc.comparison.metrics)
       expect(
         csv
@@ -49,7 +74,7 @@ describe("Decision report integrity", () => {
     expect(pdf.startsWith("%PDF-1.")).toBe(true);
     expect(pdf.trimEnd().endsWith("%%EOF")).toBe(true);
     expect((await PDFDocument.load(files["rapport.pdf"])).getPageCount()).toBe(
-      2,
+      3,
     );
     expect((await PDFDocument.load(files["rapport.pdf"])).getTitle()).toBe(
       "FlowLab · Medlemsservice",
@@ -109,7 +134,7 @@ describe("Decision report integrity", () => {
     expect(report.holdout?.status).toBe("target_met");
     expect(
       (await PDFDocument.load(await reportPdf(report, fonts))).getPageCount(),
-    ).toBe(3);
+    ).toBe(4);
     doc.holdout.model.revision++;
     expect(createReport(doc).holdoutMatchesBaseline).toBe(false);
     const old = { ...initialDocument() } as Record<string, unknown>;

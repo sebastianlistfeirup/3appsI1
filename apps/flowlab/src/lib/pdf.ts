@@ -3,6 +3,12 @@ import fontkit from "@pdf-lib/fontkit";
 import { metricDefinitions } from "@tre/flow-engine";
 import { formatDifference, formatMetric } from "./document";
 import type { DecisionReport } from "./report";
+import {
+  aggregateTimeProfile,
+  formatCaseTime,
+  TIME_LABELS,
+  TIME_METRICS,
+} from "./time-profile";
 export interface ReportFonts {
   regular: Uint8Array;
   bold: Uint8Array;
@@ -310,6 +316,77 @@ export async function renderReportPdf(
     42,
     y + 20,
     `Motor: ${c.engineVersion}. Modelversion: ${c.baseline.revision}. Fælles seed: ${report.baseSeed}. Målevindue: ${c.baseline.observationStart}–${c.baseline.horizon} ms. Fuld model, seeds, run-metrics, køkurver og inputdiff følger med i JSON-pakken.`,
+    511,
+    9,
+    3,
+  );
+  addPage();
+  text(42, 99, "De afsluttede sagers tider", 23, colors.ink, bold);
+  paragraph(
+    42,
+    126,
+    "Hver kørsel har sin egen tidsfordeling. Her vises gennemsnittet af kørslernes tidsmål; det er ikke percentiler af alle sager lagt sammen.",
+    511,
+    10,
+    3,
+  );
+  text(319, 183, "BASELINE", 8, colors.muted, bold);
+  text(446, 183, "ALTERNATIV", 8, colors.muted, bold);
+  TIME_METRICS.forEach((metric, index) => {
+    const a = aggregateTimeProfile(c.baselineRuns, metric),
+      b = aggregateTimeProfile(c.scenarioRuns, metric),
+      top = 210 + index * 156;
+    text(42, top, TIME_LABELS[metric], 14, colors.ink, bold);
+    const countRange = (value: typeof a) =>
+      value.minCount === null
+        ? "—"
+        : value.minCount === value.maxCount
+          ? String(value.minCount)
+          : `${value.minCount}–${value.maxCount}`;
+    const rows = [
+      [
+        "Gennemsnit pr. kørsel, middel",
+        formatCaseTime(a.meanOfMeans),
+        formatCaseTime(b.meanOfMeans),
+      ],
+      [
+        "Median pr. kørsel, middel",
+        formatCaseTime(a.meanOfMedians),
+        formatCaseTime(b.meanOfMedians),
+      ],
+      [
+        "P90 pr. kørsel, middel",
+        formatCaseTime(a.meanOfP90),
+        formatCaseTime(b.meanOfP90),
+      ],
+      ["Afsluttede sager pr. kørsel, min–maks", countRange(a), countRange(b)],
+      [
+        "Kørsler med tidsmåling",
+        `${a.availableRuns} af ${a.runCount}`,
+        `${b.availableRuns} af ${b.runCount}`,
+      ],
+    ];
+    rows.forEach(([label, baseline, scenario], rowIndex) => {
+      const rowY = top + 26 + rowIndex * 21;
+      if (rowIndex % 2 === 0)
+        rect(38, rowY - 14, 519, 20, rgb(0.97, 0.98, 0.97));
+      text(46, rowY, label, 9, colors.ink, regular, 260);
+      text(319, rowY, baseline, 10, colors.ink, regular, 114);
+      text(446, rowY, scenario, 10, colors.teal, bold, 107);
+    });
+  });
+  paragraph(
+    42,
+    676,
+    "Tidsmålinger omfatter kun sager afsluttet i målevinduet. Kørsler uden afsluttede sager giver ingen tidsværdi og indgår ikke som nul i gennemsnittet. Antal sager er observationer pr. kørsel, ikke forskellige personer på tværs af seeds.",
+    511,
+    9,
+    4,
+  );
+  paragraph(
+    42,
+    742,
+    "P90 beregnes med lineær interpolation. Restkø og SLA vises særskilt. Alle præcise tidstal, antal observationer og seeds findes i time-summaries.csv og report.json.",
     511,
     9,
     3,
