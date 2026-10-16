@@ -55,7 +55,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [studio, flowlab, director]
+        include:
+          - app: studio
+            engine: all
+          - app: flowlab
+            engine: chromium
+          - app: flowlab
+            engine: firefox
+          - app: flowlab
+            engine: webkit
+          - app: director
+            engine: all
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -72,7 +82,11 @@ jobs:
         run: pnpm --filter @tre/${{ matrix.app }} build
       - name: Install real browser and media dependencies
         run: |
-          pnpm exec playwright install --with-deps chromium firefox webkit
+          if [ "${{ matrix.engine }}" = "all" ]; then
+            pnpm exec playwright install --with-deps chromium firefox webkit
+          else
+            pnpm exec playwright install --with-deps "${{ matrix.engine }}"
+          fi
           sudo apt-get update
           sudo apt-get install -y ffmpeg poppler-utils pulseaudio fonts-dejavu-core openssl
       - name: Start isolated real audio sink for Firefox
@@ -88,11 +102,12 @@ jobs:
         run: pnpm test:browser
         env:
           CI_BROWSER_APP: ${{ matrix.app }}
+          CI_BROWSER_ENGINE: ${{ matrix.engine }}
       - name: Retain actual verification evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: verification-${{ matrix.app }}-${{ github.sha }}
+          name: verification-${{ matrix.app }}-${{ matrix.engine }}-${{ github.sha }}
           path: |
             reports/
             test-results/

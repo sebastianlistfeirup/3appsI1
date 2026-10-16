@@ -6,6 +6,14 @@ const selected = process.env.CI_BROWSER_APP ?? "all";
 if (!["all", "studio", "flowlab", "director"].includes(selected))
   throw new Error("CI_BROWSER_APP must be studio, flowlab, director or all.");
 const enabled = (app: string) => selected === "all" || selected === app;
+const selectedEngine = process.env.CI_BROWSER_ENGINE || "all";
+if (
+  !["all", "chromium", "firefox", "webkit"].includes(selectedEngine) ||
+  (selectedEngine !== "all" && selected !== "flowlab")
+)
+  throw new Error(
+    "CI_BROWSER_ENGINE may select chromium, firefox or webkit only with CI_BROWSER_APP=flowlab.",
+  );
 const evidence: Array<{
   command: string;
   environment: Record<string, string>;
@@ -74,7 +82,11 @@ async function run(
     });
     await writeFile(
       "reports/ci/browser-steps.json",
-      JSON.stringify({ app: selected, evidence }, null, 2),
+      JSON.stringify(
+        { app: selected, engine: selectedEngine, evidence },
+        null,
+        2,
+      ),
     );
     console.log(
       `[gate] ${outcome} in ${(elapsedMs / 1000).toFixed(1)}s: ${label}`,
@@ -143,7 +155,9 @@ try {
   }
   if (enabled("flowlab")) {
     await start("flowlab", 3001);
-    for (const browser of ["chromium", "firefox", "webkit"]) {
+    for (const browser of selectedEngine === "all"
+      ? ["chromium", "firefox", "webkit"]
+      : [selectedEngine]) {
       await run("node", ["apps/flowlab/tests/browser-check.mjs"], {
         FLOWLAB_BROWSER: browser,
       });
@@ -217,17 +231,24 @@ try {
         ["exec", "tsx", "apps/flowlab/tests/cost-profile-check.ts"],
         { FLOWLAB_BROWSER: browser },
       );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/templates-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
     }
-    await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
-    await run("node", ["apps/flowlab/tests/canvas-check.mjs"]);
-    await run("node", ["apps/flowlab/tests/accessibility-check.mjs"]);
-    await run("pnpm", ["exec", "tsx", "apps/flowlab/tests/holdout-check.ts"]);
-    await run("pnpm", [
-      "exec",
-      "tsx",
-      "apps/flowlab/tests/report-layout-check.ts",
-    ]);
-    await run("node", ["apps/flowlab/tests/edge-results-check.mjs"]);
+    if (selectedEngine === "all" || selectedEngine === "chromium") {
+      await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
+      await run("node", ["apps/flowlab/tests/canvas-check.mjs"]);
+      await run("node", ["apps/flowlab/tests/accessibility-check.mjs"]);
+      await run("pnpm", ["exec", "tsx", "apps/flowlab/tests/holdout-check.ts"]);
+      await run("pnpm", [
+        "exec",
+        "tsx",
+        "apps/flowlab/tests/report-layout-check.ts",
+      ]);
+      await run("node", ["apps/flowlab/tests/edge-results-check.mjs"]);
+    }
   }
   if (enabled("director")) {
     await start("director", 3002);
