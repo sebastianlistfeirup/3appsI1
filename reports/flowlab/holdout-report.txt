@@ -1,0 +1,159 @@
+flowlab                                                                          BESLUTNINGSRAPPORT
+
+
+
+
+FL-AT01
+Baseline vs. Samme proces som kontrol
+
+30 parrede replikationer · 0.08333333333333333 timer · 2026-10-16
+
+
+
+    HYPOTESE
+
+    En ekstra sagsbehandler reducerer ventetid og restkø. Den simulerede effekt skal vurderes op imod
+    den ekstra lønkapacitet.
+
+
+
+Resultat af sammenligningen
+Middelværdi af kørsler. Gennemløbstid: middel af run-medianer.
+
+
+MÅLING                                        BASELINE              ALTERNATIV             FORSKEL
+
+
+ Afsluttede sager                             3                     3                      0
+
+
+ Gennemløbstid                                2,0 min               2,0 min                0,0 min
+
+
+ Ventetid                                     0,5 min               0,5 min                0,0 min
+
+
+ Restkø                                       0                     0                      0
+
+
+ Udnyttelse                                   90,0 %                90,0 %                 0,0 pp
+
+
+ Omkostning                                   8 kr.                 8 kr.                  0 kr.
+
+
+ SLA overholdt                                66,7 %                66,7 %                 0,0 pp
+
+
+
+
+Din beslutning
+Ingen beslutning tilføjet. Undersøg antagelser, restkø og spredning før en ændring.
+
+
+
+
+Resultaterne er simulerede og er ikke dokumentation for realiserede gevinster.
+
+
+
+
+flow-des/1.1.0 · Lokal model · Eksempeldata                                                           1/3
+flowlab                                                                               BESLUTNINGSRAPPORT
+
+
+
+
+Antagelser & usikkerhed
+10.–90.-percentil af alternativ minus baseline
+
+Afsluttede sager                                 0 til 0 (30 par)
+
+Gennemløbstid                                    0,0 min til 0,0 min (30 par)
+
+Ventetid                                         0,0 min til 0,0 min (30 par)
+
+Restkø                                           0 til 0 (30 par)
+
+Udnyttelse                                       0,0 pp til 0,0 pp (30 par)
+
+Omkostning                                       0 kr. til 0 kr. (30 par)
+
+SLA overholdt                                    0,0 pp til 0,0 pp (30 par)
+
+
+
+
+Ændrede input
+Ingen ændrede input. Scenarierne er identiske.
+
+
+
+
+Læs tallene med omtanke
+• Resultaterne er simulerede og er ikke dokumentation for realiserede gevinster.
+
+• 10.–90.-percentilen er simulationsspredning for parrede forskelle, ikke et konfidensinterval for virkeligheden.
+
+• Gennemløbs- og ventetider omfatter kun afsluttede sager. Restkøen vises særskilt.
+
+• Modellen er ikke automatisk kalibreret mod faktisk drift. Ingen kundedata eller cloudintegration er tilkoblet.
+
+
+Reproducerbarhed
+Motor: flow-des/1.1.0. Modelversion: 1. Målevindue: 0–300000 ms. Fuld model, seeds, run-metrics, køkurver og inputdiff
+følger med i JSON-pakken.
+
+
+
+
+flow-des/1.1.0 · Lokal model · Eksempeldata                                                                         2/3
+flowlab                                                                            BESLUTNINGSRAPPORT
+
+
+
+
+Holdout · kvalitetstjek
+Pilotmålet er nået for denne periode
+Vurderingen matcher rapportens baseline og motorversion.
+
+
+
+MÅLING                                         OBSERVERET               BASELINE                  AFVIGELSE
+
+
+ Afsluttede sager                              3                        3                         0,0 %
+
+
+ Gennemløbstid                                 2,0 min                  2,0 min                   0,0 %
+
+
+ Ventetid                                      0,5 min                  0,5 min                   0,0 %
+
+
+ Restkø                                        0                        0                         0,0 %
+
+
+
+
+Kilde: uafhaengig-periode.csv. 3 gyldige rækker; 0 udeladt.
+
+Periode: 0–300 sekunder. Afsluttende aktivitet: Aktivitet.
+
+SHA-256: 7d91b0163ef7b0f643b3c5cb3e328cf5aebd4feb02d675e6b0edb4e10b46c2b8
+
+Modelversion 1; 30 seeds. Uafhængighed bekræftet: ja. Komplet periode bekræftet: ja.
+
+Kun 3 afsluttede sager har kendt ankomst. Det er et lille holdout-grundlag; vurder også andre perioder og proceskendskab.
+
+15 %-grænsen er et pilotmål for throughput og median gennemløbstid, ikke en generel faglig sandhed eller en garanti for
+fremtidig drift.
+
+Simuleret gennemløbstid er middelværdien af de enkelte kørselsmedianer. Backlog og ventetid vises som supplerende
+diagnostik.
+
+
+
+
+flow-des/1.1.0 · Lokal model · Eksempeldata                                                                     3/3
+

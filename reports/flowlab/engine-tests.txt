@@ -2,8 +2,8 @@
  RUN  v5.0.5 /workspace/3apps-flowlab
 
 
- Test Files  3 passed (3)
-      Tests  36 passed (36)
-   Start at  20:26:27
-   Duration  1.65s (tests 84%, import 13%, transform 3%, worker 1%)
+ Test Files  5 passed (5)
+      Tests  55 passed (55)
+   Start at  20:38:34
+   Duration  2.22s (tests 83%, import 12%, transform 4%, worker 1%)
 

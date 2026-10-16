@@ -9,7 +9,12 @@ const fonts = {
     readFileSync("apps/flowlab/public/fonts/manrope-bold.ttf"),
   ),
 };
-import { compareModels } from "@tre/flow-engine";
+import {
+  compareModels,
+  goldenModel,
+  assessHoldout,
+  parseCsv,
+} from "@tre/flow-engine";
 import { initialDocument, validateDocument } from "./document";
 import { createReport, reportPdf, reportZip } from "./report";
 import { unzipSync, strFromU8 } from "fflate";
@@ -60,6 +65,57 @@ describe("Decision report integrity", () => {
       await reportPdf(createReport(doc), fonts),
     );
     expect(pdf.getPageCount()).toBeGreaterThan(2);
+  });
+  it("preserves an explicit holdout and distinguishes a historical assessment from the report baseline", async () => {
+    const doc = initialDocument();
+    doc.baseline = goldenModel();
+    doc.scenario = goldenModel();
+    doc.comparison = await compareModels(doc.baseline, doc.scenario);
+    doc.holdout = assessHoldout({
+      model: doc.baseline,
+      runs: doc.comparison.baselineRuns,
+      dataset: parseCsv(
+        "case_id,arrived_at,activity,started_at,finished_at\na,0,Aktivitet,0,90\nb,60,Aktivitet,90,180\nc,120,Aktivitet,180,270",
+        { unit: "seconds" },
+      ),
+      sourceName: "holdout.csv",
+      sourceHash: "a".repeat(64),
+      unit: "seconds",
+      periodStart: 0,
+      periodEnd: 300000,
+      completionActivity: "Aktivitet",
+      independent: true,
+      completeWindow: true,
+    });
+    doc.dataset = {
+      id: "holdout",
+      name: "holdout.csv",
+      sha256: "a".repeat(64),
+      importedAt: "2026-10-16T00:00:00.000Z",
+      unit: "seconds",
+      result: parseCsv(
+        "case_id,arrived_at,activity,started_at,finished_at\na,0,Aktivitet,0,90\nb,60,Aktivitet,90,180\nc,120,Aktivitet,180,270",
+        { unit: "seconds" },
+      ),
+    };
+    const report = createReport(doc);
+    const files = unzipSync(await reportZip(report, fonts));
+    expect(
+      parseCsv(strFromU8(files["holdout-renset.csv"]), { unit: "seconds" })
+        .rows,
+    ).toEqual(doc.dataset.result.rows);
+    expect(report.holdoutDataset?.sha256).toBe(doc.holdout.source.sha256);
+    expect(report.holdoutMatchesBaseline).toBe(true);
+    expect(report.holdout?.status).toBe("target_met");
+    expect(
+      (await PDFDocument.load(await reportPdf(report, fonts))).getPageCount(),
+    ).toBe(3);
+    doc.holdout.model.revision++;
+    expect(createReport(doc).holdoutMatchesBaseline).toBe(false);
+    const old = { ...initialDocument() } as Record<string, unknown>;
+    delete old.holdout;
+    delete old.trainingDataHashes;
+    expect(validateDocument(old).trainingDataHashes).toEqual([]);
   });
   it("validates persisted and imported structure before trusting metrics or datasets", () => {
     const doc = initialDocument();

@@ -16,22 +16,36 @@ import {
   cleanedCsv,
   inferDelimiter,
   percentile,
+  parseTimestamp,
+  type Comparison,
+  type HoldoutAssessment,
   type CsvImport,
   type CsvMapping,
   type FlowModel,
 } from "@tre/flow-engine";
 import { downloadFile } from "@tre/persistence";
 import { formatNumber, type Dataset } from "../lib/document";
+import HoldoutPanel from "./holdout-panel";
 export default function DataWorkshop({
   dataset,
   model,
   onSave,
   onCalibrate,
+  baseline,
+  comparison,
+  assessment,
+  trainingDataHashes,
+  onHoldout,
 }: {
   dataset: Dataset | null;
   model: FlowModel;
   onSave: (dataset: Dataset) => void;
-  onCalibrate: (nodeId: string, duration: number) => void;
+  onCalibrate: (nodeId: string, duration: number, sourceHash: string) => void;
+  baseline: FlowModel;
+  comparison: Comparison | null;
+  assessment: HoldoutAssessment | null;
+  trainingDataHashes: string[];
+  onHoldout: (assessment: HoldoutAssessment) => void;
 }) {
   const [file, setFile] = useState<File | null>(null),
     [headers, setHeaders] = useState<string[]>([]),
@@ -42,6 +56,7 @@ export default function DataWorkshop({
     [error, setError] = useState(""),
     [progress, setProgress] = useState<number | null>(null),
     [exclude, setExclude] = useState(false),
+    [observedActivity, setObservedActivity] = useState(""),
     [target, setTarget] = useState(
       model.nodes.find((n) => n.kind === "activity")?.id ?? "",
     );
@@ -52,6 +67,7 @@ export default function DataWorkshop({
     setError("");
     setResult(null);
     setExclude(false);
+    setObservedActivity("");
     if (next.size > 10 * 1024 * 1024) {
       setError("Filen er større end 10 MB.");
       return;
@@ -66,8 +82,8 @@ export default function DataWorkshop({
       if (!columns.length)
         columns = row.map((c) => c.replace(/^\uFEFF/, "").trim());
     });
-    parser.write(text.split(/\r?\n/)[0]);
-    parser.finish();
+    parser.write(text);
+    if (!columns.length) parser.finish();
     setHeaders(columns);
     setMapping(
       Object.fromEntries(
@@ -118,7 +134,25 @@ export default function DataWorkshop({
     w.postMessage({ type: "import", file, mapping, unit });
   };
   const current = result ?? dataset?.result,
-    durations = current?.durationMs.filter((n) => n > 0) ?? [],
+    currentUnit = result ? unit : (dataset?.unit ?? unit),
+    activityOptions = [
+      ...new Set(
+        current?.rows.map((row) => row.activity).filter(Boolean) ?? [],
+      ),
+    ].sort(),
+    activity =
+      observedActivity ||
+      (activityOptions.length === 1 ? activityOptions[0] : ""),
+    durations =
+      current?.rows
+        .filter((row) => !activityOptions.length || row.activity === activity)
+        .flatMap((row) => {
+          const start = parseTimestamp(row.started_at ?? "", currentUnit),
+            end = parseTimestamp(row.finished_at ?? "", currentUnit);
+          return start !== null && end !== null && end > start
+            ? [end - start]
+            : [];
+        }) ?? [],
     median = percentile(durations, 0.5);
   return (
     <div className="data-workshop">
@@ -351,6 +385,10 @@ export default function DataWorkshop({
                         unit,
                         result,
                       });
+                      setResult(null);
+                      setFile(null);
+                      setHeaders([]);
+                      setExclude(false);
                     }}
                   >
                     <Check size={16} />
@@ -419,6 +457,22 @@ export default function DataWorkshop({
             <span className="small-badge">Manuel overførsel</span>
           </div>
           <div className="calibrate-row">
+            {activityOptions.length > 0 && (
+              <label>
+                Observeret aktivitet
+                <select
+                  value={activity}
+                  onChange={(event) => setObservedActivity(event.target.value)}
+                >
+                  <option value="">Vælg observationer…</option>
+                  {activityOptions.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <label>
               Aktivitet i alternativet
               <select
@@ -436,9 +490,16 @@ export default function DataWorkshop({
             </label>
             <button
               className="button secondary"
-              disabled={!median || !target}
+              disabled={
+                !median || !target || (!!result?.excludedRows && !exclude)
+              }
               onClick={() => {
-                if (median) onCalibrate(target, Math.round(median));
+                if (median)
+                  onCalibrate(
+                    target,
+                    Math.round(median),
+                    result ? sha256 : dataset!.sha256,
+                  );
               }}
             >
               Brug median som fast varighed
@@ -452,6 +513,15 @@ export default function DataWorkshop({
           </p>
         </section>
       )}
+      <HoldoutPanel
+        key={dataset?.id ?? "no-dataset"}
+        dataset={dataset}
+        baseline={baseline}
+        comparison={comparison}
+        assessment={assessment}
+        trainingDataHashes={trainingDataHashes}
+        onSave={onHoldout}
+      />
     </div>
   );
 }

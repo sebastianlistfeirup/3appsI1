@@ -1,12 +1,25 @@
-import { chromium } from "@playwright/test";
+import { existsSync } from "node:fs";
+import { chromium, firefox, webkit } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-const browser = await chromium.launch({
-  executablePath: "/usr/bin/chromium",
-  headless: true,
-  args: ["--no-sandbox"],
-});
+const browserName = process.env.FLOWLAB_BROWSER ?? "chromium";
+const browserType = { chromium, firefox, webkit }[browserName];
+if (!browserType) throw new Error("Unknown browser");
+const browser = await browserType.launch(
+  browserName === "chromium"
+    ? {
+        executablePath:
+          process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ??
+          (existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
+        headless: true,
+        args: ["--no-sandbox"],
+      }
+    : { headless: true },
+);
 const errors = [];
-const evidence = "reports/flowlab";
+const evidence =
+  browserName === "chromium"
+    ? "reports/flowlab"
+    : `reports/flowlab/${browserName}`;
 await mkdir(evidence, { recursive: true });
 for (const [name, width, height] of [
   ["desktop", 1440, 900],
@@ -96,7 +109,7 @@ await writeFile(
   JSON.stringify(
     {
       checkedAt: new Date().toISOString(),
-      browser: "Chromium",
+      browser: browserName,
       viewports: ["1440x900", "1024x768", "390x844"],
       errors,
     },

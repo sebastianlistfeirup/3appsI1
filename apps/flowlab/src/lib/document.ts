@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { comparisonSchema, datasetSchema } from "./validation";
+import { comparisonSchema, datasetSchema, holdoutSchema } from "./validation";
 import {
   ENGINE_VERSION,
   membershipTemplate,
@@ -7,6 +7,7 @@ import {
   type FlowModel,
   type Comparison,
   type CsvImport,
+  type HoldoutAssessment,
 } from "@tre/flow-engine";
 export interface ModelSnapshot {
   id: string;
@@ -33,6 +34,8 @@ export interface FlowDocument {
   versions: ModelSnapshot[];
   dataset: Dataset | null;
   comparison: Comparison | null;
+  holdout: HoldoutAssessment | null;
+  trainingDataHashes: string[];
 }
 export function initialDocument(): FlowDocument {
   const baseline = membershipTemplate(),
@@ -49,6 +52,8 @@ export function initialDocument(): FlowDocument {
     versions: [],
     dataset: null,
     comparison: null,
+    holdout: null,
+    trainingDataHashes: [],
   };
 }
 const documentSchema = z.object({
@@ -71,6 +76,11 @@ const documentSchema = z.object({
     .max(30),
   dataset: datasetSchema.nullable(),
   comparison: comparisonSchema.nullable(),
+  holdout: holdoutSchema.nullable().default(null),
+  trainingDataHashes: z
+    .array(z.string().regex(/^[a-f0-9]{64}$/))
+    .max(100)
+    .default([]),
 });
 export function validateDocument(value: unknown): FlowDocument {
   return documentSchema.parse(value) as FlowDocument;

@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-10-16T20:39:18.898Z",
+  "outcomes": [
+    {
+      "viewport": "desktop",
+      "checks": [
+        "Explicit independent and complete window confirmations required.",
+        "Exact golden observed throughput, lead time, waiting and backlog.",
+        "Holdout preserved across reload.",
+        "No page errors or overflow.",
+        "Axe WCAG2AA/21AA zero violations."
+      ],
+      "a11y": [],
+      "errors": []
+    },
+    {
+      "viewport": "tablet",
+      "checks": [
+        "Explicit independent and complete window confirmations required.",
+        "Exact golden observed throughput, lead time, waiting and backlog.",
+        "Holdout preserved across reload.",
+        "No page errors or overflow.",
+        "Axe WCAG2AA/21AA zero violations."
+      ],
+      "a11y": [],
+      "errors": []
+    },
+    {
+      "viewport": "mobile",
+      "checks": [
+        "Explicit independent and complete window confirmations required.",
+        "Exact golden observed throughput, lead time, waiting and backlog.",
+        "Holdout preserved across reload.",
+        "No page errors or overflow.",
+        "Axe WCAG2AA/21AA zero violations."
+      ],
+      "a11y": [],
+      "errors": []
+    }
+  ]
+}

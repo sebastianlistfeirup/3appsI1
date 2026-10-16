@@ -306,6 +306,93 @@ export async function renderReportPdf(
       lineY += 23;
     }
   }
+  if (report.holdout) {
+    const holdout = report.holdout;
+    addPage();
+    text(42, 99, "Holdout · kvalitetstjek", 24, colors.ink, bold);
+    const status =
+      holdout.status === "target_met"
+        ? "Pilotmålet er nået for denne periode"
+        : holdout.status === "outside_target"
+          ? "Pilotmålet er ikke nået"
+          : "Datagrundlaget er ikke tilstrækkeligt";
+    text(42, 132, status, 13, colors.teal, bold);
+    paragraph(
+      42,
+      157,
+      report.holdoutMatchesBaseline
+        ? "Vurderingen matcher rapportens baseline og motorversion."
+        : "Historisk vurdering: modellen eller motorversionen matcher ikke rapportens baseline.",
+      511,
+      10,
+      2,
+    );
+    text(42, 206, "MÅLING", 8, colors.muted, bold);
+    text(235, 206, "OBSERVERET", 8, colors.muted, bold);
+    text(345, 206, "BASELINE", 8, colors.muted, bold);
+    text(455, 206, "AFVIGELSE", 8, colors.muted, bold);
+    (["throughput", "leadTime", "queueTime", "backlog"] as const).forEach(
+      (key, i) => {
+        const metric = holdout.metrics[key],
+          rowY = 237 + i * 36;
+        if (i % 2 === 0) rect(38, rowY - 18, 519, 32, colors.pale);
+        text(46, rowY, metricDefinitions[key].label, 10, colors.ink, bold);
+        text(
+          235,
+          rowY,
+          formatMetric(key, metric.observed),
+          10,
+          colors.ink,
+          regular,
+          100,
+        );
+        text(
+          345,
+          rowY,
+          formatMetric(key, metric.simulated),
+          10,
+          colors.ink,
+          regular,
+          100,
+        );
+        text(
+          455,
+          rowY,
+          metric.relativeError === null
+            ? "Ikke vurderet"
+            : `${(metric.relativeError * 100).toFixed(1).replace(".", ",")} %`,
+          10,
+          colors.ink,
+          regular,
+          98,
+        );
+      },
+    );
+    let holdoutY = 396;
+    const period =
+      holdout.source.unit === "iso"
+        ? `${new Date(holdout.source.periodStart).toISOString()} til ${new Date(holdout.source.periodEnd).toISOString()}`
+        : `${holdout.source.periodStart / 1000}–${holdout.source.periodEnd / 1000} sekunder`;
+    const lines = [
+      `Kilde: ${holdout.source.name}. ${holdout.source.rows} gyldige rækker; ${holdout.source.excludedRows} udeladt.`,
+      `Periode: ${period}. Afsluttende aktivitet: ${holdout.source.completionActivity}.`,
+      `SHA-256: ${holdout.source.sha256}`,
+      `Modelversion ${holdout.model.revision}; ${holdout.seeds.length} seeds. Uafhængighed bekræftet: ${holdout.independent ? "ja" : "nej"}. Komplet periode bekræftet: ${holdout.completeWindow ? "ja" : "nej"}.`,
+      ...holdout.dataGaps.map((gap) => `Datamangel: ${gap}`),
+      ...holdout.notes,
+    ];
+    for (const value of lines) {
+      for (const line of wrap(value, 511, 9)) {
+        if (holdoutY > 750) {
+          addPage();
+          holdoutY = 100;
+        }
+        text(42, holdoutY, line, 9);
+        holdoutY += 15;
+      }
+      holdoutY += 8;
+    }
+  }
   pages.forEach((p, i) => {
     page = p;
     text(

@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { chromium } from "@playwright/test";
 import { createRequire } from "node:module";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -6,7 +7,9 @@ const axe = createRequire(require.resolve("@axe-core/playwright"))(
   "axe-core",
 ).source;
 const browser = await chromium.launch({
-  executablePath: "/usr/bin/chromium",
+  executablePath:
+    process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ??
+    (existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
   args: ["--no-sandbox"],
 });
 const summary = [];
@@ -72,7 +75,19 @@ for (const [viewport, width, height] of [
     console.log(JSON.stringify(entry));
     await writeFile(
       `reports/flowlab/a11y/${viewport}-${tab.toLowerCase()}.json`,
-      JSON.stringify(result, null, 2),
+      JSON.stringify(
+        {
+          testEngine: result.testEngine,
+          testRunner: result.testRunner,
+          testEnvironment: result.testEnvironment,
+          timestamp: result.timestamp,
+          url: result.url,
+          violations: result.violations,
+          incompleteCount: result.incomplete?.length ?? 0,
+        },
+        null,
+        2,
+      ),
     );
   }
   await context.close();

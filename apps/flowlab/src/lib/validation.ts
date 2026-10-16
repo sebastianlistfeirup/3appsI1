@@ -214,3 +214,40 @@ export const datasetSchema = z.object({
     observedEnd: number.nullable(),
   }),
 });
+
+const holdoutMetric = z.object({
+  observed: number.nullable(),
+  simulated: number.nullable(),
+  relativeError: number.nonnegative().nullable(),
+  withinTarget: z.boolean().nullable(),
+  sampleCount: count,
+});
+export const holdoutSchema = z.object({
+  schemaVersion: z.literal(1),
+  engineVersion: z.string(),
+  assessedAt: z.string(),
+  status: z.enum(["target_met", "outside_target", "insufficient_data"]),
+  threshold: number.min(0).max(1),
+  model: modelSchema,
+  seeds: z.array(count.max(0xffffffff)).min(30).max(100),
+  source: z.object({
+    name: z.string().max(255),
+    sha256: z.string().regex(/^[a-f0-9]{64}$/),
+    unit: z.enum(["iso", "seconds", "minutes"]),
+    rows: count.max(100000),
+    excludedRows: count.max(100000),
+    periodStart: number,
+    periodEnd: number,
+    completionActivity: z.string().max(100000),
+  }),
+  independent: z.boolean(),
+  completeWindow: z.boolean(),
+  metrics: z.object({
+    throughput: holdoutMetric,
+    leadTime: holdoutMetric,
+    backlog: holdoutMetric,
+    queueTime: holdoutMetric,
+  }),
+  dataGaps: z.array(z.string()).max(100),
+  notes: z.array(z.string()).max(100),
+});

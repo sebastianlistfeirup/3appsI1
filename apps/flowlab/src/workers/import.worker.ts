@@ -27,7 +27,7 @@ self.onmessage = async (
         delimiter: inferDelimiter(prefix),
       }),
       reader = file.stream().getReader(),
-      decoder = new TextDecoder();
+      decoder = new TextDecoder("utf-8", { fatal: true });
     let bytes = 0;
     while (true) {
       if (cancelled) {
@@ -56,7 +56,11 @@ self.onmessage = async (
     self.postMessage({
       type: "error",
       message:
-        error instanceof Error ? error.message : "Filen kunne ikke læses.",
+        error instanceof TypeError
+          ? "Filen indeholder ugyldig UTF-8. Gem CSV-filen som UTF-8, og prøv igen."
+          : error instanceof Error
+            ? error.message
+            : "Filen kunne ikke læses.",
     });
   }
 };

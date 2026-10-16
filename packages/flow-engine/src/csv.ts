@@ -105,21 +105,35 @@ export class CsvParser {
   }
 }
 export function inferDelimiter(text: string): string {
-  const line = text.split(/\r?\n/, 1)[0] ?? "";
-  return (line.match(/;/g)?.length ?? 0) > (line.match(/,/g)?.length ?? 0)
-    ? ";"
-    : ",";
+  let quoted = false,
+    comma = 0,
+    semicolon = 0;
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (char === '"') {
+      if (quoted && text[i + 1] === '"') {
+        i++;
+        continue;
+      }
+      quoted = !quoted;
+    } else if (!quoted) {
+      if (char === "\r" || char === "\n") break;
+      if (char === ",") comma++;
+      if (char === ";") semicolon++;
+    }
+  }
+  return semicolon > comma ? ";" : ",";
 }
-function parseTimestamp(
+export function parseTimestamp(
   value: string,
   unit: "iso" | "seconds" | "minutes",
 ): number | null {
   if (!value.trim()) return null;
   if (unit !== "iso") {
-    const n = Number(value.replace(",", "."));
-    return Number.isFinite(n) && n >= 0
-      ? Math.round(n * (unit === "seconds" ? 1000 : 60000))
-      : NaN;
+    if (!/^\d+(?:[.,]\d+)?$/.test(value.trim())) return NaN;
+    const n = Number(value.replace(",", ".")),
+      ms = Math.round(n * (unit === "seconds" ? 1000 : 60000));
+    return Number.isSafeInteger(ms) && ms >= 0 ? ms : NaN;
   }
   if (
     !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|[+-]\d{2}:\d{2})$/.test(
@@ -149,6 +163,11 @@ export function createCsvImporter(options: {
   unit?: "iso" | "seconds" | "minutes";
   delimiter?: string;
 }) {
+  const fields = Object.values(options.mapping ?? {}).filter(Boolean);
+  if (fields.some((field) => !CSV_FIELDS.includes(field as CsvField)))
+    throw new Error("Kolonnemappingen indeholder et ukendt felt.");
+  if (new Set(fields).size !== fields.length)
+    throw new Error("To kolonner må ikke mappes til samme felt.");
   const result: CsvImport = {
       headers: [],
       preview: [],
@@ -168,6 +187,10 @@ export function createCsvImporter(options: {
     line++;
     if (line === 1) {
       result.headers = cells.map((c) => c.replace(/^\uFEFF/, "").trim());
+      if (result.headers.length > 1000)
+        throw new Error("CSV-grænsen er 1.000 kolonner.");
+      if (result.headers.some((header) => !header))
+        throw new Error("Alle kolonner skal have et navn.");
       if (new Set(result.headers).size !== result.headers.length)
         throw new Error("Kolonnenavne må ikke gentages.");
       return;
@@ -187,7 +210,9 @@ export function createCsvImporter(options: {
       );
     result.headers.forEach((header, i) => {
       const field = options.mapping
-        ? options.mapping[header]
+        ? Object.hasOwn(options.mapping, header)
+          ? options.mapping[header]
+          : ""
         : CSV_FIELDS.includes(header as CsvField)
           ? header
           : "";
@@ -226,6 +251,12 @@ export function createCsvImporter(options: {
       times.started_at < times.arrived_at
     )
       issue("started_at", "Start ligger før ankomst.");
+    if (
+      times.finished_at !== null &&
+      times.arrived_at !== null &&
+      times.finished_at < times.arrived_at
+    )
+      issue("finished_at", "Afslutning ligger før ankomst.");
     if (row.event_id) {
       if (eventIds.has(row.event_id))
         issue("event_id", "Dubleret hændelses-id.");

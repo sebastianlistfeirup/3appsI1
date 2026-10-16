@@ -1,11 +1,18 @@
 import {
   assertReportReady,
+  cleanedCsv,
   metricDefinitions,
   type Comparison,
   type MetricKey,
+  type HoldoutAssessment,
 } from "@tre/flow-engine";
 import { strToU8, zipSync } from "fflate";
-import { formatMetric, formatDifference, type FlowDocument } from "./document";
+import {
+  formatMetric,
+  formatDifference,
+  type FlowDocument,
+  type Dataset,
+} from "./document";
 export interface DecisionReport {
   reportVersion: 1;
   generatedAt: string;
@@ -16,6 +23,9 @@ export interface DecisionReport {
   dataBasis: string;
   limitations: string[];
   comparison: Comparison;
+  holdout: HoldoutAssessment | null;
+  holdoutMatchesBaseline: boolean;
+  holdoutDataset: Dataset | null;
 }
 export function createReport(doc: FlowDocument): DecisionReport {
   if (!doc.comparison) throw new Error("Kør en sammenligning først.");
@@ -35,6 +45,16 @@ export function createReport(doc: FlowDocument): DecisionReport {
       "Modellen er ikke automatisk kalibreret mod faktisk drift. Ingen kundedata eller cloudintegration er tilkoblet.",
     ],
     comparison: doc.comparison,
+    holdout: doc.holdout,
+    holdoutDataset:
+      doc.holdout && doc.dataset?.sha256 === doc.holdout.source.sha256
+        ? doc.dataset
+        : null,
+    holdoutMatchesBaseline:
+      !!doc.holdout &&
+      doc.holdout.engineVersion === doc.comparison.engineVersion &&
+      JSON.stringify(doc.holdout.model) ===
+        JSON.stringify(doc.comparison.baseline),
   };
 }
 import type { ReportFonts } from "./pdf";
@@ -66,6 +86,13 @@ export async function reportZip(
   return zipSync(
     {
       "rapport.pdf": await reportPdf(report, fonts),
+      ...(report.holdoutDataset
+        ? {
+            "holdout-renset.csv": strToU8(
+              cleanedCsv(report.holdoutDataset.result),
+            ),
+          }
+        : {}),
       "report.json": strToU8(JSON.stringify(report, null, 2)),
       "metrics.csv": strToU8(metrics),
       "models.json": strToU8(
@@ -79,7 +106,7 @@ export async function reportZip(
         ),
       ),
       "LAES_MIG.txt": strToU8(
-        "FlowLab lokal beslutningsrapport\nPDF og CSV er afledt af de samme metrics i report.json.\nFor at reproducere: brug motorversionen, de to model-snapshots og den fælles seedliste i report.json.\nAlle tider i JSON er millisekunder; rapporten viser minutter.\nSimulerede gevinster er ikke realiserede gevinster.\n",
+        "FlowLab lokal beslutningsrapport\nPDF og CSV er afledt af de samme metrics i report.json.\nFor at reproducere: brug motorversionen, de to model-snapshots og den fælles seedliste i report.json.\nAlle tider i JSON er millisekunder; rapporten viser minutter.\nSimulerede gevinster er ikke realiserede gevinster.\nHvis holdoutDataset findes i report.json, indeholder den det præcise rensede grundlag til holdout-vurderingen. CSV beskytter formellignende tekst med en apostrof; JSON bevarer den oprindelige værdi.\n",
       ),
     },
     { level: 6 },

@@ -55,3 +55,37 @@ it("rejects impossible calendar dates instead of normalizing them silently", () 
   expect(result.excludedRows).toBe(1);
   expect(result.issues[0].field).toBe("started_at");
 });
+
+it("detects delimiters outside quoted headers and rejects ambiguous mappings", () => {
+  const r = parseCsv('"case;identifier",started_at,finished_at\na,0,1', {
+    unit: "seconds",
+    mapping: {
+      "case;identifier": "case_id",
+      started_at: "started_at",
+      finished_at: "finished_at",
+    },
+  });
+  expect(r.rows[0].case_id).toBe("a");
+  expect(() =>
+    parseCsv("one,two\na,b", { mapping: { one: "case_id", two: "case_id" } }),
+  ).toThrow("samme felt");
+  expect(() =>
+    parseCsv("case_id,,finished_at\na,0,1", { unit: "seconds" }),
+  ).toThrow("navn");
+});
+it("rejects finish before arrival without requiring a start and rejects unsafe relative timestamps", () => {
+  const r = parseCsv(
+    "case_id,arrived_at,finished_at\na,20,10\nb,0x10,20\nc,999999999999999999,20",
+    { unit: "seconds" },
+  );
+  expect(r.excludedRows).toBe(3);
+  expect(r.rows).toHaveLength(0);
+});
+
+it("does not treat inherited mapping properties as columns", () => {
+  const result = parseCsv("case_id,toString,started_at\na,unneeded,0", {
+    unit: "seconds",
+    mapping: { case_id: "case_id", started_at: "started_at" },
+  });
+  expect(result.rows[0]).toEqual({ case_id: "a", started_at: "0" });
+});

@@ -413,7 +413,7 @@ export default function FlowLab() {
       if (file.size > 20 * 1024 * 1024)
         throw new Error("Modelpakken må højst være 20 MB.");
       const parsed = validateDocument(JSON.parse(await file.text()));
-      update({ ...parsed, comparison: null });
+      update({ ...parsed, comparison: null, holdout: null });
       autoRan.current = false;
       notify(
         "Modellen er importeret; resultater genberegnes fra input. Dit tidligere arbejde kan gendannes med Fortryd.",
@@ -1237,15 +1237,28 @@ export default function FlowLab() {
                 <DataWorkshop
                   dataset={doc.dataset}
                   model={doc.scenario}
+                  baseline={doc.baseline}
+                  comparison={doc.comparison}
+                  assessment={doc.holdout}
+                  trainingDataHashes={doc.trainingDataHashes}
+                  onHoldout={(holdout) => {
+                    update({ ...doc, holdout });
+                    notify(
+                      "Holdout-vurderingen er gemt med den præcise baseline og dataperiode.",
+                    );
+                  }}
                   onSave={(dataset) => {
                     update({ ...doc, dataset });
                     notify(
                       "Validerede data er gemt lokalt. Modellen er fortsat ikke kalibreret.",
                     );
                   }}
-                  onCalibrate={(nodeId, duration) => {
+                  onCalibrate={(nodeId, duration, sourceHash) => {
                     update({
                       ...doc,
+                      trainingDataHashes: [
+                        ...new Set([...doc.trainingDataHashes, sourceHash]),
+                      ].slice(-100),
                       scenario: {
                         ...doc.scenario,
                         revision: doc.scenario.revision + 1,
