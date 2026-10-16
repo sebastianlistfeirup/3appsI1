@@ -92,3 +92,14 @@ pnpm exec node apps/director/tests/codec-probe.mjs reports/director/chromium-med
 This standalone probe tries the system Chromium when present, Playwright's default headless browser and its full Chrome for Testing executable, and records actual metadata and a decoded video frame. On this Debian13 environment all three opened the same H.264/AAC fixture; the full media UI flow also passed both pinned Playwright variants. An initial Ubuntu24.04 CI run rejected its locally generated MP4, so an operating-system/FFmpeg/browser difference remains under investigation. No assertion is disabled and no browser/codec limitation is inferred only from `canPlayType`.
 
 The Ubuntu CI runner exposed why implicit OS-browser selection was unsafe: its freshly recorded Chromium was **155.0.8059.0**, while the same job installed the pinned **156.0.8078.4 / revision 1248**. The helper now selects the pinned browser by default. The actual Ubuntu FFmpeg **6.1.1-3ubuntu5** binaries were also reproduced locally, in isolated library wrappers; both FFmpeg6 and Debian7 fixtures passed the complete blue-frame PDF gate on pinned Chromium156. This narrows the investigation without claiming that a browser version alone proves a codec limitation. The storyboard gate now saves its precise input and incremental native media events/current-time/error diagnostics, with the same decoding and PDF-pixel assertions. Use `DIRECTOR_STORYBOARD_INPUT=/path/to/failing.mp4` to replay exact bytes, or `DIRECTOR_FFMPEG_PATH` / `DIRECTOR_FFPROBE_PATH` to exercise a specific toolchain.
+
+Store lokale biblioteker og afbrudte billeddecodes:
+
+```bash
+node apps/director/tests/large-library-flow.mjs
+LIBRARY_ENGINE=firefox node apps/director/tests/large-library-flow.mjs
+LIBRARY_ENGINE=webkit node apps/director/tests/large-library-flow.mjs
+```
+
+Testen bruger >20 MB ægte, seedede PNG-originaler og validerer, at covers er
+små afledte filer, mens originaldokumenter og recovery-download er uændrede.

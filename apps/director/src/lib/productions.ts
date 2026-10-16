@@ -1,3 +1,4 @@
+import { libraryThumbnail } from "./library-thumbnail";
 import {
   createSampleProject,
   createEnvironment,
@@ -32,21 +33,15 @@ export function summarizeProduction(
   try {
     if (envelope?.schemaVersion !== 1)
       throw Error("Lagringsversionen understøttes ikke");
-    const project = parseProject(envelope.data),
-      shot = project.shots.find((s) => s.id === project.sequence[0]),
-      media = project.media.find((m) => m.id === shot?.mediaId);
+    const project = parseProject(envelope.data);
     return {
       key,
       title: project.title,
       updatedAt,
       shots: project.sequence.length,
       frames: totalFrames(project),
-      thumbnail:
-        media?.kind === "image"
-          ? media.dataUrl
-          : media?.kind === "video"
-            ? null
-            : (shot?.frame ?? null),
+      // Never retain a full-size source in the summary collection.
+      thumbnail: null,
       valid: true,
     };
   } catch (error) {
@@ -66,40 +61,94 @@ export function summarizeProduction(
     };
   }
 }
-/** Scan actual documents with a cursor; no separately maintained index or duplicate project bodies. */
-export async function listProductions(): Promise<ProductionSummary[]> {
-  await loadDocument("director", "production");
-  return new Promise((resolve, reject) => {
+/** Each cursor transaction reads one document; decode/release it before requesting the next. */
+export async function listProductions(
+  signal?: AbortSignal,
+): Promise<ProductionSummary[]> {
+  // Initialize the shared schema without loading the possibly large first film twice.
+  await loadDocument("director", "__library_bootstrap__");
+  const db = await new Promise<IDBDatabase>((resolve, reject) => {
     const request = indexedDB.open("tre-apps-director-v1", 1);
     request.onerror = () => reject(request.error);
-    request.onsuccess = () => {
-      const db = request.result,
-        tx = db.transaction("documents"),
-        cursor = tx.objectStore("documents").openCursor(),
-        list: ProductionSummary[] = [];
-      cursor.onerror = () => reject(cursor.error);
-      cursor.onsuccess = () => {
-        const row = cursor.result;
-        if (!row) return;
-        const key = String(row.key);
-        if (isProductionKey(key))
-          list.push(summarizeProduction(key, row.value));
-        row.continue();
-      };
-      tx.oncomplete = () => {
-        db.close();
-        resolve(
-          list.sort((a, b) =>
-            (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""),
-          ),
-        );
-      };
-      tx.onerror = () => {
-        db.close();
-        reject(tx.error);
-      };
-    };
+    request.onsuccess = () => resolve(request.result);
   });
+  let previousKey: IDBValidKey | undefined;
+  const nextRow = () =>
+    new Promise<{ key: IDBValidKey; value: LocalEnvelope<unknown> } | null>(
+      (resolve, reject) => {
+        if (signal?.aborted)
+          return reject(new DOMException("Afbrudt", "AbortError"));
+        const tx = db.transaction("documents"),
+          request = tx
+            .objectStore("documents")
+            .openCursor(
+              previousKey === undefined
+                ? undefined
+                : IDBKeyRange.lowerBound(previousKey, true),
+            );
+        let row: { key: IDBValidKey; value: LocalEnvelope<unknown> } | null =
+          null;
+        const cancel = () => {
+          try {
+            tx.abort();
+          } catch {
+            // The readonly transaction may already have committed.
+            reject(new DOMException("Afbrudt", "AbortError"));
+          }
+        };
+        signal?.addEventListener("abort", cancel, { once: true });
+        const cleanup = () => signal?.removeEventListener("abort", cancel);
+        tx.oncomplete = () => {
+          cleanup();
+          resolve(row);
+        };
+        tx.onerror = () => {
+          cleanup();
+          reject(tx.error);
+        };
+        tx.onabort = () => {
+          cleanup();
+          reject(new DOMException("Afbrudt", "AbortError"));
+        };
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          row = request.result
+            ? { key: request.result.key, value: request.result.value }
+            : null;
+        };
+      },
+    );
+  const summaries: ProductionSummary[] = [];
+  try {
+    for (;;) {
+      if (signal?.aborted) throw new DOMException("Afbrudt", "AbortError");
+      const row = await nextRow();
+      if (!row) break;
+      previousKey = row.key;
+      const key = String(row.key);
+      if (!isProductionKey(key)) continue;
+      const summary = summarizeProduction(key, row.value);
+      if (summary.valid) {
+        // summarizeProduction has validated these required fields; the full body is not retained.
+        const project = row.value.data as Project,
+          shot = project.shots.find((shot) => shot.id === project.sequence[0]),
+          media = project.media.find((media) => media.id === shot?.mediaId),
+          source =
+            media?.kind === "image"
+              ? media.dataUrl
+              : media
+                ? null
+                : shot?.frame;
+        if (source) summary.thumbnail = await libraryThumbnail(source, signal);
+      }
+      summaries.push(summary);
+    }
+    return summaries.sort((a, b) =>
+      (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""),
+    );
+  } finally {
+    db.close();
+  }
 }
 export function freshProduction(
   title: string,

@@ -38,6 +38,7 @@ export default function DirectorWorkspace() {
     [title, setTitle] = useState(""),
     [template, setTemplate] = useState<"empty" | "sample">("empty");
   const generation = useRef(0),
+    libraryRead = useRef<AbortController | null>(null),
     heading = useRef<HTMLHeadingElement>(null),
     importInput = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -61,9 +62,12 @@ export default function DirectorWorkspace() {
   }, []);
   const refresh = useCallback(async () => {
     const run = ++generation.current;
+    libraryRead.current?.abort();
+    const controller = new AbortController();
+    libraryRead.current = controller;
     setLoading(true);
     try {
-      const next = await listProductions();
+      const next = await listProductions(controller.signal);
       if (run === generation.current) {
         setItems(next);
         setError("");
@@ -81,11 +85,14 @@ export default function DirectorWorkspace() {
     if (view !== "library") return;
     void refresh();
     heading.current?.focus();
-    if (typeof BroadcastChannel === "undefined") return;
-    const channel = new BroadcastChannel("tre-apps-director");
-    channel.onmessage = () => void refresh();
+    const channel =
+      typeof BroadcastChannel !== "undefined"
+        ? new BroadcastChannel("tre-apps-director")
+        : null;
+    if (channel) channel.onmessage = () => void refresh();
     return () => {
-      channel.close();
+      channel?.close();
+      libraryRead.current?.abort();
       generation.current++;
     };
   }, [view, refresh]);
@@ -238,8 +245,7 @@ export default function DirectorWorkspace() {
             <span className="section-kicker">NÆSTE FORTÆLLING</span>
             <h2 id="new-production-title">Start noget nyt</h2>
             <p>
-              En tom scene eller et færdigt udgangspunkt.{" "}
-              <br />
+              En tom scene eller et færdigt udgangspunkt. <br />
               Dine andre film bliver i biblioteket.
             </p>
             <button
@@ -291,9 +297,7 @@ export default function DirectorWorkspace() {
                   }
                   disabled={!!busy}
                 >
-                  <option value="empty">
-                    Tomt observationsdæk · ingen shots
-                  </option>
+                  <option value="empty">Tomt filmstudie · ingen shots</option>
                   <option value="sample">
                     Det sidste signal · 5 shots / 60 sek.
                   </option>

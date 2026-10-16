@@ -1,0 +1,88 @@
+{
+  "engine": "chromium",
+  "checks": [
+    "More than 20 MB of real source PNGs produce only 384×216 JPEG derivatives, each <=64 KiB; one source decode at a time; original document hashes unchanged",
+    "Navigation cancels an intentionally pending native image decode and revokes its URL, also when BroadcastChannel is unavailable",
+    "Recovery download preserves the exact full-resolution source hash after repeated scans and cancellation; corrupted image does not hide its film"
+  ],
+  "phases": [
+    {
+      "name": "load and create original film",
+      "at": "2026-10-16T22:33:58.734Z"
+    },
+    {
+      "name": "seed three real full-resolution PNG films and one broken local image",
+      "at": "2026-10-16T22:34:02.160Z"
+    },
+    {
+      "name": "read bounded derivatives sequentially",
+      "at": "2026-10-16T22:34:03.619Z"
+    },
+    {
+      "name": "cancel pending decode on navigation with and without BroadcastChannel",
+      "at": "2026-10-16T22:34:05.058Z"
+    },
+    {
+      "name": "rescan and recover exact original bytes",
+      "at": "2026-10-16T22:34:06.700Z"
+    },
+    {
+      "name": "passed",
+      "at": "2026-10-16T22:34:08.941Z"
+    }
+  ],
+  "verifiedAt": "2026-10-16T22:33:58.651Z",
+  "sources": [
+    {
+      "key": "production_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "bytes": 8118003,
+      "sha256": "acae3975bfc1cea4c05b46accd89f7d5a69874ffd2990f3488163ea058fcc586"
+    },
+    {
+      "key": "production_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "bytes": 8118415,
+      "sha256": "cc99cea4fb14515a2024e2f3b634976442d8bbf472e018c6506e60bf405cab84"
+    },
+    {
+      "key": "production_cccccccccccccccccccccccccccccccc",
+      "bytes": 8118629,
+      "sha256": "f7cd28605270731508d60671884d9040f47dcb022c77122f5dd524efec9c685b"
+    },
+    {
+      "key": "production_dddddddddddddddddddddddddddddddd",
+      "bytes": 1,
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    }
+  ],
+  "covers": [
+    {
+      "chars": 34315,
+      "width": 384,
+      "height": 216
+    },
+    {
+      "chars": 34183,
+      "width": 384,
+      "height": 216
+    },
+    {
+      "chars": 34315,
+      "width": 384,
+      "height": 216
+    },
+    {
+      "chars": 12459,
+      "width": 384,
+      "height": 216
+    }
+  ],
+  "probe": {
+    "tracking": true,
+    "pause": false,
+    "live": 0,
+    "maxLive": 1,
+    "created": 10,
+    "revoked": 10
+  },
+  "pageErrors": []
+}

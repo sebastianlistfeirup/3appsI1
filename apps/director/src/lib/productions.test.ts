@@ -78,4 +78,19 @@ describe("Independent local film documents", () => {
     expect(isProductionKey("director-last-render")).toBe(false);
     expect(isProductionKey("__proto__")).toBe(false);
   });
+  it("does not retain full-resolution frames in the summary collection", () => {
+    const project = createSampleProject();
+    project.shots[0].frame = "data:image/jpeg;base64," + "A".repeat(4_000_000);
+    const summary = summarizeProduction("production", {
+      schemaVersion: 1,
+      key: "production",
+      revision: 1,
+      updatedAt: new Date().toISOString(),
+      data: project,
+    });
+    expect(summary.valid).toBe(true);
+    expect(summary.thumbnail).toBeNull();
+    expect(JSON.stringify(summary).length).toBeLessThan(500);
+    expect(project.shots[0].frame.length).toBeGreaterThan(4_000_000);
+  });
 });
