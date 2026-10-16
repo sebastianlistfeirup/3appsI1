@@ -93,6 +93,13 @@ try {
     await run("node", ["apps/flowlab/tests/workspace-check.mjs"], {
       FLOWLAB_BROWSER: browser,
     });
+    await run(
+      "pnpm",
+      ["exec", "tsx", "apps/flowlab/tests/data-history-check.ts"],
+      {
+        FLOWLAB_BROWSER: browser,
+      },
+    );
   }
   await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
   await run("node", ["apps/flowlab/tests/canvas-check.mjs"]);
@@ -105,10 +112,14 @@ try {
   ]);
   await run("node", ["apps/flowlab/tests/edge-results-check.mjs"]);
   await run("node", ["apps/director/tests/cross-browser.mjs"]);
-  for (const browser of ["chromium", "firefox", "webkit"])
+  for (const browser of ["chromium", "firefox", "webkit"]) {
     await run("node", ["apps/director/tests/textured-glb-flow.mjs"], {
       GLB_ENGINE: browser,
     });
+    await run("node", ["apps/director/tests/library-flow.mjs"], {
+      LIBRARY_ENGINE: browser,
+    });
+  }
   await run("node", ["apps/director/tests/editor-flow.mjs"]);
   await run("node", ["apps/director/tests/storage-recovery.mjs"]);
   await run("node", ["apps/director/tests/a11y-smoke.mjs"]);

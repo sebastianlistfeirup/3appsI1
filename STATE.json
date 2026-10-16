@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T21:20:48.890380+00:00",
+  "updatedAt": "2026-10-16T21:33:45.436423+00:00",
   "status": "building",
   "activeTasks": [
     "F06-ci-diagnostics",
-    "S07-review-comparison",
-    "L08-dataset-provenance",
-    "D08-production-library"
+    "S08-task-recovery",
+    "L09-case-explanation",
+    "D09-storyboard-pdf"
   ],
   "profile": "demo",
   "connectedIntegrations": [],

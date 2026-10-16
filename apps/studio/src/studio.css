@@ -2486,7 +2486,7 @@ button {
   line-height: 1.7;
 }
 .checkbox-row span {
-  color: #a68bb8 !important;
+  color: #715b7f;
 }
 .stale-confirm {
   font-size: 10px;
@@ -3854,11 +3854,11 @@ button {
 }
 .review-file small {
   font-size: 11px;
-  color: #9371a1;
+  color: #715b7f;
 }
 .review-file code {
   font-size: 10px;
-  color: #9f82ac;
+  color: #74627d;
 }
 .notice {
   font-size: 12px;
@@ -4015,5 +4015,216 @@ button {
   .archive-progress > span:last-child {
     width: 100%;
     margin-left: 30px;
+  }
+}
+.review-file-selector {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 22px;
+  border-bottom: 1px solid #e8dfef;
+  background: #faf8fd;
+}
+.review-file-selector label {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.025em;
+  color: #715b7f;
+}
+.review-file-selector select {
+  width: 100%;
+  max-width: 440px;
+  margin-top: 7px;
+  border: 1px solid #dcd1e6;
+  border-radius: 7px;
+  padding: 9px 12px;
+  background: white;
+  color: #473b52;
+  font-size: 13px;
+  text-overflow: ellipsis;
+}
+.review-file-selector > span {
+  color: #715b7f;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.comparison-baseline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 11px 18px;
+  background: #f5f1fa;
+  border-top: 1px solid #e8dfef;
+  color: #675473;
+  font-size: 11px;
+}
+.comparison-baseline > span,
+.comparison-baseline > div,
+.comparison-download {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.comparison-download {
+  padding: 7px 8px;
+  border: 1px solid #dbd1e6;
+  border-radius: 6px;
+  color: #665079;
+  background: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.comparison-download:hover {
+  background: #f0eaf8;
+}
+.checkbox-row.stale-confirm span {
+  color: #715b7f;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.diff-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #493d53;
+}
+.diff-options strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.diff-options > div {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+.diff-options label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-size: 11px;
+  color: #e4d9ed;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.diff-options input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: #a98cf4;
+}
+.diff-message,
+.diff-ending-key {
+  margin: 0;
+  padding: 14px 18px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #e4d9ed;
+  overflow-wrap: anywhere;
+}
+.diff-ending-key {
+  font-size: 10px;
+  color: #cbb9d9;
+}
+.diff-column-labels,
+.diff-line {
+  display: grid;
+  grid-template-columns: 4ch 4ch 1ch minmax(0, 1fr);
+  gap: 9px;
+  padding: 2px 15px;
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.diff-column-labels {
+  background: #352b3e;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  color: #cbb9d9;
+  font-size: 10px;
+}
+.diff-line > span {
+  width: auto;
+}
+.diff-line .diff-number {
+  text-align: right;
+  color: #c2b1d0;
+  user-select: none;
+}
+.diff-line code {
+  min-width: 0;
+  tab-size: 2;
+}
+.diff-eol {
+  font-size: 9px;
+  color: #e2cfec;
+  background: #49394f;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-left: 8px;
+}
+.diff-gap {
+  padding: 10px 18px;
+  margin: 5px 0;
+  color: #d6c5e4;
+  background: #3d3247;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.diff-more {
+  display: block;
+  margin: 16px auto;
+  padding: 10px 14px;
+  border: 1px solid #857192;
+  border-radius: 6px;
+  color: #f4eafb;
+  background: #493a55;
+  font-size: 12px;
+}
+.diff-more:hover {
+  background: #594568;
+}
+@media (max-width: 700px) {
+  .review-file-selector {
+    padding: 14px;
+    gap: 10px;
+  }
+  .review-file-selector > span {
+    max-width: 60px;
+    white-space: normal;
+    text-align: right;
+    line-height: 1.6;
+  }
+  .comparison-baseline {
+    padding: 10px 12px;
+    font-size: 10px;
+  }
+  .diff-options {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+  }
+  .diff-column-labels,
+  .diff-line {
+    grid-template-columns: 3.5ch 3.5ch 1ch minmax(0, 1fr);
+    gap: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 10px;
+  }
+  .diff-column-labels {
+    font-size: 9px;
+  }
+  .review-file .comparison-download {
+    padding: 8px;
   }
 }

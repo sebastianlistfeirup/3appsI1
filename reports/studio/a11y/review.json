@@ -13,7 +13,7 @@
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2026-10-16T21:19:52.761Z",
+  "timestamp": "2026-10-16T21:31:41.891Z",
   "url": "http://localhost:3000/projects/realmread/review",
   "toolOptions": {
     "runOnly": {
@@ -505,28 +505,6 @@
       "description": "Ensure [role=\"img\"] elements have alternative text",
       "help": "[role=\"img\"] elements must have alternative text",
       "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/role-img-alt?application=axeAPI",
-      "nodes": []
-    },
-    {
-      "id": "select-name",
-      "impact": null,
-      "tags": [
-        "cat.forms",
-        "wcag2a",
-        "wcag412",
-        "section508",
-        "section508.22.n",
-        "TTv5",
-        "TT5.c",
-        "EN-301-549",
-        "EN-9.4.1.2",
-        "ACT",
-        "RGAAv4",
-        "RGAA-11.1.1"
-      ],
-      "description": "Ensure select element has an accessible name",
-      "help": "Select element must have an accessible name",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/select-name?application=axeAPI",
       "nodes": []
     },
     {
@@ -1452,9 +1430,9 @@
               "data": null,
               "relatedNodes": [
                 {
-                  "html": "<label><input type=\"checkbox\"><span>Aktiv quest har titel og næste handling</span></label>",
+                  "html": "<label>Fil til gennemgang<select><option value=\"menu-v2\">quest-menu.html · v2</option><option value=\"notes-v1\">review-guide.md · v1</option></select></label>",
                   "target": [
-                    "div:nth-child(1) > label"
+                    ".review-file-selector > label"
                   ]
                 }
               ],
@@ -1463,9 +1441,9 @@
             }
           ],
           "impact": null,
-          "html": "<input type=\"checkbox\">",
+          "html": "<select><option value=\"menu-v2\">quest-menu.html · v2</option><option value=\"notes-v1\">review-guide.md · v1</option></select>",
           "target": [
-            "div:nth-child(1) > label > input[type=\"checkbox\"]"
+            "select"
           ]
         }
       ]
@@ -1658,7 +1636,7 @@
                 {
                   "html": "<label><input type=\"checkbox\"><span>Aktiv quest har titel og næste handling</span></label>",
                   "target": [
-                    "div:nth-child(1) > label"
+                    ".checklist-items > div:nth-child(1) > label"
                   ]
                 }
               ],
@@ -1846,6 +1824,64 @@
           "html": "<aside class=\"sidebar \">",
           "target": [
             ".sidebar"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "select-name",
+      "impact": null,
+      "tags": [
+        "cat.forms",
+        "wcag2a",
+        "wcag412",
+        "section508",
+        "section508.22.n",
+        "TTv5",
+        "TT5.c",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-11.1.1"
+      ],
+      "description": "Ensure select element has an accessible name",
+      "help": "Select element must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/select-name?application=axeAPI",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "implicit-label",
+              "data": {
+                "implicitLabel": "Fil til gennemgang"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<label>Fil til gennemgang<select><option value=\"menu-v2\">quest-menu.html · v2</option><option value=\"notes-v1\">review-guide.md · v1</option></select></label>",
+                  "target": [
+                    ".review-file-selector > label"
+                  ]
+                }
+              ],
+              "impact": "critical",
+              "message": "Element has an implicit (wrapped) <label>"
+            }
+          ],
+          "all": [],
+          "none": [
+            {
+              "id": "hidden-explicit-label",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Form element has a visible explicit <label>"
+            }
+          ],
+          "impact": null,
+          "html": "<select><option value=\"menu-v2\">quest-menu.html · v2</option><option value=\"notes-v1\">review-guide.md · v1</option></select>",
+          "target": [
+            "select"
           ]
         }
       ]

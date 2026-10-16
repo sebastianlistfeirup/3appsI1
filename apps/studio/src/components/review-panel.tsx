@@ -1,6 +1,7 @@
 "use client";
 import { sandboxDocument } from "../lib/preview";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { compareText, comparisonInput, contextRows } from "../lib/comparison";
 import Link from "next/link";
 import {
   ArrowDownToLine,
@@ -61,11 +62,14 @@ export function ReviewPanel({
   const [checked, setChecked] = useState<string[]>([]);
   const [ack, setAck] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [outputId, setOutputId] = useState<string | null>(null);
   useEffect(() => {
     setComment("");
     setChecked([]);
     setAck(false);
     setTab("preview");
+    setOutputId(null);
+    setView("new");
   }, [delivery?.id]);
   if (!delivery)
     return (
@@ -98,14 +102,11 @@ export function ReviewPanel({
     delivery.outputVersionIds.includes(a.id),
   );
   const primary =
+    outputs.find((a) => a.id === outputId) ??
     outputs.find((a) => a.mime === "text/html") ??
     outputs.find((a) => a.kind === "code") ??
     outputs[0]!;
-  const previous = project.artifacts
-    .filter(
-      (a) => a.artifactId === primary.artifactId && a.version < primary.version,
-    )
-    .sort((a, b) => b.version - a.version)[0];
+  const previous = comparisonInput(project, delivery, primary);
   const review = latestReview(project, delivery.id);
   const stale = isStale(project, delivery);
   const canAccept =
@@ -141,7 +142,7 @@ export function ReviewPanel({
       return (
         <div className="no-preview">
           <Layers3 size={35} />
-          <p>Ingen tidligere version</p>
+          <p>Denne fil fandtes ikke i opgavens input.</p>
         </div>
       );
     if (a.mime === "text/html" || a.mime === "image/svg+xml")
@@ -162,7 +163,10 @@ export function ReviewPanel({
     return (
       <pre className="text-preview">
         {a.encoding === "utf8"
-          ? a.content
+          ? a.content.slice(0, 100_000) +
+            (a.content.length > 100_000
+              ? "\n\n… Preview viser de første 100.000 tegn. Hent filen for hele indholdet."
+              : "")
           : "Denne filtype kan hentes fra fanen Filer."}
       </pre>
     );
@@ -210,6 +214,28 @@ export function ReviewPanel({
       <div className="review-layout">
         <section className="review-main">
           <div className="review-workbench">
+            <div className="review-file-selector">
+              <label>
+                Fil til gennemgang
+                <select
+                  value={primary.id}
+                  onChange={(event) => {
+                    setOutputId(event.target.value);
+                    setView("new");
+                  }}
+                >
+                  {outputs.map((file) => (
+                    <option key={file.id} value={file.id}>
+                      {file.name} · v{file.version}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <span>
+                {outputs.length} {outputs.length === 1 ? "fil" : "filer"} i
+                leverancen
+              </span>
+            </div>
             <div className="review-toolbar">
               <div
                 className="tabs"
@@ -261,6 +287,46 @@ export function ReviewPanel({
                   </button>
                 </div>
               )}
+            </div>
+            <div className="comparison-baseline">
+              <span>
+                <ShieldCheck size={14} />
+                {previous
+                  ? `Låst input v${previous.version} → leveret v${primary.version}`
+                  : "Ny fil · intet tidligere input"}
+              </span>
+              <div>
+                {previous && (
+                  <button
+                    className="comparison-download"
+                    onClick={() =>
+                      downloadFile(
+                        previous.name,
+                        artifactBytes(previous) as Uint8Array<ArrayBuffer>,
+                        previous.mime,
+                      )
+                    }
+                    aria-label={`Hent låst input: ${previous.name} v${previous.version}`}
+                  >
+                    <ArrowDownToLine size={14} />
+                    Input
+                  </button>
+                )}
+                <button
+                  className="comparison-download"
+                  onClick={() =>
+                    downloadFile(
+                      primary.name,
+                      artifactBytes(primary) as Uint8Array<ArrayBuffer>,
+                      primary.mime,
+                    )
+                  }
+                  aria-label={`Hent leveret fil: ${primary.name} v${primary.version}`}
+                >
+                  <ArrowDownToLine size={14} />
+                  Output
+                </button>
+              </div>
             </div>
             {tab === "preview" ? (
               <>
@@ -331,12 +397,13 @@ export function ReviewPanel({
             ) : tab === "diff" ? (
               <div className="diff-panel">
                 <div className="diff-legend">
-                  <span className="diff-old">− Tidligere version</span>
+                  <span className="diff-old">− Låst input</span>
                   <span className="diff-new">+ Ny version</span>
                   <small>{primary.name}</small>
                 </div>
                 {primary.encoding === "utf8" ? (
                   <CodeDiff
+                    key={`${delivery.id}:${primary.id}`}
                     before={
                       previous?.encoding === "utf8" ? previous.content : ""
                     }
@@ -368,6 +435,21 @@ export function ReviewPanel({
                       </small>
                       <code>{a.sha256.slice(0, 24)}…</code>
                     </div>
+                    <button
+                      className="comparison-download"
+                      aria-label={`Gennemgå ${a.name}`}
+                      onClick={() => {
+                        setOutputId(a.id);
+                        setView("new");
+                        setTab(
+                          a.encoding === "utf8" && a.mime !== "text/html"
+                            ? "diff"
+                            : "preview",
+                        );
+                      }}
+                    >
+                      <Monitor size={16} /> Åbn
+                    </button>
                     <button
                       className="icon-button"
                       aria-label={`Hent ${a.name}`}
@@ -584,37 +666,125 @@ export function ReviewPanel({
   );
 }
 function CodeDiff({ before, after }: { before: string; after: string }) {
-  const a = before.replace(/></g, ">\n<").split("\n");
-  const b = after.replace(/></g, ">\n<").split("\n");
-  let start = 0;
-  while (start < a.length && start < b.length && a[start] === b[start]) start++;
-  let end = 0;
-  while (
-    end < a.length - start &&
-    end < b.length - start &&
-    a[a.length - 1 - end] === b[b.length - 1 - end]
-  )
-    end++;
-  const rows = [
-    ...a.slice(0, start).map((text) => ({ type: "same", text })),
-    ...a
-      .slice(start, a.length - end)
-      .map((text) => ({ type: "removed", text })),
-    ...b.slice(start, b.length - end).map((text) => ({ type: "added", text })),
-    ...(end
-      ? b.slice(b.length - end).map((text) => ({ type: "same", text }))
-      : []),
-  ];
+  const result = useMemo(() => compareText(before, after), [before, after]);
+  const [showAll, setShowAll] = useState(false);
+  const [showEndings, setShowEndings] = useState(
+    () =>
+      before !== after &&
+      before.replace(/[\r\n]/g, "") === after.replace(/[\r\n]/g, ""),
+  );
+  const [limit, setLimit] = useState(400);
+  if (result.kind === "too_large")
+    return <div className="diff-message">{result.reason}</div>;
+  const rows = showAll ? result.rows : contextRows(result.rows);
+  const endings = showEndings;
   return (
-    <div className="diff-lines">
-      {rows.map((r, i) => (
-        <div key={i} className={`diff-line ${r.type}`}>
-          <span>
-            {r.type === "added" ? "+" : r.type === "removed" ? "−" : " "}
-          </span>
-          <code>{r.text || " "}</code>
+    <>
+      <div className="diff-options">
+        <strong>
+          {result.identical
+            ? "Ingen ændringer i filens indhold"
+            : `+${result.added} tilføjet · −${result.removed} fjernet`}
+        </strong>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={showAll}
+              onChange={(event) => {
+                setShowAll(event.target.checked);
+                setLimit(400);
+              }}
+            />
+            Vis alle linjer
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={showEndings}
+              onChange={(event) => setShowEndings(event.target.checked)}
+            />
+            Vis linjeskift
+          </label>
         </div>
-      ))}
-    </div>
+      </div>
+      {result.coarse && (
+        <p className="diff-message">
+          Store blokke med gentagne linjer vises samlet som fjernet og tilføjet.
+          Indholdet er komplet; fordelingen er forenklet.
+        </p>
+      )}
+      {endings && (
+        <p className="diff-ending-key">
+          LF / CRLF / CR er filens linjeskift. ∅ betyder, at sidste linje ikke
+          slutter med et linjeskift.
+        </p>
+      )}
+      <div className="diff-column-labels" aria-hidden="true">
+        <span>Før</span>
+        <span>Ny</span>
+        <span />
+        <span>Filindhold</span>
+      </div>
+      <div
+        className="diff-lines"
+        tabIndex={0}
+        role="region"
+        aria-label="Kodeændringer med linjenumre"
+      >
+        {rows.slice(0, limit).map((row, i) =>
+          row.type === "gap" ? (
+            <div className="diff-gap" key={i}>
+              {row.count} uændrede {row.count === 1 ? "linje" : "linjer"} · vælg
+              “Vis alle linjer” for at læse dem
+            </div>
+          ) : (
+            <div key={i} className={`diff-line ${row.type}`}>
+              <span className="diff-number">
+                {row.before && <span className="sr-only">Inputlinje </span>}
+                {row.before ?? ""}
+              </span>
+              <span className="diff-number">
+                {row.after && <span className="sr-only">Outputlinje </span>}
+                {row.after ?? ""}
+              </span>
+              <span
+                role="img"
+                aria-label={
+                  row.type === "added"
+                    ? "Tilføjet"
+                    : row.type === "removed"
+                      ? "Fjernet"
+                      : "Uændret"
+                }
+              >
+                {row.type === "added"
+                  ? "+"
+                  : row.type === "removed"
+                    ? "−"
+                    : " "}
+              </span>
+              <code>
+                {row.text || " "}
+                {endings && (
+                  <small className="diff-eol">
+                    {row.ending === "none" ? "∅" : row.ending}
+                  </small>
+                )}
+              </code>
+            </div>
+          ),
+        )}
+        {rows.length > limit && (
+          <button
+            className="diff-more"
+            onClick={() => setLimit((current) => current + 400)}
+          >
+            Vis næste {Math.min(400, rows.length - limit)} linjer ·{" "}
+            {rows.length - limit} tilbage
+          </button>
+        )}
+      </div>
+    </>
   );
 }
