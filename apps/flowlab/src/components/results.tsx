@@ -17,6 +17,7 @@ import { formatMetric, formatDifference, formatNumber } from "../lib/document";
 import CaseExplorer from "./case-explorer";
 import RunDistribution from "./run-distribution";
 import TimeProfile from "./time-profile";
+import CostProfile from "./cost-profile";
 export function MetricCards({ comparison }: { comparison: Comparison | null }) {
   return (
     <div className="metric-grid">
@@ -306,6 +307,7 @@ export function ResultsPanel({
         <QueueChart comparison={comparison} />
         <ResourceChart comparison={comparison} />
       </div>
+      <CostProfile comparison={comparison} />
       <div className="panel spread-panel">
         <div className="section-title">
           <div>

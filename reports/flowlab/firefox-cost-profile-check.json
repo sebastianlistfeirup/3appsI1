@@ -1,0 +1,42 @@
+{
+  "executedAt": "2026-10-16T23:32:34.833Z",
+  "results": [
+    {
+      "viewport": "desktop",
+      "checks": [
+        "Warmup costs reconcile 5+7+100=112 and 40+7+250=297 for all 30 seeds",
+        "Unused reserved salary is charged despite zero occupied time",
+        "Side-specific renamed labels, exact staff time, selected last seed",
+        "Downloaded CSVs match the real PDF/JSON report package",
+        "Zero capacity differs from absent resource; 100-pool union paginates/searches without filtering exports",
+        "WCAG2AA/21AA zero, no page errors or horizontal overflow"
+      ],
+      "violations": []
+    },
+    {
+      "viewport": "tablet",
+      "checks": [
+        "Warmup costs reconcile 5+7+100=112 and 40+7+250=297 for all 30 seeds",
+        "Unused reserved salary is charged despite zero occupied time",
+        "Side-specific renamed labels, exact staff time, selected last seed",
+        "Downloaded CSVs match the real PDF/JSON report package",
+        "Zero capacity differs from absent resource; 100-pool union paginates/searches without filtering exports",
+        "WCAG2AA/21AA zero, no page errors or horizontal overflow"
+      ],
+      "violations": []
+    },
+    {
+      "viewport": "mobile",
+      "checks": [
+        "Warmup costs reconcile 5+7+100=112 and 40+7+250=297 for all 30 seeds",
+        "Unused reserved salary is charged despite zero occupied time",
+        "Side-specific renamed labels, exact staff time, selected last seed",
+        "Downloaded CSVs match the real PDF/JSON report package",
+        "Zero capacity differs from absent resource; 100-pool union paginates/searches without filtering exports",
+        "WCAG2AA/21AA zero, no page errors or horizontal overflow"
+      ],
+      "violations": []
+    }
+  ],
+  "errors": []
+}

@@ -4,6 +4,14 @@ import { metricDefinitions } from "@tre/flow-engine";
 import { formatDifference, formatMetric } from "./document";
 import type { DecisionReport } from "./report";
 import {
+  COST_FIELDS,
+  COST_LABELS,
+  costProfile,
+  formatCost,
+  resourceIds,
+  resourceProfile,
+} from "./cost-profile";
+import {
   aggregateTimeProfile,
   formatCaseTime,
   TIME_LABELS,
@@ -387,6 +395,114 @@ export async function renderReportPdf(
     42,
     742,
     "P90 beregnes med lineær interpolation. Restkø og SLA vises særskilt. Alle præcise tidstal, antal observationer og seeds findes i time-summaries.csv og report.json.",
+    511,
+    9,
+    3,
+  );
+  addPage();
+  text(42, 99, "Kapacitetens tid & pris", 23, colors.ink, bold);
+  paragraph(
+    42,
+    126,
+    "Gennemsnit af de samme parrede kørsler som rapportens øvrige resultater. Priserne er simulerede omkostninger for målevinduet, ikke dokumenterede besparelser.",
+    511,
+    10,
+    3,
+  );
+  text(319, 183, "BASELINE", 8, colors.muted, bold);
+  text(446, 183, "ALTERNATIV", 8, colors.muted, bold);
+  const costA = costProfile(c, "baseline"),
+    costB = costProfile(c, "scenario");
+  COST_FIELDS.forEach((field, index) => {
+    const top = 211 + index * 27;
+    if (field === "totalCost") rect(38, top - 17, 519, 25, colors.pale);
+    text(
+      46,
+      top,
+      COST_LABELS[field],
+      10,
+      colors.ink,
+      field === "totalCost" ? bold : regular,
+      260,
+    );
+    text(319, top, formatCost(costA[field]), 10, colors.ink, regular, 114);
+    text(446, top, formatCost(costB[field]), 10, colors.teal, bold, 107);
+  });
+  paragraph(
+    42,
+    332,
+    "Løn = planlagt medarbejdertid i målevinduet × timeløn. Ubrugte puljer koster også løn. Optaget tid reducerer ikke det reserverede beløb. Ledig tid er ikke automatisk en realiserbar besparelse.",
+    511,
+    9,
+    3,
+  );
+  paragraph(
+    42,
+    381,
+    "Aktivitetspris medregnes, når besøget starter i målevinduet, også ved uafsluttede sager. Fast automation medregnes fuldt én gang pr. kørsel, uden forholdsmæssig reduktion for målevinduet.",
+    511,
+    9,
+    3,
+  );
+  const resourceHeader = (top: number) => {
+    text(42, top, "HVERT TEAMS MEDARBEJDERTID", 9, colors.muted, bold);
+    text(268, top, "RESERVERET", 8, colors.muted, bold);
+    text(366, top, "OPTAGET", 8, colors.muted, bold);
+    text(464, top, "LØN", 8, colors.muted, bold);
+  };
+  resourceHeader(448);
+  let resourceY = 477;
+  const allResourceIds = resourceIds(c);
+  if (!allResourceIds.length)
+    text(42, resourceY, "Ingen ressourcepuljer i modellerne.", 10);
+  for (const id of allResourceIds) {
+    if (resourceY > 700) {
+      addPage();
+      text(42, 99, "Ressourcer · fortsat", 23, colors.ink, bold);
+      resourceHeader(138);
+      resourceY = 168;
+    }
+    text(42, resourceY, `Pulje-id: ${id}`, 9, colors.muted, regular, 511);
+    for (const [index, side] of (["baseline", "scenario"] as const).entries()) {
+      const profile = resourceProfile(c, side, id);
+      const rowY = resourceY + 20 + index * 22;
+      rect(38, rowY - 14, 519, 21, index ? colors.pale : rgb(0.97, 0.98, 0.97));
+      const label = `${side === "baseline" ? "Baseline" : "Alternativ"} · ${profile?.label ?? "puljen mangler"}`;
+      text(46, rowY, label, 9, colors.ink, regular, 207);
+      text(
+        268,
+        rowY,
+        formatCaseTime(profile?.availableTime ?? null),
+        10,
+        colors.ink,
+        regular,
+        85,
+      );
+      text(
+        366,
+        rowY,
+        formatCaseTime(profile?.busyTime ?? null),
+        10,
+        colors.ink,
+        regular,
+        85,
+      );
+      text(
+        464,
+        rowY,
+        formatCost(profile?.salaryCost ?? null),
+        9,
+        colors.ink,
+        regular,
+        89,
+      );
+    }
+    resourceY += 77;
+  }
+  paragraph(
+    42,
+    760,
+    "Tider summeres over medarbejdere, derefter som middel pr. kørsel. Alle beløb, seeds, fulde navne, id og enheder findes i costs.csv, resources.csv og report.json. CSV beskytter formellignende tekst; JSON bevarer originalen.",
     511,
     9,
     3,

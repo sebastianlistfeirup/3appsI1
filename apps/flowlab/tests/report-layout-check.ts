@@ -15,6 +15,21 @@ async function main() {
     "W".repeat(4000 - "HYPOTESESTART".length - "HYPOTESESLUT".length) +
     "HYPOTESESLUT";
   doc.decision = "BESLUTNINGSTART" + "æøåW".repeat(2490) + "BESLUTNINGSLUT";
+  for (const [side, model] of [
+    ["baseline", doc.baseline],
+    ["scenario", doc.scenario],
+  ] as const) {
+    model.resources = Array.from({ length: 50 }, (_, index) => ({
+      id: `${side}-pool-${index}`,
+      label: "æøåW".repeat(25),
+      capacity: index === 0 ? 1 : 1000,
+      hourlyCost: 1000000,
+      calendar: [],
+    }));
+    model.nodes.find((node) => node.kind === "activity")!.resourceId =
+      `${side}-pool-0`;
+    model.fixedAutomationCost = 1e12;
+  }
   doc.comparison = await compareModels(doc.baseline, doc.scenario);
   const bytes = await reportPdf(createReport(doc), {
     regular: new Uint8Array(
@@ -50,6 +65,12 @@ async function main() {
     (extracted.match(/æ/g) ?? []).length >= 2490,
     "All Danish characters in the complete decision survive pagination",
   );
+  for (const model of [doc.baseline, doc.scenario])
+    for (const pool of model.resources)
+      assert(
+        normalized.includes(`Pulje-id:${pool.id}`),
+        `Resource ${pool.id} appears in the paginated cost ledger`,
+      );
   const bbox = execFileSync("pdftotext", ["-bbox", path, "-"], {
     encoding: "utf8",
   });
@@ -88,6 +109,7 @@ async function main() {
       "Nearly 10,000-character unbroken Danish decision retained",
       "Every extracted word stays within printable page bounds",
       "Actual licensed embedded fonts and full 30 paired golden runs used",
+      "All 100 distinct pool IDs and maximum fixed cost survive the paginated resource ledger",
     ],
   };
   await writeFile(

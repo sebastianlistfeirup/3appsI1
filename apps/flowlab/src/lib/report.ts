@@ -10,6 +10,7 @@ import {
 import { strToU8, zipSync } from "fflate";
 import { holdoutDataset } from "./datasets";
 import { timeProfilesCsv } from "./time-profile";
+import { costProfilesCsv, resourceProfilesCsv } from "./cost-profile";
 import {
   comparisonMatches,
   narrativeChanged,
@@ -139,6 +140,8 @@ export async function reportZip(
       "report.json": strToU8(JSON.stringify(report, null, 2)),
       "metrics.csv": strToU8(metrics),
       "time-summaries.csv": strToU8(timeProfilesCsv(report.comparison)),
+      "costs.csv": strToU8(costProfilesCsv(report.comparison)),
+      "resources.csv": strToU8(resourceProfilesCsv(report.comparison)),
       "models.json": strToU8(
         JSON.stringify(
           {
@@ -150,7 +153,7 @@ export async function reportZip(
         ),
       ),
       "LAES_MIG.txt": strToU8(
-        "FlowLab lokal beslutningsrapport\nPDF og CSV er afledt af de samme metrics i report.json.\nFor at reproducere: brug motorversionen, de to model-snapshots og den fælles seedliste i report.json.\nAlle tider i JSON og time-summaries.csv er millisekunder. PDF viser enheden ved hvert tal.\nTime-summaries.csv indeholder gennemsnit, median, p90 og antal afsluttede sager for hver tidsart og hvert seed. Middel af run-percentiler er ikke en samlet percentil for alle sager.\nSimulerede gevinster er ikke realiserede gevinster.\nHvis holdoutDataset findes i report.json, indeholder den det præcise rensede grundlag til holdout-vurderingen. CSV beskytter formellignende tekst med en apostrof; JSON bevarer den oprindelige værdi.\n",
+        "FlowLab lokal beslutningsrapport\nPDF og CSV er afledt af de samme metrics i report.json.\nFor at reproducere: brug motorversionen, de to model-snapshots og den fælles seedliste i report.json.\nAlle tider i JSON og time-summaries.csv er millisekunder. PDF viser enheden ved hvert tal.\nCosts.csv indeholder løn, variable aktivitetspriser, fast automation og total for hvert seed og hvert scenarie. Alle beløb er DKK. Resources.csv indeholder reserveret, optaget og ledig medarbejdertid i millisekunder samt løn for alle puljer og seeds. Tid summeres på tværs af medarbejdere. Løn betales for reserveret tid i målevinduet; fast automation tæller fuldt én gang pr. kørsel. Formellignende pulje-id og navne beskyttes med en apostrof i CSV; JSON bevarer originalen.\nTime-summaries.csv indeholder gennemsnit, median, p90 og antal afsluttede sager for hver tidsart og hvert seed. Middel af run-percentiler er ikke en samlet percentil for alle sager.\nSimulerede gevinster er ikke realiserede gevinster.\nHvis holdoutDataset findes i report.json, indeholder den det præcise rensede grundlag til holdout-vurderingen. CSV beskytter formellignende tekst med en apostrof; JSON bevarer den oprindelige værdi.\n",
       ),
     },
     { level: 6 },

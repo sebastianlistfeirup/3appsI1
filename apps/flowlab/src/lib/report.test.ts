@@ -32,6 +32,32 @@ describe("Decision report integrity", () => {
     const csv = strFromU8(files["metrics.csv"]).split("\n");
     const timeRows = strFromU8(files["time-summaries.csv"]).split("\n");
     expect(timeRows).toHaveLength(181);
+    const costRows = strFromU8(files["costs.csv"]).split("\n"),
+      resourceRows = strFromU8(files["resources.csv"]).split("\n");
+    expect(costRows).toHaveLength(61);
+    expect(resourceRows).toHaveLength(
+      1 +
+        30 *
+          (doc.comparison.baseline.resources.length +
+            doc.comparison.scenario.resources.length),
+    );
+    for (const side of ["baseline", "scenario"] as const)
+      for (const run of doc.comparison[
+        side === "baseline" ? "baselineRuns" : "scenarioRuns"
+      ])
+        expect(costRows).toContain(
+          [
+            run.seed,
+            `"${side}"`,
+            `"${run.status}"`,
+            run.observationStart,
+            run.measuredUntil,
+            run.metrics.salaryCost,
+            run.metrics.variableCost,
+            doc.comparison[side].fixedAutomationCost,
+            run.metrics.cost,
+          ].join(","),
+        );
     for (const seed of doc.comparison.seeds)
       for (const side of ["baseline", "scenario"] as const)
         for (const metric of [
@@ -74,7 +100,7 @@ describe("Decision report integrity", () => {
     expect(pdf.startsWith("%PDF-1.")).toBe(true);
     expect(pdf.trimEnd().endsWith("%%EOF")).toBe(true);
     expect((await PDFDocument.load(files["rapport.pdf"])).getPageCount()).toBe(
-      3,
+      4,
     );
     expect((await PDFDocument.load(files["rapport.pdf"])).getTitle()).toBe(
       "FlowLab · Medlemsservice",
@@ -134,7 +160,7 @@ describe("Decision report integrity", () => {
     expect(report.holdout?.status).toBe("target_met");
     expect(
       (await PDFDocument.load(await reportPdf(report, fonts))).getPageCount(),
-    ).toBe(4);
+    ).toBe(5);
     doc.holdout.model.revision++;
     expect(createReport(doc).holdoutMatchesBaseline).toBe(false);
     const old = { ...initialDocument() } as Record<string, unknown>;
