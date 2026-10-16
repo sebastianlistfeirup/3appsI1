@@ -24,7 +24,7 @@ import {
   type CsvMapping,
   type FlowModel,
 } from "@tre/flow-engine";
-import { downloadFile } from "@tre/persistence";
+import { downloadFile, type SaveState } from "@tre/persistence";
 import { formatNumber, type Dataset } from "../lib/document";
 import HoldoutPanel from "./holdout-panel";
 import { ActivityPicker } from "./activity-picker";
@@ -37,6 +37,7 @@ import {
 } from "../lib/datasets";
 export default function DataWorkshop({
   dataset,
+  saveState,
   datasetHistory,
   onRestoreDataset,
   onDeleteDataset,
@@ -51,6 +52,7 @@ export default function DataWorkshop({
   onHoldout,
 }: {
   dataset: Dataset | null;
+  saveState: SaveState;
   datasetHistory: Dataset[];
   onRestoreDataset: (id: string) => void;
   onDeleteDataset: (id: string) => void;
@@ -388,13 +390,13 @@ export default function DataWorkshop({
               {result
                 ? "Kontrolleret forhåndsvisning"
                 : dataset
-                  ? "Gemt datagrundlag"
+                  ? "Valgt datagrundlag"
                   : "Afventer data"}
             </span>
           </div>
           {file && !result && dataset && (
             <p className="notice-text">
-              Viser det gemte grundlag {dataset.name}. Kontrollér den nye fil,
+              Viser det valgte grundlag {dataset.name}. Kontrollér den nye fil,
               før du bruger dens data.
             </p>
           )}
@@ -582,8 +584,13 @@ export default function DataWorkshop({
               </div>
               {dataset && (
                 <p className="field-hint">
-                  Gemt: {dataset.name} · SHA-256:{" "}
-                  <span className="hash">{dataset.sha256}</span>
+                  {saveState === "saved" ? "Gemt" : "Valgt"}: {dataset.name}
+                  {saveState === "saving"
+                    ? " · Afventer lokal lagring"
+                    : saveState === "error" || saveState === "conflict"
+                      ? " · Ikke gemt lokalt; eksportér en kopi før du lukker"
+                      : ""}{" "}
+                  · SHA-256: <span className="hash">{dataset.sha256}</span>
                 </p>
               )}
             </>

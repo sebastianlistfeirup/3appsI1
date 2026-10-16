@@ -41,6 +41,28 @@ async function main() {
           reducedMotion: "reduce",
         }),
         page = await context.newPage();
+      // Hold a real IndexedDB transaction open, so UI selection is observably
+      // earlier than durable commit. No stored values or save events are faked.
+      await page.addInitScript({
+        content: `
+        window.__flowlabHoldWrites = false;
+        const original = IDBObjectStore.prototype.put;
+        IDBObjectStore.prototype.put = function (...args) {
+          const request = original.apply(this, args);
+          const hold = window.__flowlabHoldWrites;
+          if (this.name === "documents" && hold) {
+            const until = performance.now() + 15000;
+            const keepOpen = () => {
+              if (window.__flowlabHoldWrites && performance.now() < until)
+                this.get("__flowlab_test_keep_transaction_open__")
+                  .addEventListener("success", keepOpen);
+            };
+            keepOpen();
+          }
+          return request;
+        };
+      `,
+      });
       page.on("pageerror", (error) => errors.push(error.message));
       await page.goto("http://localhost:3001", { waitUntil: "networkidle" });
       await expect(
@@ -240,11 +262,28 @@ async function main() {
         .locator(".dataset-history .version-list > div")
         .filter({ hasText: "period-1.csv" });
       await expect(firstVersion).toBeVisible();
+      await page.evaluate(() => {
+        (window as any).__flowlabHoldWrites = true;
+      });
       await firstVersion
         .getByRole("button", { name: "Gendan data", exact: true })
         .click();
       await expect(
+        page.getByText("Valgt: period-1.csv · Afventer lokal lagring", {
+          exact: false,
+        }),
+      ).toBeVisible();
+      await expect(
         page.getByText("Gemt: period-1.csv", { exact: false }),
+      ).toHaveCount(0);
+      await page.evaluate(() => {
+        (window as any).__flowlabHoldWrites = false;
+      });
+      await expect(
+        page.getByText("Gemt: period-1.csv", { exact: false }),
+      ).toBeVisible();
+      await expect(
+        page.getByText("Gemt lokalt", { exact: true }),
       ).toBeVisible();
       await page.reload({ waitUntil: "networkidle" });
       await page
@@ -292,6 +331,7 @@ async function main() {
           "Report includes archived holdout source after three new imports",
           "Fifth version requires explicit removal and offers a working backup",
           "Retention removal can be undone; archived data can be restored and survives reload",
+          "A delayed real IndexedDB transaction shows selected, not saved, until durable commit",
           "Stale model input blocks report until 30 paired reruns complete",
           "WCAG2AA/21AA zero violations; no overflow",
         ],

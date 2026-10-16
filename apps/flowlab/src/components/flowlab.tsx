@@ -1405,6 +1405,7 @@ export default function FlowLab() {
               {tab === "data" && (
                 <DataWorkshop
                   dataset={doc.dataset}
+                  saveState={saveState}
                   datasetHistory={doc.datasetHistory}
                   onExportWorkspace={() => workspaceTask("export")}
                   onDeleteDataset={(id) => {
@@ -1442,7 +1443,7 @@ export default function FlowLab() {
                     try {
                       update(replaceDataset(doc, dataset, allowRemoval));
                       notify(
-                        "Dataversionen er gemt lokalt. Modellen er fortsat ikke kalibreret.",
+                        "Dataversionen er valgt og gemmes lokalt. Modellen er fortsat ikke kalibreret.",
                       );
                       return true;
                     } catch (error) {
