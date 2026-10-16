@@ -167,6 +167,11 @@ try {
         ["exec", "tsx", "apps/flowlab/tests/case-evidence-check.ts"],
         { FLOWLAB_BROWSER: browser },
       );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/run-distribution-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
     }
     await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
     await run("node", ["apps/flowlab/tests/canvas-check.mjs"]);
@@ -192,12 +197,20 @@ try {
       await run("node", ["apps/director/tests/storyboard-flow.mjs"], {
         STORYBOARD_ENGINE: browser,
       });
+      await run("node", ["apps/director/tests/versions-flow.mjs"], {
+        VERSIONS_ENGINE: browser,
+      });
     }
     await run("node", ["apps/director/tests/editor-flow.mjs"]);
     await run("node", ["apps/director/tests/storage-recovery.mjs"]);
     await run("node", ["apps/director/tests/a11y-smoke.mjs"]);
     await run("node", ["apps/director/tests/render-smoke.mjs"]);
     await run("node", ["apps/director/tests/recovery-smoke.mjs"]);
+    await run("node", [
+      "--import",
+      "tsx",
+      "apps/director/tests/sequence-render-smoke.mjs",
+    ]);
     await run("node", ["apps/director/tests/media-ui-flow.mjs"]);
     for (const browser of ["firefox", "webkit"])
       await run("node", ["apps/director/tests/media-ui-flow.mjs"], {
