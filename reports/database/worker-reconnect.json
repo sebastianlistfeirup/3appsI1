@@ -1,0 +1,24 @@
+{
+  "verifiedAt": "2026-10-16T22:25:53.966Z",
+  "profile": "real-local-postgres-connections-and-separate-worker",
+  "cloudConnected": false,
+  "terminatedIdleConnections": [
+    "tre-app-worker",
+    "tre-outbox",
+    "tre-queue",
+    "tre-queue"
+  ],
+  "sameProcessSurvived": true,
+  "actualJobResults": 2,
+  "usageEvents": 2,
+  "totalCostMinor": 0,
+  "repeatedIdempotencyKeyReturnedOriginal": true,
+  "cleanShutdown": true,
+  "checks": [
+    "Pre-disconnect result retained",
+    "New job completed after reconnect",
+    "Idle pool errors handled without uncaught exception",
+    "No credentials in structured worker output"
+  ],
+  "limits": "Terminates actual idle database sessions; does not simulate a complete hosted database outage or an unknown external provider outcome."
+}

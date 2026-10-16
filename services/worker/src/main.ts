@@ -7,24 +7,57 @@ import {
   envelopeSchema,
   localHandlers,
 } from "@tre/jobs";
+const log = (event: object) =>
+  process.stdout.write(
+    `${JSON.stringify({ at: new Date().toISOString(), ...event })}\n`,
+  );
+const observeConnectionErrors = (pool: Pool, purpose: string) => {
+  // pg emits a pool-level error when an idle socket is disconnected. Without a
+  // listener EventEmitter terminates the process, before the pool can reconnect.
+  pool.on("error", () =>
+    log({
+      event: "database.connection_error",
+      purpose,
+      message:
+        "An idle database connection was lost; the next operation will reconnect.",
+    }),
+  );
+  return pool;
+};
+const connectionLimits = {
+  connectionTimeoutMillis: 5000,
+  statement_timeout: 15000,
+  lock_timeout: 5000,
+};
 const required = (key: string) => {
   const value = process.env[key];
   if (!value)
     throw new Error(`${key} is required. See docs/backend-profile.md.`);
   return value;
 };
-const appPool = new Pool({
-  connectionString: required("APP_WORKER_DATABASE_URL"),
-  max: 4,
-  application_name: "tre-app-worker",
-});
-const dispatcherPool = new Pool({
-  connectionString: required("DISPATCHER_DATABASE_URL"),
-  max: 2,
-  application_name: "tre-outbox",
-});
+const appPool = observeConnectionErrors(
+  new Pool({
+    ...connectionLimits,
+    connectionString: required("APP_WORKER_DATABASE_URL"),
+    max: 4,
+    application_name: "tre-app-worker",
+  }),
+  "worker",
+);
+const dispatcherPool = observeConnectionErrors(
+  new Pool({
+    ...connectionLimits,
+    connectionString: required("DISPATCHER_DATABASE_URL"),
+    max: 2,
+    application_name: "tre-outbox",
+  }),
+  "dispatcher",
+);
 const queueUrl = required("QUEUE_DATABASE_URL");
-const queueCheck = new Pool({ connectionString: queueUrl, max: 1 });
+const queueCheck = observeConnectionErrors(
+  new Pool({ ...connectionLimits, connectionString: queueUrl, max: 1 }),
+  "queue-principal-check",
+);
 try {
   await Promise.all([
     assertRuntimePrincipal(appPool, "tre_worker"),
@@ -35,10 +68,6 @@ try {
   await queueCheck.end();
 }
 const boss = await startQueue(queueUrl, { role: "tre_queue" });
-const log = (event: object) =>
-  process.stdout.write(
-    `${JSON.stringify({ at: new Date().toISOString(), ...event })}\n`,
-  );
 boss.on("error", () =>
   log({
     event: "queue.error",
@@ -94,9 +123,34 @@ async function stop() {
   stopping = true;
   clearInterval(timer);
   log({ event: "worker.stopping" });
-  await boss.stop({ graceful: true, timeout: 15000 });
-  await Promise.all([appPool.end(), dispatcherPool.end()]);
-  log({ event: "worker.stopped" });
+  const deadline = setTimeout(() => {
+    log({
+      event: "worker.shutdown_timeout",
+      message:
+        "Shutdown exceeded 25 seconds. Durable jobs retain their recovery state.",
+    });
+    process.exit(1);
+  }, 25000);
+  deadline.unref();
+  try {
+    await boss.stop({ graceful: true, timeout: 15000 });
+  } catch {
+    process.exitCode = 1;
+    log({
+      event: "worker.shutdown_error",
+      message:
+        "Queue shutdown failed; inspect server diagnostics before restart.",
+    });
+  } finally {
+    const closed = await Promise.allSettled([
+      appPool.end(),
+      dispatcherPool.end(),
+    ]);
+    if (closed.some((result) => result.status === "rejected"))
+      process.exitCode = 1;
+    clearTimeout(deadline);
+    log({ event: "worker.stopped", exitCode: process.exitCode ?? 0 });
+  }
 }
 process.on("SIGINT", () => void stop());
 process.on("SIGTERM", () => void stop());

@@ -31,7 +31,8 @@ export async function startQueue(
     supervise: options.supervise ?? true,
     schedule: false,
     application_name: "tre-queue",
-    options: options.role ? "-c role=tre_queue" : undefined,
+    connectionTimeoutMillis: 5000,
+    options: `${options.role ? "-c role=tre_queue " : ""}-c statement_timeout=15000 -c lock_timeout=5000`,
   });
   // Callers may add a structured error logger; never log raw payloads or connection strings.
   boss.on("error", () => {});

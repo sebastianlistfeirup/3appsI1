@@ -38,3 +38,11 @@ Studio includes an opt-in [authenticated server API](backend-api.md), disabled b
 The actual worker entry point is launched as a separate Node process in `tests/integration/worker-process.test.ts`, using a dedicated fixture database and three restricted logins. The test verifies a real result, SIGKILL, new work queued during downtime, restart without a duplicate result/usage event, and graceful SIGTERM. Other fixtures exercise an unknown in-flight outcome and retained reservation. These are separate claims; a restart after a completed job does not prove a paid provider can be retried safely.
 
 The database runner preserves failing child exit codes explicitly after cleanup. `embedded-postgres`'s transitive exit hook otherwise resets a natural process exit to zero; the failure path was reproduced with an invalid Vitest argument before rerunning the normal suite. CI must never treat a printed failed suite as a passed gate.
+
+## Idle connection recovery
+
+The worker subscribes to idle `pg.Pool` errors before startup checks. An interrupted idle connection is logged without credentials; the pool opens a fresh connection for the next operation. Application/dispatcher connections and pg-boss connections have a five-second connection limit, fifteen-second statement limit and five-second lock limit. Worker shutdown has a twenty-five-second outer deadline. These limits bound database waits; they do not authorize retrying an unknown provider operation.
+
+The process integration fixture terminates the actual idle PostgreSQL sessions, proves the same worker process remains alive, and then completes a new job. The previous result and its idempotency key remain intact, with exactly two total results and two zero-cost usage events. `reports/database/worker-reconnect.json` records the actual connection classes terminated. This exercises connection loss, not a complete hosted database restart. The pre-fix fixture exited with status 1; the idle pool emitted an unhandled `error` event.
+
+A separate [actual backup/restore drill](backup-restore.md) now passes locally and on GitHub. Production backup scheduling and a hosted restore rehearsal remain unconfigured.
