@@ -1,13 +1,14 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T20:00:21.092089+00:00",
+  "updatedAt": "2026-10-16T20:25:05.483393+00:00",
   "status": "building",
   "activeTasks": [
     "F03-data-jobs",
-    "S09-browser",
-    "L01-flowlab-core",
-    "D05-animatic"
+    "F04-auth-isolation",
+    "L03-model-audit",
+    "D06-glb"
   ],
   "profile": "demo",
-  "connectedIntegrations": []
+  "connectedIntegrations": [],
+  "verifiedLocalServices": ["PostgreSQL 17.10", "pg-boss 12.38.0"]
 }

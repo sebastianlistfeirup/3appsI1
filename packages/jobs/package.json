@@ -1,0 +1,18 @@
+{
+  "name": "@tre/jobs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "pg-boss": "12.38.0",
+    "@tre/database": "workspace:*",
+    "@tre/contracts": "workspace:*",
+    "zod": "4.6.7"
+  }
+}

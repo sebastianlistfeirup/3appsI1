@@ -53,6 +53,8 @@ export interface JobRow {
   actionable_error: string | null;
   created_at: Date;
   updated_at: Date;
+  deadline_at: Date;
+  next_attempt_at: Date | null;
 }
 export interface RequestJob {
   workspaceId: string;
@@ -304,7 +306,12 @@ export async function transitionJob(
   options: { error?: string; providerRef?: string; leaseToken?: string } = {},
 ): Promise<JobRow> {
   assertJobTransition(job.state, state);
-  if (options.leaseToken && job.lease_token !== options.leaseToken)
+  if (
+    options.leaseToken &&
+    (job.lease_token !== options.leaseToken ||
+      !job.lease_until ||
+      job.lease_until.getTime() <= Date.now())
+  )
     throw new DomainError(
       "LEASE_LOST",
       "Jobbet tilhører en anden worker.",
@@ -394,6 +401,12 @@ export async function finishJob(
       "Workerens lease er udløbet eller jobbet er i forkert tilstand.",
       409,
     );
+  if (job.cancel_requested)
+    throw new DomainError(
+      "CANCEL_REQUESTED",
+      "Jobbet er blevet annulleret.",
+      409,
+    );
   const reservation = (
     await client.query<{ reserved_minor: string; state: string; day: string }>(
       "select reserved_minor,state,day from app.budget_reservations where job_id=$1 for update",
@@ -437,4 +450,104 @@ export async function finishJob(
   ).rows[0]!;
   await recordJobEvent(client, updated, "job.succeeded");
   return updated;
+}
+
+/** Only call when the operation's final cost is known, including confirmed zero-cost failure.
+ * Unknown provider outcomes must use reconcile_required and retain the reservation. */
+export async function settleUnsuccessfulJob(
+  client: PoolClient,
+  id: string,
+  leaseToken: string,
+  state: "failed" | "cancelled",
+  actualMinor: number,
+  message: string,
+): Promise<JobRow> {
+  z.number()
+    .int()
+    .nonnegative()
+    .max(Number.MAX_SAFE_INTEGER)
+    .parse(actualMinor);
+  const visible = await getJob(client, id);
+  await client.query(
+    "select workspace_id from app.workspace_budgets where workspace_id=$1 for update",
+    [visible.workspace_id],
+  );
+  const job = (
+    await client.query<JobRow>(
+      "select * from app.jobs where id=$1 for update",
+      [id],
+    )
+  ).rows[0]!;
+  if (["failed", "cancelled"].includes(job.state)) return job;
+  if (
+    job.lease_token !== leaseToken ||
+    !job.lease_until ||
+    job.lease_until.getTime() <= Date.now()
+  )
+    throw new DomainError("LEASE_LOST", "Workerens lease er udløbet.", 409);
+  assertJobTransition(job.state, state);
+  const reservation = (
+    await client.query<{ reserved_minor: string; state: string; day: string }>(
+      "select reserved_minor,state,day from app.budget_reservations where job_id=$1 for update",
+      [id],
+    )
+  ).rows[0]!;
+  if (
+    reservation.state !== "held" ||
+    actualMinor > Number(reservation.reserved_minor)
+  )
+    throw new DomainError(
+      "COST_EXCEEDS_RESERVATION",
+      "Forbruget overstiger reservationen.",
+      409,
+    );
+  await client.query(
+    "insert into app.usage_events(workspace_id,job_id,source_event_id,amount_minor,day) values($1,$2,$3,$4,$5)",
+    [job.workspace_id, id, `job:${id}:settled`, actualMinor, reservation.day],
+  );
+  await client.query(
+    "update app.budget_reservations set state=$2,actual_minor=$3,updated_at=now() where job_id=$1",
+    [id, actualMinor === 0 ? "released" : "settled", actualMinor],
+  );
+  const updated = (
+    await client.query<JobRow>(
+      "update app.jobs set state=$2,revision=revision+1,lease_until=null,actionable_error=$3,updated_at=now() where id=$1 returning *",
+      [id, state, message.slice(0, 1000)],
+    )
+  ).rows[0]!;
+  await recordJobEvent(client, updated, `job.${state}`);
+  return updated;
+}
+export async function recordProviderReference(
+  client: PoolClient,
+  id: string,
+  leaseToken: string,
+  reference: string,
+): Promise<JobRow> {
+  z.string().min(1).max(500).parse(reference);
+  const job = await getJob(client, id);
+  if (job.provider_ref && job.provider_ref !== reference)
+    throw new DomainError(
+      "PROVIDER_REFERENCE_CONFLICT",
+      "Jobbet har allerede en anden providerreference.",
+      409,
+    );
+  return transitionJob(client, job, job.state, {
+    providerRef: reference,
+    leaseToken,
+  });
+}
+export async function cancelJob(
+  client: PoolClient,
+  id: string,
+  expectedRevision: number,
+): Promise<JobRow> {
+  uuid.parse(id);
+  z.number().int().positive().parse(expectedRevision);
+  return (
+    await client.query<JobRow>("select * from app.cancel_job($1,$2)", [
+      id,
+      expectedRevision,
+    ])
+  ).rows[0]!;
 }
