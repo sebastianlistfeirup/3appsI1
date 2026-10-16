@@ -34,12 +34,19 @@ import {
   createProject,
   latestBrief,
   latestReview,
+  copyProject,
   validateStudio,
   type Project,
   type Studio,
 } from "../lib/model";
 import { createSample } from "../lib/sample";
-import { exportProject, importProject } from "../lib/archive";
+import type { ArchiveProgress } from "../lib/archive";
+import {
+  exportProjectFile,
+  importProjectFile,
+  progressLabel,
+} from "../lib/archive-client";
+import { MAX_ARCHIVE_BYTES } from "../lib/limits";
 import {
   Badge,
   DeliveryStatus,
@@ -82,6 +89,10 @@ export function StudioApp() {
   const input = useRef<HTMLInputElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [archiveProgress, setArchiveProgress] =
+    useState<ArchiveProgress | null>(null);
+  const [duplicateImport, setDuplicateImport] = useState<Project | null>(null);
   const projectId =
     parts[0] === "projects" && parts[1]
       ? parts[1]
@@ -125,17 +136,20 @@ export function StudioApp() {
     }
   };
   async function exportCurrent() {
-    if (!project) return;
+    if (!project || exporting || importing) return;
     setExporting(true);
     try {
-      const file = await exportProject(project);
+      setArchiveProgress(null);
+      const file = await exportProjectFile(project, setArchiveProgress);
       downloadFile(
         `${project.name.toLowerCase().replace(/[^a-z0-9-]/g, "-")}-v${project.revision}.zip`,
         file as Uint8Array<ArrayBuffer>,
         "application/zip",
       );
       notify(
-        "Projektpakken er hentet med versioner, manifest og reviewbeviser.",
+        store.saveState === "saved"
+          ? "Projektpakken er hentet med versioner, manifest og reviewbeviser."
+          : "Din aktuelle lokale kopi er hentet. Browserlagringen er stadig ikke bekræftet.",
       );
     } catch (e) {
       notify(e instanceof Error ? e.message : "Eksporten fejlede.", true);
@@ -144,17 +158,20 @@ export function StudioApp() {
     }
   }
   async function importZip(file?: File) {
-    if (!file) return;
+    if (!file || importing || exporting) return;
+    setImporting(true);
+    setArchiveProgress(null);
     try {
-      if (file.size > 10_000_000)
-        throw new Error("Projektpakken må højst fylde 10 MB.");
-      const imported = await importProject(
+      if (file.size > MAX_ARCHIVE_BYTES)
+        throw new Error("Projektpakken må højst fylde 64 MB.");
+      const imported = await importProjectFile(
         new Uint8Array(await file.arrayBuffer()),
+        setArchiveProgress,
       );
-      if (store.data.projects.some((p) => p.id === imported.id))
-        throw new Error(
-          "Projektet findes allerede. Importen overskriver aldrig et eksisterende projekt.",
-        );
+      if (store.data.projects.some((p) => p.id === imported.id)) {
+        setDuplicateImport(imported);
+        return;
+      }
       store.setData((s) => ({ ...s, projects: [...s.projects, imported] }));
       router.push(`/projects/${imported.id}/overview`);
       notify(
@@ -165,8 +182,10 @@ export function StudioApp() {
         e instanceof Error ? e.message : "Projektpakken kunne ikke læses.",
         true,
       );
+    } finally {
+      setImporting(false);
+      if (input.current) input.current.value = "";
     }
-    if (input.current) input.current.value = "";
   }
   const pending =
     project?.deliveries.filter((d) => !latestReview(project, d.id)).length ?? 0;
@@ -344,6 +363,13 @@ export function StudioApp() {
           </div>
         </header>
         <main id="main" className="main-content">
+          {(exporting || importing) && (
+            <div className="archive-progress" role="status" aria-live="polite">
+              <span className="loading-orbit" />
+              {progressLabel(archiveProgress)}
+              <span>Du kan fortsætte med at se projektet.</span>
+            </div>
+          )}
           {store.error && (
             <div role="alert" className="storage-error">
               <Notice danger>{store.error}</Notice>
@@ -519,6 +545,52 @@ export function StudioApp() {
           }}
         />
       )}{" "}
+      {duplicateImport && (
+        <Modal
+          title="Projektet findes allerede"
+          description={`Pakken indeholder “${duplicateImport.name}”. Åbn en selvstændig kopi med hele den importerede historik.`}
+          onClose={() => setDuplicateImport(null)}
+        >
+          <Notice>
+            Det eksisterende projekt bevares. Kopien får sit eget projekt-id, og
+            filversioner, reviews og ophav følger med.
+          </Notice>
+          <div className="modal-actions">
+            <button
+              className="button secondary"
+              onClick={() => setDuplicateImport(null)}
+            >
+              Behold som nu
+            </button>
+            <button
+              className="button primary"
+              onClick={() => {
+                try {
+                  const copy = copyProject(duplicateImport);
+                  store.setData((state) => ({
+                    ...state,
+                    projects: [...state.projects, copy],
+                  }));
+                  setDuplicateImport(null);
+                  router.push(`/projects/${copy.id}/overview`);
+                  notify(
+                    "Projektet er åbnet som en selvstændig kopi. Den oprindelige produktion er bevaret.",
+                  );
+                } catch (error) {
+                  notify(
+                    error instanceof Error
+                      ? error.message
+                      : "Kopien kunne ikke åbnes.",
+                    true,
+                  );
+                }
+              }}
+            >
+              Åbn som kopi <ArrowRight size={16} />
+            </button>
+          </div>
+        </Modal>
+      )}
       {help && (
         <HelpDialog
           onClose={() => setHelp(false)}

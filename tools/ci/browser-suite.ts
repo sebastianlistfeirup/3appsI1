@@ -81,18 +81,34 @@ try {
   await start("studio", 3000);
   await start("flowlab", 3001);
   await start("director", 3002);
-  await run("pnpm", ["exec", "playwright", "test", "tests/e2e/studio.spec.ts"]);
+  await run("pnpm", ["exec", "playwright", "test", "tests/e2e"]);
   await run("node", ["tools/browser/studio-a11y.cjs"]);
-  for (const browser of ["chromium", "firefox", "webkit"])
+  for (const browser of ["chromium", "firefox", "webkit"]) {
     await run("node", ["apps/flowlab/tests/browser-check.mjs"], {
       FLOWLAB_BROWSER: browser,
     });
+    await run("node", ["apps/flowlab/tests/import-state-check.mjs"], {
+      FLOWLAB_BROWSER: browser,
+    });
+    await run("node", ["apps/flowlab/tests/workspace-check.mjs"], {
+      FLOWLAB_BROWSER: browser,
+    });
+  }
   await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
   await run("node", ["apps/flowlab/tests/canvas-check.mjs"]);
   await run("node", ["apps/flowlab/tests/accessibility-check.mjs"]);
   await run("pnpm", ["exec", "tsx", "apps/flowlab/tests/holdout-check.ts"]);
+  await run("pnpm", [
+    "exec",
+    "tsx",
+    "apps/flowlab/tests/report-layout-check.ts",
+  ]);
   await run("node", ["apps/flowlab/tests/edge-results-check.mjs"]);
   await run("node", ["apps/director/tests/cross-browser.mjs"]);
+  for (const browser of ["chromium", "firefox", "webkit"])
+    await run("node", ["apps/director/tests/textured-glb-flow.mjs"], {
+      GLB_ENGINE: browser,
+    });
   await run("node", ["apps/director/tests/editor-flow.mjs"]);
   await run("node", ["apps/director/tests/storage-recovery.mjs"]);
   await run("node", ["apps/director/tests/a11y-smoke.mjs"]);

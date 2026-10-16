@@ -22,6 +22,7 @@ import {
   X,
 } from "lucide-react";
 import { downloadFile } from "@tre/persistence";
+import { bytesToBase64, decodeUtf8 } from "../lib/limits";
 import {
   addArtifact,
   addDependency,
@@ -826,17 +827,13 @@ export function AssetsPanel({ project, update, notify }: ProjectActions) {
       const previous = project.artifacts
         .filter((a) => a.name === file.name)
         .sort((a, b) => b.version - a.version)[0];
-      let binary = "";
-      if (!textual) for (const b of bytes) binary += String.fromCharCode(b);
       const a = artifactSchema.parse({
         id: uid("version"),
         artifactId: previous?.artifactId ?? uid("artifact"),
         version: (previous?.version ?? 0) + 1,
         name: file.name,
         mime: file.type || "application/octet-stream",
-        content: textual
-          ? new TextDecoder("utf-8", { fatal: true }).decode(bytes)
-          : btoa(binary),
+        content: textual ? decodeUtf8(bytes) : bytesToBase64(bytes),
         encoding: textual ? "utf8" : "base64",
         sha256: await sha256(bytes),
         bytes: bytes.length,
@@ -969,7 +966,14 @@ export function AssetsPanel({ project, update, notify }: ProjectActions) {
         <span>
           <strong>Versioner med et fingeraftryk.</strong> Hver fil har en
           SHA-256-kontrolsum. Eksport og import kontrollerer, at indholdet er
-          uændret.
+          uændret. Filhistorikken bruger{" "}
+          {bytesLabel(
+            project.artifacts.reduce(
+              (total, artifact) => total + artifact.bytes,
+              0,
+            ),
+          )}{" "}
+          af 48 MB.
         </span>
       </div>
       {selected && (
@@ -1083,7 +1087,7 @@ export function AssetsPanel({ project, update, notify }: ProjectActions) {
       {uploading && (
         <Modal
           title="Tilføj en fil til produktionen"
-          description="Et eksisterende filnavn bliver en ny version. Maks. 2 MB i lokal demo."
+          description="Et eksisterende filnavn bliver en ny version. Maks. 2 MB pr. fil og 48 MB filhistorik pr. projekt."
           onClose={() => setUploading(false)}
         >
           <label>

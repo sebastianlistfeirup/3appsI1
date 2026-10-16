@@ -87,7 +87,7 @@
       "goal": "Durable pg-boss worker, idempotency and recovery",
       "dependencies": ["F03"],
       "verification": ["worker kill/restart integration"],
-      "status": "in_progress",
+      "status": "verified-local",
       "allowed_paths": [
         "packages",
         "services",
@@ -103,7 +103,7 @@
       "goal": "CI, local runbook, handoff and gates",
       "dependencies": ["S09", "L01", "D05"],
       "verification": ["pnpm check"],
-      "status": "ready",
+      "status": "in_progress",
       "allowed_paths": [
         "packages",
         "services",

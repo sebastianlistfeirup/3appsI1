@@ -1,4 +1,5 @@
 import { DomainError } from "@tre/contracts";
+import { assertProjectBudget } from "./limits";
 import {
   assertProject,
   assertProjectUpdate,
@@ -42,6 +43,7 @@ export function validateProjectDocument(value: unknown) {
   const content = contentSchema.parse(value);
   try {
     assertProject({ ...content, ...metadata });
+    assertProjectBudget({ ...content, ...metadata });
   } catch (error) {
     throw new DomainError(
       "INVALID_DOCUMENT",

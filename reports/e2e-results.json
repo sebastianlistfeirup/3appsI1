@@ -4,7 +4,7 @@
       "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
       "/workspace/3appsI1/node_modules/@playwright/test/cli.js",
       "test",
-      "tests/e2e/studio.spec.ts"
+      "tests/e2e"
     ],
     "configFile": "/workspace/3appsI1/playwright.config.ts",
     "rootDir": "/workspace/3appsI1/tests/e2e",
@@ -198,6 +198,430 @@
   },
   "suites": [
     {
+      "title": "studio-archive.spec.ts",
+      "file": "studio-archive.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "worker ZIP roundtrip opens a duplicate as an independent copy at every viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5412,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T21:17:20.525Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9221ef98cceddf6de915-4360be7c072f8063500e",
+          "file": "studio-archive.spec.ts",
+          "line": 54,
+          "column": 1
+        },
+        {
+          "title": "actual quota failure still exports the current in-memory brief and explicit reload preserves saved history",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1954,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T21:17:26.171Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9221ef98cceddf6de915-895ca924e8753db5f3c3",
+          "file": "studio-archive.spec.ts",
+          "line": 113,
+          "column": 1
+        },
+        {
+          "title": "imports and exports a real binary project beyond the old 10 MB limit using background workers",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9580,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T21:17:28.142Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9221ef98cceddf6de915-924c7ac24d36e322c0d9",
+          "file": "studio-archive.spec.ts",
+          "line": 161,
+          "column": 1
+        },
+        {
+          "title": "uploaded UTF-8 with BOM survives preview, worker export and hash verification",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1970,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T21:17:37.734Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9221ef98cceddf6de915-e8649638995f8b47bc13",
+          "file": "studio-archive.spec.ts",
+          "line": 214,
+          "column": 1
+        },
+        {
+          "title": "worker ZIP roundtrip opens a duplicate as an independent copy at every viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6721,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "text": "Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.\n"
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-10-16T21:18:01.175Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9221ef98cceddf6de915-d2e1688b9c795fc43a2f",
+          "file": "studio-archive.spec.ts",
+          "line": 54,
+          "column": 1
+        },
+        {
+          "title": "actual quota failure still exports the current in-memory brief and explicit reload preserves saved history",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2916,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T21:18:08.371Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9221ef98cceddf6de915-41d42672a44cb0f8aabe",
+          "file": "studio-archive.spec.ts",
+          "line": 113,
+          "column": 1
+        },
+        {
+          "title": "imports and exports a real binary project beyond the old 10 MB limit using background workers",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7555,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T21:18:11.301Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9221ef98cceddf6de915-0fb003e59fd398a2b1ac",
+          "file": "studio-archive.spec.ts",
+          "line": 161,
+          "column": 1
+        },
+        {
+          "title": "uploaded UTF-8 with BOM survives preview, worker export and hash verification",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2436,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T21:18:18.873Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9221ef98cceddf6de915-30a275aa27a1f1a3b4f9",
+          "file": "studio-archive.spec.ts",
+          "line": 214,
+          "column": 1
+        },
+        {
+          "title": "worker ZIP roundtrip opens a duplicate as an independent copy at every viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6260,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "text": "Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.\n"
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-10-16T21:19:04.415Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9221ef98cceddf6de915-76a43a6834520f48467f",
+          "file": "studio-archive.spec.ts",
+          "line": 54,
+          "column": 1
+        },
+        {
+          "title": "actual quota failure still exports the current in-memory brief and explicit reload preserves saved history",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2132,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T21:19:10.808Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9221ef98cceddf6de915-b76c68340c4b4b4727e2",
+          "file": "studio-archive.spec.ts",
+          "line": 113,
+          "column": 1
+        },
+        {
+          "title": "imports and exports a real binary project beyond the old 10 MB limit using background workers",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6956,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T21:19:12.956Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9221ef98cceddf6de915-7b8b52ddfbad95742700",
+          "file": "studio-archive.spec.ts",
+          "line": 161,
+          "column": 1
+        },
+        {
+          "title": "uploaded UTF-8 with BOM survives preview, worker export and hash verification",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2031,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T21:19:19.922Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9221ef98cceddf6de915-212f29197b1ee4594dc1",
+          "file": "studio-archive.spec.ts",
+          "line": 214,
+          "column": 1
+        }
+      ]
+    },
+    {
       "title": "studio.spec.ts",
       "file": "studio.spec.ts",
       "column": 0,
@@ -219,12 +643,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 5461,
+                  "duration": 2507,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:35:49.081Z",
+                  "startTime": "2026-10-16T21:17:39.733Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -253,12 +677,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2542,
+                  "duration": 2341,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:35:54.980Z",
+                  "startTime": "2026-10-16T21:17:42.250Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -287,12 +711,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2217,
+                  "duration": 1887,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:35:57.544Z",
+                  "startTime": "2026-10-16T21:17:44.613Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -321,12 +745,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3157,
+                  "duration": 2384,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:35:59.788Z",
+                  "startTime": "2026-10-16T21:17:46.510Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -355,12 +779,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4995,
+                  "duration": 4536,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:02.960Z",
+                  "startTime": "2026-10-16T21:17:48.917Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -389,12 +813,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2795,
+                  "duration": 3121,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:07.969Z",
+                  "startTime": "2026-10-16T21:17:53.488Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -423,12 +847,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2135,
+                  "duration": 1621,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:10.787Z",
+                  "startTime": "2026-10-16T21:17:56.635Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -457,12 +881,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3102,
+                  "duration": 2167,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:12.938Z",
+                  "startTime": "2026-10-16T21:17:58.270Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -491,16 +915,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3387,
+                  "duration": 2854,
                   "errors": [],
                   "stdout": [],
-                  "stderr": [
-                    {
-                      "text": "Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.\n"
-                    }
-                  ],
+                  "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:16.655Z",
+                  "startTime": "2026-10-16T21:18:21.334Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -529,12 +949,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2640,
+                  "duration": 3423,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:20.415Z",
+                  "startTime": "2026-10-16T21:18:24.201Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -563,12 +983,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2330,
+                  "duration": 4384,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:23.069Z",
+                  "startTime": "2026-10-16T21:18:27.640Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -597,12 +1017,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3597,
+                  "duration": 4560,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:25.409Z",
+                  "startTime": "2026-10-16T21:18:32.035Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -631,12 +1051,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4323,
+                  "duration": 5249,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:29.017Z",
+                  "startTime": "2026-10-16T21:18:36.614Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -665,12 +1085,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2292,
+                  "duration": 6340,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:33.353Z",
+                  "startTime": "2026-10-16T21:18:41.881Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -699,12 +1119,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1873,
+                  "duration": 6914,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:35.653Z",
+                  "startTime": "2026-10-16T21:18:48.230Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -733,12 +1153,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2717,
+                  "duration": 8094,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:37.533Z",
+                  "startTime": "2026-10-16T21:18:55.187Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -767,16 +1187,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2410,
+                  "duration": 2574,
                   "errors": [],
                   "stdout": [],
-                  "stderr": [
-                    {
-                      "text": "Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.\n"
-                    }
-                  ],
+                  "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:41.029Z",
+                  "startTime": "2026-10-16T21:19:21.985Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -805,12 +1221,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2176,
+                  "duration": 2467,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:43.548Z",
+                  "startTime": "2026-10-16T21:19:24.567Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -839,12 +1255,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1934,
+                  "duration": 2003,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:45.737Z",
+                  "startTime": "2026-10-16T21:19:27.047Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -873,12 +1289,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2206,
+                  "duration": 3195,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:47.695Z",
+                  "startTime": "2026-10-16T21:19:29.063Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -907,12 +1323,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3523,
+                  "duration": 4594,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:49.912Z",
+                  "startTime": "2026-10-16T21:19:32.267Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -941,12 +1357,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2468,
+                  "duration": 2260,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:53.451Z",
+                  "startTime": "2026-10-16T21:19:36.873Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -975,12 +1391,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1843,
+                  "duration": 1627,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:55.929Z",
+                  "startTime": "2026-10-16T21:19:39.144Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1009,12 +1425,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2867,
+                  "duration": 2329,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:36:57.782Z",
+                  "startTime": "2026-10-16T21:19:40.779Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1032,9 +1448,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-16T20:35:47.835Z",
-    "duration": 72907.976,
-    "expected": 24,
+    "startTime": "2026-10-16T21:17:19.842Z",
+    "duration": 143416.049,
+    "expected": 36,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

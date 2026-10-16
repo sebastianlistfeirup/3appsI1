@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { assertProjectBudget, decodeUtf8 } from "./limits";
 
 export const idSchema = z
   .string()
@@ -324,6 +325,7 @@ export function changeProject(
                 "Projektet er ændret, siden handlingen begyndte. Prøv igen med den aktuelle version.",
               );
             const next = assertProject(action(structuredClone(p)));
+            assertProjectBudget(next);
             assertProjectUpdate(p, next);
             return next;
           })()
@@ -360,6 +362,21 @@ export function createProject(name: string, description = ""): Project {
     reviews: [],
     activity: [],
   });
+}
+export function copyProject(source: Project): Project {
+  const copy = event(
+    {
+      ...structuredClone(source),
+      id: uid("project"),
+      name: `${source.name.slice(0, 88)} (kopi)`,
+      createdAt: now(),
+      archivedAt: null,
+    },
+    "project.imported_copy",
+    `Importeret kopi af ${source.name} (${source.id})`,
+  );
+  assertProjectBudget(copy);
+  return assertProject(projectSchema.parse(copy));
 }
 export const latestBrief = (p: Project) =>
   p.briefVersions.reduce((a, b) => (a.version > b.version ? a : b));
@@ -732,6 +749,7 @@ export async function textArtifact(
   artifactId?: string,
 ): Promise<Artifact> {
   const bytes = new TextEncoder().encode(content);
+  content = decodeUtf8(bytes);
   const versions = p.artifacts.filter((x) => x.artifactId === artifactId);
   return artifactSchema.parse({
     id: uid("version"),

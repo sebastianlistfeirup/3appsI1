@@ -1,22 +1,78 @@
-import { strToU8, strFromU8, unzipSync, zipSync } from "fflate";
+import { strToU8, zipSync, unzipSync } from "fflate";
+import { z } from "zod";
 import {
   artifactBytes,
+  artifactSchema,
   latestBrief,
   assertProject,
   projectSchema,
   sha256,
   type Project,
 } from "./model";
+import {
+  assertProjectBudget,
+  MAX_ARCHIVE_BYTES,
+  MAX_EXPANDED_BYTES,
+  projectMetadata,
+  bytesToBase64,
+  decodeUtf8,
+} from "./limits";
 
-const MAX_ARCHIVE = 10_000_000;
-const MAX_CONTENT = 50_000_000;
-export async function exportProject(project: Project): Promise<Uint8Array> {
+export type ArchiveProgress = {
+  phase: "validating" | "packing" | "unpacking";
+  completed: number;
+  total: number;
+};
+type Progress = (progress: ArchiveProgress) => void;
+const hashSchema = z.string().regex(/^[a-f0-9]{64}$/);
+const entrySchema = z
+  .object({
+    id: z.string().min(1).max(120),
+    path: z.string().max(200),
+    sha256: hashSchema,
+    bytes: z.number().int().nonnegative().max(10_000_000),
+    rights: artifactSchema.shape.rights,
+    provenance: artifactSchema.shape.provenance,
+  })
+  .strict();
+const manifestSchema = z
+  .object({
+    schemaVersion: z.union([z.literal(1), z.literal(2)]),
+    app: z.literal("studio"),
+    exportedAt: z.string().datetime(),
+    projectId: z.string().min(1).max(120),
+    projectSha256: hashSchema,
+    artifacts: z.array(entrySchema).max(500),
+  })
+  .strict();
+const packedProjectSchema = projectSchema
+  .extend({
+    artifacts: z
+      .array(artifactSchema.omit({ content: true }).strict())
+      .max(500),
+  })
+  .strict();
+export async function exportProject(
+  input: Project,
+  progress?: Progress,
+): Promise<Uint8Array> {
+  const project = assertProject(projectSchema.parse(input));
+  assertProjectBudget(project);
   const files: Record<string, Uint8Array> = {};
-  const artifacts = [];
-  for (const artifact of project.artifacts) {
-    const bytes = artifactBytes(artifact);
-    const hash = await sha256(bytes);
-    if (hash !== artifact.sha256 || bytes.length !== artifact.bytes)
+  const artifacts: z.infer<typeof entrySchema>[] = [];
+  for (const [index, artifact] of project.artifacts.entries()) {
+    progress?.({
+      phase: "validating",
+      completed: index,
+      total: project.artifacts.length,
+    });
+    const bytes = artifactBytes(artifact),
+      hash = await sha256(bytes);
+    if (
+      hash !== artifact.sha256 ||
+      bytes.length !== artifact.bytes ||
+      (artifact.encoding === "utf8" && decodeUtf8(bytes) !== artifact.content)
+    )
       throw new Error(`Filintegritet fejlede: ${artifact.name}`);
     const path = `versions/${artifact.id}.bin`;
     files[path] = bytes;
@@ -36,11 +92,11 @@ export async function exportProject(project: Project): Promise<Uint8Array> {
   files["tasks.json"] = strToU8(
     JSON.stringify({ tasks: project.tasks, edges: project.edges }, null, 2),
   );
-  files["project.json"] = strToU8(JSON.stringify(project));
+  files["project.json"] = strToU8(JSON.stringify(projectMetadata(project)));
   files["manifest.json"] = strToU8(
     JSON.stringify(
       {
-        schemaVersion: 1,
+        schemaVersion: 2,
         app: "studio",
         exportedAt: new Date().toISOString(),
         projectId: project.id,
@@ -51,56 +107,103 @@ export async function exportProject(project: Project): Promise<Uint8Array> {
       2,
     ),
   );
-  return zipSync(files, { level: 6 });
-}
-export async function importProject(input: Uint8Array): Promise<Project> {
-  if (input.length > MAX_ARCHIVE)
-    throw new Error("Projektpakken må højst fylde 10 MB.");
-  let expanded = 0;
-  let count = 0;
-  const seen = new Set<string>();
-  const files = unzipSync(input, {
-    filter(file) {
-      count++;
-      expanded += file.originalSize;
-      if (count > 1000 || expanded > MAX_CONTENT)
-        throw new Error("Projektpakken er for stor efter udpakning.");
-      if (
-        file.name.startsWith("/") ||
-        file.name.includes("\\") ||
-        file.name.split("/").some((x) => x === ".." || x === ".") ||
-        seen.has(file.name)
-      )
-        throw new Error(
-          "Projektpakken indeholder en usikker eller dubleret filsti.",
-        );
-      seen.add(file.name);
-      return true;
-    },
+  if (
+    Object.values(files).reduce((total, bytes) => total + bytes.length, 0) >
+    MAX_EXPANDED_BYTES
+  )
+    throw new Error(
+      "Projektpakken er for stor efter udpakning. Hent de enkelte filer under Filer & versioner.",
+    );
+  progress?.({
+    phase: "packing",
+    completed: artifacts.length,
+    total: artifacts.length,
   });
+  const zip = zipSync(files, { level: 6 });
+  if (zip.length > MAX_ARCHIVE_BYTES)
+    throw new Error("Projektpakken må højst fylde 64 MB.");
+  return zip;
+}
+export async function importProject(
+  input: Uint8Array,
+  progress?: Progress,
+): Promise<Project> {
+  if (input.length > MAX_ARCHIVE_BYTES)
+    throw new Error("Projektpakken må højst fylde 64 MB.");
+  let expanded = 0,
+    count = 0;
+  const seen = new Set<string>();
+  progress?.({ phase: "unpacking", completed: 0, total: 0 });
+  let files: Record<string, Uint8Array>;
+  try {
+    files = unzipSync(input, {
+      filter(file) {
+        count++;
+        expanded += file.originalSize;
+        if (count > 510 || expanded > MAX_EXPANDED_BYTES)
+          throw new Error("Projektpakken er for stor efter udpakning.");
+        if (
+          file.name.length > 220 ||
+          file.name.startsWith("/") ||
+          file.name.includes("\\") ||
+          file.name.includes("\0") ||
+          file.name
+            .split("/")
+            .some((x) => x === ".." || x === "." || x === "") ||
+          seen.has(file.name)
+        )
+          throw new Error(
+            "Projektpakken indeholder en usikker eller dubleret filsti.",
+          );
+        seen.add(file.name);
+        return true;
+      },
+    });
+  } catch (error) {
+    throw new Error(
+      error instanceof Error && error.message.startsWith("Projektpakken")
+        ? error.message
+        : "Projektpakken er beskadiget eller er ikke en ZIP-fil.",
+    );
+  }
   if (!files["manifest.json"] || !files["project.json"])
     throw new Error("Manifest eller projekt mangler.");
-  const manifest = JSON.parse(strFromU8(files["manifest.json"]));
+  let manifest: z.infer<typeof manifestSchema>;
+  let raw: unknown;
+  try {
+    manifest = manifestSchema.parse(
+      JSON.parse(decodeUtf8(files["manifest.json"])),
+    );
+    raw = JSON.parse(decodeUtf8(files["project.json"]));
+  } catch {
+    throw new Error(
+      "Projektpakkens format understøttes ikke, eller metadata er beskadiget.",
+    );
+  }
   if (
-    manifest.schemaVersion !== 1 ||
-    manifest.app !== "studio" ||
-    !Array.isArray(manifest.artifacts)
+    new Set(manifest.artifacts.map((a) => a.id)).size !==
+    manifest.artifacts.length
   )
-    throw new Error("Projektpakkens format understøttes ikke.");
+    throw new Error("Manifestet indeholder dublerede filversioner.");
   if ((await sha256(files["project.json"])) !== manifest.projectSha256)
     throw new Error("Projektets kontrolsum matcher ikke.");
-  const project = assertProject(
-    projectSchema.parse(JSON.parse(strFromU8(files["project.json"]))),
-  );
+  const stored =
+    manifest.schemaVersion === 2
+      ? packedProjectSchema.parse(raw)
+      : projectSchema.parse(raw);
   if (
-    manifest.projectId !== project.id ||
-    manifest.artifacts.length !== project.artifacts.length
+    manifest.projectId !== stored.id ||
+    manifest.artifacts.length !== stored.artifacts.length
   )
     throw new Error("Manifestet matcher ikke projektet.");
-  for (const artifact of project.artifacts) {
-    const entry = manifest.artifacts.find(
-      (x: { id?: string }) => x.id === artifact.id,
-    );
+  const artifacts: Project["artifacts"] = [];
+  for (const [index, artifact] of stored.artifacts.entries()) {
+    progress?.({
+      phase: "validating",
+      completed: index,
+      total: stored.artifacts.length,
+    });
+    const entry = manifest.artifacts.find((a) => a.id === artifact.id);
     if (
       !entry ||
       entry.path !== `versions/${artifact.id}.bin` ||
@@ -113,9 +216,17 @@ export async function importProject(input: Uint8Array): Promise<Project> {
       bytes.length !== entry.bytes ||
       (await sha256(bytes)) !== artifact.sha256 ||
       artifact.sha256 !== entry.sha256 ||
-      (await sha256(artifactBytes(artifact))) !== artifact.sha256
+      artifact.rights !== entry.rights ||
+      artifact.provenance !== entry.provenance
     )
       throw new Error(`Filintegritet fejlede: ${artifact.name}`);
+    const content =
+      artifact.encoding === "utf8" ? decodeUtf8(bytes) : bytesToBase64(bytes);
+    if ("content" in artifact && artifact.content !== content)
+      throw new Error(`Filintegritet fejlede: ${artifact.name}`);
+    artifacts.push({ ...artifact, content });
   }
+  const project = assertProject(projectSchema.parse({ ...stored, artifacts }));
+  assertProjectBudget(project);
   return project;
 }

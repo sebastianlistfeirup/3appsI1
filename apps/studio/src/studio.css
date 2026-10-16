@@ -1095,12 +1095,12 @@ button {
 .new-project-card strong {
   font-size: 13px;
   font-weight: 500;
-  color: #8f77a3;
+  color: #705a80;
 }
 .new-project-card p {
-  font-size: 10px;
+  font-size: 12px;
   margin-top: 7px;
-  color: #b4a3c1;
+  color: #74627d;
 }
 .project-initial {
   display: flex;
@@ -2535,7 +2535,7 @@ button {
 }
 .loading-screen h2 {
   font-size: 23px;
-  color: #8e75a0;
+  color: #74627d;
 }
 .loading-screen p {
   font-size: 12px;
@@ -2628,7 +2628,7 @@ button {
 }
 .modal > header p,
 .help-steps p {
-  color: #8b749a;
+  color: #74627d;
 }
 .main-content .review-comment textarea {
   color: #765e85;
@@ -3748,7 +3748,7 @@ button {
 }
 .version-list button {
   font-size: 12px;
-  color: #8e6aa3;
+  color: #715b7f;
 }
 .settings-card > p {
   font-size: 13px;
@@ -3883,19 +3883,19 @@ button {
 }
 .project-card-body > p {
   font-size: 12px;
-  color: #887195;
+  color: #74627d;
 }
 .project-card-meta {
   font-size: 11px;
-  color: #927aa0;
+  color: #74627d;
 }
 .import-strip small {
   font-size: 11px;
-  color: #8e75a0;
+  color: #74627d;
 }
 .import-strip strong {
   font-size: 13px;
-  color: #826294;
+  color: #6c527e;
 }
 @media (max-width: 760px) {
   .sidebar:not(.sidebar-open) {
@@ -3981,5 +3981,39 @@ button {
   }
   .main-content .change-summary > p {
     font-size: 13px;
+  }
+}
+
+.archive-progress {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  font-size: 13px;
+  color: var(--ink);
+}
+.archive-progress .loading-orbit {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border-width: 2px;
+}
+.archive-progress > span:last-child {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+}
+@media (max-width: 700px) {
+  .archive-progress {
+    flex-wrap: wrap;
+  }
+  .archive-progress > span:last-child {
+    width: 100%;
+    margin-left: 30px;
   }
 }
