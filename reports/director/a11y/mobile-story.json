@@ -13,7 +13,7 @@
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2026-10-16T20:21:48.781Z",
+  "timestamp": "2026-10-16T20:51:38.184Z",
   "url": "http://localhost:3002/",
   "toolOptions": {
     "runOnly": {
@@ -1030,12 +1030,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div aria-hidden=\"true\" data-issues-count-exit=\"true\">-1</div>",
+          "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-clapperboard\" aria-hidden=\"true\">",
           "target": [
-            [
-              "nextjs-portal",
-              "div[data-issues-count-exit=\"true\"]"
-            ]
+            ".lucide-clapperboard"
           ]
         }
       ]
@@ -1533,7 +1530,7 @@
                 {
                   "html": "<label class=\"field\"><span>Produktionens titel</span><input type=\"text\" value=\"Det sidste signal\"></label>",
                   "target": [
-                    "label:nth-child(1)"
+                    ".field:nth-child(1)"
                   ]
                 }
               ],
@@ -1659,7 +1656,7 @@
                 {
                   "html": "<label class=\"field\"><span>Produktionens titel</span><input type=\"text\" value=\"Det sidste signal\"></label>",
                   "target": [
-                    "label:nth-child(1)"
+                    ".field:nth-child(1)"
                   ]
                 }
               ],

@@ -1,0 +1,40 @@
+{
+  "checks": [
+    "originalclip audio survives trimmed export",
+    "disabledclipaudio is real silence"
+  ],
+  "results": [
+    {
+      "clipAudio": true,
+      "rms": 0.08799961693650346,
+      "metadata": {
+        "duration": 2,
+        "width": 1280,
+        "height": 720,
+        "fps": 24,
+        "audioSampleRate": 48000,
+        "codec": "h264",
+        "audioCodec": "aac",
+        "sha256": "7a4d5a71b6ba0909e4fbdd02d1646626476cba15ed2ec93ee33519387a966936",
+        "loudnessLufs": -21.3,
+        "truePeakDbfs": -20.5
+      }
+    },
+    {
+      "clipAudio": false,
+      "rms": 0,
+      "metadata": {
+        "duration": 2,
+        "width": 1280,
+        "height": 720,
+        "fps": 24,
+        "audioSampleRate": 48000,
+        "codec": "h264",
+        "audioCodec": "aac",
+        "sha256": "8792aede9cd4546b971bc618e219d1ee298cfbca7d46b6508ea1107d1f0838e1",
+        "loudnessLufs": -70
+      }
+    }
+  ],
+  "verifiedAt": "2026-10-16T20:37:00.615Z"
+}

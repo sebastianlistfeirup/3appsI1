@@ -2,8 +2,8 @@
  RUN  v5.0.5 /workspace/3apps-director
 
 
- Test Files  4 passed (4)
-      Tests  22 passed (22)
-   Start at  20:26:30
-   Duration  412ms (import 38%, transform 37%, tests 23%, worker 2%)
+ Test Files  5 passed (5)
+      Tests  26 passed (26)
+   Start at  20:49:00
+   Duration  475ms (import 54%, tests 27%, transform 16%, worker 3%)
 

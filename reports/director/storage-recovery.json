@@ -1,0 +1,8 @@
+{
+  "checks": [
+    "two real tabs: conflict preserves local edits in downloadable JSON; explicit reload reads newer saved copy",
+    "injected actual IndexedDB write failure: unsaved in-memory JSON survives rejecting flush; persisted copy unchanged"
+  ],
+  "pageErrors": [],
+  "verifiedAt": "2026-10-16T20:52:26.345Z"
+}

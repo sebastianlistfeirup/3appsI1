@@ -1,0 +1,113 @@
+{
+  "verifiedAt": "2026-10-16T20:51:07.506Z",
+  "results": [
+    {
+      "browser": "chromium",
+      "webglDisabled": false,
+      "frameModes": [
+        "3d"
+      ],
+      "checks": [
+        "initial five frames",
+        "immutable edit",
+        "undo",
+        "GLB import and actual capture",
+        "reload",
+        "modal keyboard trap/Escape",
+        "storyboard",
+        "no overflow/page errors"
+      ],
+      "pageErrors": []
+    },
+    {
+      "browser": "chromium",
+      "webglDisabled": true,
+      "frameModes": [
+        "plan"
+      ],
+      "checks": [
+        "initial five frames",
+        "immutable edit",
+        "undo",
+        "GLB import and actual capture",
+        "reload",
+        "modal keyboard trap/Escape",
+        "storyboard",
+        "no overflow/page errors"
+      ],
+      "pageErrors": []
+    },
+    {
+      "browser": "firefox",
+      "webglDisabled": false,
+      "frameModes": [
+        "plan"
+      ],
+      "checks": [
+        "initial five frames",
+        "immutable edit",
+        "undo",
+        "GLB import and actual capture",
+        "reload",
+        "modal keyboard trap/Escape",
+        "storyboard",
+        "no overflow/page errors"
+      ],
+      "pageErrors": []
+    },
+    {
+      "browser": "firefox",
+      "webglDisabled": true,
+      "frameModes": [
+        "plan"
+      ],
+      "checks": [
+        "initial five frames",
+        "immutable edit",
+        "undo",
+        "GLB import and actual capture",
+        "reload",
+        "modal keyboard trap/Escape",
+        "storyboard",
+        "no overflow/page errors"
+      ],
+      "pageErrors": []
+    },
+    {
+      "browser": "webkit",
+      "webglDisabled": false,
+      "frameModes": [
+        "3d"
+      ],
+      "checks": [
+        "initial five frames",
+        "immutable edit",
+        "undo",
+        "GLB import and actual capture",
+        "reload",
+        "modal keyboard trap/Escape",
+        "storyboard",
+        "no overflow/page errors"
+      ],
+      "pageErrors": []
+    },
+    {
+      "browser": "webkit",
+      "webglDisabled": true,
+      "frameModes": [
+        "plan"
+      ],
+      "checks": [
+        "initial five frames",
+        "immutable edit",
+        "undo",
+        "GLB import and actual capture",
+        "reload",
+        "modal keyboard trap/Escape",
+        "storyboard",
+        "no overflow/page errors"
+      ],
+      "pageErrors": []
+    }
+  ]
+}

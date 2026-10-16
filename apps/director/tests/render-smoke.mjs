@@ -1,9 +1,10 @@
+import { chromiumExecutable, directorUrl } from "./browser.mjs";
 import { chromium, expect } from "@playwright/test";
 import fs from "node:fs/promises";
 const base = process.env.DIRECTOR_TEST_URL ?? "http://localhost:3002";
 const browser = await chromium.launch({
   headless: true,
-  executablePath: "/usr/bin/chromium",
+  executablePath: chromiumExecutable,
   args: [
     "--no-sandbox",
     "--use-gl=angle",

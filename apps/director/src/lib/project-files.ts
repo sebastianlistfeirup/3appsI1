@@ -141,7 +141,12 @@ export async function importMedia(
     "audio/ogg": "audio",
     "audio/webm": "audio",
   };
-  const kind = kinds[file.type];
+  const declaredMime = ["audio/x-wav", "audio/wave", "audio/vnd.wave"].includes(
+    file.type,
+  )
+    ? "audio/wav"
+    : file.type;
+  const kind = kinds[declaredMime];
   if (!kind) throw Error("Vælg PNG, JPEG, MP4, WebM, WAV, MP3, M4A eller OGG");
   const bytes = new Uint8Array(await file.arrayBuffer());
   if (
@@ -157,12 +162,12 @@ export async function importMedia(
     throw Error("Billedets indhold matcher ikke filtypen");
   if (kind === "image") {
     const info = inspectRaster(bytes);
-    if (file.type !== `image/${info.format}`)
+    if (declaredMime !== `image/${info.format}`)
       throw Error("Billedets format matcher ikke filtypen");
   }
   const signature = (at: number, text: string) =>
     text.split("").every((c, i) => bytes[at + i] === c.charCodeAt(0));
-  const mime = file.type.replace("audio/x-wav", "audio/wav");
+  const mime = declaredMime;
   if (
     (mime === "audio/wav" && !(signature(0, "RIFF") && signature(8, "WAVE"))) ||
     (mime === "audio/mpeg" &&
@@ -176,7 +181,9 @@ export async function importMedia(
     (mime === "audio/ogg" && !signature(0, "OggS"))
   )
     throw Error("Mediets indhold matcher ikke filtypen");
-  const dataUrl = (await fileDataUrl(file)).replace("audio/x-wav", "audio/wav");
+  const dataUrl = await fileDataUrl(
+    new File([bytes], file.name, { type: declaredMime }),
+  );
   let durationFrames: number | undefined;
   if (kind !== "image")
     durationFrames = await new Promise<number>((resolve, reject) => {
@@ -220,7 +227,7 @@ export async function importMedia(
     id: `media_${crypto.randomUUID().replaceAll("-", "")}`,
     name: file.name,
     kind,
-    mime: file.type.replace("audio/x-wav", "audio/wav") as Media["mime"],
+    mime: declaredMime as Media["mime"],
     dataUrl,
     sha256: await sha256(bytes),
     bytes: bytes.byteLength,

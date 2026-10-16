@@ -66,6 +66,8 @@ import {
   type Vector,
 } from "@tre/scene-format";
 import { SceneViewport } from "./SceneViewport";
+import { SequencePreview } from "./SequencePreview";
+import { PreviewAudio } from "../lib/preview-audio";
 import { renderFrame } from "../lib/scene-renderer";
 import {
   exportPackage,
@@ -200,6 +202,8 @@ export default function DirectorEditor() {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(""),
     [playing, setPlaying] = useState(false),
+    [reviewing, setReviewing] = useState(false),
+    [previewGraph, setPreviewGraph] = useState<PreviewAudio | null>(null),
     [playhead, setPlayhead] = useState(0),
     [rights, setRights] = useState<"owned" | "licensed" | "unknown">("owned"),
     [mediaTarget, setMediaTarget] = useState<
@@ -223,6 +227,7 @@ export default function DirectorEditor() {
     future = useRef<Project[]>([]),
     [historyTick, setHistoryTick] = useState(0);
   const initialCapture = useRef(false);
+  const previewGraphRef = useRef<PreviewAudio | null>(null);
   const fileRef = useRef<HTMLInputElement>(null),
     mediaRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -234,7 +239,7 @@ export default function DirectorEditor() {
     object = p.draft.objects.find((o) => o.id === selectedObject);
   const frames = totalFrames(p),
     affected = affectedShots(p);
-  const activeShot = playing
+  const activeShot = reviewing
     ? timeline(p)
         .filter((s) => s.startFrame <= playhead)
         .at(-1)
@@ -275,6 +280,41 @@ export default function DirectorEditor() {
       setHistoryTick((t) => t + 1);
     }
   }, [storage.setData]);
+  const resumeAudio = useCallback(() => {
+    try {
+      const graph = previewGraphRef.current ?? new PreviewAudio();
+      previewGraphRef.current = graph;
+      setPreviewGraph(graph);
+      void graph
+        .resume()
+        .catch(() =>
+          setError("Tryk Afspil igen for at aktivere browserens lyd."),
+        );
+    } catch {
+      setError(
+        "Browserens lydpreview kunne ikke åbnes. MP4-eksport er stadig mulig.",
+      );
+    }
+  }, []);
+  const togglePlayback = useCallback(() => {
+    resumeAudio();
+    setReviewing(true);
+    setPlaying((v) => !v);
+    setPlayhead((f) => (f >= frames - 1 ? 0 : f));
+    setTab("scene");
+  }, [resumeAudio, frames]);
+  useEffect(() => {
+    if (!playing) void previewGraphRef.current?.suspend();
+  }, [playing]);
+  useEffect(
+    () => () => {
+      previewGraphRef.current?.close();
+    },
+    [],
+  );
+  useEffect(() => {
+    if (modal) setPlaying(false);
+  }, [modal]);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const input =
@@ -284,6 +324,33 @@ export default function DirectorEditor() {
         e.preventDefault();
         e.shiftKey ? redo() : undo();
       }
+      if (
+        !input &&
+        !modal &&
+        frames > 0 &&
+        e.target instanceof HTMLElement &&
+        !["BUTTON", "A"].includes(e.target.tagName)
+      ) {
+        if (e.code === "Space") {
+          e.preventDefault();
+          togglePlayback();
+        }
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+          e.preventDefault();
+          setPlaying(false);
+          setReviewing(true);
+          setPlayhead((f) =>
+            Math.max(
+              0,
+              Math.min(
+                frames - 1,
+                f + (e.key === "ArrowLeft" ? -1 : 1) * (e.shiftKey ? 24 : 1),
+              ),
+            ),
+          );
+          setTab("scene");
+        }
+      }
       if (e.key === "Escape") {
         setModal(null);
         setPlaying(false);
@@ -291,7 +358,7 @@ export default function DirectorEditor() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [undo, redo]);
+  }, [undo, redo, modal, frames, togglePlayback]);
   useEffect(() => {
     if (!notice) return;
     const t = setTimeout(() => setNotice(""), 4500);
@@ -349,7 +416,7 @@ export default function DirectorEditor() {
       const frame =
         from + Math.floor(((performance.now() - start) / 1000) * 24);
       if (frame >= frames) {
-        setPlayhead(0);
+        setPlayhead(Math.max(0, frames - 1));
         setPlaying(false);
         return;
       }
@@ -380,6 +447,7 @@ export default function DirectorEditor() {
     setSelectedShot(s.id);
     setCameraId(s.cameraId);
     setPlaying(false);
+    setReviewing(false);
     setPlayhead(timeline(p).find((t) => t.id === s.id)?.startFrame ?? 0);
   };
   const patchCamera = (patch: Partial<CameraType>) =>
@@ -478,6 +546,7 @@ export default function DirectorEditor() {
         frame: null,
         frameRenderer: null,
         frameMode: "3d",
+        clipAudio: false,
         mediaId: null,
         sourceIn: 0,
         transitionFrames: 0,
@@ -602,7 +671,10 @@ export default function DirectorEditor() {
     });
   const exportFile = (kind: "json" | "zip" | "pdf") =>
     act("Forbereder eksport …", async () => {
-      await storage.flush();
+      let unsavedCopy = false;
+      await storage.flush().catch(() => {
+        unsavedCopy = true;
+      });
       const project = current.current;
       const slug = project.title
         .toLocaleLowerCase("da-DK")
@@ -625,7 +697,11 @@ export default function DirectorEditor() {
           (await storyboardPdf(project)) as Uint8Array<ArrayBuffer>,
           "application/pdf",
         );
-      setNotice("Din eksport er klar til download.");
+      setNotice(
+        unsavedCopy
+          ? "Lagring fejlede. Din aktuelle kladde er hentet som en lokal kopi."
+          : "Din eksport er klar til download.",
+      );
     });
   const exportMovie = () =>
     act("Låser manifest og starter lokal render …", async () => {
@@ -759,7 +835,8 @@ export default function DirectorEditor() {
           <div role="alert" className="error-banner">
             <AlertTriangle size={16} />
             <span>{error || storage.error}</span>
-            {storage.saveState === "conflict" && (
+            {(storage.saveState === "conflict" ||
+              storage.saveState === "error") && (
               <>
                 <button onClick={() => exportFile("json")}>
                   Gem lokal kopi
@@ -769,9 +846,11 @@ export default function DirectorEditor() {
                 </button>
               </>
             )}
-            <button aria-label="Luk fejl" onClick={() => setError("")}>
-              <X size={16} />
-            </button>
+            {!storage.error && (
+              <button aria-label="Luk fejl" onClick={() => setError("")}>
+                <X size={16} />
+              </button>
+            )}
           </div>
         )}
         <div className="production-heading">
@@ -983,7 +1062,7 @@ export default function DirectorEditor() {
               <div className="stage-topline">
                 <span>
                   <span className="live-dot" />{" "}
-                  {playing
+                  {reviewing
                     ? "SEKVENSREVIEW"
                     : mode === "3d"
                       ? "KAMERAVISNING"
@@ -992,7 +1071,11 @@ export default function DirectorEditor() {
                 <select
                   aria-label="Vælg kamera"
                   value={cam.id}
-                  onChange={(e) => setCameraId(e.target.value)}
+                  onChange={(e) => {
+                    setCameraId(e.target.value);
+                    setPlaying(false);
+                    setReviewing(false);
+                  }}
                 >
                   {p.draft.cameras.map((c, i) => (
                     <option key={c.id} value={c.id}>
@@ -1003,16 +1086,15 @@ export default function DirectorEditor() {
                 <span className="stage-resolution">16:9</span>
               </div>
               <div className="viewport-wrap">
-                {playing && activeShot ? (
-                  <div className="playback-frame">
-                    <Frame project={p} shot={activeShot} />
-                    <div className="playback-caption">
-                      {activeShot.dialogue}
-                    </div>
-                    <span className="preview-label">
-                      STILLBILLEDREVIEW · LYD AFSPILLES I EKSPORT
-                    </span>
-                  </div>
+                {reviewing && activeShot ? (
+                  <SequencePreview
+                    project={p}
+                    frame={playhead}
+                    playing={playing}
+                    onError={setError}
+                    onToggle={togglePlayback}
+                    graph={previewGraph}
+                  />
                 ) : (
                   <SceneViewport
                     scene={p.draft}
@@ -1037,24 +1119,39 @@ export default function DirectorEditor() {
                 <div className="viewport-shot">
                   <span>
                     {String(
-                      shots.length ? Math.max(0, shots.indexOf(shot)) + 1 : 0,
+                      shots.length
+                        ? Math.max(
+                            0,
+                            reviewing
+                              ? shots.findIndex((s) => s.id === activeShot?.id)
+                              : shots.indexOf(shot),
+                          ) + 1
+                        : 0,
                     ).padStart(2, "0")}{" "}
                     / {String(shots.length).padStart(2, "0")}
                   </span>
-                  <small>{playing ? activeShot?.name : cam.name}</small>
+                  <small>{reviewing ? activeShot?.name : cam.name}</small>
                 </div>
               </div>
               <div className="stage-toolbar">
                 <div className="segmented">
                   <button
-                    onClick={() => setMode("3d")}
-                    className={mode === "3d" ? "selected" : ""}
+                    onClick={() => {
+                      setMode("3d");
+                      setReviewing(false);
+                      setPlaying(false);
+                    }}
+                    className={!reviewing && mode === "3d" ? "selected" : ""}
                   >
                     <Box size={13} /> 3D
                   </button>
                   <button
-                    onClick={() => setMode("2d")}
-                    className={mode === "2d" ? "selected" : ""}
+                    onClick={() => {
+                      setMode("2d");
+                      setReviewing(false);
+                      setPlaying(false);
+                    }}
+                    className={!reviewing && mode === "2d" ? "selected" : ""}
                   >
                     <Grid2X2 size={13} /> 2D-plan
                   </button>
@@ -1072,10 +1169,17 @@ export default function DirectorEditor() {
                 <button
                   className="button capture-button"
                   disabled={!!busy || !shot}
-                  onClick={() => capture()}
+                  onClick={() => {
+                    if (reviewing) {
+                      setPlaying(false);
+                      setReviewing(false);
+                    } else void capture();
+                  }}
                 >
                   <Camera size={15} />
-                  <span>Gem indstilling</span>
+                  <span>
+                    {reviewing ? "Tilbage til scene" : "Gem indstilling"}
+                  </span>
                 </button>
               </div>
               <div className="scene-tip">
@@ -1421,6 +1525,20 @@ export default function DirectorEditor() {
                         }
                       />
                     )}
+                  {shot.mediaId &&
+                    p.media.find((m) => m.id === shot.mediaId)?.kind ===
+                      "video" && (
+                      <label className="check-field">
+                        <input
+                          type="checkbox"
+                          checked={shot.clipAudio}
+                          onChange={(e) =>
+                            patchShot({ clipAudio: e.target.checked })
+                          }
+                        />
+                        Brug klippets lyd
+                      </label>
+                    )}
                   <button
                     className="button subtle full-width"
                     onClick={() => {
@@ -1714,11 +1832,10 @@ export default function DirectorEditor() {
               </IconButton>
               <button
                 className="play-button"
-                title={playing ? "Pause" : "Afspil stillbilledreview"}
-                aria-label={playing ? "Pause" : "Afspil stillbilledreview"}
+                title={playing ? "Pause" : "Afspil sekvens"}
+                aria-label={playing ? "Pause" : "Afspil sekvens"}
                 onClick={() => {
-                  setPlaying(!playing);
-                  setTab("scene");
+                  togglePlayback();
                 }}
                 disabled={!shots.length}
               >
@@ -1743,6 +1860,24 @@ export default function DirectorEditor() {
               <span>Tilføj lyd</span>
             </button>
           </div>
+          <label className="timeline-scrubber">
+            <span className="sr-only">Afspilningsposition</span>
+            <input
+              type="range"
+              min={0}
+              max={Math.max(0, frames - 1)}
+              step={1}
+              value={playhead}
+              disabled={!frames}
+              aria-valuetext={timecode(playhead)}
+              onChange={(e) => {
+                setPlayhead(Number(e.target.value));
+                setPlaying(false);
+                setReviewing(true);
+                setTab("scene");
+              }}
+            />
+          </label>
           <div className="timeline-body">
             <div className="track-labels">
               <span>
@@ -2207,6 +2342,62 @@ export default function DirectorEditor() {
                     bestået.
                   </p>
                 )}
+                {(mediaTarget === "voice" || mediaTarget === "music") &&
+                  p[mediaTarget] && (
+                    <div className="audio-timing-fields">
+                      <TextField
+                        label="Start på tidslinje (sek.)"
+                        type="number"
+                        min={0}
+                        max={120}
+                        step={1 / 24}
+                        value={p[mediaTarget]!.startFrame / 24}
+                        onCommit={(v) =>
+                          commit((next) => {
+                            next[mediaTarget]!.startFrame = Math.round(
+                              Number(v) * 24,
+                            );
+                            next.revision++;
+                            return next;
+                          })
+                        }
+                      />
+                      <TextField
+                        label="Start i lydfil (sek.)"
+                        type="number"
+                        min={0}
+                        max={3600}
+                        step={1 / 24}
+                        value={p[mediaTarget]!.sourceIn / 24}
+                        onCommit={(v) =>
+                          commit((next) => {
+                            next[mediaTarget]!.sourceIn = Math.round(
+                              Number(v) * 24,
+                            );
+                            next.revision++;
+                            return next;
+                          })
+                        }
+                      />
+                      <TextField
+                        label="Fade ind/ud (sek.)"
+                        type="number"
+                        min={0}
+                        max={5}
+                        step={0.1}
+                        value={p[mediaTarget]!.fadeFrames / 24}
+                        onCommit={(v) =>
+                          commit((next) => {
+                            next[mediaTarget]!.fadeFrames = Math.round(
+                              Number(v) * 24,
+                            );
+                            next.revision++;
+                            return next;
+                          })
+                        }
+                      />
+                    </div>
+                  )}
                 {mediaTarget === "music" && p.music && (
                   <label className="check-field">
                     <input

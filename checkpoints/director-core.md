@@ -59,3 +59,17 @@ Local browser IndexedDB only. WebGL renderer and local file exports are real. No
 - Import profile and truthful limits documented in `docs/director-imports.md`.
 
 Cross-engine gate found a real shared-persistence race before completion: React StrictMode started two concurrent initial reloads; fast 2D auto-capture saved revision 2 and five valid frames, then the later reload applied the original frame-less document to the UI. Chromium native and forced no-WebGL flows, plus Firefox native, passed. Firefox forced no-WebGL and WebKit exposed the race. Coordinator confirmed the cause and is implementing a shared single-flight/mutation guard with deterministic regression. Remaining flows will rerun after that fix; no six-engine-path pass is claimed at this checkpoint.
+
+## Fourth milestone — real media review and recoverable local work
+
+The shared persistence race is fixed by coordinator commit 4b93720 (integrated in this branch as ff75e02). All six Chromium/Firefox/WebKit native and explicitly no-WebGL paths passed after the fix. The original late-initial-read failure no longer replaces captured frames.
+
+- Added actual trimmed-video playback, frame-position seeking, held paused frames, overlapping-shot crossfades, real voice/music playback, start/source/fade controls, measured WebAudio output and voice-driven music ducking. Space toggles playback; arrow keys move one frame, Shift+arrow one second when not editing a field.
+- Optional original clip audio is explicit per shot and is preserved both in browser review and FFmpeg assembly, with timeline placement, trim and crossfade envelopes. Two actual CLI exports prove AAC-decoded PCM RMS 0.088 when enabled and 0 when disabled.
+- Chromium, Firefox and WebKit completed real file imports, active audio contexts, nonzero decoded PCM, measured music gain reduction, advancing trimmed video, pause and exact half-crossfade seeks. WebKit's real `audio/vnd.wave` file type is safely canonicalized to WAV. Linux headless Firefox required a real local PulseAudio null sink; the independent minimal reproduction and full application both then ran. The environment setup is documented, never replaced with simulated audio.
+- A real UI export combines a trimmed original clip, original clip audio, two audio tracks and a crossfade: 7.5 seconds of H.264/AAC at 1280×720/24 fps. Export remains an animatic/clip assembly, not continuous 3D animation.
+- Recovery exports now tolerate rejecting persistence flush and download the current validated in-memory document. A real two-tab conflict and injected IndexedDB write-quota failure prove that local edits can be exported and that explicit reload restores the saved copy without overwriting it.
+- Browser scripts use a portable Chromium path and `DIRECTOR_TEST_URL`. `docs/director-verification.md` separates a short daily gate from sequential render/recovery/media gates, with exact headless audio setup.
+- 26 deterministic tests, Director TypeScript and optimized production build passed. The expanded media accessibility scan caught marginal volume-label contrast and the labels were corrected.
+
+Final fourth-milestone production-server gates passed: six core browser paths; full editor import/roundtrip flow; two storage recovery scenarios; three real media browser flows; ten baseline axe scans plus twelve media/dialog scans with **zero violations**. Chromium UI rendered and downloaded the verified 7.5-second MP4. All evidence is local, reproduced without AI/provider calls.

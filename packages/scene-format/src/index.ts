@@ -189,6 +189,7 @@ export const shotSchema = z.object({
   frame: frameSchema.nullable(),
   frameRenderer: z.string().max(100).nullable(),
   frameMode: z.enum(["3d", "plan"]).default("3d"),
+  clipAudio: z.boolean().default(false),
   mediaId: id.nullable(),
   sourceIn: z.number().int().nonnegative(),
   transitionFrames: z.number().int().min(0).max(48),
@@ -578,6 +579,7 @@ export function createSampleProject(): Project {
     frame: null,
     frameRenderer: null,
     frameMode: "3d",
+    clipAudio: false,
     mediaId: null,
     sourceIn: 0,
     transitionFrames: 0,
@@ -658,3 +660,4 @@ export function inspectRaster(bytes: Uint8Array): {
     );
   return { width, height, format };
 }
+export { previewLayers, previewAudio, duckGain } from "./playback";

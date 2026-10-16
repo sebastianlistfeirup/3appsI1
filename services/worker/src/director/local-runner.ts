@@ -1,10 +1,10 @@
 /** Local Director CLI. No provider calls, auth bypass or production queue claim. */
 import { readFile } from "node:fs/promises";
-import {
-  createRender,
-  executeRender,
-  getRender,
-} from "../../../../apps/director/src/lib/server/local-render";
+import * as renderModule from "../../../../apps/director/src/lib/server/local-render";
+// Next app packages can be CommonJS while the workspace CLI is ESM.
+const { createRender, executeRender, getRender } =
+  (renderModule as typeof renderModule & { default?: typeof renderModule })
+    .default ?? renderModule;
 async function main() {
   const [action, input] = process.argv.slice(2);
   if (!input || !["render", "resume", "status"].includes(action)) {

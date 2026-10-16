@@ -1,3 +1,4 @@
+import { chromiumExecutable, directorUrl } from "./browser.mjs";
 import { chromium, firefox, webkit, expect } from "@playwright/test";
 import fs from "node:fs/promises";
 import assert from "node:assert/strict";
@@ -13,7 +14,7 @@ for (const [name, engine] of Object.entries({
     name === "chromium"
       ? {
           headless: true,
-          executablePath: "/usr/bin/chromium",
+          executablePath: chromiumExecutable,
           args: [
             "--no-sandbox",
             "--use-gl=angle",
@@ -60,7 +61,7 @@ for (const [name, engine] of Object.entries({
               r.onerror = () => reject(r.error);
             }),
         );
-      await page.goto("http://localhost:3002");
+      await page.goto(directorUrl);
       await expect(page.locator(".shot-thumbnail img")).toHaveCount(5, {
         timeout: 30000,
       });

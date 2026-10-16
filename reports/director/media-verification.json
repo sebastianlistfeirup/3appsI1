@@ -1,0 +1,111 @@
+{
+  "mediaBrowsers": [
+    {
+      "engine": "chromium",
+      "checks": [
+        "real browser MP4/WAV import",
+        "source trim and own clip audio",
+        "voice/music timing and fades",
+        "running WebAudio context and measured nonzero PCM",
+        "actual music gain reduced by voice energy",
+        "source video clock advances",
+        "pause freezes frame",
+        "scrub positions crossfade at 50%",
+        "real UI export 7.5s"
+      ],
+      "accessibility": [
+        {
+          "name": "audio-dialog",
+          "violations": []
+        },
+        {
+          "name": "desktop-preview",
+          "violations": []
+        },
+        {
+          "name": "tablet-preview",
+          "violations": []
+        },
+        {
+          "name": "mobile-preview",
+          "violations": []
+        }
+      ],
+      "rendered": true
+    },
+    {
+      "engine": "firefox",
+      "checks": [
+        "real browser MP4/WAV import",
+        "source trim and own clip audio",
+        "voice/music timing and fades",
+        "running WebAudio context and measured nonzero PCM",
+        "actual music gain reduced by voice energy",
+        "source video clock advances",
+        "pause freezes frame",
+        "scrub positions crossfade at 50%"
+      ],
+      "accessibility": [
+        {
+          "name": "audio-dialog",
+          "violations": []
+        },
+        {
+          "name": "desktop-preview",
+          "violations": []
+        },
+        {
+          "name": "tablet-preview",
+          "violations": []
+        },
+        {
+          "name": "mobile-preview",
+          "violations": []
+        }
+      ],
+      "rendered": false
+    },
+    {
+      "engine": "webkit",
+      "checks": [
+        "real browser MP4/WAV import",
+        "source trim and own clip audio",
+        "voice/music timing and fades",
+        "running WebAudio context and measured nonzero PCM",
+        "actual music gain reduced by voice energy",
+        "source video clock advances",
+        "pause freezes frame",
+        "scrub positions crossfade at 50%"
+      ],
+      "accessibility": [
+        {
+          "name": "audio-dialog",
+          "violations": []
+        },
+        {
+          "name": "desktop-preview",
+          "violations": []
+        },
+        {
+          "name": "tablet-preview",
+          "violations": []
+        },
+        {
+          "name": "mobile-preview",
+          "violations": []
+        }
+      ],
+      "rendered": false
+    }
+  ],
+  "coreCrossBrowser": "cross-browser.json",
+  "storageRecovery": "storage-recovery.json",
+  "clipAudioPCM": "clip-audio.json",
+  "unitsPassed": 26,
+  "productionBuild": "production-build.txt",
+  "limitations": [
+    "local opt-in renderer",
+    "animatic and imported clips; no continuous 3D animation",
+    "Linux Firefox media gate requires real PulseAudio sink"
+  ]
+}

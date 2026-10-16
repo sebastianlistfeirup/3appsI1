@@ -1,3 +1,4 @@
+import { chromiumExecutable, directorUrl } from "./browser.mjs";
 import { chromium, expect } from "@playwright/test";
 import { createRequire } from "node:module";
 import fs from "node:fs/promises";
@@ -7,7 +8,7 @@ const require = createRequire(import.meta.url),
   ).source;
 const browser = await chromium.launch({
   headless: true,
-  executablePath: "/usr/bin/chromium",
+  executablePath: chromiumExecutable,
   args: [
     "--no-sandbox",
     "--use-gl=angle",
@@ -22,7 +23,7 @@ try {
     ["mobile", 390, 844],
   ]) {
     const page = await browser.newPage({ viewport: { width, height } });
-    await page.goto("http://localhost:3002");
+    await page.goto(directorUrl);
     await expect(page.locator(".shot-thumbnail img")).toHaveCount(5, {
       timeout: 30000,
     });

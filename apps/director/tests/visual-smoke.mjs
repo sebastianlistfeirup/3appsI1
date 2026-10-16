@@ -1,8 +1,9 @@
+import { chromiumExecutable, directorUrl } from "./browser.mjs";
 import { chromium, expect } from "@playwright/test";
 import fs from "node:fs/promises";
 const browser = await chromium.launch({
   headless: true,
-  executablePath: "/usr/bin/chromium",
+  executablePath: chromiumExecutable,
   args: [
     "--no-sandbox",
     "--use-gl=angle",
@@ -19,7 +20,7 @@ for (const [name, width, height] of [
   const page = await browser.newPage({ viewport: { width, height } });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("http://localhost:3002");
+  await page.goto(directorUrl);
   await expect(page.locator(".shot-thumbnail img")).toHaveCount(5, {
     timeout: 30000,
   });

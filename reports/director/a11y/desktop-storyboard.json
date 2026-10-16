@@ -13,7 +13,7 @@
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2026-10-16T20:21:40.222Z",
+  "timestamp": "2026-10-16T20:51:31.529Z",
   "url": "http://localhost:3002/",
   "toolOptions": {
     "runOnly": {
@@ -983,12 +983,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div aria-hidden=\"true\" data-issues-count-exit=\"true\">-1</div>",
+          "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-clapperboard\" aria-hidden=\"true\">",
           "target": [
-            [
-              "nextjs-portal",
-              "div[data-issues-count-exit=\"true\"]"
-            ]
+            ".lucide-clapperboard"
           ]
         }
       ]
@@ -1506,15 +1503,22 @@
             {
               "id": "multiple-label",
               "data": null,
-              "relatedNodes": [],
+              "relatedNodes": [
+                {
+                  "html": "<label class=\"timeline-scrubber\"><span class=\"sr-only\">Afspilningsposition</span><input min=\"0\" max=\"1439\" step=\"1\" aria-valuetext=\"00:00:00\" type=\"range\" value=\"0\"></label>",
+                  "target": [
+                    "label"
+                  ]
+                }
+              ],
               "impact": "moderate",
               "message": "Form field does not have multiple label elements"
             }
           ],
           "impact": null,
-          "html": "<input class=\"scrub-range\" aria-label=\"Sekvensens afspilningsposition\" min=\"0\" max=\"1439\" type=\"range\" value=\"0\">",
+          "html": "<input min=\"0\" max=\"1439\" step=\"1\" aria-valuetext=\"00:00:00\" type=\"range\" value=\"0\">",
           "target": [
-            ".scrub-range"
+            "input[step=\"1\"]"
           ]
         }
       ]
@@ -1671,11 +1675,20 @@
         {
           "any": [
             {
-              "id": "aria-label",
-              "data": null,
-              "relatedNodes": [],
+              "id": "implicit-label",
+              "data": {
+                "implicitLabel": "Afspilningsposition"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<label class=\"timeline-scrubber\"><span class=\"sr-only\">Afspilningsposition</span><input min=\"0\" max=\"1439\" step=\"1\" aria-valuetext=\"00:00:00\" type=\"range\" value=\"0\"></label>",
+                  "target": [
+                    "label"
+                  ]
+                }
+              ],
               "impact": "critical",
-              "message": "aria-label attribute exists and is not empty"
+              "message": "Element has an implicit (wrapped) <label>"
             }
           ],
           "all": [],
@@ -1689,9 +1702,9 @@
             }
           ],
           "impact": null,
-          "html": "<input class=\"scrub-range\" aria-label=\"Sekvensens afspilningsposition\" min=\"0\" max=\"1439\" type=\"range\" value=\"0\">",
+          "html": "<input min=\"0\" max=\"1439\" step=\"1\" aria-valuetext=\"00:00:00\" type=\"range\" value=\"0\">",
           "target": [
-            ".scrub-range"
+            "input[step=\"1\"]"
           ]
         }
       ]

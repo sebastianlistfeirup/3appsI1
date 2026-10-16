@@ -8,6 +8,7 @@ import {
   parseProject,
   orderedShots,
   totalFrames,
+  timeline,
   type Project,
   type Media,
   type Shot,
@@ -472,15 +473,6 @@ async function assemble(jobDir: string, p: Project, segments: string[]) {
     const track = p[key];
     if (!track) continue;
     const media = p.media.find((m) => m.id === track.mediaId)!;
-    const path = await writeMedia(jobDir, media);
-    args.push(
-      "-protocol_whitelist",
-      "file,pipe",
-      "-f",
-      formats[media.mime],
-      "-i",
-      path,
-    );
     const output = `${key}base`;
     const available = Math.max(
       0,
@@ -489,6 +481,16 @@ async function assemble(jobDir: string, p: Project, segments: string[]) {
         ((media.durationFrames ?? Math.ceil(duration * 24)) - track.sourceIn) /
           24,
       ),
+    );
+    if (available <= 0) continue;
+    const path = await writeMedia(jobDir, media);
+    args.push(
+      "-protocol_whitelist",
+      "file,pipe",
+      "-f",
+      formats[media.mime],
+      "-i",
+      path,
     );
     const fade = Math.min(track.fadeFrames / 24, available / 2);
     filters.push(
@@ -501,9 +503,14 @@ async function assemble(jobDir: string, p: Project, segments: string[]) {
   if (!audioLabels.length) {
     args.push("-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo");
     filters.push(`[${inputIndex}:a]atrim=duration=${duration}[silence]`);
+    inputIndex++;
   } else if (audioLabels.length === 1) audio = audioLabels[0];
   else {
-    if (p.music?.duck) {
+    if (
+      p.music?.duck &&
+      audioLabels.includes("voicebase") &&
+      audioLabels.includes("musicbase")
+    ) {
       filters.push(
         "[voicebase]asplit=2[voiceout][sidechain]",
         "[musicbase][sidechain]sidechaincompress=threshold=0.04:ratio=6:attack=80:release=600[ducked]",
@@ -511,6 +518,67 @@ async function assemble(jobDir: string, p: Project, segments: string[]) {
       );
     } else filters.push("[voicebase][musicbase]amix=inputs=2:normalize=0[mix]");
     audio = "mix";
+  }
+  const clipLabels: string[] = [];
+  const timedShots = timeline(p);
+  for (let i = 0; i < timedShots.length; i++) {
+    const shot = timedShots[i],
+      media = p.media.find((m) => m.id === shot.mediaId);
+    if (!shot.clipAudio || media?.kind !== "video") continue;
+    const path = await writeMedia(jobDir, media);
+    const info = JSON.parse(
+      await run(
+        "ffprobe",
+        [
+          "-v",
+          "error",
+          "-protocol_whitelist",
+          "file,pipe",
+          "-f",
+          formats[media.mime],
+          "-select_streams",
+          "a:0",
+          "-show_entries",
+          "stream=codec_type",
+          "-of",
+          "json",
+          path,
+        ],
+        20000,
+      ),
+    );
+    if (
+      !info.streams?.some(
+        (stream: { codec_type?: string }) => stream.codec_type === "audio",
+      )
+    )
+      continue;
+    args.push(
+      "-protocol_whitelist",
+      "file,pipe",
+      "-f",
+      formats[media.mime],
+      "-i",
+      path,
+    );
+    const length = shot.durationFrames / 24,
+      fadeIn = shot.transitionFrames / 24,
+      fadeOut = (timedShots[i + 1]?.transitionFrames ?? 0) / 24,
+      delay = Math.round((shot.startFrame / 24) * 1000),
+      output = `clipaudio${i}`;
+    let chain = `[${inputIndex}:a]atrim=start=${shot.sourceIn / 24}:duration=${length},asetpts=PTS-STARTPTS,aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo`;
+    if (fadeIn) chain += `,afade=t=in:d=${fadeIn}`;
+    if (fadeOut) chain += `,afade=t=out:st=${length - fadeOut}:d=${fadeOut}`;
+    chain += `,adelay=${delay}|${delay},apad,atrim=duration=${duration}[${output}]`;
+    filters.push(chain);
+    clipLabels.push(output);
+    inputIndex++;
+  }
+  if (clipLabels.length) {
+    filters.push(
+      `[${audio}]${clipLabels.map((label) => `[${label}]`).join("")}amix=inputs=${clipLabels.length + 1}:normalize=0[combinedaudio]`,
+    );
+    audio = "combinedaudio";
   }
   filters.push(
     `[${audio}]alimiter=limit=0.891:level=false,aresample=48000[aout]`,
