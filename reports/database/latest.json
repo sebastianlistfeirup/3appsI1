@@ -1,0 +1,11 @@
+{
+  "started": "2026-10-16T20:15:37.930Z",
+  "finished": "2026-10-16T20:15:39.871Z",
+  "postgresVersion": "PostgreSQL 17.10 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit",
+  "migrations": [
+    "0001_foundation.sql"
+  ],
+  "exitCode": 0,
+  "profile": "isolated-local-postgres",
+  "cloudConnected": false
+}

@@ -1,0 +1,440 @@
+import { createHash, randomUUID } from "node:crypto";
+import { Pool, type PoolClient } from "pg";
+import { z } from "zod";
+import {
+  appKeySchema,
+  assertJobTransition,
+  DomainError,
+  type AppKey,
+  type JobState,
+} from "@tre/contracts";
+export { Pool } from "pg";
+export type Json =
+  string | number | boolean | null | Json[] | { [key: string]: Json };
+export function canonicalJson(value: Json): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  return `{${Object.keys(value)
+    .sort()
+    .map((k) => `${JSON.stringify(k)}:${canonicalJson(value[k]!)}`)
+    .join(",")}}`;
+}
+export const hashJson = (input: Json) =>
+  createHash("sha256").update(canonicalJson(input)).digest("hex");
+const uuid = z.string().uuid();
+export interface ProjectRow {
+  id: string;
+  workspace_id: string;
+  app_key: AppKey;
+  name: string;
+  document: Json;
+  revision: string;
+  archived_at: Date | null;
+  created_at: Date;
+  updated_at: Date;
+}
+export interface JobRow {
+  id: string;
+  workspace_id: string;
+  project_id: string;
+  app_key: AppKey;
+  kind: string;
+  state: JobState;
+  revision: string;
+  idempotency_key: string;
+  input: Json;
+  input_hash: string;
+  attempt: number;
+  lease_token: string | null;
+  lease_until: Date | null;
+  provider_ref: string | null;
+  result_version: string | null;
+  cancel_requested: boolean;
+  actionable_error: string | null;
+  created_at: Date;
+  updated_at: Date;
+}
+export interface RequestJob {
+  workspaceId: string;
+  projectId: string;
+  appKey: AppKey;
+  kind: string;
+  idempotencyKey: string;
+  input: Json;
+  maximumMinor: number;
+}
+const requestSchema = z.object({
+  workspaceId: uuid,
+  projectId: uuid,
+  appKey: appKeySchema,
+  kind: z.string().min(1).max(100),
+  idempotencyKey: z.string().min(1).max(200),
+  input: z.json(),
+  maximumMinor: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+});
+function databaseError(error: unknown): never {
+  const message =
+    error instanceof Error ? error.message : "Database operation failed";
+  const codes: Record<string, [number, string]> = {
+    FORBIDDEN: [403, "Du har ikke adgang til denne handling."],
+    AUTH_REQUIRED: [401, "Log ind for at fortsætte."],
+    PROJECT_NOT_FOUND: [404, "Projektet findes ikke."],
+    BUDGET_EXCEEDED: [429, "Jobbet overskrider det tilgængelige budget."],
+    IDEMPOTENCY_CONFLICT: [
+      409,
+      "Bestillings-id’et er allerede brugt med andet input.",
+    ],
+    REVISION_CONFLICT: [409, "Der findes en nyere version."],
+    IMMUTABLE_VERSION: [409, "Gem en ny version i stedet for at overskrive."],
+    LAST_OWNER: [409, "Arbejdsrummet skal have mindst én ejer."],
+  };
+  if (codes[message]) {
+    const [status, text] = codes[message]!;
+    throw new DomainError(message, text, status);
+  }
+  throw error;
+}
+/** Server-only boundary. Caller MUST verify a session/JWT before providing this user ID.
+ * Browser-supplied workspace/user IDs are never authentication. This does not verify tokens. */
+export async function withTrustedUser<T>(
+  pool: Pool,
+  userId: string,
+  fn: (client: PoolClient) => Promise<T>,
+): Promise<T> {
+  uuid.parse(userId);
+  return transaction(pool, async (client) => {
+    await client.query("set local role authenticated");
+    await client.query("select set_config('request.jwt.claim.sub',$1,true)", [
+      userId,
+    ]);
+    return fn(client);
+  });
+}
+/** Queue worker only: a dedicated non-owning role, tenant context scoped to one transaction. */
+export async function withWorker<T>(
+  pool: Pool,
+  workspaceId: string,
+  fn: (client: PoolClient) => Promise<T>,
+): Promise<T> {
+  uuid.parse(workspaceId);
+  return transaction(pool, async (client) => {
+    await client.query("set local role tre_worker");
+    await client.query("select set_config('app.worker_workspace_id',$1,true)", [
+      workspaceId,
+    ]);
+    return fn(client);
+  });
+}
+export async function transaction<T>(
+  pool: Pool,
+  fn: (client: PoolClient) => Promise<T>,
+): Promise<T> {
+  const client = await pool.connect();
+  try {
+    await client.query("begin");
+    const result = await fn(client);
+    await client.query("commit");
+    return result;
+  } catch (error) {
+    await client.query("rollback").catch(() => undefined);
+    return databaseError(error);
+  } finally {
+    client.release();
+  }
+}
+export async function createWorkspace(client: PoolClient, name: string) {
+  z.string().trim().min(1).max(100).parse(name);
+  return (
+    await client.query<{ id: string; name: string }>(
+      "select * from app.create_workspace($1)",
+      [name.trim()],
+    )
+  ).rows[0]!;
+}
+export async function createProject(
+  client: PoolClient,
+  input: { workspaceId: string; appKey: AppKey; name: string; document?: Json },
+): Promise<ProjectRow> {
+  uuid.parse(input.workspaceId);
+  appKeySchema.parse(input.appKey);
+  const name = z.string().trim().min(1).max(100).parse(input.name);
+  const document = z.json().parse(input.document ?? {});
+  return (
+    await client.query<ProjectRow>(
+      "insert into app.projects(workspace_id,app_key,name,document) values($1,$2,$3,$4) returning *",
+      [input.workspaceId, input.appKey, name, document],
+    )
+  ).rows[0]!;
+}
+export async function getProject(
+  client: PoolClient,
+  id: string,
+  appKey: AppKey,
+): Promise<ProjectRow> {
+  uuid.parse(id);
+  appKeySchema.parse(appKey);
+  const result = await client.query<ProjectRow>(
+    "select * from app.projects where id=$1 and app_key=$2",
+    [id, appKey],
+  );
+  if (!result.rows[0])
+    throw new DomainError("NOT_FOUND", "Projektet findes ikke.", 404);
+  return result.rows[0];
+}
+export async function updateProject(
+  client: PoolClient,
+  id: string,
+  appKey: AppKey,
+  expectedRevision: number,
+  input: { name: string; document: Json },
+): Promise<ProjectRow> {
+  const previous = await getProject(client, id, appKey);
+  if (previous.archived_at)
+    throw new DomainError("ARCHIVED", "Projektet er arkiveret.", 409);
+  z.number().int().positive().parse(expectedRevision);
+  const name = z.string().trim().min(1).max(100).parse(input.name);
+  const document = z.json().parse(input.document);
+  const result = await client.query<ProjectRow>(
+    "update app.projects set name=$1,document=$2,revision=revision+1 where id=$3 and app_key=$4 and revision=$5 returning *",
+    [name, document, id, appKey, expectedRevision],
+  );
+  if (!result.rows[0])
+    throw new DomainError(
+      "REVISION_CONFLICT",
+      "Der findes en nyere version, eller din rolle tillader ikke ændringen.",
+      409,
+    );
+  return result.rows[0];
+}
+export async function requestJob(
+  client: PoolClient,
+  input: RequestJob,
+): Promise<JobRow> {
+  requestSchema.parse(input);
+  const hash = hashJson({
+    projectId: input.projectId,
+    appKey: input.appKey,
+    kind: input.kind,
+    input: input.input,
+    maximumMinor: input.maximumMinor,
+  });
+  return (
+    await client.query<JobRow>(
+      "select * from app.request_job($1,$2,$3,$4,$5,$6,$7,$8)",
+      [
+        input.workspaceId,
+        input.projectId,
+        input.appKey,
+        input.kind,
+        input.idempotencyKey,
+        input.input,
+        hash,
+        input.maximumMinor,
+      ],
+    )
+  ).rows[0]!;
+}
+export async function getJob(client: PoolClient, id: string): Promise<JobRow> {
+  uuid.parse(id);
+  const result = await client.query<JobRow>(
+    "select * from app.jobs where id=$1",
+    [id],
+  );
+  if (!result.rows[0])
+    throw new DomainError("NOT_FOUND", "Jobbet findes ikke.", 404);
+  return result.rows[0];
+}
+export async function getArtifact(client: PoolClient, id: string) {
+  uuid.parse(id);
+  const result = await client.query(
+    "select id,workspace_id,project_id,storage_key,sha256,mime,bytes,rights_status from app.artifact_versions where id=$1",
+    [id],
+  );
+  if (!result.rows[0])
+    throw new DomainError("NOT_FOUND", "Filen findes ikke.", 404);
+  return result.rows[0];
+}
+export async function claimJob(
+  client: PoolClient,
+  id: string,
+  leaseMs = 120000,
+): Promise<JobRow | null> {
+  uuid.parse(id);
+  z.number().int().min(100).max(600000).parse(leaseMs);
+  const result = await client.query<JobRow>(
+    "select * from app.jobs where id=$1 for update",
+    [id],
+  );
+  const job = result.rows[0];
+  if (!job) return null;
+  if (["running", "validating"].includes(job.state)) {
+    if (job.lease_until && job.lease_until.getTime() <= Date.now())
+      await transitionJob(client, job, "reconcile_required", {
+        error:
+          "Arbejderens lease udløb. Kontrollér eksisterende providerjob før genbestilling.",
+      });
+    return null;
+  }
+  if (
+    !["queued", "retry_wait"].includes(job.state) ||
+    job.cancel_requested ||
+    job.attempt >= 3
+  )
+    return null;
+  const lease = randomUUID();
+  const updated = (
+    await client.query<JobRow>(
+      "update app.jobs set state='running',revision=revision+1,attempt=attempt+1,lease_token=$2,lease_until=now()+($3*interval '1 millisecond'),updated_at=now() where id=$1 returning *",
+      [id, lease, leaseMs],
+    )
+  ).rows[0]!;
+  await recordJobEvent(client, updated, "job.started");
+  return updated;
+}
+async function recordJobEvent(client: PoolClient, job: JobRow, type: string) {
+  await client.query(
+    "insert into app.job_events(workspace_id,job_id,job_revision,type) values($1,$2,$3,$4)",
+    [job.workspace_id, job.id, job.revision, type],
+  );
+}
+export async function transitionJob(
+  client: PoolClient,
+  job: JobRow,
+  state: JobState,
+  options: { error?: string; providerRef?: string; leaseToken?: string } = {},
+): Promise<JobRow> {
+  assertJobTransition(job.state, state);
+  if (options.leaseToken && job.lease_token !== options.leaseToken)
+    throw new DomainError(
+      "LEASE_LOST",
+      "Jobbet tilhører en anden worker.",
+      409,
+    );
+  const updated = (
+    await client.query<JobRow>(
+      "update app.jobs set state=$1,revision=revision+1,actionable_error=$2,provider_ref=coalesce($3,provider_ref),updated_at=now() where id=$4 and revision=$5 returning *",
+      [
+        state,
+        options.error ?? null,
+        options.providerRef ?? null,
+        job.id,
+        job.revision,
+      ],
+    )
+  ).rows[0];
+  if (!updated)
+    throw new DomainError("REVISION_CONFLICT", "Jobversionen er ændret.", 409);
+  await recordJobEvent(client, updated, `job.${state}`);
+  return updated;
+}
+export async function heartbeat(
+  client: PoolClient,
+  id: string,
+  leaseToken: string,
+  leaseMs = 120000,
+): Promise<boolean> {
+  z.number().int().min(100).max(600000).parse(leaseMs);
+  const result = await client.query(
+    "update app.jobs set lease_until=now()+($3*interval '1 millisecond'),updated_at=now() where id=$1 and lease_token=$2 and state in ('running','validating') and lease_until>now() returning id",
+    [id, leaseToken, leaseMs],
+  );
+  return Boolean(result.rows[0]);
+}
+export async function finishJob(
+  client: PoolClient,
+  id: string,
+  leaseToken: string,
+  manifest: Json,
+  actualMinor: number,
+): Promise<JobRow> {
+  z.json().parse(manifest);
+  z.number()
+    .int()
+    .nonnegative()
+    .max(Number.MAX_SAFE_INTEGER)
+    .parse(actualMinor);
+  const visible = await getJob(client, id);
+  await client.query(
+    "select workspace_id from app.workspace_budgets where workspace_id=$1 for update",
+    [visible.workspace_id],
+  );
+  const job = (
+    await client.query<JobRow>(
+      "select * from app.jobs where id=$1 for update",
+      [id],
+    )
+  ).rows[0];
+  if (!job) throw new DomainError("NOT_FOUND", "Jobbet findes ikke.", 404);
+  if (job.state === "succeeded") {
+    const completed = (
+      await client.query<{ sha256: string; actual_minor: string }>(
+        "select r.sha256,b.actual_minor from app.job_results r join app.budget_reservations b on b.job_id=r.job_id where r.job_id=$1",
+        [id],
+      )
+    ).rows[0];
+    if (
+      completed?.sha256 !== hashJson(manifest) ||
+      Number(completed.actual_minor) !== actualMinor
+    )
+      throw new DomainError(
+        "IDEMPOTENCY_CONFLICT",
+        "Jobbet er allerede afsluttet med et andet resultat eller forbrug.",
+        409,
+      );
+    return job;
+  }
+  if (
+    job.state !== "validating" ||
+    job.lease_token !== leaseToken ||
+    !job.lease_until ||
+    job.lease_until.getTime() <= Date.now()
+  )
+    throw new DomainError(
+      "LEASE_LOST",
+      "Workerens lease er udløbet eller jobbet er i forkert tilstand.",
+      409,
+    );
+  const reservation = (
+    await client.query<{ reserved_minor: string; state: string; day: string }>(
+      "select reserved_minor,state,day from app.budget_reservations where job_id=$1 for update",
+      [id],
+    )
+  ).rows[0]!;
+  if (
+    reservation.state !== "held" ||
+    actualMinor > Number(reservation.reserved_minor)
+  )
+    throw new DomainError(
+      "COST_EXCEEDS_RESERVATION",
+      "Det faktiske forbrug overstiger reservationen.",
+      409,
+    );
+  const result = (
+    await client.query<{ id: string }>(
+      "insert into app.job_results(workspace_id,project_id,job_id,manifest,sha256) values($1,$2,$3,$4,$5) returning id",
+      [job.workspace_id, job.project_id, job.id, manifest, hashJson(manifest)],
+    )
+  ).rows[0]!;
+  await client.query(
+    "insert into app.usage_events(workspace_id,job_id,source_event_id,amount_minor,day) values($1,$2,$3,$4,$5)",
+    [
+      job.workspace_id,
+      job.id,
+      `job:${job.id}:settled`,
+      actualMinor,
+      reservation.day,
+    ],
+  );
+  await client.query(
+    "update app.budget_reservations set state='settled',actual_minor=$2,updated_at=now() where job_id=$1",
+    [id, actualMinor],
+  );
+  const updated = (
+    await client.query<JobRow>(
+      "update app.jobs set state='succeeded',revision=revision+1,result_version=$2,lease_until=null,updated_at=now() where id=$1 returning *",
+      [id, result.id],
+    )
+  ).rows[0]!;
+  await recordJobEvent(client, updated, "job.succeeded");
+  return updated;
+}

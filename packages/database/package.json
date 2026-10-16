@@ -1,0 +1,17 @@
+{
+  "name": "@tre/database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "pg": "8.23.1",
+    "zod": "4.6.7",
+    "@tre/contracts": "workspace:*"
+  }
+}
