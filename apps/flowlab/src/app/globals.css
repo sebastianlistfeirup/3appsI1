@@ -1598,6 +1598,68 @@ td strong {
 .diff-list b:first-child {
   color: #7a6952;
 }
+.input-diff-row h4 {
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  margin: 0 0 5px;
+}
+.input-diff-row code {
+  font-size: 12px;
+}
+.diff-values {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+.diff-values > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.diff-values small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+.diff-values b {
+  display: block;
+  color: #17343a;
+  font-size: 13px;
+  font-weight: 600;
+}
+.diff-values > div:first-child b {
+  color: #6d5b3e;
+}
+.diff-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 15px;
+}
+.diff-pagination label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  margin: 0;
+}
+.diff-pagination input {
+  max-width: 80px;
+  min-width: 45px;
+  margin: 0;
+  padding: 6px;
+}
+.diff-pagination button {
+  font-size: 12px;
+  padding: 9px;
+}
+.input-diff-run {
+  margin-top: 15px;
+}
 .data-columns {
   display: grid;
   grid-template-columns: 0.9fr 1.2fr;

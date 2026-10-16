@@ -1,0 +1,43 @@
+{
+  "executedAt": "2026-10-16T22:51:23.652Z",
+  "browser": "webkit",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "changedInputs": 1201,
+      "maxVisibleRows": 20,
+      "finalPage": 61,
+      "exportedAllWhileFiltered": true,
+      "fullLongTextLength": 1900,
+      "compositeCasesPreserved": 1200,
+      "axeViolations": 0
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "height": 768,
+      "changedInputs": 1201,
+      "maxVisibleRows": 20,
+      "finalPage": 61,
+      "exportedAllWhileFiltered": true,
+      "fullLongTextLength": 1900,
+      "compositeCasesPreserved": 1200,
+      "axeViolations": 0
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "changedInputs": 1201,
+      "maxVisibleRows": 20,
+      "finalPage": 61,
+      "exportedAllWhileFiltered": true,
+      "fullLongTextLength": 1900,
+      "compositeCasesPreserved": 1200,
+      "axeViolations": 0
+    }
+  ],
+  "errors": []
+}

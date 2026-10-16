@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import {
   Activity,
@@ -45,7 +45,6 @@ import {
   describeEngineCode,
   assembleComparison,
   seedList,
-  inputDiff,
   modelSchema,
   validateModel,
   type Comparison,
@@ -83,6 +82,8 @@ import {
 import DataWorkshop from "./data-workshop";
 import ScenarioLibrary from "./scenario-library";
 import ExperimentSettings from "./experiment-settings";
+import InputDifferences from "./input-differences";
+import { modelInputDifferences } from "../lib/input-differences";
 import { applyExperimentSettings } from "../lib/experiment-settings";
 import { formatCaseTime } from "../lib/time-profile";
 import {
@@ -587,9 +588,12 @@ export default function FlowLab() {
     comparison.status === "completed" &&
     comparison.seeds.length >= 30 &&
     !stale;
-  const diff = inputDiff(doc.baseline, doc.scenario).filter(
-    (d) =>
-      !["revision", "id"].includes(d.path) && !d.path.includes(".position."),
+  const diff = useMemo(
+    () =>
+      tab === "scenarios"
+        ? modelInputDifferences(doc.baseline, doc.scenario)
+        : [],
+    [tab, doc.baseline, doc.scenario],
   );
   return (
     <div className="app-shell">
@@ -1357,43 +1361,13 @@ export default function FlowLab() {
                         aktivitet.
                       </p>
                     </section>
-                    <section className="panel">
-                      <div className="section-title">
-                        <h3>Præcis dét er ændret</h3>
-                        <span className="small-badge">{diff.length} input</span>
-                      </div>
-                      {diff.length ? (
-                        <div className="diff-list">
-                          {diff.map((d, i) => (
-                            <div key={i}>
-                              <code>{humanPath(d.path, doc.baseline)}</code>
-                              <span>
-                                <b>{formatDiffValue(d.before)}</b>
-                                <ArrowRight size={14} />
-                                <b>{formatDiffValue(d.after)}</b>
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="empty-state compact">
-                          <GitBranch size={27} />
-                          <h3>Et rent udgangspunkt.</h3>
-                          <p>
-                            Der er endnu ingen ændrede antagelser. Justér fx
-                            antallet af medarbejdere i alternativet.
-                          </p>
-                        </div>
-                      )}
-                      <button
-                        className="button primary full"
-                        disabled={running}
-                        onClick={() => run(30)}
-                      >
-                        <Play size={14} fill="currentColor" />
-                        Afprøv hypotesen
-                      </button>
-                    </section>
+                    <InputDifferences
+                      differences={diff}
+                      baseline={doc.baseline}
+                      scenario={doc.scenario}
+                      running={running}
+                      onRun={() => run(30)}
+                    />
                   </div>
                   <ExperimentSettings
                     key={`${doc.baseline.id}:${doc.baseline.revision}:${doc.scenario.id}:${doc.scenario.revision}`}
@@ -1942,18 +1916,4 @@ export default function FlowLab() {
 }
 function InfoDot() {
   return <span className="info-dot">i</span>;
-}
-function formatDiffValue(value: unknown) {
-  if (typeof value === "number")
-    return formatNumber(value, Number.isInteger(value) ? 0 : 2);
-  if (typeof value === "string") return value;
-  return JSON.stringify(value);
-}
-function humanPath(path: string, model: FlowModel) {
-  const r = /^resources\.(\d+)\.(.+)$/.exec(path);
-  if (r)
-    return `${model.resources[Number(r[1])]?.label ?? "Ressource"} · ${{ capacity: "medarbejdere", hourlyCost: "timeløn", calendar: "arbejdsplan" }[r[2]] ?? r[2]}`;
-  const n = /^nodes\.(\d+)\.(.+)$/.exec(path);
-  if (n) return `${model.nodes[Number(n[1])]?.label ?? "Node"} · ${n[2]}`;
-  return path;
 }
