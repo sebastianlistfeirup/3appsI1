@@ -21,10 +21,6 @@ import EmbeddedPostgres from "embedded-postgres";
 import { exportJWK, generateKeyPair, SignJWT } from "jose";
 import { Pool, withTrustedUser } from "../../packages/database/src/index";
 import { installQueue } from "../../packages/jobs/src/queue";
-import {
-  LocalPrivateObjectStore,
-  objectKey,
-} from "../../packages/storage/src/index";
 const startedAt = new Date().toISOString(),
   repository = resolve(".");
 const root = await mkdtemp(join(tmpdir(), "tre-http-proof-"));
@@ -286,46 +282,51 @@ try {
   assert(identityAddress && typeof identityAddress === "object");
   const identityOrigin = `https://127.0.0.1:${identityAddress.port}`,
     origin = `http://127.0.0.1:${appPort}`;
-  const app = childProcess(
-    process.execPath,
-    [
-      join(repository, "apps/studio/node_modules/next/dist/bin/next"),
-      "start",
-      "--hostname",
-      "127.0.0.1",
-      "--port",
-      String(appPort),
-    ],
-    {
-      TRE_BACKEND_ENABLED: "1",
-      APP_DATABASE_URL: runtime.APP_DATABASE_URL,
-      SUPABASE_URL: identityOrigin,
-      TRE_PRIVATE_OBJECT_DIR: join(root, "objects"),
-      TRE_ARTIFACT_SIGNING_KEY: secret(),
-      NODE_EXTRA_CA_CERTS: certificate,
-      NEXT_TELEMETRY_DISABLED: "1",
-    },
-    join(repository, "apps/studio"),
-  );
-  await until(
-    async () => {
-      if (app.child.exitCode !== null)
-        throw new Error(
-          `Production server exited before readiness: ${safe(app.log())}`,
-        );
-      try {
-        return (
-          await fetch(`${origin}/api/health`, {
-            signal: AbortSignal.timeout(1000),
-          })
-        ).ok;
-      } catch {
-        return false;
-      }
-    },
-    "Production Next readiness",
-    30000,
-  );
+  const artifactSigningKey = secret();
+  const startApp = () =>
+    childProcess(
+      process.execPath,
+      [
+        join(repository, "apps/studio/node_modules/next/dist/bin/next"),
+        "start",
+        "--hostname",
+        "127.0.0.1",
+        "--port",
+        String(appPort),
+      ],
+      {
+        TRE_BACKEND_ENABLED: "1",
+        APP_DATABASE_URL: runtime.APP_DATABASE_URL,
+        SUPABASE_URL: identityOrigin,
+        TRE_PRIVATE_OBJECT_DIR: join(root, "objects"),
+        TRE_ARTIFACT_SIGNING_KEY: artifactSigningKey,
+        NODE_EXTRA_CA_CERTS: certificate,
+        NEXT_TELEMETRY_DISABLED: "1",
+      },
+      join(repository, "apps/studio"),
+    );
+  let app = startApp();
+  const waitForApp = () =>
+    until(
+      async () => {
+        if (app.child.exitCode !== null)
+          throw new Error(
+            `Production server exited before readiness: ${safe(app.log())}`,
+          );
+        try {
+          return (
+            await fetch(`${origin}/api/health`, {
+              signal: AbortSignal.timeout(1000),
+            })
+          ).ok;
+        } catch {
+          return false;
+        }
+      },
+      "Production Next readiness",
+      30000,
+    );
+  await waitForApp();
   const owner = randomUUID(),
     stranger = randomUUID(),
     viewer = randomUUID();
@@ -350,6 +351,7 @@ try {
       token?: string;
       method?: string;
       body?: unknown;
+      bytes?: Uint8Array;
       status?: number;
       origin?: string;
     } = {},
@@ -359,14 +361,18 @@ try {
       signal: AbortSignal.timeout(10000),
       headers: {
         ...(options.token ? { authorization: `Bearer ${options.token}` } : {}),
-        ...(options.body !== undefined
-          ? { "content-type": "application/json" }
-          : {}),
+        ...(options.bytes !== undefined
+          ? { "content-type": "application/octet-stream" }
+          : options.body !== undefined
+            ? { "content-type": "application/json" }
+            : {}),
         ...(options.origin ? { origin: options.origin } : {}),
       },
-      ...(options.body !== undefined
-        ? { body: JSON.stringify(options.body) }
-        : {}),
+      ...(options.bytes !== undefined
+        ? { body: Uint8Array.from(options.bytes) }
+        : options.body !== undefined
+          ? { body: JSON.stringify(options.body) }
+          : {}),
     });
     if (options.status !== undefined && response.status !== options.status)
       throw new Error(
@@ -516,30 +522,126 @@ try {
     accounting.count === 1 && accounting.cost === 0,
     "One immutable usage record and zero external cost",
   );
-  const bytes = randomBytes(12345),
-    descriptor = {
-      workspaceId: workspace.id,
-      projectId: project.id,
-      artifactVersionId: randomUUID(),
-      sha256: digest(bytes),
-      bytes: bytes.length,
-    };
-  const store = new LocalPrivateObjectStore(join(root, "objects"));
-  await store.putVerified(descriptor, bytes);
-  await withTrustedUser(web, owner, (client) =>
-    client.query(
-      "insert into app.artifact_versions(id,workspace_id,project_id,artifact_id,version,sha256,mime,bytes,storage_key,provenance,rights_status) values($1,$2,$3,$4,1,$5,'application/octet-stream',$6,$7,'{}','owned')",
-      [
-        descriptor.artifactVersionId,
-        workspace.id,
-        project.id,
-        randomUUID(),
-        descriptor.sha256,
-        descriptor.bytes,
-        objectKey(descriptor),
-      ],
-    ),
+  const bytes = randomBytes(12345);
+  const uploadInput = {
+    idempotencyKey: randomUUID(),
+    name: "HTTP-prøve-æøå.bin",
+    mime: "application/octet-stream",
+    bytes: bytes.length,
+    sha256: digest(bytes),
+    source: "Syntetiske tilfældige prøvebytes",
+    rights: "owned",
+  };
+  const uploadPath = `projects/${project.id}/uploads`;
+  await (
+    await api(uploadPath, {
+      token: viewerJwt,
+      method: "POST",
+      body: uploadInput,
+      status: 403,
+    })
+  ).arrayBuffer();
+  const { upload } = await (
+    await api(uploadPath, {
+      token: ownerJwt,
+      method: "POST",
+      body: uploadInput,
+      status: 202,
+    })
+  ).json();
+  const contentPath = `uploads/${upload.id}/content`,
+    finalizePath = `uploads/${upload.id}/finalize`;
+  await (
+    await api(contentPath, {
+      token: ownerJwt,
+      method: "PUT",
+      bytes,
+      status: 200,
+    })
+  ).arrayBuffer();
+  await (
+    await api(`artifacts/${upload.id}/download-link`, {
+      token: ownerJwt,
+      method: "POST",
+      body: {},
+      status: 404,
+    })
+  ).arrayBuffer();
+  check(
+    (
+      await admin.query(
+        "select count(*)::int as count from app.artifact_versions where project_id=$1",
+        [project.id],
+      )
+    ).rows[0].count === 0,
+    "Actual HTTP upload remains private and unpublished before finalization",
   );
+  // Terminate the real Next process between durable file publication and SQL
+  // finalization. Recovery gets its identity/metadata from PostgreSQL, not memory.
+  const previousPid = app.child.pid;
+  await new Promise<void>((resolveCrash, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error("Production server crash did not settle")),
+      5000,
+    );
+    app.child.once("close", () => {
+      clearTimeout(timer);
+      resolveCrash();
+    });
+    app.child.kill("SIGKILL");
+  });
+  check(
+    app.child.signalCode === "SIGKILL",
+    "Actual production Next process was killed after durable upload bytes",
+  );
+  app = startApp();
+  await waitForApp();
+  check(
+    app.child.pid !== previousPid,
+    "Upload recovery runs in a new production Next process",
+  );
+  const recovered = await (
+    await api(`uploads/${upload.id}`, { token: ownerJwt, status: 200 })
+  ).json();
+  check(
+    recovered.upload.state === "pending" &&
+      recovered.upload.sha256 === uploadInput.sha256,
+    "New HTTP process discovers the existing durable upload reservation",
+  );
+  const complete = await (
+    await api(finalizePath, {
+      token: ownerJwt,
+      method: "POST",
+      body: {},
+      status: 200,
+    })
+  ).json();
+  const duplicate = await (
+    await api(finalizePath, {
+      token: ownerJwt,
+      method: "POST",
+      body: {},
+      status: 200,
+    })
+  ).json();
+  check(
+    complete.upload.state === "finalized" &&
+      duplicate.upload.artifactVersionId === upload.id,
+    "HTTP finalization recovers existing bytes without reupload and safely repeats",
+  );
+  check(
+    (
+      await admin.query(
+        "select count(*)::int as count from app.artifact_versions where project_id=$1",
+        [project.id],
+      )
+    ).rows[0].count === 1,
+    "Retried HTTP finalization publishes exactly one immutable version",
+  );
+  const descriptor = {
+    artifactVersionId: upload.id,
+    sha256: uploadInput.sha256,
+  };
   const linkPath = `artifacts/${descriptor.artifactVersionId}/download-link`;
   const { download } = await (
     await api(linkPath, {
@@ -595,8 +697,8 @@ try {
     })
   ).arrayBuffer();
   check(
-    jwksRequests === 1,
-    "Valid HTTP requests reuse the verified JWKS cache",
+    jwksRequests === 2,
+    "Each production process fetches verified JWKS once and reuses its cache",
   );
   await stop(worker.child, 28000);
   check(
@@ -622,6 +724,8 @@ try {
     actualCostMinor: accounting.cost,
     downloadedBytes: bytes.length,
     privateFileIntegrity: true,
+    uploadThroughHttp: true,
+    processKilledBetweenUploadAndFinalize: true,
   };
   exitCode = 0;
 } catch (error) {

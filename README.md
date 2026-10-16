@@ -68,7 +68,7 @@ pnpm test:db
 # Med PostgreSQL 17+ klientværktøjer installeret:
 pnpm test:restore
 pnpm build
-# Faktisk HTTP/TLS/JWT/worker/fildownload i isolerede lokale processer:
+# Faktisk HTTP/TLS/JWT/worker/upload, servergenstart og fildownload:
 pnpm test:http
 pnpm exec playwright install --with-deps chromium firefox webkit
 pnpm test:browser

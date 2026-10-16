@@ -30,7 +30,11 @@ import {
   claimJob,
   recordProviderReference,
   assertRuntimePrincipal,
+  beginUpload,
+  getUpload,
+  finalizeUpload,
 } from "../../packages/database/src/index";
+import { LocalPrivateObjectStore } from "../../packages/storage/src/index";
 import {
   installQueue,
   startQueue,
@@ -299,6 +303,8 @@ try {
   const sourceObjects = join(directory, "source-objects"),
     backupObjects = join(directory, "backup-objects"),
     restoredObjects = join(directory, "restored-objects");
+  for (const objectRoot of [sourceObjects, backupObjects, restoredObjects])
+    await mkdir(objectRoot, { mode: 0o700 });
   for (const [version, content] of [
     "Første version med danske tegn: æøå.",
     "Anden version. Den første skal blive bevaret.",
@@ -306,7 +312,7 @@ try {
     const bytes = Buffer.from(content),
       assetId = `${fixture.workspace.id}/${fixture.project.id}/notes/v${version + 1}.txt`;
     const path = objectPath(sourceObjects, assetId);
-    await mkdir(resolve(path, ".."), { recursive: true });
+    await mkdir(resolve(path, ".."), { recursive: true, mode: 0o700 });
     await writeFile(path, bytes, { mode: 0o600 });
     await withTrustedUser(source.pool, owner, (client) =>
       client.query(
@@ -324,6 +330,31 @@ try {
       ),
     );
   }
+  const pendingBytes = Buffer.from(
+    "Uploaden var skrevet før backup, men var endnu ikke registreret som filversion. 🌱",
+  );
+  const pendingUpload = await withTrustedUser(source.pool, owner, (client) =>
+    beginUpload(client, fixture.project.id, "studio", {
+      idempotencyKey: "pending-file-before-backup",
+      name: "ufærdig-upload.txt",
+      mime: "text/plain",
+      bytes: pendingBytes.length,
+      sha256: sha256(pendingBytes),
+      source: "synthetic-restore-fixture",
+      rights: "owned",
+    }),
+  );
+  const pendingDescriptor = {
+    workspaceId: fixture.workspace.id,
+    projectId: fixture.project.id,
+    artifactVersionId: pendingUpload.id,
+    sha256: pendingUpload.sha256,
+    bytes: pendingBytes.length,
+  };
+  await new LocalPrivateObjectStore(sourceObjects).putVerified(
+    pendingDescriptor,
+    pendingBytes,
+  );
   await processJob(source.pool, {
     jobId: fixture.completed.id,
     workspaceId: fixture.workspace.id,
@@ -354,7 +385,7 @@ try {
   // explicit consistency boundary across the database and private object store.
   const checkpointAt = new Date().toISOString(),
     before = await snapshot(source.pool);
-  assert.equal(before["app.audit_log"]!.length, 1);
+  assert.equal(before["app.audit_log"]!.length, 2);
   const assets = (
     await source.pool.query<{
       id: string;
@@ -362,7 +393,7 @@ try {
       sha256: string;
       bytes: string;
     }>(
-      "select id,storage_key,sha256,bytes from app.artifact_versions order by storage_key",
+      "select id,storage_key,sha256,bytes from app.artifact_versions union all select id,workspace_id::text||'/'||project_id::text||'/'||id::text||'/'||sha256 as storage_key,sha256,bytes from app.artifact_uploads where state='pending' order by storage_key",
     )
   ).rows;
   for (const asset of assets) {
@@ -370,7 +401,7 @@ try {
     assert.equal(sha256(bytes), asset.sha256);
     assert.equal(bytes.length, Number(asset.bytes));
     const path = objectPath(backupObjects, asset.storage_key);
-    await mkdir(resolve(path, ".."), { recursive: true });
+    await mkdir(resolve(path, ".."), { recursive: true, mode: 0o700 });
     await writeFile(path, bytes, { mode: 0o600 });
   }
   const archive = join(directory, "database.dump"),
@@ -434,7 +465,7 @@ try {
     assert.equal(sha256(bytes), asset.sha256);
     assert.equal(bytes.length, Number(asset.bytes));
     const path = objectPath(restoredObjects, asset.key);
-    await mkdir(resolve(path, ".."), { recursive: true });
+    await mkdir(resolve(path, ".."), { recursive: true, mode: 0o700 });
     await writeFile(path, bytes, { mode: 0o600 });
     assert.equal(sha256(await readFile(path)), asset.sha256);
   }
@@ -446,6 +477,32 @@ try {
     getProject(client, fixture.project.id, "studio"),
   );
   assert.deepEqual(restored.document, fixture.project.document);
+  const recoveredUpload = await withTrustedUser(app.pool, owner, (client) =>
+    getUpload(client, pendingUpload.id, "studio", true),
+  );
+  assert.equal(recoveredUpload.state, "pending");
+  assert.deepEqual(
+    await new LocalPrivateObjectStore(restoredObjects).readVerified(
+      pendingDescriptor,
+    ),
+    pendingBytes,
+  );
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const completed = await withTrustedUser(app.pool, owner, (client) =>
+      finalizeUpload(client, pendingUpload.id, "studio"),
+    );
+    assert.equal(completed.state, "finalized");
+    assert.equal(completed.id, pendingUpload.id);
+  }
+  assert.equal(
+    (
+      await target.pool.query(
+        "select count(*)::int count from app.artifact_versions where id=$1",
+        [pendingUpload.id],
+      )
+    ).rows[0].count,
+    1,
+  );
   await assert.rejects(
     withTrustedUser(app.pool, stranger, (client) =>
       getProject(client, fixture.project.id, "studio"),
@@ -552,7 +609,9 @@ try {
     tableRowsAtCheckpoint: Object.fromEntries(
       Object.entries(before).map(([name, rows]) => [name, rows.length]),
     ),
-    restoredObjectVersions: assets.length,
+    restoredObjectVersions: assets.length - 1,
+    restoredPendingUploadObjects: 1,
+    pendingUploadFinalizedWithoutReupload: true,
     observedLostRows: 0,
     observedLostObjects: 0,
     scope:
@@ -560,6 +619,7 @@ try {
     checks: [
       "Every app and queue row equals the pre-backup snapshot",
       "Original immutable object bytes and SHA-256 restored",
+      "Pending upload bytes and reservation restored, then finalized twice into one version without reupload",
       "All app tables retain FORCE RLS and non-runtime ownership",
       "Four dedicated restricted runtime logins accepted",
       "Foreign project and object access return 404",

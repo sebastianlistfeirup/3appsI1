@@ -261,6 +261,42 @@
       "verification": ["pnpm test:http"],
       "status": "verified-local",
       "allowed_paths": ["tools", "docs", "reports"]
+    },
+    {
+      "id": "F11",
+      "app": "foundation",
+      "goal": "Durable quota-bound private uploads, immutable finalization, crash and restore recovery",
+      "dependencies": ["F09", "F10"],
+      "verification": ["pnpm test:db", "pnpm test:http", "pnpm test:restore"],
+      "status": "verified-local",
+      "allowed_paths": [
+        "packages",
+        "migrations",
+        "tools",
+        "tests/integration",
+        "docs",
+        "reports"
+      ]
+    },
+    {
+      "id": "L17",
+      "app": "flowlab",
+      "goal": "Manual arrival and case type editor with guarded drafts",
+      "dependencies": ["L15"],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/arrival-editor-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/flowlab"]
+    },
+    {
+      "id": "D14",
+      "app": "director",
+      "goal": "Cancellable deduplicated project archive in actual browser workers",
+      "dependencies": ["D01"],
+      "verification": ["node apps/director/tests/archive-flow.mjs"],
+      "status": "verified-local",
+      "allowed_paths": ["apps/director"]
     }
   ]
 }

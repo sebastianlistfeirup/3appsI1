@@ -49,7 +49,7 @@ A separate [actual backup/restore drill](backup-restore.md) now passes locally a
 
 ## Private immutable files
 
-The optional API now supports [private local artifacts and one-minute download links](private-artifacts.md). It rechecks current membership on redemption and verifies exact size and SHA-256 before delivery. Real filesystem and PostgreSQL fixtures cover concurrency, corruption, foreign tenants, revoked membership and expiry. Browser cloud uploads and remote storage are still unconnected.
+The optional API now supports [private local artifacts and one-minute download links](private-artifacts.md). It rechecks current membership on redemption and verifies exact size and SHA-256 before delivery. Real filesystem and PostgreSQL fixtures cover concurrency, corruption, foreign tenants, revoked membership and expiry. The [authenticated HTTP upload protocol](durable-uploads.md) reserves quota, writes verified bytes and finalizes one immutable version. Actual process death and lost-acknowledgement recovery are verified. Browser cloud synchronization and remote storage are still unconnected.
 
 ## Full production HTTP boundary
 

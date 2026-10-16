@@ -1,6 +1,6 @@
 {
-  "startedAt": "2026-10-16T23:00:55.250Z",
-  "finishedAt": "2026-10-16T23:00:56.931Z",
+  "startedAt": "2026-10-16T23:15:39.385Z",
+  "finishedAt": "2026-10-16T23:15:41.040Z",
   "status": "failed",
   "failureProbe": true,
   "failureReason": "Intentional failure after real services became ready.",

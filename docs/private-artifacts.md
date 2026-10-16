@@ -1,6 +1,6 @@
 # Private artifact reference storage
 
-The optional Studio server profile can read real immutable files from a dedicated private local directory. This is a verified local storage implementation, **not** a connected Supabase Storage or S3 service. The browser demo remains independent and never uploads its data automatically.
+The optional Studio server profile can upload and read real immutable files from a dedicated private local directory. This is a verified local storage implementation, **not** a connected Supabase Storage or S3 service. The browser demo remains independent and never uploads its data automatically.
 
 ## Storage boundary
 
@@ -55,4 +55,4 @@ A missing pair or malformed key fails closed. Replacing the signing key invalida
 
 `tests/integration/artifact-download.test.ts` uses an actual restricted PostgreSQL login, ES256 JWTs and actual stored bytes. It verifies binary/HEAD delivery, viewer access and immediate revocation, foreign/missing IDs, application isolation, malformed references, expired links, corruption, missing files, archived reads and disconnected configuration. `pnpm test:db` runs it alongside the other database gates.
 
-No public upload endpoint or metadata finalization workflow is present in this milestone. Fixtures publish immutable metadata and bytes deliberately; a future upload path needs durable reservation/finalization and idempotent recovery for ambiguous database commits. Do not delete a file merely because a metadata commit's acknowledgement was lost. Production object quotas, upload lifecycle, object garbage collection, rate limiting, remote storage adapter, proxy settings and hosted restore rehearsal remain separate work.
+The [durable upload protocol](durable-uploads.md) now reserves, receives and finalizes actual private files through authenticated HTTP. Its tests include concurrent retries, quota locks, revocation/archive between I/O and commit, lost commit acknowledgement, actual process death and restoration of an unpublished file. No local browser project is uploaded automatically. Browser cloud synchronization, abandoned-object collection, production rate limiting, remote storage, proxy settings and hosted restore rehearsal remain separate work.

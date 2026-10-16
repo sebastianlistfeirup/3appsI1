@@ -11,9 +11,9 @@ The real path is:
 1. An unauthenticated request is rejected before key discovery. A wrong signature is rejected after the server retrieves the key over HTTPS.
 2. A valid end-user token creates a workspace and Studio project through the actual Next route and domain validator. Foreign identities cannot read it; a viewer can read but cannot write; foreign origins are refused.
 3. HTTP job retries yield the same job. The actual separate worker consumes the durable pg-boss outbox using three different restricted database logins. It returns the exact non-ASCII UTF-8 hash and explicit `codeExecuted:false` / `externalBuildVerified:false` evidence. Exactly one zero-cost immutable usage event exists.
-4. A fixture publishes real immutable file metadata and bytes through the existing restricted database/storage primitives. This setup is deliberately not described as an HTTP upload endpoint.
+4. HTTP reserves an upload, PUTs 12,345 actual bytes and confirms they are not downloadable yet. Next is actually killed with SIGKILL. A new process discovers the pending reservation, finalizes the existing bytes without reupload, and repeats finalization with exactly one immutable version.
 5. The actual Next file route issues a one-minute link, delivers all 12,345 original binary bytes as an attachment, and returns the correct HEAD size without a body. Revoking the viewer invalidates the already-issued link.
-6. Requests reuse the verified JWKS cache. Application and worker logs are checked for generated credentials/tokens. The worker and server shut down, sockets drain, and the local database, certificate, key and object directory are removed.
+6. Each of the two Next processes fetches verified JWKS once and caches it. Application and worker logs are checked for generated credentials/tokens. The worker and server shut down, sockets drain, and the local database, certificate, key and object directory are removed.
 
 `reports/backend/http-proof.json` records current status and actual evidence. A failed run writes failed status instead of leaving a previous success report unqualified. Fixtures never read production database connection variables; they create all four restricted login credentials themselves. Server secrets are passed through child environments, never arguments or report fields. Next telemetry is disabled in the fixture.
 

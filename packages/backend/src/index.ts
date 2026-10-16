@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
+import { uploadRoute } from "./uploads";
 import { DomainError, type AppKey } from "@tre/contracts";
 import { verifyBearer, type AuthConfig } from "@tre/auth";
 import {
@@ -276,6 +277,14 @@ export function createBackendHandler(config: BackendConfig) {
           },
         });
       }
+      const uploadResponse = await uploadRoute(
+        config,
+        request,
+        parts,
+        identity.userId,
+        requestId,
+      );
+      if (uploadResponse) return uploadResponse;
       // Receive and bound the body before opening a database transaction.
       const body = ["POST", "PATCH"].includes(method)
         ? await readJson(

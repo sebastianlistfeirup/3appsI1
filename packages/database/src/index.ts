@@ -90,6 +90,16 @@ function databaseError(error: unknown): never {
     REVISION_CONFLICT: [409, "Der findes en nyere version."],
     IMMUTABLE_VERSION: [409, "Gem en ny version i stedet for at overskrive."],
     LAST_OWNER: [409, "Arbejdsrummet skal have mindst én ejer."],
+    STORAGE_QUOTA_EXCEEDED: [
+      429,
+      "Filområdet er fyldt. Afvent mere lagerplads før en ny upload.",
+    ],
+    UPLOAD_LIMIT: [
+      429,
+      "Afslut eksisterende uploads først. Der kan være højst 20 åbne uploads i arbejdsrummet.",
+    ],
+    UPLOAD_NOT_FOUND: [404, "Uploaden findes ikke."],
+    ARTIFACT_NOT_FOUND: [404, "Filfamilien findes ikke i projektet."],
   };
   if (codes[message]) {
     const [status, text] = codes[message]!;
@@ -631,3 +641,11 @@ export async function archiveProject(
     )
   ).rows[0]!;
 }
+export {
+  uploadInputSchema,
+  beginUpload,
+  getUpload,
+  finalizeUpload,
+  type UploadInput,
+  type UploadRow,
+} from "./uploads";

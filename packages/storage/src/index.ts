@@ -30,6 +30,7 @@ export function objectKey(descriptor: ObjectDescriptor): string {
   return `${d.workspaceId}/${d.projectId}/${d.artifactVersionId}/${d.sha256}`;
 }
 export interface PrivateObjectStore {
+  readonly maximumObjectBytes?: number;
   readVerified(descriptor: ObjectDescriptor): Promise<Uint8Array>;
   putVerified(
     descriptor: ObjectDescriptor,

@@ -1,24 +1,25 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T23:00:00.802205+00:00",
+  "updatedAt": "2026-10-16T23:15:39.669245+00:00",
   "status": "building",
   "activeTasks": [
     "F06-remote-ci",
-    "F10-production-http-proof",
-    "L17-arrival-editor",
-    "D14-background-packages"
+    "F11-durable-upload-verification",
+    "L18-resources-and-calendars",
+    "D15-complete-caption-and-audio-evidence"
   ],
   "profile": "demo",
   "connectedIntegrations": [],
   "verifiedLocalServices": [
     "PostgreSQL 17.10",
     "pg-boss 12.38.0",
-    "Asymmetric JWT \u2192 API \u2192 RLS",
+    "Asymmetric JWT → API → RLS",
     "Separate worker process restart",
     "Local FFmpeg H.264/AAC",
     "Two-cluster PostgreSQL and immutable-file restore",
     "Separate worker reconnect after actual idle session termination",
     "Private local immutable objects and signed links with current RLS membership",
-    "Production Next HTTP \u2192 certificate-validated HTTPS JWKS \u2192 RLS \u2192 separate worker \u2192 signed private file"
+    "Production Next HTTP → certificate-validated HTTPS JWKS → RLS → separate worker → signed private file",
+    "Durable HTTP uploads survive real Next SIGKILL and two-cluster restore before finalization"
   ]
 }

@@ -5,3 +5,4 @@ export const GET = studioBackend;
 export const HEAD = studioBackend;
 export const POST = studioBackend;
 export const PATCH = studioBackend;
+export const PUT = studioBackend;

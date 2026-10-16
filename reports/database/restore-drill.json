@@ -1,7 +1,7 @@
 {
-  "startedAt": "2026-10-16T22:04:24.647Z",
-  "verifiedAt": "2026-10-16T22:04:26.024Z",
-  "checkpointAt": "2026-10-16T22:04:25.253Z",
+  "startedAt": "2026-10-16T23:13:00.183Z",
+  "verifiedAt": "2026-10-16T23:13:04.996Z",
+  "checkpointAt": "2026-10-16T23:13:02.328Z",
   "profile": "two-disposable-local-clusters",
   "cloudConnected": false,
   "postgresVersion": "PostgreSQL 17.10 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit",
@@ -12,15 +12,17 @@
   "migrations": [
     "0001_foundation.sql",
     "0002_job_control.sql",
-    "0003_archive_ordering.sql"
+    "0003_archive_ordering.sql",
+    "0004_private_uploads.sql"
   ],
-  "dumpBytes": 123127,
-  "archiveSha256": "bea0b68a587e017adfebfccf152be2258c7cb2942b1ece0a7ff18bf8cdc4c992",
-  "dumpMs": 76,
-  "recoveryMs": 235,
+  "dumpBytes": 138085,
+  "archiveSha256": "246348a1752e278325bed5d24159f6f40cb9337d9e32a8975dc3096e9e21775e",
+  "dumpMs": 465,
+  "recoveryMs": 1114,
   "tableRowsAtCheckpoint": {
+    "app.artifact_uploads": 1,
     "app.artifact_versions": 2,
-    "app.audit_log": 1,
+    "app.audit_log": 2,
     "app.budget_reservations": 3,
     "app.entitlements": 0,
     "app.job_events": 8,
@@ -47,12 +49,15 @@
     "queue.warning": 0
   },
   "restoredObjectVersions": 2,
+  "restoredPendingUploadObjects": 1,
+  "pendingUploadFinalizedWithoutReupload": true,
   "observedLostRows": 0,
   "observedLostObjects": 0,
   "scope": "Quiesced synthetic snapshot; original cluster stopped and original objects removed before restore. Recovery time excludes fresh cluster provisioning. No production RPO/RTO promise.",
   "checks": [
     "Every app and queue row equals the pre-backup snapshot",
     "Original immutable object bytes and SHA-256 restored",
+    "Pending upload bytes and reservation restored, then finalized twice into one version without reupload",
     "All app tables retain FORCE RLS and non-runtime ownership",
     "Four dedicated restricted runtime logins accepted",
     "Foreign project and object access return 404",
@@ -62,7 +67,7 @@
     "Same idempotency key returns the original job",
     "No external provider call or payment"
   ],
-  "finishedAt": "2026-10-16T22:04:26.056Z",
+  "finishedAt": "2026-10-16T23:13:05.081Z",
   "exitCode": 0,
   "cleanupVerified": true,
   "poolErrors": 0
