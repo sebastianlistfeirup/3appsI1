@@ -1,2 +1,4 @@
-import DirectorEditor from '../components/DirectorEditor';
-export default function Page(){return <DirectorEditor/>;}
+import DirectorEditor from "../components/DirectorEditor";
+export default function Page() {
+  return <DirectorEditor />;
+}

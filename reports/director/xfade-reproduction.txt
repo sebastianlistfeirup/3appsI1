@@ -1,0 +1,103 @@
+[Parsed_fps_0 @ 0x55a89c0f4b00] 0 frames in, 0 frames out; 0 frames dropped, 0 frames duplicated.
+[Parsed_fps_3 @ 0x55a89c1498c0] 0 frames in, 0 frames out; 0 frames dropped, 0 frames duplicated.
+[h264 @ 0x55a89c14c940] Reinit context to 1280x720, pix_fmt: yuvj420p
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/tmp/director-recovery-TE8lFS/jobs/dda9abbb-c0be-4d95-81ab-c446818a590d/segment-0-a4250ff51a9eda674b7c27cf6ea7d83a825fe85551b23a11f2311ebefd6a345a.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf61.7.103
+  Duration: 00:00:12.00, start: 0.000000, bitrate: 88 kb/s
+  Stream #0:0[0x1](und): Video: h264 (High), 1 reference frame (avc1 / 0x31637661), yuvj420p(pc, bt470bg/unknown/unknown, progressive, center), 1280x720 [SAR 1:1 DAR 16:9], 85 kb/s, 24 fps, 24 tbr, 24k tbn (default)
+      Metadata:
+        handler_name    : VideoHandler
+        vendor_id       : [0][0][0][0]
+        encoder         : Lavc61.19.101 libx264
+      Side data:
+        ICC Profile
+[h264 @ 0x55a89c14c940] Reinit context to 1280x720, pix_fmt: yuvj420p
+Input #1, mov,mp4,m4a,3gp,3g2,mj2, from '/tmp/director-recovery-TE8lFS/jobs/dda9abbb-c0be-4d95-81ab-c446818a590d/segment-1-1d372dd76b9101fda481dc3e02f13afdbd6fd8fff9f6e7e6b5fa253b719d40da.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf61.7.103
+  Duration: 00:00:12.00, start: 0.000000, bitrate: 93 kb/s
+  Stream #1:0[0x1](und): Video: h264 (High), 1 reference frame (avc1 / 0x31637661), yuvj420p(pc, bt470bg/unknown/unknown, progressive, center), 1280x720 [SAR 1:1 DAR 16:9], 90 kb/s, 24 fps, 24 tbr, 24k tbn (default)
+      Metadata:
+        handler_name    : VideoHandler
+        vendor_id       : [0][0][0][0]
+        encoder         : Lavc61.19.101 libx264
+      Side data:
+        ICC Profile
+[out#0/null @ 0x55a89c14ff80] Adding streams from explicit maps...
+[out#0/null @ 0x55a89c14ff80] Creating output stream from an explicitly mapped complex filtergraph 0, output [v]
+[vost#0:0/wrapped_avframe @ 0x55a89c1524c0] Created video stream from complex filtergraph 0:[xfade:default]
+[vost#0:0/wrapped_avframe @ 0x55a89c1524c0] 
+[fc#0 @ 0x55a89c1480c0] Binding input with label '0:v' to input stream 0:0
+[fc#0 @ 0x55a89c1480c0] Binding input with label '1:v' to input stream 1:0
+Stream mapping:
+  Stream #0:0 (h264) -> fps:default
+  Stream #1:0 (h264) -> fps:default
+  xfade:default -> Stream #0:0 (wrapped_avframe)
+[vost#0:0/wrapped_avframe @ 0x55a89c1524c0] Starting thread...
+[fc#0 @ 0x55a89c1480c0] Starting thread...
+[vist#0:0/h264 @ 0x55a89c1d0100] [dec:h264 @ 0x55a89c152900] Starting thread...
+[vist#1:0/h264 @ 0x55a89c26d2c0] [dec:h264 @ 0x55a89c26ce80] Starting thread...
+[in#0/mov,mp4,m4a,3gp,3g2,mj2 @ 0x55a89c14be80] Starting thread...
+[in#1/mov,mp4,m4a,3gp,3g2,mj2 @ 0x55a89c14e2c0] Starting thread...
+Press [q] to stop, [?] for help
+[h264 @ 0x55a89c153580] Reinit context to 1280x720, pix_fmt: yuvj420p
+[h264 @ 0x55a89c21a940] Reinit context to 1280x720, pix_fmt: yuvj420p
+[graph 0 input from stream 0:0 @ 0x7fca9c005b00] w:1280 h:720 pixfmt:yuvj420p tb:1/24000 fr:24/1 sar:1/1 csp:bt470bg range:pc
+[graph 0 input from stream 1:0 @ 0x7fca9c005d00] w:1280 h:720 pixfmt:yuvj420p tb:1/24000 fr:24/1 sar:1/1 csp:bt470bg range:pc
+[auto_scale_0 @ 0x7fca9c009b00] w:iw h:ih flags:'' interl:0
+[Parsed_xfade_6 @ 0x7fca9c0045c0] auto-inserting filter 'auto_scale_0' between the filter 'Parsed_setpts_2' and the filter 'Parsed_xfade_6'
+[auto_scale_1 @ 0x7fca9c017d80] w:iw h:ih flags:'' interl:0
+[Parsed_xfade_6 @ 0x7fca9c0045c0] auto-inserting filter 'auto_scale_1' between the filter 'Parsed_setpts_5' and the filter 'Parsed_xfade_6'
+[Parsed_fps_0 @ 0x7fca9c003580] fps=24/1
+[Parsed_settb_1 @ 0x7fca9c003800] tb:1/24 -> tb:1/24
+[Parsed_settb_1 @ 0x7fca9c003800] TB:0.041667 FRAME_RATE:24.000000 SAMPLE_RATE:nan
+[swscaler @ 0x7fca9c025fc0] deprecated pixel format used, make sure you did set range correctly
+[auto_scale_0 @ 0x7fca9c009b00] w:1280 h:720 fmt:yuvj420p csp:bt470bg range:pc sar:1/1 -> w:1280 h:720 fmt:yuvj444p csp:bt470bg range:pc sar:1/1 flags:0x00000004
+[auto_scale_0 @ 0x7fca9c009b00] [framesync @ 0x7fca9c009c28] Selected 1/24 time base
+[auto_scale_0 @ 0x7fca9c009b00] [framesync @ 0x7fca9c009c28] Sync level 1
+[Parsed_fps_3 @ 0x7fca9c003d80] fps=24/1
+[Parsed_settb_4 @ 0x7fca9c004040] tb:1/24 -> tb:1/24
+[Parsed_settb_4 @ 0x7fca9c004040] TB:0.041667 FRAME_RATE:24.000000 SAMPLE_RATE:nan
+[swscaler @ 0x7fca9c061500] deprecated pixel format used, make sure you did set range correctly
+[auto_scale_1 @ 0x7fca9c017d80] w:1280 h:720 fmt:yuvj420p csp:bt470bg range:pc sar:1/1 -> w:1280 h:720 fmt:yuvj444p csp:bt470bg range:pc sar:1/1 flags:0x00000004
+[auto_scale_1 @ 0x7fca9c017d80] [framesync @ 0x7fca9c017ea8] Selected 1/24 time base
+[auto_scale_1 @ 0x7fca9c017d80] [framesync @ 0x7fca9c017ea8] Sync level 1
+[Parsed_xfade_6 @ 0x7fca9c0045c0] The inputs needs to be a constant frame rate; current rate of 1/0 is invalid
+[Parsed_xfade_6 @ 0x7fca9c0045c0] Failed to configure output pad on Parsed_xfade_6
+[Parsed_fps_0 @ 0x7fca9c003580] 0 frames in, 0 frames out; 0 frames dropped, 0 frames duplicated.
+[Parsed_fps_3 @ 0x7fca9c003d80] 0 frames in, 0 frames out; 0 frames dropped, 0 frames duplicated.
+[fc#0 @ 0x55a89c1480c0] Error reinitializing filters!
+[fc#0 @ 0x55a89c1480c0] Task finished with error code: -22 (Invalid argument)
+[fc#0 @ 0x55a89c1480c0] Terminating thread with return code -22 (Invalid argument)
+[vist#1:0/h264 @ 0x55a89c26d2c0] [dec:h264 @ 0x55a89c26ce80] Decoder returned EOF, finishing
+[vist#1:0/h264 @ 0x55a89c26d2c0] [dec:h264 @ 0x55a89c26ce80] Terminating thread with return code 0 (success)
+[vist#1:0/h264 @ 0x55a89c26d2c0] All consumers of this stream are done
+[in#1/mov,mp4,m4a,3gp,3g2,mj2 @ 0x55a89c14e2c0] All consumers are done
+[in#1/mov,mp4,m4a,3gp,3g2,mj2 @ 0x55a89c14e2c0] Terminating thread with return code 0 (success)
+[vost#0:0/wrapped_avframe @ 0x55a89c1524c0] Encoder thread received EOF
+[vost#0:0/wrapped_avframe @ 0x55a89c1524c0] Could not open encoder before EOF
+[vost#0:0/wrapped_avframe @ 0x55a89c1524c0] Task finished with error code: -22 (Invalid argument)
+[vost#0:0/wrapped_avframe @ 0x55a89c1524c0] Terminating thread with return code -22 (Invalid argument)
+[vist#0:0/h264 @ 0x55a89c1d0100] [dec:h264 @ 0x55a89c152900] Decoder returned EOF, finishing
+[vist#0:0/h264 @ 0x55a89c1d0100] [dec:h264 @ 0x55a89c152900] Terminating thread with return code 0 (success)
+[vist#0:0/h264 @ 0x55a89c1d0100] All consumers of this stream are done
+[in#0/mov,mp4,m4a,3gp,3g2,mj2 @ 0x55a89c14be80] All consumers are done
+[in#0/mov,mp4,m4a,3gp,3g2,mj2 @ 0x55a89c14be80] Terminating thread with return code 0 (success)
+[out#0/null @ 0x55a89c14ff80] Nothing was written into output file, because at least one of its streams received no packets.
+frame=    0 fps=0.0 q=0.0 Lsize=       0KiB time=N/A bitrate=N/A speed=N/A    
+[in#0/mov,mp4,m4a,3gp,3g2,mj2 @ 0x55a89c14be80] Input file #0 (/tmp/director-recovery-TE8lFS/jobs/dda9abbb-c0be-4d95-81ab-c446818a590d/segment-0-a4250ff51a9eda674b7c27cf6ea7d83a825fe85551b23a11f2311ebefd6a345a.mp4):
+[in#0/mov,mp4,m4a,3gp,3g2,mj2 @ 0x55a89c14be80]   Input stream #0:0 (video): 23 packets read (51352 bytes); 11 frames decoded; 0 decode errors; 
+[in#0/mov,mp4,m4a,3gp,3g2,mj2 @ 0x55a89c14be80]   Total: 23 packets (51352 bytes) demuxed
+[AVIOContext @ 0x55a89c1543c0] Statistics: 119484 bytes read, 2 seeks
+[in#1/mov,mp4,m4a,3gp,3g2,mj2 @ 0x55a89c14e2c0] Input file #1 (/tmp/director-recovery-TE8lFS/jobs/dda9abbb-c0be-4d95-81ab-c446818a590d/segment-1-1d372dd76b9101fda481dc3e02f13afdbd6fd8fff9f6e7e6b5fa253b719d40da.mp4):
+[in#1/mov,mp4,m4a,3gp,3g2,mj2 @ 0x55a89c14e2c0]   Input stream #1:0 (video): 19 packets read (51843 bytes); 3 frames decoded; 0 decode errors; 
+[in#1/mov,mp4,m4a,3gp,3g2,mj2 @ 0x55a89c14e2c0]   Total: 19 packets (51843 bytes) demuxed
+[AVIOContext @ 0x55a89c1d0640] Statistics: 119829 bytes read, 2 seeks
+Conversion failed!

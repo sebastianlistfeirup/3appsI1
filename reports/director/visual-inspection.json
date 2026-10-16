@@ -1,0 +1,104 @@
+[
+  {
+    "name": "desktop",
+    "width": 1440,
+    "height": 900,
+    "overflow": false,
+    "errors": [],
+    "layout": [
+      {
+        "class": "editor-workspace",
+        "height": 670.09375,
+        "width": 1374
+      },
+      {
+        "class": "viewport-wrap",
+        "height": 499.5,
+        "width": 888
+      },
+      {
+        "class": "inspector-panel",
+        "height": 669.09375,
+        "width": 238
+      },
+      {
+        "class": "shots-section",
+        "height": 254.953125,
+        "width": 1374
+      },
+      {
+        "class": "timeline-section",
+        "height": 218,
+        "width": 1374
+      }
+    ]
+  },
+  {
+    "name": "tablet",
+    "width": 1024,
+    "height": 768,
+    "overflow": false,
+    "errors": [],
+    "layout": [
+      {
+        "class": "editor-workspace",
+        "height": 631.59375,
+        "width": 958
+      },
+      {
+        "class": "viewport-wrap",
+        "height": 307.6875,
+        "width": 547
+      },
+      {
+        "class": "inspector-panel",
+        "height": 630.59375,
+        "width": 210
+      },
+      {
+        "class": "shots-section",
+        "height": 212.4375,
+        "width": 958
+      },
+      {
+        "class": "timeline-section",
+        "height": 218,
+        "width": 958
+      }
+    ]
+  },
+  {
+    "name": "mobile",
+    "width": 390,
+    "height": 844,
+    "overflow": false,
+    "errors": [],
+    "layout": [
+      {
+        "class": "editor-workspace",
+        "height": 1021.15625,
+        "width": 390
+      },
+      {
+        "class": "viewport-wrap",
+        "height": 205.875,
+        "width": 366
+      },
+      {
+        "class": "inspector-panel",
+        "height": 474.6875,
+        "width": 390
+      },
+      {
+        "class": "shots-section",
+        "height": 215,
+        "width": 390
+      },
+      {
+        "class": "timeline-section",
+        "height": 239.375,
+        "width": 390
+      }
+    ]
+  }
+]

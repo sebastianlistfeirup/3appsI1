@@ -1,0 +1,18 @@
+{
+  "test": "Own 30fps clip trimmed at 1s, normalized to24fps, 12-frame crossfade, voice+music gain/fade/duck, actual measured audio",
+  "metadata": {
+    "duration": 5.5,
+    "width": 1280,
+    "height": 720,
+    "fps": 24,
+    "audioSampleRate": 48000,
+    "codec": "h264",
+    "audioCodec": "aac",
+    "sha256": "bb2bc520baec559c6c05d2c8e160411cbf2e9bbea757583ae399432ccfc0f2fa",
+    "loudnessLufs": -26.1,
+    "truePeakDbfs": -21.4
+  },
+  "expectedFrames": 132,
+  "syntheticAudio": true,
+  "verifiedAt": "2026-10-16T20:02:40.423Z"
+}

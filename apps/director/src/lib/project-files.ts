@@ -1,16 +1,178 @@
-import { unzipSync,zipSync,strFromU8,strToU8 } from 'fflate';
-import { parseProject,type Project,type Media } from '@tre/scene-format';
-export async function sha256(bytes:Uint8Array){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes as Uint8Array<ArrayBuffer>))].map(v=>v.toString(16).padStart(2,'0')).join('');}
-export async function exportPackage(project:Project){const bytes=strToU8(JSON.stringify(parseProject(project)));const manifest={format:'director-project-package',version:1,project:'project.json',sha256:await sha256(bytes),media:project.media.map(m=>({id:m.id,sha256:m.sha256,bytes:m.bytes})),note:'Originale medier og kameraframes er indlejret i projektfilen. Ingen ekstern download kræves.'};return zipSync({'project.json':bytes,'manifest.json':strToU8(JSON.stringify(manifest,null,2))},{level:6});}
-export async function importPackage(buffer:ArrayBuffer):Promise<Project>{if(buffer.byteLength>100*1024*1024)throw Error('Projektpakken må højst være 100 MB');let total=0;let count=0;const files=unzipSync(new Uint8Array(buffer),{filter(file){count++;total+=file.originalSize;if(count>2||!['project.json','manifest.json'].includes(file.name)||file.originalSize>150*1024*1024||total>151*1024*1024)throw Error('Ugyldig eller for stor projektpakke');return true;}});if(!files['project.json']||!files['manifest.json'])throw Error('Projekt og manifest mangler');const manifest=JSON.parse(strFromU8(files['manifest.json']));if(manifest.format!=='director-project-package'||manifest.version!==1||manifest.sha256!==await sha256(files['project.json']))throw Error('Projektpakkens checksum matcher ikke');const project=parseProject(JSON.parse(strFromU8(files['project.json'])));await verifyMedia(project);return project;}
-export async function verifyMedia(project:Project){for(const media of project.media){const bytes=dataUrlBytes(media.dataUrl);if(bytes.byteLength!==media.bytes||await sha256(bytes)!==media.sha256)throw Error(`Mediefilen ${media.name} matcher ikke dens checksum`);}}
-export function dataUrlBytes(value:string){const decoded=atob(value.slice(value.indexOf(',')+1));return Uint8Array.from(decoded,c=>c.charCodeAt(0));}
-export function fileDataUrl(file:File):Promise<string>{return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(Error('Filen kunne ikke læses'));reader.readAsDataURL(file);});}
-export async function importMedia(file:File,rights:Media['rights']):Promise<Media>{
- if(file.size>50*1024*1024)throw Error('En mediefil må højst være 50 MB');const kinds:Record<string,Media['kind']>={'image/png':'image','image/jpeg':'image','video/mp4':'video','video/webm':'video','audio/wav':'audio','audio/x-wav':'audio','audio/mpeg':'audio','audio/mp4':'audio','audio/ogg':'audio','audio/webm':'audio'};const kind=kinds[file.type];if(!kind)throw Error('Vælg PNG, JPEG, MP4, WebM, WAV, MP3, M4A eller OGG');
- const bytes=new Uint8Array(await file.arrayBuffer());if(kind==='image'&&!((bytes[0]===137&&bytes[1]===80&&bytes[2]===78&&bytes[3]===71)||(bytes[0]===255&&bytes[1]===216)))throw Error('Billedets indhold matcher ikke filtypen');
- const dataUrl=(await fileDataUrl(file)).replace('audio/x-wav','audio/wav');let durationFrames:number|undefined;
- if(kind!=='image')durationFrames=await new Promise<number>((resolve,reject)=>{const el=document.createElement(kind==='video'?'video':'audio');const url=URL.createObjectURL(file);const timeout=setTimeout(()=>{URL.revokeObjectURL(url);reject(Error('Mediet kunne ikke aflæses inden 10 sekunder'));},10000);el.preload='metadata';el.onloadedmetadata=()=>{clearTimeout(timeout);URL.revokeObjectURL(url);if(!Number.isFinite(el.duration)||el.duration<=0||el.duration>3600)reject(Error('Mediets varighed kan ikke bruges'));else resolve(Math.floor(el.duration*24));};el.onerror=()=>{clearTimeout(timeout);URL.revokeObjectURL(url);reject(Error('Browseren kan ikke åbne dette medie'));};el.src=url;});
- else await new Promise<void>((resolve,reject)=>{const image=new Image();image.onload=()=>{if(image.width>8192||image.height>8192)reject(Error('Billedet må højst være 8192 × 8192 pixels'));else resolve();};image.onerror=()=>reject(Error('Billedet kunne ikke åbnes'));image.src=dataUrl;});
- return {id:`media_${crypto.randomUUID().replaceAll('-','')}`,name:file.name,kind,mime:file.type.replace('audio/x-wav','audio/wav') as Media['mime'],dataUrl,sha256:await sha256(bytes),bytes:bytes.byteLength,durationFrames,source:'Egen lokal fil',rights};
+import { unzipSync, zipSync, strFromU8, strToU8 } from "fflate";
+import {
+  inspectRaster,
+  parseProject,
+  type Project,
+  type Media,
+} from "@tre/scene-format";
+export async function sha256(bytes: Uint8Array) {
+  return [
+    ...new Uint8Array(
+      await crypto.subtle.digest("SHA-256", bytes as Uint8Array<ArrayBuffer>),
+    ),
+  ]
+    .map((v) => v.toString(16).padStart(2, "0"))
+    .join("");
+}
+export async function exportPackage(project: Project) {
+  const bytes = strToU8(JSON.stringify(parseProject(project)));
+  const manifest = {
+    format: "director-project-package",
+    version: 1,
+    project: "project.json",
+    sha256: await sha256(bytes),
+    media: project.media.map((m) => ({
+      id: m.id,
+      sha256: m.sha256,
+      bytes: m.bytes,
+    })),
+    note: "Originale medier og kameraframes er indlejret i projektfilen. Ingen ekstern download kræves.",
+  };
+  return zipSync(
+    {
+      "project.json": bytes,
+      "manifest.json": strToU8(JSON.stringify(manifest, null, 2)),
+    },
+    { level: 6 },
+  );
+}
+export async function importPackage(buffer: ArrayBuffer): Promise<Project> {
+  if (buffer.byteLength > 100 * 1024 * 1024)
+    throw Error("Projektpakken må højst være 100 MB");
+  let total = 0;
+  let count = 0;
+  const files = unzipSync(new Uint8Array(buffer), {
+    filter(file) {
+      count++;
+      total += file.originalSize;
+      if (
+        count > 2 ||
+        !["project.json", "manifest.json"].includes(file.name) ||
+        file.originalSize > 150 * 1024 * 1024 ||
+        total > 151 * 1024 * 1024
+      )
+        throw Error("Ugyldig eller for stor projektpakke");
+      return true;
+    },
+  });
+  if (!files["project.json"] || !files["manifest.json"])
+    throw Error("Projekt og manifest mangler");
+  const manifest = JSON.parse(strFromU8(files["manifest.json"]));
+  if (
+    manifest.format !== "director-project-package" ||
+    manifest.version !== 1 ||
+    manifest.sha256 !== (await sha256(files["project.json"]))
+  )
+    throw Error("Projektpakkens checksum matcher ikke");
+  const project = parseProject(JSON.parse(strFromU8(files["project.json"])));
+  await verifyMedia(project);
+  return project;
+}
+export async function verifyMedia(project: Project) {
+  for (const media of project.media) {
+    const bytes = dataUrlBytes(media.dataUrl);
+    if (
+      bytes.byteLength !== media.bytes ||
+      (await sha256(bytes)) !== media.sha256
+    )
+      throw Error(`Mediefilen ${media.name} matcher ikke dens checksum`);
+  }
+}
+export function dataUrlBytes(value: string) {
+  const decoded = atob(value.slice(value.indexOf(",") + 1));
+  return Uint8Array.from(decoded, (c) => c.charCodeAt(0));
+}
+export function fileDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(Error("Filen kunne ikke læses"));
+    reader.readAsDataURL(file);
+  });
+}
+export async function importMedia(
+  file: File,
+  rights: Media["rights"],
+): Promise<Media> {
+  if (file.size > 50 * 1024 * 1024)
+    throw Error("En mediefil må højst være 50 MB");
+  const kinds: Record<string, Media["kind"]> = {
+    "image/png": "image",
+    "image/jpeg": "image",
+    "video/mp4": "video",
+    "video/webm": "video",
+    "audio/wav": "audio",
+    "audio/x-wav": "audio",
+    "audio/mpeg": "audio",
+    "audio/mp4": "audio",
+    "audio/ogg": "audio",
+    "audio/webm": "audio",
+  };
+  const kind = kinds[file.type];
+  if (!kind) throw Error("Vælg PNG, JPEG, MP4, WebM, WAV, MP3, M4A eller OGG");
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  if (
+    kind === "image" &&
+    !(
+      (bytes[0] === 137 &&
+        bytes[1] === 80 &&
+        bytes[2] === 78 &&
+        bytes[3] === 71) ||
+      (bytes[0] === 255 && bytes[1] === 216)
+    )
+  )
+    throw Error("Billedets indhold matcher ikke filtypen");
+  if (kind === "image") inspectRaster(bytes);
+  const dataUrl = (await fileDataUrl(file)).replace("audio/x-wav", "audio/wav");
+  let durationFrames: number | undefined;
+  if (kind !== "image")
+    durationFrames = await new Promise<number>((resolve, reject) => {
+      const el = document.createElement(kind === "video" ? "video" : "audio");
+      const url = URL.createObjectURL(file);
+      const timeout = setTimeout(() => {
+        URL.revokeObjectURL(url);
+        reject(Error("Mediet kunne ikke aflæses inden 10 sekunder"));
+      }, 10000);
+      el.preload = "metadata";
+      el.onloadedmetadata = () => {
+        clearTimeout(timeout);
+        URL.revokeObjectURL(url);
+        if (
+          !Number.isFinite(el.duration) ||
+          el.duration <= 0 ||
+          el.duration > 3600
+        )
+          reject(Error("Mediets varighed kan ikke bruges"));
+        else resolve(Math.floor(el.duration * 24));
+      };
+      el.onerror = () => {
+        clearTimeout(timeout);
+        URL.revokeObjectURL(url);
+        reject(Error("Browseren kan ikke åbne dette medie"));
+      };
+      el.src = url;
+    });
+  else
+    await new Promise<void>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => {
+        if (image.width > 8192 || image.height > 8192)
+          reject(Error("Billedet må højst være 8192 × 8192 pixels"));
+        else resolve();
+      };
+      image.onerror = () => reject(Error("Billedet kunne ikke åbnes"));
+      image.src = dataUrl;
+    });
+  return {
+    id: `media_${crypto.randomUUID().replaceAll("-", "")}`,
+    name: file.name,
+    kind,
+    mime: file.type.replace("audio/x-wav", "audio/wav") as Media["mime"],
+    dataUrl,
+    sha256: await sha256(bytes),
+    bytes: bytes.byteLength,
+    durationFrames,
+    source: "Egen lokal fil",
+    rights,
+  };
 }

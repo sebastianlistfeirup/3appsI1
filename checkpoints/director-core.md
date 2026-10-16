@@ -37,3 +37,14 @@ Local browser IndexedDB only. WebGL renderer and local file exports are real. No
 - Render service must be explicitly enabled and bound to localhost. Host/Origin checks are defense in depth and do not authenticate a public deployment.
 - No tenant/viewer claims; D-AT11 awaits a real authenticated backend.
 - Rendering currently uses the local Next server lifetime with resumable intermediates. A separately supervised production worker is not connected.
+
+## Second milestone evidence (20:06 UTC)
+
+- Actual browser/UI render and download succeeded: 60.000 seconds, 1280×720, 24 fps, H.264/AAC. Captioned sample MP4, ffprobe JSON, contact sheet and completed-export screenshot are in reports/director.
+- Actual storyboard PDF extracted with pdftotext; Danish æ/ø/å, frames, dialogue, scene and shot IDs retained. Portable ZIP downloaded.
+- D-AT06 passed: CLI worker+child process group SIGKILL after two transcodes, restart same manifest, two verified segments reused with unchanged modification times; final crossfade output 1,428 frames / 59.5 seconds. reports/director/recovery.json.
+- Real imported 30 fps clip, source trim, 0.5-second crossfade, synthetic voice+music, ducking/fades and 48 kHz AAC passed. Loudness measured -26.1 LUFS, true peak -21.4 dBFS in the synthetic test. reports/director/media-pipeline.json.
+- 16 domain/archive/raster/local-route tests passed. Actual desktop/tablet/mobile scene/storyboard/2D screenshots show no horizontal overflow or browser page errors.
+- Fixed real FFmpeg xfade failure: in this installed build, setpts clears frame-rate metadata. An isolated reproduction established that pixel-format conversion and setpts must precede fps. Fixed pipeline is verified by the actual 59.5-second movie, not just timeline arithmetic.
+- Cancellation and a ten-minute total job deadline added; cancellation smoke-test is being recorded.
+- Coordinator requested next block: complete textureless GLB import/render safely, preserve work on malformed imports, complete interactive browser and cross-engine gates. These remain active work.

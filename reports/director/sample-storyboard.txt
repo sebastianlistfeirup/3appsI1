@@ -1,0 +1,79 @@
+DIRECTOR / STORYBOARD
+
+Det sidste signal
+24 fps | 16:9 | Revision 6 | 01:00:00
+
+SHOT 01 / 12 sek.
+
+SHOT 02 / 12 sek.
+
+Det sidste signal
+
+Noget derude
+
+Station 07. Sidste vagt før solopgang.
+
+Vent. Der er noget på den gamle frekvens.
+
+Total. Et øde observationsdæk ved en fremmed horisont.
+
+Halvnær på Liv. Hun lytter til signalet.
+
+Scene v2 / cam_01 / Shot v2
+
+Scene v2 / cam_02 / Shot v2
+
+director-primitives-1.0 | shot_91b0bec267be4f6b8aabd383dbe19347
+
+director-primitives-1.0 | shot_e0e4e977e5a54b3ba6bcaff0dd2a5cd6
+
+Lokal produktion / 1 af 3
+
+DIRECTOR / STORYBOARD
+
+Det sidste signal
+24 fps | 16:9 | Revision 6 | 01:00:00
+
+SHOT 03 / 12 sek.
+
+SHOT 04 / 12 sek.
+
+En gammel frekvens
+
+Vi er ikke alene
+
+Det er ikke støj. Nogen svarer os.
+
+Efter alle de år - vi er ikke alene.
+
+Modbillede. Noa finder en kendt rytme.
+
+Indklip på terminalen. Håbet tænder.
+
+Scene v2 / cam_03 / Shot v2
+
+Scene v2 / cam_04 / Shot v2
+
+director-primitives-1.0 | shot_e133fdc58ab64b5e8c3369efc342d030
+
+director-primitives-1.0 | shot_33fe9898a0fb448aad3151feda7910f6
+
+Lokal produktion / 2 af 3
+
+DIRECTOR / STORYBOARD
+
+Det sidste signal
+24 fps | 16:9 | Revision 6 | 01:00:00
+
+SHOT 05 / 12 sek.
+
+Sæt kursen
+Sæt kursen. Vi tager hjem.
+Total. To figurer vender sig mod den nye dag.
+
+Scene v2 / cam_05 / Shot v2
+director-primitives-1.0 | shot_b4863dfad3f34d76b46e6382249ed6c5
+
+Lokal produktion / 3 af 3
+
+
