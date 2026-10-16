@@ -1,4 +1,5 @@
 import { parseEmbeddedGlb, disposeModelResources } from "./glb-resources";
+import { checkMediaAbort } from "./media-lifecycle";
 import * as THREE from "three";
 import type { Camera, SceneObject, SceneVersion } from "@tre/scene-format";
 
@@ -550,18 +551,20 @@ export async function loadSceneModels(
   scene: THREE.Scene,
   version: SceneVersion,
   selectedId?: string,
+  signal?: AbortSignal,
 ) {
   if (!version.objects.some((o) => o.kind === "glb")) return;
   const loaded = new Map<string, THREE.Group>();
   scene.userData.glbRoots ??= [];
   for (const object of version.objects.filter((o) => o.kind === "glb")) {
+    checkMediaAbort(signal);
     const asset = version.assets.find((a) => a.id === object.assetId);
     if (!asset) throw Error("GLB-modelversion mangler");
     let source = loaded.get(asset.sha256);
     if (!source) {
       const raw = atob(asset.dataUrl.slice(asset.dataUrl.indexOf(",") + 1));
       const bytes = Uint8Array.from(raw, (c) => c.charCodeAt(0));
-      const gltf = await parseEmbeddedGlb(bytes.buffer);
+      const gltf = await parseEmbeddedGlb(bytes.buffer, signal);
       source = gltf.scene;
       loaded.set(asset.sha256, source);
       scene.userData.glbRoots.push(...gltf.scenes);

@@ -2,14 +2,21 @@
 import { useEffect, useRef, useState } from "react";
 import { Camera, Film } from "lucide-react";
 import type { Project, Shot } from "@tre/scene-format";
+import { releaseMediaElement } from "../lib/media-lifecycle";
 
 /** A paused clip thumbnail follows the selected source trim. Camera frames never stand in for clips. */
 export function ShotFrame({ project, shot }: { project: Project; shot: Shot }) {
   const media = project.media.find((m) => m.id === shot.mediaId),
     ref = useRef<HTMLVideoElement>(null),
     [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [media?.id]);
   useEffect(() => {
-    setFailed(false);
+    const video = ref.current;
+    if (!video || media?.kind !== "video" || failed) return;
+    video.src = media.dataUrl;
+    return () => releaseMediaElement(video);
+  }, [media?.dataUrl, failed]);
+  useEffect(() => {
     const video = ref.current;
     if (!video || media?.kind !== "video") return;
     const position = () => {
@@ -24,7 +31,7 @@ export function ShotFrame({ project, shot }: { project: Project; shot: Shot }) {
     video.addEventListener("loadedmetadata", position);
     if (video.readyState >= 1) position();
     return () => video.removeEventListener("loadedmetadata", position);
-  }, [media?.id, shot.sourceIn, project.fps]);
+  }, [media?.id, shot.sourceIn, project.fps, failed]);
   if (media?.kind === "video")
     return failed ? (
       <div className="frame-placeholder">
@@ -34,7 +41,6 @@ export function ShotFrame({ project, shot }: { project: Project; shot: Shot }) {
     ) : (
       <video
         ref={ref}
-        src={media.dataUrl}
         muted
         playsInline
         preload="metadata"

@@ -1,92 +1,87 @@
 {
   "engine": "chromium",
-  "startedAt": "2026-10-16T21:51:28.955Z",
+  "startedAt": "2026-10-16T23:46:10.222Z",
   "phase": "completed",
   "steps": [
     {
       "phase": "launch browser",
-      "at": "2026-10-16T21:51:28.956Z"
+      "at": "2026-10-16T23:46:10.222Z"
     },
     {
       "phase": "new page",
-      "at": "2026-10-16T21:51:29.354Z"
+      "at": "2026-10-16T23:46:10.288Z"
     },
     {
       "phase": "navigate and initial frames",
-      "at": "2026-10-16T21:51:29.692Z"
+      "at": "2026-10-16T23:46:10.340Z"
     },
     {
       "phase": "read initial saved project",
-      "at": "2026-10-16T21:51:39.962Z"
+      "at": "2026-10-16T23:46:15.787Z"
     },
     {
       "phase": "import and position model 1: fixtures/director-textured-crate.glb",
-      "at": "2026-10-16T21:51:40.045Z"
+      "at": "2026-10-16T23:46:15.829Z"
     },
     {
       "phase": "import and position model 2: fixtures/director-jpeg-crate.glb",
-      "at": "2026-10-16T21:51:43.844Z"
+      "at": "2026-10-16T23:46:16.468Z"
     },
     {
       "phase": "verify immutable imports",
-      "at": "2026-10-16T21:51:47.307Z"
+      "at": "2026-10-16T23:46:17.748Z"
     },
     {
       "phase": "capture actual textured frame",
-      "at": "2026-10-16T21:51:47.338Z"
+      "at": "2026-10-16T23:46:17.797Z"
     },
     {
       "phase": "screenshot textured models",
-      "at": "2026-10-16T21:51:49.240Z"
+      "at": "2026-10-16T23:46:21.208Z"
     },
     {
       "phase": "reject corrupt PNG stream",
-      "at": "2026-10-16T21:51:50.610Z"
+      "at": "2026-10-16T23:46:22.001Z"
     },
     {
       "phase": "reject forged texture manifest",
-      "at": "2026-10-16T21:51:51.438Z"
+      "at": "2026-10-16T23:46:22.283Z"
     },
     {
       "phase": "download project ZIP",
-      "at": "2026-10-16T21:51:51.928Z"
+      "at": "2026-10-16T23:46:22.587Z"
     },
     {
       "phase": "reimport project ZIP",
-      "at": "2026-10-16T21:51:52.255Z"
+      "at": "2026-10-16T23:46:23.015Z"
     },
     {
       "phase": "reload and verify saved project",
-      "at": "2026-10-16T21:51:53.139Z"
+      "at": "2026-10-16T23:46:23.469Z"
     },
     {
       "phase": "remove model and retain immutable scene",
-      "at": "2026-10-16T21:51:53.944Z"
+      "at": "2026-10-16T23:46:23.935Z"
     },
     {
       "phase": "undo removal",
-      "at": "2026-10-16T21:51:56.724Z"
+      "at": "2026-10-16T23:46:24.493Z"
     },
     {
       "phase": "write verified results",
-      "at": "2026-10-16T21:51:56.999Z"
+      "at": "2026-10-16T23:46:27.783Z"
     },
     {
       "phase": "close browser",
-      "at": "2026-10-16T21:51:57.000Z"
+      "at": "2026-10-16T23:46:27.789Z"
     },
     {
       "phase": "completed",
-      "at": "2026-10-16T21:51:57.473Z"
+      "at": "2026-10-16T23:46:28.085Z"
     }
   ],
-  "console": [
-    {
-      "type": "error",
-      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
-    }
-  ],
+  "console": [],
   "pageErrors": [],
   "externalRequests": [],
-  "browserVersion": "154.0.8037.57"
+  "browserVersion": "156.0.8078.4"
 }

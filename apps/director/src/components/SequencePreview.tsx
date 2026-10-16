@@ -9,6 +9,7 @@ import {
 } from "@tre/scene-format";
 import { PreviewAudio } from "../lib/preview-audio";
 import { buildCaptionTrack } from "../lib/captions";
+import { releaseMediaElement } from "../lib/media-lifecycle";
 
 function ClockedMedia({
   media,
@@ -35,7 +36,19 @@ function ClockedMedia({
     rejected = useRef(false),
     [loaded, setLoaded] = useState(false);
   const errorRef = useRef(onError);
+  const disposed = useRef(false);
   errorRef.current = onError;
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    disposed.current = false;
+    setLoaded(false);
+    element.src = media.dataUrl;
+    return () => {
+      disposed.current = true;
+      releaseMediaElement(element);
+    };
+  }, [media.dataUrl]);
   useEffect(() => {
     const el = ref.current;
     if (!el || !graph) return;
@@ -64,7 +77,8 @@ function ClockedMedia({
     }
     if (playing) {
       if (el.paused && !rejected.current)
-        void el.play().catch(() => {
+        void el.play().catch((error) => {
+          if (disposed.current || error?.name === "AbortError") return;
           rejected.current = true;
           errorRef.current(
             "Browseren kunne ikke afspille mediet. Prøv afspilning igen, eller se MP4-eksporten.",
@@ -72,12 +86,10 @@ function ClockedMedia({
         });
     } else el.pause();
   }, [sourceFrame, playing, active, gain, graph, channel, loaded]);
-  useEffect(() => () => ref.current?.pause(), []);
   const props = {
     ref: (el: HTMLMediaElement | null) => {
       ref.current = el;
     },
-    src: media.dataUrl,
     preload: "auto",
     onLoadedMetadata: () => setLoaded(true),
     onError: () =>

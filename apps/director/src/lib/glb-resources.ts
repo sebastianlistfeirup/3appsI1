@@ -1,19 +1,24 @@
 import * as THREE from "three";
 import { inspectGlb, type GlbInspection } from "@tre/scene-format";
+import {
+  boundedMediaStep,
+  checkMediaAbort,
+  withDecodedImage,
+} from "./media-lifecycle";
 
 /** Validate browser decoding before GLTFLoader can silently discard a bad texture. */
 export async function validateGlbImages(
   buffer: ArrayBuffer,
   inspection: GlbInspection,
+  signal?: AbortSignal,
 ) {
   for (const image of inspection.images) {
+    checkMediaAbort(signal);
     const blob = new Blob(
       [buffer.slice(image.offset, image.offset + image.bytes)],
       { type: image.mime },
     );
     const url = URL.createObjectURL(blob);
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const decoded = new Image();
     try {
       if (image.mime === "image/png") {
         const bytes = new Uint8Array(buffer, image.offset, image.bytes),
@@ -41,7 +46,7 @@ export async function validateGlbImages(
         let decodedBytes = 0;
         try {
           while (true) {
-            const chunk = await reader.read();
+            const chunk = await boundedMediaStep(reader.read(), signal);
             if (chunk.done) break;
             decodedBytes += chunk.value.byteLength;
             if (decodedBytes > maxBytes)
@@ -53,51 +58,66 @@ export async function validateGlbImages(
           reader.releaseLock();
         }
       }
-      decoded.src = url;
-      await Promise.race([
-        decoded.decode(),
-        new Promise<never>(
-          (_, reject) =>
-            (timer = setTimeout(
-              () => reject(Error("Teksturafkodning tog for lang tid")),
-              15000,
-            )),
-        ),
-      ]);
-      if (
-        decoded.naturalWidth !== image.width ||
-        decoded.naturalHeight !== image.height
-      )
-        throw Error("Teksturens afkodede dimensioner matcher ikke headeren");
-    } catch {
+      await withDecodedImage(
+        url,
+        (decoded) => {
+          if (
+            decoded.naturalWidth !== image.width ||
+            decoded.naturalHeight !== image.height
+          )
+            throw Error(
+              "Teksturens afkodede dimensioner matcher ikke headeren",
+            );
+        },
+        { signal },
+      );
+    } catch (error) {
+      checkMediaAbort(signal);
       throw Error(
         "GLB-teksturen kunne ikke afkodes som et gyldigt PNG/JPEG-billede",
       );
     } finally {
-      clearTimeout(timer);
-      decoded.src = "";
       URL.revokeObjectURL(url);
     }
   }
 }
 
 /** Metadata has no URIs; only GLTFLoader's own same-origin embedded-image blobs may resolve. */
-export async function parseEmbeddedGlb(buffer: ArrayBuffer) {
+export async function parseEmbeddedGlb(
+  buffer: ArrayBuffer,
+  signal?: AbortSignal,
+) {
+  checkMediaAbort(signal);
   const inspection = inspectGlb(buffer);
-  await validateGlbImages(buffer, inspection);
+  await validateGlbImages(buffer, inspection, signal);
   const { GLTFLoader } =
     await import("three/examples/jsm/loaders/GLTFLoader.js");
   const manager = new THREE.LoadingManager();
+  const urls = new Set<string>();
+  let finished = false;
   manager.setURLModifier((url) => {
-    if (url.startsWith("blob:") && new URL(url).origin === location.origin)
+    if (url.startsWith("blob:") && new URL(url).origin === location.origin) {
+      if (finished) {
+        URL.revokeObjectURL(url);
+        throw Error("Modelindlæsningen er afsluttet");
+      }
+      urls.add(url);
       return url;
+    }
     throw Error("Eksterne GLB-ressourcer er ikke tilladt");
   });
   let failed = false;
   manager.onError = () => {
     failed = true;
   };
-  const gltf = await new GLTFLoader(manager).parseAsync(buffer, "");
+  checkMediaAbort(signal);
+  const parsed = new GLTFLoader(manager).parseAsync(buffer, "");
+  const gltf = await boundedMediaStep(parsed, signal, (value) =>
+    disposeModelResources(value.scenes),
+  ).finally(() => {
+    finished = true;
+    for (const url of urls) URL.revokeObjectURL(url);
+  });
   if (failed) {
     disposeModelResources(gltf.scenes);
     throw Error("GLB-teksturen kunne ikke indlæses");

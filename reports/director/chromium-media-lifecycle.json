@@ -1,0 +1,60 @@
+{
+  "engine": "chromium",
+  "phases": [
+    {
+      "name": "load editor and cancel an actual decoded clip before metadata admission",
+      "at": "2026-10-16T23:45:01.867Z"
+    },
+    {
+      "name": "timeout releases native decoder and successful retry remains possible",
+      "at": "2026-10-16T23:45:08.815Z"
+    },
+    {
+      "name": "cancel delayed native GLB ImageBitmap and dispose the late parse result",
+      "at": "2026-10-16T23:45:19.093Z"
+    },
+    {
+      "name": "repeated native preview mount/unmount releases retired media and closes audio graph",
+      "at": "2026-10-16T23:45:19.477Z"
+    },
+    {
+      "name": "passed",
+      "at": "2026-10-16T23:45:26.942Z"
+    }
+  ],
+  "checks": [
+    "cancel after actual native metadata decode releases source/object URL and preserves exact project",
+    "ten-second native timeout releases decoder; same file imports successfully afterwards",
+    "late actual GLB parse after cancellation closes ImageBitmap and URLs without adding an asset",
+    "four actual video/audio previews leave no detached sources/playing media; navigation closes AudioContext"
+  ],
+  "scans": [
+    {
+      "name": "desktop",
+      "violations": []
+    },
+    {
+      "name": "tablet",
+      "violations": []
+    },
+    {
+      "name": "mobile",
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "resources": {
+    "media": 8,
+    "detachedSources": [],
+    "detachedPlaying": 0,
+    "liveUrls": [],
+    "loadingFiles": 0,
+    "retainedImages": 0,
+    "bitmaps": 1,
+    "openBitmaps": 0,
+    "audioContexts": [
+      "closed"
+    ],
+    "metadataSuppressed": 2
+  }
+}

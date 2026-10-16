@@ -18,6 +18,7 @@ export class PreviewAudio {
   private master: DynamicsCompressorNode;
   private voiceSamples = new Float32Array(1024);
   private masterSamples = new Float32Array(1024);
+  private closed = false;
   constructor() {
     this.context = new AudioContext();
     this.voice = this.context.createAnalyser();
@@ -37,6 +38,7 @@ export class PreviewAudio {
     this.meter.connect(this.context.destination);
   }
   register(key: string, element: HTMLMediaElement, kind: Channel["kind"]) {
+    if (this.closed) return () => {};
     const source =
         this.sources.get(element) ??
         this.context.createMediaElementSource(element),
@@ -51,11 +53,14 @@ export class PreviewAudio {
           : this.master,
     );
     gain.gain.value = 0;
-    this.channels.set(key, { source, gain, kind });
+    const channel = { source, gain, kind };
+    this.channels.set(key, channel);
     return () => {
-      source.disconnect();
+      try {
+        source.disconnect(gain);
+      } catch {}
       gain.disconnect();
-      this.channels.delete(key);
+      if (this.channels.get(key) === channel) this.channels.delete(key);
     };
   }
   gain(key: string, value: number) {
@@ -95,11 +100,17 @@ export class PreviewAudio {
     return this.duck.gain.value;
   }
   close() {
+    if (this.closed) return;
+    this.closed = true;
     this.channels.forEach((c) => {
       c.source.disconnect();
       c.gain.disconnect();
     });
     this.channels.clear();
-    void this.context.close();
+    this.voice.disconnect();
+    this.duck.disconnect();
+    this.master.disconnect();
+    this.meter.disconnect();
+    void this.context.close().catch(() => {});
   }
 }

@@ -67,7 +67,13 @@ export function SceneViewport({
       observer.observe(renderer.domElement);
       resize();
       let disposed = false;
-      void loadSceneModels(world, scene, selectedId ?? undefined)
+      const modelLoad = new AbortController();
+      void loadSceneModels(
+        world,
+        scene,
+        selectedId ?? undefined,
+        modelLoad.signal,
+      )
         .then(() => {
           if (disposed) {
             disposeScene(world);
@@ -76,7 +82,8 @@ export function SceneViewport({
           draw();
         })
         .catch(() => {
-          if (!disposed) {
+          if (disposed) disposeScene(world);
+          else {
             setFailed(true);
             callbacks.current.onMode("2d");
           }
@@ -120,6 +127,7 @@ export function SceneViewport({
       renderer.domElement.addEventListener("webglcontextlost", contextLost);
       cleanup = () => {
         disposed = true;
+        modelLoad.abort();
         observer.disconnect();
         controls.dispose();
         renderer.domElement.removeEventListener("dblclick", select);

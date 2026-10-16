@@ -1,4 +1,11 @@
 import {
+  readMediaFile,
+  probeMedia,
+  withDecodedImage,
+  checkMediaAbort,
+  type MediaTaskOptions,
+} from "./media-lifecycle";
+import {
   parseEmbeddedGlb,
   disposeModelResources,
   validateGlbImages,
@@ -31,17 +38,16 @@ export async function validateProjectTextures(project: Project) {
       checked.add(asset.dataUrl);
     }
 }
-export function fileDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(Error("Filen kunne ikke læses"));
-    reader.readAsDataURL(file);
-  });
+export function fileDataUrl(
+  file: File,
+  options: MediaTaskOptions = {},
+): Promise<string> {
+  return readMediaFile(file, "url", options);
 }
 export async function importMedia(
   file: File,
   rights: Media["rights"],
+  options: MediaTaskOptions = {},
 ): Promise<Media> {
   if (file.size > 50 * 1024 * 1024)
     throw Error("En mediefil må højst være 50 MB");
@@ -64,7 +70,7 @@ export async function importMedia(
     : file.type;
   const kind = kinds[declaredMime];
   if (!kind) throw Error("Vælg PNG, JPEG, MP4, WebM, WAV, MP3, M4A eller OGG");
-  const bytes = new Uint8Array(await file.arrayBuffer());
+  const bytes = new Uint8Array(await readMediaFile(file, "bytes", options));
   if (
     kind === "image" &&
     !(
@@ -99,63 +105,28 @@ export async function importMedia(
     throw Error("Mediets indhold matcher ikke filtypen");
   const dataUrl = await fileDataUrl(
     new File([bytes], file.name, { type: declaredMime }),
+    options,
   );
   let durationFrames: number | undefined;
-  if (kind !== "image")
-    durationFrames = await new Promise<number>((resolve, reject) => {
-      const el = document.createElement(kind === "video" ? "video" : "audio");
-      const url = URL.createObjectURL(file);
-      const timeout = setTimeout(() => {
-        URL.revokeObjectURL(url);
-        reject(Error("Mediet kunne ikke aflæses inden 10 sekunder"));
-      }, 10000);
-      el.preload = "metadata";
-      el.onloadedmetadata = () => {
-        clearTimeout(timeout);
-        URL.revokeObjectURL(url);
-        if (
-          !Number.isFinite(el.duration) ||
-          el.duration <= 0 ||
-          el.duration > 3600
-        )
-          reject(Error("Mediets varighed kan ikke bruges"));
-        else resolve(Math.floor(el.duration * 24));
-      };
-      el.onerror = () => {
-        console.warn(
-          "Director media import failed",
-          JSON.stringify({
-            mime: declaredMime,
-            code: el.error?.code,
-            message: el.error?.message,
-            networkState: el.networkState,
-            readyState: el.readyState,
-          }),
-        );
-        clearTimeout(timeout);
-        URL.revokeObjectURL(url);
-        reject(Error("Browseren kan ikke åbne dette medie"));
-      };
-      el.src = url;
-    });
+  if (kind !== "image") durationFrames = await probeMedia(file, kind, options);
   else
-    await new Promise<void>((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => {
-        if (image.width > 8192 || image.height > 8192)
-          reject(Error("Billedet må højst være 8192 × 8192 pixels"));
-        else resolve();
-      };
-      image.onerror = () => reject(Error("Billedet kunne ikke åbnes"));
-      image.src = dataUrl;
-    });
+    await withDecodedImage(
+      dataUrl,
+      (image) => {
+        if (image.naturalWidth > 8192 || image.naturalHeight > 8192)
+          throw Error("Billedet må højst være 8192 × 8192 pixels");
+      },
+      options,
+    );
+  const hash = await sha256(bytes);
+  checkMediaAbort(options.signal);
   return {
     id: `media_${crypto.randomUUID().replaceAll("-", "")}`,
     name: file.name,
     kind,
     mime: declaredMime as Media["mime"],
     dataUrl,
-    sha256: await sha256(bytes),
+    sha256: hash,
     bytes: bytes.byteLength,
     durationFrames,
     source: "Egen lokal fil",
@@ -166,23 +137,27 @@ export async function importMedia(
 export async function importGlb(
   file: File,
   rights: GlbAsset["rights"],
+  options: MediaTaskOptions = {},
 ): Promise<GlbAsset> {
   if (!file.name.toLowerCase().endsWith(".glb"))
     throw Error("Vælg en .glb-fil");
   if (file.size > 50 * 1024 * 1024) throw Error("GLB må højst være 50 MB");
-  const buffer = await file.arrayBuffer();
+  const buffer = await readMediaFile(file, "bytes", options);
   const inspected = inspectGlb(buffer);
   const bytes = new Uint8Array(buffer);
   const dataUrl = await fileDataUrl(
     new File([buffer], file.name, { type: "model/gltf-binary" }),
+    options,
   );
-  const parsed = await parseEmbeddedGlb(buffer);
+  const parsed = await parseEmbeddedGlb(buffer, options.signal);
   disposeModelResources(parsed.scenes);
+  const hash = await sha256(bytes);
+  checkMediaAbort(options.signal);
   return {
     id: `glb_${crypto.randomUUID().replaceAll("-", "")}`,
     name: file.name,
     dataUrl,
-    sha256: await sha256(bytes),
+    sha256: hash,
     bytes: bytes.length,
     triangles: inspected.triangles,
     textureBytes: inspected.textureBytes,

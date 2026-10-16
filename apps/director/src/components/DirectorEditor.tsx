@@ -1,6 +1,8 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { RenderCapability } from "../lib/render-capability";
+import { useMediaTask } from "../lib/use-media-task";
+import { checkMediaAbort } from "../lib/media-lifecycle";
 import {
   Camera,
   Clapperboard,
@@ -241,6 +243,14 @@ export default function DirectorEditor({
     mediaRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const archive = useArchiveTask(setBusy);
+  const mediaTask = useMediaTask();
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
   const current = useRef(p);
   current.current = p;
   const shots = orderedShots(p),
@@ -553,6 +563,7 @@ export default function DirectorEditor({
     try {
       await fn();
     } catch (e) {
+      if (!mounted.current) return;
       if (e instanceof DOMException && e.name === "AbortError")
         setNotice(e.message);
       else
@@ -560,7 +571,7 @@ export default function DirectorEditor({
           e instanceof Error ? e.message : "Handlingen kunne ikke gennemføres",
         );
     } finally {
-      setBusy("");
+      if (mounted.current) setBusy("");
     }
   };
   const openProductions = () =>
@@ -716,71 +727,75 @@ export default function DirectorEditor({
       setModal(null);
     });
   const mediaImport = async (file: File) =>
-    act("Kontrollerer mediefil …", async () => {
-      if (mediaTarget === "model") {
-        const asset = await importGlb(file, rights);
-        commit(
-          (next) => {
-            next.draft.assets.push(asset);
-            const id = newId("object");
-            next.draft.objects.push({
-              id,
-              name: file.name.slice(0, 100),
-              kind: "glb",
-              color: "#ffffff",
-              assetId: asset.id,
-              assetVersion: 1,
-              transform: {
-                position: [0, 0, 1],
-                quaternion: [0, 0, 0, 1],
-                scale: [1, 1, 1],
-              },
-              source: "Egen lokal GLB-fil",
-              rights,
-            });
-            next.revision++;
-            setSelectedObject(id);
-            setInspector("object");
-            return next;
-          },
-          `${asset.name} er importeret · ${asset.triangles.toLocaleString("da-DK")} trekanter`,
-        );
-        setModal(null);
-        return;
-      }
-      const target = mediaTarget;
-      const media = await importMedia(file, rights);
-      commit((next) => {
-        next.media.push(media);
-        if (target === "shot") {
-          if (!shot || media.kind === "audio")
-            throw Error("Vælg et billede eller videoklip til et shot");
-          const updated = reviseShot(next, shot.id, {
-            mediaId: media.id,
-            durationFrames:
-              media.kind === "video"
-                ? Math.min(media.durationFrames ?? 288, 288)
-                : shot.durationFrames,
-            sourceIn: 0,
-          });
-          setSelectedShot(updated.sequence[next.sequence.indexOf(shot.id)]);
-          return updated;
+    act("Kontrollerer mediefil …", () =>
+      mediaTask.run(async (signal) => {
+        if (mediaTarget === "model") {
+          const asset = await importGlb(file, rights, { signal });
+          checkMediaAbort(signal);
+          commit(
+            (next) => {
+              next.draft.assets.push(asset);
+              const id = newId("object");
+              next.draft.objects.push({
+                id,
+                name: file.name.slice(0, 100),
+                kind: "glb",
+                color: "#ffffff",
+                assetId: asset.id,
+                assetVersion: 1,
+                transform: {
+                  position: [0, 0, 1],
+                  quaternion: [0, 0, 0, 1],
+                  scale: [1, 1, 1],
+                },
+                source: "Egen lokal GLB-fil",
+                rights,
+              });
+              next.revision++;
+              setSelectedObject(id);
+              setInspector("object");
+              return next;
+            },
+            `${asset.name} er importeret · ${asset.triangles.toLocaleString("da-DK")} trekanter`,
+          );
+          setModal(null);
+          return;
         }
-        if (media.kind !== "audio")
-          throw Error("Vælg en lydfil til dette spor");
-        next[target] = {
-          mediaId: media.id,
-          volume: mediaTarget === "music" ? 0.3 : 1,
-          startFrame: 0,
-          sourceIn: 0,
-          fadeFrames: 24,
-          duck: mediaTarget === "music",
-        };
-        next.revision++;
-        return next;
-      }, "Mediet er valideret og gemt lokalt.");
-      setModal(null);
-    });
+        const target = mediaTarget;
+        const media = await importMedia(file, rights, { signal });
+        checkMediaAbort(signal);
+        commit((next) => {
+          next.media.push(media);
+          if (target === "shot") {
+            if (!shot || media.kind === "audio")
+              throw Error("Vælg et billede eller videoklip til et shot");
+            const updated = reviseShot(next, shot.id, {
+              mediaId: media.id,
+              durationFrames:
+                media.kind === "video"
+                  ? Math.min(media.durationFrames ?? 288, 288)
+                  : shot.durationFrames,
+              sourceIn: 0,
+            });
+            setSelectedShot(updated.sequence[next.sequence.indexOf(shot.id)]);
+            return updated;
+          }
+          if (media.kind !== "audio")
+            throw Error("Vælg en lydfil til dette spor");
+          next[target] = {
+            mediaId: media.id,
+            volume: mediaTarget === "music" ? 0.3 : 1,
+            startFrame: 0,
+            sourceIn: 0,
+            fadeFrames: 24,
+            duck: mediaTarget === "music",
+          };
+          next.revision++;
+          return next;
+        }, "Mediet er valideret og gemt lokalt.");
+        setModal(null);
+      }),
+    );
   const exportFile = (kind: "json" | "zip" | "pdf" | "srt" | "vtt") =>
     act("Forbereder eksport …", async () => {
       let unsavedCopy = false;
@@ -2250,6 +2265,9 @@ export default function DirectorEditor({
             <Check size={15} />
           )}
           <span>{busy || notice}</span>
+          {mediaTask.active && !modal && (
+            <button onClick={mediaTask.cancel}>Afbryd medieimport</button>
+          )}
           {archive.active && !modal && (
             <button onClick={archive.cancel}>Afbryd projektpakke</button>
           )}
@@ -2321,6 +2339,14 @@ export default function DirectorEditor({
                 <span>{busy}</span>
                 <button className="button secondary" onClick={archive.cancel}>
                   Afbryd projektpakke
+                </button>
+              </div>
+            )}
+            {mediaTask.active && (
+              <div className="archive-progress" role="status">
+                <span>{busy}</span>
+                <button className="button secondary" onClick={mediaTask.cancel}>
+                  Afbryd medieimport
                 </button>
               </div>
             )}

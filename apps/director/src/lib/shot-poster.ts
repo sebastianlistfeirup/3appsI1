@@ -1,5 +1,6 @@
 import type { Project, Shot } from "@tre/scene-format";
 import { dataUrlBytes } from "./project-files";
+import { withDecodedImage } from "./media-lifecycle";
 
 export interface ShotPoster {
   bytes: Uint8Array;
@@ -15,21 +16,23 @@ function drawPoster(source: CanvasImageSource, width: number, height: number) {
   const canvas = document.createElement("canvas");
   canvas.width = 1280;
   canvas.height = 720;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw Error("Browseren kan ikke tegne storyboardets billeder");
-  ctx.fillStyle = "#161a22";
-  ctx.fillRect(0, 0, 1280, 720);
-  const scale = Math.min(1280 / width, 720 / height);
-  ctx.drawImage(
-    source,
-    (1280 - width * scale) / 2,
-    (720 - height * scale) / 2,
-    width * scale,
-    height * scale,
-  );
-  const bytes = dataUrlBytes(canvas.toDataURL("image/jpeg", 0.9));
-  canvas.width = canvas.height = 0;
-  return bytes;
+  try {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw Error("Browseren kan ikke tegne storyboardets billeder");
+    ctx.fillStyle = "#161a22";
+    ctx.fillRect(0, 0, 1280, 720);
+    const scale = Math.min(1280 / width, 720 / height);
+    ctx.drawImage(
+      source,
+      (1280 - width * scale) / 2,
+      (720 - height * scale) / 2,
+      width * scale,
+      height * scale,
+    );
+    return dataUrlBytes(canvas.toDataURL("image/jpeg", 0.9));
+  } finally {
+    canvas.width = canvas.height = 0;
+  }
 }
 
 /** A video poster always comes from the actual source at its trim, never a prior camera frame. */
@@ -157,29 +160,9 @@ export async function shotPoster(
   }
   const frame = media?.kind === "image" ? media.dataUrl : shot.frame;
   if (!frame) return null;
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    const timer = setTimeout(() => {
-      image.onload = image.onerror = null;
-      image.src = "";
-      reject(Error("Et storyboard-billede kunne ikke læses inden 15 sekunder"));
-    }, 15000);
-    image.onload = () => {
-      clearTimeout(timer);
-      try {
-        resolve({
-          bytes: drawPoster(image, image.naturalWidth, image.naturalHeight),
-          source: media ? "image" : "camera",
-          sourceFrame: null,
-        });
-      } catch (e) {
-        reject(e);
-      }
-    };
-    image.onerror = () => {
-      clearTimeout(timer);
-      reject(Error(`Billedet til ${shot.name} kunne ikke åbnes`));
-    };
-    image.src = frame;
-  });
+  return withDecodedImage(frame, (image) => ({
+    bytes: drawPoster(image, image.naturalWidth, image.naturalHeight),
+    source: media ? "image" : "camera",
+    sourceFrame: null,
+  }));
 }
