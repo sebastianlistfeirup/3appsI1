@@ -1,0 +1,39 @@
+{
+  "executedAt": "2026-10-16T21:10:39.000Z",
+  "results": [
+    {
+      "viewport": "desktop",
+      "test": "Actual exported model package reimports, reruns 30 pairs, and preserves decision and immutable version; deleted version can be undone",
+      "passed": true,
+      "bytes": 7082
+    },
+    {
+      "viewport": "desktop",
+      "test": "Malformed import preserves workspace; cancellation ignores late delivery; real import result cannot overwrite a concurrent edit",
+      "passed": true
+    },
+    {
+      "viewport": "tablet",
+      "test": "Actual exported model package reimports, reruns 30 pairs, and preserves decision and immutable version; deleted version can be undone",
+      "passed": true,
+      "bytes": 7082
+    },
+    {
+      "viewport": "tablet",
+      "test": "Malformed import preserves workspace; cancellation ignores late delivery; real import result cannot overwrite a concurrent edit",
+      "passed": true
+    },
+    {
+      "viewport": "mobile",
+      "test": "Actual exported model package reimports, reruns 30 pairs, and preserves decision and immutable version; deleted version can be undone",
+      "passed": true,
+      "bytes": 7082
+    },
+    {
+      "viewport": "mobile",
+      "test": "Malformed import preserves workspace; cancellation ignores late delivery; real import result cannot overwrite a concurrent edit",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

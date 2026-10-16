@@ -67,16 +67,29 @@ export async function renderReportPdf(
       .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "")
       .replace(/[\r\n]+/g, " ");
     const width = font.widthOfTextAtSize(safe, size);
-    page.drawText(safe, {
-      x,
-      y: 842 - y,
-      size:
-        maxWidth && width > maxWidth
-          ? Math.max(6, (size * maxWidth) / width)
-          : size,
-      color,
-      font,
-    });
+    const fittedSize =
+      maxWidth && width > maxWidth
+        ? Math.max(Math.min(9, size), (size * maxWidth) / width)
+        : size;
+    let fitted = safe;
+    if (maxWidth && font.widthOfTextAtSize(fitted, fittedSize) > maxWidth) {
+      const characters = Array.from(fitted);
+      let low = 0,
+        high = characters.length;
+      while (low < high) {
+        const middle = Math.ceil((low + high) / 2);
+        if (
+          font.widthOfTextAtSize(
+            characters.slice(0, middle).join("") + "…",
+            fittedSize,
+          ) <= maxWidth
+        )
+          low = middle;
+        else high = middle - 1;
+      }
+      fitted = characters.slice(0, low).join("") + "…";
+    }
+    page.drawText(fitted, { x, y: 842 - y, size: fittedSize, color, font });
   };
   const rect = (
     x: number,
@@ -92,10 +105,22 @@ export async function renderReportPdf(
       for (const word of paragraph.split(/\s+/)) {
         if (!word) continue;
         const candidate = line ? `${line} ${word}` : word;
-        if (font.widthOfTextAtSize(candidate, size) > width && line) {
+        if (font.widthOfTextAtSize(candidate, size) <= width) {
+          line = candidate;
+          continue;
+        }
+        if (line) {
           lines.push(line);
-          line = word;
-        } else line = candidate;
+          line = "";
+        }
+        // A URL, ID or pasted unbroken sentence must remain inside the printable area.
+        for (const character of word) {
+          const next = line + character;
+          if (line && font.widthOfTextAtSize(next, size) > width) {
+            lines.push(line);
+            line = character;
+          } else line = next;
+        }
       }
       lines.push(line);
     }
@@ -289,11 +314,20 @@ export async function renderReportPdf(
     9,
     3,
   );
-  if (hypothesisLines.length > 2 || decisionLines.length > 4) {
+  const longNames =
+    bold.widthOfTextAtSize(report.title, 9) > 511 ||
+    regular.widthOfTextAtSize(`Baseline vs. ${report.scenarioName}`, 9) > 511;
+  if (hypothesisLines.length > 2 || decisionLines.length > 4 || longNames) {
     addPage();
     text(42, 99, "Bilag · dine fulde overvejelser", 20, colors.ink, bold);
     let lineY = 136;
     for (const [title, value] of [
+      ...(longNames
+        ? [
+            ["Modelnavn", report.title],
+            ["Alternativ", report.scenarioName],
+          ]
+        : []),
       ["Hypotese", report.hypothesis],
       ["Beslutning", report.decision],
     ]) {
@@ -328,6 +362,10 @@ export async function renderReportPdf(
         diagnosticY += 18;
       }
       diagnosticY += 22;
+    }
+    if (diagnosticY > 650) {
+      addPage();
+      diagnosticY = 100;
     }
     paragraph(
       42,

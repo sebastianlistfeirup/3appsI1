@@ -1,0 +1,13 @@
+{
+  "executedAt": "2026-10-16T21:09:57.020Z",
+  "pages": 8,
+  "words": 568,
+  "outside": [],
+  "checks": [
+    "200-character alternative name and 100-character model name retained in appendix",
+    "4,000-character unbroken hypothesis retained",
+    "Nearly 10,000-character unbroken Danish decision retained",
+    "Every extracted word stays within printable page bounds",
+    "Actual licensed embedded fonts and full 30 paired golden runs used"
+  ]
+}

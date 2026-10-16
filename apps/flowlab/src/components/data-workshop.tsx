@@ -517,7 +517,11 @@ export default function DataWorkshop({
                 positive aktivitetsvarigheder · median{" "}
                 {median === null
                   ? "—"
-                  : `${formatNumber(median / 60000, 1)} min`}
+                  : median < 1000
+                    ? `${formatNumber(median)} ms`
+                    : median < 60000
+                      ? `${formatNumber(median / 1000, median % 1000 ? 1 : 0)} sek`
+                      : `${formatNumber(median / 60000, 1)} min`}
               </p>
             </div>
             <span className="small-badge">Manuel overførsel</span>

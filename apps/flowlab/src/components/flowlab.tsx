@@ -36,6 +36,7 @@ import {
   Square,
   Undo2,
   Upload,
+  Trash2,
   X,
   AlertTriangle,
 } from "lucide-react";
@@ -63,6 +64,12 @@ import {
   type FlowDocument,
 } from "../lib/document";
 import { createReport, reportPdf, reportZip } from "../lib/report";
+import {
+  appendVersion,
+  workspaceCopy,
+  workspaceError,
+  versionBytes,
+} from "../lib/workspace";
 import Inspector from "./inspector";
 import { nodeIcons, nodeLabels } from "./model-canvas";
 import {
@@ -114,6 +121,9 @@ export default function FlowLab() {
     [toast, setToast] = useState(""),
     [running, setRunning] = useState(false),
     [exporting, setExporting] = useState(false),
+    [workspaceOperation, setWorkspaceOperation] = useState<
+      "import" | "export" | null
+    >(null),
     [progress, setProgress] = useState({ done: 0, total: 30 }),
     [partial, setPartial] = useState<Comparison | null>(null),
     [showPalette, setShowPalette] = useState(false),
@@ -128,6 +138,7 @@ export default function FlowLab() {
     scenarioRuns: SimulationResult[];
   } | null>(null);
   const worker = useRef<Worker | null>(null),
+    workspaceWorker = useRef<Worker | null>(null),
     currentDoc = useRef(doc),
     autoRan = useRef(false),
     undo = useRef<FlowDocument[]>([]),
@@ -145,7 +156,13 @@ export default function FlowLab() {
     const timer = setTimeout(() => setToast(""), 4500);
     return () => clearTimeout(timer);
   }, [toast]);
-  useEffect(() => () => worker.current?.terminate(), []);
+  useEffect(
+    () => () => {
+      worker.current?.terminate();
+      workspaceWorker.current?.terminate();
+    },
+    [],
+  );
   useEffect(() => {
     if (window.matchMedia("(max-width: 760px)").matches) {
       setListMode(true);
@@ -358,15 +375,17 @@ export default function FlowLab() {
     }
   };
   const saveVersion = () => {
-    const snapshot = {
-      id: crypto.randomUUID(),
-      label: `Version ${doc.versions.length + 1}`,
-      savedAt: new Date().toISOString(),
-      baseline: structuredClone(doc.baseline),
-      scenario: structuredClone(doc.scenario),
-    };
-    update({ ...doc, versions: [snapshot, ...doc.versions].slice(0, 30) });
-    notify(`${snapshot.label} er gemt som et uforanderligt snapshot.`);
+    try {
+      const { snapshot, versions } = appendVersion(
+        doc,
+        crypto.randomUUID(),
+        new Date().toISOString(),
+      );
+      update({ ...doc, versions });
+      notify(`${snapshot.label} er gemt som et uforanderligt snapshot.`);
+    } catch (error) {
+      setError(workspaceError(error));
+    }
   };
   const addNode = (kind: FlowNode["kind"]) => {
     const id = crypto.randomUUID(),
@@ -411,26 +430,73 @@ export default function FlowLab() {
     setInspectorOpen(true);
     setShowPalette(false);
   };
-  const importDocument = async (file: File) => {
-    try {
-      if (file.size > 20 * 1024 * 1024)
-        throw new Error("Modelpakken må højst være 20 MB.");
-      const parsed = validateDocument(JSON.parse(await file.text()));
-      worker.current?.terminate();
-      worker.current = null;
-      pendingRun.current = null;
-      setRunning(false);
-      setPartial(null);
-      update({ ...parsed, comparison: null, holdout: null });
-      autoRan.current = false;
-      notify(
-        "Modellen er importeret; resultater genberegnes fra input. Dit tidligere arbejde kan gendannes med Fortryd.",
-      );
-    } catch (e) {
+  const stopSimulation = () => {
+    worker.current?.terminate();
+    worker.current = null;
+    pendingRun.current = null;
+    setRunning(false);
+    setPartial(null);
+  };
+  const workspaceTask = (operation: "import" | "export", file?: File) => {
+    if (workspaceWorker.current) return;
+    if (operation === "import") stopSimulation();
+    const startedFrom = currentDoc.current;
+    setWorkspaceOperation(operation);
+    setError("");
+    const w = new Worker(
+      new URL("../workers/workspace.worker.ts", import.meta.url),
+    );
+    workspaceWorker.current = w;
+    const finish = () => {
+      w.terminate();
+      workspaceWorker.current = null;
+      setWorkspaceOperation(null);
+    };
+    w.onmessage = (event) => {
+      if (workspaceWorker.current !== w) return;
+      finish();
+      if (event.data.type === "imported") {
+        if (currentDoc.current !== startedFrom) {
+          setError(
+            "Arbejdsrummet blev ændret, mens filen blev læst. Dit seneste arbejde er bevaret. Vælg filen igen for at importere den.",
+          );
+          return;
+        }
+        const imported = event.data.document as FlowDocument;
+        autoRan.current = false;
+        update(imported);
+        setSelected(
+          imported[variant].nodes.find((node) => node.kind === "activity")
+            ?.id ?? imported[variant].nodes[0].id,
+        );
+        notify(
+          "Modellen er importeret; resultater genberegnes fra input. Dit tidligere arbejde kan gendannes med Fortryd.",
+        );
+      } else if (event.data.type === "exported") {
+        downloadFile("FlowLab-modelpakke.json", event.data.bytes as BlobPart);
+        notify(
+          "Arbejdsrummet er eksporteret med modeller, data og snapshots. Beregnede resultater findes i rapportpakken.",
+        );
+      } else setError(event.data.message);
+    };
+    w.onerror = () => {
+      if (workspaceWorker.current !== w) return;
+      finish();
       setError(
-        e instanceof Error ? e.message : "Modelpakken kunne ikke læses.",
+        "Modelpakkens worker kunne ikke gennemføres. Dit arbejde er bevaret; prøv igen.",
       );
-    }
+    };
+    w.postMessage(
+      operation === "import"
+        ? { type: operation, file }
+        : { type: operation, document: workspaceCopy(startedFrom) },
+    );
+  };
+  const cancelWorkspaceTask = () => {
+    workspaceWorker.current?.terminate();
+    workspaceWorker.current = null;
+    setWorkspaceOperation(null);
+    setError("Modelpakken er afbrudt. Dit nuværende arbejde er bevaret.");
   };
   const comparisonReady =
     !!comparison &&
@@ -619,14 +685,23 @@ export default function FlowLab() {
               </button>
               <button
                 className="text-button"
-                onClick={() =>
-                  downloadFile(
-                    "FlowLab-arbejdskopi.json",
-                    JSON.stringify(doc, null, 2),
-                  )
-                }
+                disabled={workspaceOperation !== null}
+                onClick={() => workspaceTask("export")}
               >
                 Eksportér min kopi
+              </button>
+            </div>
+          )}
+          {workspaceOperation && (
+            <div className="notice" role="status">
+              <LoaderCircle size={18} className="spin" />
+              <span>
+                {workspaceOperation === "import"
+                  ? "Læser og kontrollerer modelpakken…"
+                  : "Forbereder din modelpakke…"}
+              </span>
+              <button className="text-button" onClick={cancelWorkspaceTask}>
+                Afbryd modelpakke
               </button>
             </div>
           )}
@@ -1485,8 +1560,9 @@ export default function FlowLab() {
                       <button
                         className="button primary"
                         onClick={() => {
-                          update(initialDocument());
+                          stopSimulation();
                           autoRan.current = false;
+                          update(initialDocument());
                           setSelected("process");
                           go("model");
                           notify(
@@ -1502,18 +1578,15 @@ export default function FlowLab() {
                   <div className="data-actions">
                     <button
                       className="button secondary"
-                      onClick={() =>
-                        downloadFile(
-                          "FlowLab-modelpakke.json",
-                          JSON.stringify(doc, null, 2),
-                        )
-                      }
+                      disabled={workspaceOperation !== null}
+                      onClick={() => workspaceTask("export")}
                     >
                       <ArrowDownToLine size={15} />
                       Eksportér arbejdsrum
                     </button>
                     <button
                       className="button secondary"
+                      disabled={workspaceOperation !== null}
                       onClick={() => importInput.current?.click()}
                     >
                       <Upload size={15} />
@@ -1527,16 +1600,27 @@ export default function FlowLab() {
                       aria-label="Importér modelpakke"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) void importDocument(file);
+                        if (file) workspaceTask("import", file);
                         e.target.value = "";
                       }}
                     />
                   </div>
+                  <p className="field-hint">
+                    Modelpakken indeholder modeller, beslutninger, datagrundlag
+                    og snapshots. Resultater genberegnes ved import. Brug
+                    rapportpakken, når de beregnede tal også skal bevares.
+                    Importgrænse: 128 MB.
+                  </p>
                   <section className="panel">
                     <div className="section-title">
                       <h3>Gemte versioner</h3>
                       <span className="small-badge">
-                        {doc.versions.length} / 30
+                        {doc.versions.length} / 30 ·{" "}
+                        {formatNumber(
+                          versionBytes(doc.versions) / 1024 / 1024,
+                          1,
+                        )}{" "}
+                        / 16 MB
                       </span>
                     </div>
                     {doc.versions.length ? (
@@ -1569,6 +1653,23 @@ export default function FlowLab() {
                               Gendan
                               <ArrowRight size={14} />
                             </button>
+                            <button
+                              className="icon-button"
+                              aria-label={`Fjern ${v.label}`}
+                              onClick={() => {
+                                update({
+                                  ...doc,
+                                  versions: doc.versions.filter(
+                                    (version) => version.id !== v.id,
+                                  ),
+                                });
+                                notify(
+                                  `${v.label} er fjernet. Fortryd gendanner det.`,
+                                );
+                              }}
+                            >
+                              <Trash2 size={16} />
+                            </button>
                           </div>
                         ))}
                       </div>
@@ -1578,7 +1679,8 @@ export default function FlowLab() {
                         <h3>Bevar et godt udgangspunkt.</h3>
                         <p>
                           Gem en version før næste eksperiment. De seneste 30
-                          snapshots bevares lokalt.
+                          snapshots bevares lokalt, inden for 16 MB. Eksportér
+                          arbejdsrummet, før du rydder op.
                         </p>
                       </div>
                     )}
