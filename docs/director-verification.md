@@ -24,6 +24,9 @@ LIBRARY_ENGINE=webkit pnpm exec node apps/director/tests/library-flow.mjs
 STORYBOARD_ENGINE=chromium pnpm exec node apps/director/tests/storyboard-flow.mjs
 STORYBOARD_ENGINE=firefox pnpm exec node apps/director/tests/storyboard-flow.mjs
 STORYBOARD_ENGINE=webkit pnpm exec node apps/director/tests/storyboard-flow.mjs
+VERSIONS_ENGINE=chromium pnpm exec node apps/director/tests/versions-flow.mjs
+VERSIONS_ENGINE=firefox pnpm exec node apps/director/tests/versions-flow.mjs
+VERSIONS_ENGINE=webkit pnpm exec node apps/director/tests/versions-flow.mjs
 ```
 
 Cross-browser covers Chromium, Firefox and WebKit with native capabilities and with WebGL explicitly disabled: initial frames, immutable edit, undo, GLB load/capture, reload, modal focus/Escape, storyboard and page errors. Editor flow adds malformed imports, full ZIP/GLB roundtrip, duration/crossfade/reorder and responsive empty/error states. Axe checks ten desktop/mobile views and dialogs against WCAG2A/2AA/2.1AA tags. Automated scans do not constitute a full accessibility certification.
@@ -33,6 +36,8 @@ The textured-GLB gate logs every major phase to the console and incrementally pe
 The production-library flow creates independent empty and sample films, duplicates and edits a copy, restores the last-opened film, imports a project as a new film and preserves invalid/future documents for raw backup. It injects a real IndexedDB quota error and proves a rejected save blocks switching films while the current memory copy remains downloadable. It also imports an own-image-only film with no camera frames and verifies that reload and bulk camera capture preserve the actual media. Every engine checks desktop/tablet/mobile overflow and six automated accessibility states.
 
 The storyboard gate uses an actual red-then-blue clip and checks that source trim produces the blue PDF image, full long multilingual dialogue/notes survive, the embedded manifest matches the sources and actual image hashes, and export leaves the project unchanged. See `docs/director-storyboard.md` for the browser-decoding boundary and required Poppler commands.
+
+The versions gate exercises selective camera updates, full cut restoration with automatic preservation, side-by-side shot history, independent duplication, saved audio settings and adversarial historical references. Six accessibility states run per engine. It has a 240-second process watchdog and five-second cleanup deadline; see `docs/director-versions.md`.
 
 ## Render and recovery gate
 
@@ -44,6 +49,7 @@ pnpm exec node apps/director/tests/recovery-smoke.mjs
 pnpm exec node apps/director/tests/media-ui-flow.mjs
 pnpm exec node apps/director/tests/clip-audio-smoke.mjs
 pnpm exec node apps/director/tests/cancellation-smoke.mjs
+pnpm exec node --import tsx apps/director/tests/sequence-render-smoke.mjs
 ```
 
 The actual 60-second output is checked with ffprobe. Recovery SIGKILLs a CLI worker and its child process group after two completed segments, then verifies those exact validated intermediates were reused. Clip-audio testing decodes the resulting AAC to PCM and distinguishes a nonzero original tone from real silence when clip audio is disabled. No external providers or paid calls occur.

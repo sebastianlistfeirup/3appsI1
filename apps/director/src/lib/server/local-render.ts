@@ -9,6 +9,7 @@ import {
   orderedShots,
   totalFrames,
   timeline,
+  matchingSequenceVersion,
   type Project,
   type Media,
   type Shot,
@@ -23,6 +24,7 @@ export type RenderState = {
   updatedAt: string;
   manifestHash: string;
   expectedFrames: number;
+  sequenceVersion?: { id: string; version: number; name: string };
   error?: string;
   metadata?: {
     duration: number;
@@ -164,6 +166,7 @@ export async function createRender(input: unknown) {
     await fs.writeFile(join(dir(id), "manifest.json"), manifest, {
       mode: 0o400,
     });
+    const savedSequence = matchingSequenceVersion(p);
     const state: RenderState = {
       id,
       state: "queued",
@@ -172,6 +175,15 @@ export async function createRender(input: unknown) {
       updatedAt: now(),
       manifestHash: sha(manifest),
       expectedFrames: totalFrames(p),
+      ...(savedSequence
+        ? {
+            sequenceVersion: {
+              id: savedSequence.id,
+              version: savedSequence.version,
+              name: savedSequence.name,
+            },
+          }
+        : {}),
     };
     await atomic(join(dir(id), "status.json"), state);
     return state;

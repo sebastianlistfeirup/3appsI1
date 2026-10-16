@@ -1,0 +1,42 @@
+{
+  "engine": "chromium",
+  "checks": [
+    "own image excluded from continuity changes",
+    "only selected camera gets a new shot and shared immutable scene reference",
+    "all previous scenes/shots unchanged",
+    "named cut pins order, versions, crossfade and audio",
+    "restoration automatically preserves current unsaved cut and restores it exactly",
+    "independent shot duplicate",
+    "previous shot result restored as a new linked version",
+    "reload and portable ZIP preserve the complete history",
+    "malformed predecessor and inactive saved-sequence references reject without changing film"
+  ],
+  "accessibility": [
+    {
+      "name": "selective-continuity",
+      "violations": []
+    },
+    {
+      "name": "empty-sequence-history",
+      "violations": []
+    },
+    {
+      "name": "desktop-saved-cuts",
+      "violations": []
+    },
+    {
+      "name": "tablet-saved-cuts",
+      "violations": []
+    },
+    {
+      "name": "mobile-saved-cuts",
+      "violations": []
+    },
+    {
+      "name": "shot-comparison",
+      "violations": []
+    }
+  ],
+  "pageErrors": [],
+  "verifiedAt": "2026-10-16T21:58:53.109Z"
+}

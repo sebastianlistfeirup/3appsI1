@@ -53,12 +53,18 @@ import {
   publishScene,
   reviseShot,
   moveShot,
+  removeShot,
   affectedShots,
   clone,
   newId,
   lookAtQuaternion,
   RENDERER_VERSION,
   rightsWarnings,
+  duplicateShot,
+  saveSequenceVersion,
+  restoreSequenceVersion,
+  restoreShotVersion,
+  matchingSequenceVersion,
   type Project,
   type Shot,
   type Camera as CameraType,
@@ -67,6 +73,11 @@ import {
 } from "@tre/scene-format";
 import { SceneViewport } from "./SceneViewport";
 import { ShotFrame as Frame } from "./ShotFrame";
+import {
+  ContinuityPanel,
+  SequenceHistoryPanel,
+  ShotHistoryPanel,
+} from "./VersionPanels";
 import { SequencePreview } from "./SequencePreview";
 import { PreviewAudio } from "../lib/preview-audio";
 import { renderFrame } from "../lib/scene-renderer";
@@ -79,7 +90,14 @@ import {
 } from "../lib/project-files";
 
 type Tab = "scene" | "storyboard" | "story";
-type Modal = "export" | "import" | "help" | "versions" | null;
+type Modal =
+  | "export"
+  | "import"
+  | "help"
+  | "versions"
+  | "sequences"
+  | "shotHistory"
+  | null;
 const formatSeconds = (frames: number) =>
   `${(frames / 24).toLocaleString("da-DK", { maximumFractionDigits: 2 })} sek.`;
 function TextField({
@@ -202,6 +220,7 @@ export default function DirectorEditor({
       id: string;
       state: string;
       phase: string;
+      sequenceVersion?: { id: string; version: number; name: string };
       error?: string;
       metadata?: {
         duration: number;
@@ -227,12 +246,17 @@ export default function DirectorEditor({
     cam = p.draft.cameras.find((c) => c.id === cameraId) ?? p.draft.cameras[0],
     object = p.draft.objects.find((o) => o.id === selectedObject);
   const frames = totalFrames(p),
+    savedSequence = matchingSequenceVersion(p),
     affected = affectedShots(p);
   const activeShot = reviewing
     ? timeline(p)
         .filter((s) => s.startFrame <= playhead)
         .at(-1)
     : undefined;
+  useEffect(() => {
+    setPlayhead((frame) => Math.min(frame, Math.max(0, frames - 1)));
+    if (!frames) setPlaying(false);
+  }, [frames]);
   const commit = useCallback(
     (update: (value: Project) => Project, message?: string) => {
       try {
@@ -472,6 +496,14 @@ export default function DirectorEditor({
       return revised;
     });
   };
+  const reorderShot = (selected: Shot, delta: number) =>
+    commit((next) => {
+      const target = next.sequence.indexOf(selected.id) + delta,
+        reordered = moveShot(next, selected.id, delta);
+      if (target >= 0 && target < reordered.sequence.length)
+        setSelectedShot(reordered.sequence[target]);
+      return reordered;
+    }, "Rækkefølgen er gemt. Overgange er tilpasset pladsen mellem shots.");
   const act = async (name: string, fn: () => Promise<void>) => {
     setBusy(name);
     setError("");
@@ -491,12 +523,19 @@ export default function DirectorEditor({
       await storage.flush();
       onOpenProductions?.(current.current);
     });
-  const capture = async (all = false, missingOnly = false) =>
+  const capture = async (
+    all = false,
+    missingOnly = false,
+    selectedIds?: string[],
+  ) =>
     act(all ? "Tager kameraframes …" : "Tager kameraframe …", async () => {
       const base = current.current;
       const target = all
         ? orderedShots(base).filter(
-            (s) => !s.mediaId && (!missingOnly || !s.frame),
+            (s) =>
+              !s.mediaId &&
+              (!missingOnly || !s.frame) &&
+              (!selectedIds || selectedIds.includes(s.id)),
           )
         : shot
           ? [shot]
@@ -516,8 +555,12 @@ export default function DirectorEditor({
         await new Promise<void>((resolve) => setTimeout(resolve, 0));
         const scene = missingOnly ? sceneForShot(next, s) : next.draft;
         const camera = all
-          ? (scene.cameras.find((c) => c.id === s.cameraId) ?? cam)
+          ? scene.cameras.find((c) => c.id === s.cameraId)
           : cam;
+        if (!camera)
+          throw Error(
+            `Kameraet til ${s.name} mangler i arbejdsscenen. Vælg et kamera og gem indstillingen enkeltvis.`,
+          );
         const captured = await renderFrame(scene, camera, mode);
         next = reviseShot(next, s.id, {
           sceneVersionId: scene.id,
@@ -555,6 +598,7 @@ export default function DirectorEditor({
       const fresh: Shot = {
         id: newId("shot"),
         version: 1,
+        previousShotId: null,
         name: `Ny indstilling ${next.sequence.length + 1}`,
         sceneVersionId: published.draft.id,
         cameraId: cam.id,
@@ -1569,6 +1613,11 @@ export default function DirectorEditor({
                       <option value="0">Rent klip</option>
                       <option value="12">Crossfade · 0,5 sek.</option>
                       <option value="24">Crossfade · 1 sek.</option>
+                      {![0, 12, 24].includes(shot.transitionFrames) && (
+                        <option value={shot.transitionFrames}>
+                          Crossfade · {shot.transitionFrames} frames
+                        </option>
+                      )}
                     </select>
                   </label>
                   {shot.mediaId &&
@@ -1610,40 +1659,49 @@ export default function DirectorEditor({
                   </button>
                   <div className="reorder-buttons">
                     <button
-                      onClick={() =>
-                        commit((next) => moveShot(next, shot.id, -1))
-                      }
+                      onClick={() => reorderShot(shot, -1)}
                       disabled={shots.indexOf(shot) === 0}
                     >
                       <ArrowLeft size={14} /> Tidligere
                     </button>
                     <button
-                      onClick={() =>
-                        commit((next) => moveShot(next, shot.id, 1))
-                      }
+                      onClick={() => reorderShot(shot, 1)}
                       disabled={shots.indexOf(shot) === shots.length - 1}
                     >
                       Senere <ArrowRight size={14} />
                     </button>
                   </div>
                   <button
+                    className="button subtle full-width"
+                    onClick={() => setModal("shotHistory")}
+                  >
+                    <Layers3 size={14} /> Shotversioner
+                  </button>
+                  <button
+                    className="button subtle full-width"
+                    onClick={() =>
+                      commit((next) => {
+                        const index = next.sequence.indexOf(shot.id),
+                          copy = duplicateShot(next, shot.id);
+                        setSelectedShot(copy.sequence[index + 1]);
+                        return copy;
+                      }, "Shot er duplikeret som en selvstændig indstilling.")
+                    }
+                  >
+                    <Copy size={14} /> Duplikér shot
+                  </button>
+                  <button
                     className="button danger-outline full-width"
                     onClick={() =>
                       commit((next) => {
-                        next.sequence = next.sequence.filter(
-                          (id) => id !== shot.id,
+                        const index = next.sequence.indexOf(shot.id),
+                          removed = removeShot(next, shot.id);
+                        setSelectedShot(
+                          removed.sequence[
+                            Math.min(index, removed.sequence.length - 1)
+                          ] ?? "",
                         );
-                        next.revision++;
-                        if (next.sequence[0]) {
-                          const first = next.shots.find(
-                            (s) => s.id === next.sequence[0],
-                          )!;
-                          if (first.transitionFrames)
-                            next = reviseShot(next, first.id, {
-                              transitionFrames: 0,
-                            });
-                        }
-                        return next;
+                        return removed;
                       })
                     }
                   >
@@ -1662,8 +1720,13 @@ export default function DirectorEditor({
                 <span className="eyebrow">
                   DIN FORTÆLLING, BILLEDE FOR BILLEDE
                 </span>
-                <h2>Fra stilhed til signal.</h2>
-                <p>Fem øjeblikke. Én sammenhængende verden.</p>
+                <h2>
+                  {p.id === "station_07" ? "Fra stilhed til signal." : p.title}
+                </h2>
+                <p>
+                  {shots.length} indstillinger. Din fortælling, billede for
+                  billede.
+                </p>
               </div>
               <button
                 className="button dark-button"
@@ -1702,18 +1765,14 @@ export default function DirectorEditor({
                       <div>
                         <IconButton
                           title={`Flyt shot ${i + 1} tidligere`}
-                          onClick={() =>
-                            commit((next) => moveShot(next, s.id, -1))
-                          }
+                          onClick={() => reorderShot(s, -1)}
                           disabled={i === 0}
                         >
                           <ArrowLeft size={14} />
                         </IconButton>
                         <IconButton
                           title={`Flyt shot ${i + 1} senere`}
-                          onClick={() =>
-                            commit((next) => moveShot(next, s.id, 1))
-                          }
+                          onClick={() => reorderShot(s, 1)}
                           disabled={i === shots.length - 1}
                         >
                           <ArrowRight size={14} />
@@ -1906,9 +1965,23 @@ export default function DirectorEditor({
               </span>
             </div>
             <div className="timeline-label">
-              <span>SEKVENS 01</span>
+              <span>
+                {savedSequence
+                  ? `SEKVENS v${savedSequence.version}`
+                  : "AKTUEL SEKVENS"}
+              </span>
               <span>24 FPS</span>
             </div>
+            <button
+              className="text-button sequence-history-button"
+              onClick={() => {
+                setPlaying(false);
+                setModal("sequences");
+              }}
+            >
+              <Layers3 size={13} />
+              <span>Sekvensversioner</span>
+            </button>
             <button
               className="text-button"
               onClick={() => {
@@ -2117,7 +2190,7 @@ export default function DirectorEditor({
         >
           <div
             ref={modalRef}
-            className={`modal ${modal === "versions" ? "wide-modal" : ""}`}
+            className={`modal ${["versions", "sequences", "shotHistory"].includes(modal) ? "wide-modal" : ""}`}
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
@@ -2132,7 +2205,11 @@ export default function DirectorEditor({
                       ? "MEDIER"
                       : modal === "versions"
                         ? "KONTINUITET"
-                        : "KOM GODT I GANG"}
+                        : modal === "sequences"
+                          ? "KLIPNINGER"
+                          : modal === "shotHistory"
+                            ? "SHOTVERSIONER"
+                            : "KOM GODT I GANG"}
                 </span>
                 <h2 id="modal-title">
                   {modal === "export"
@@ -2141,7 +2218,11 @@ export default function DirectorEditor({
                       ? "Dit materiale. Din film."
                       : modal === "versions"
                         ? "En scene. Flere versioner."
-                        : "Fra scene til fortælling."}
+                        : modal === "sequences"
+                          ? "Prøv en ny retning."
+                          : modal === "shotHistory"
+                            ? "Behold det gode billede."
+                            : "Fra scene til fortælling."}
                 </h2>
               </div>
               <IconButton title="Luk dialog" onClick={() => setModal(null)}>
@@ -2243,6 +2324,12 @@ export default function DirectorEditor({
                               : "Filmen bliver samlet …"}
                       </strong>
                       <span>{renderJob.error ?? renderJob.phase}</span>
+                      {renderJob.sequenceVersion && (
+                        <small>
+                          Låst klipning: {renderJob.sequenceVersion.name} · v
+                          {renderJob.sequenceVersion.version}
+                        </small>
+                      )}
                       {renderJob.state === "succeeded" && (
                         <>
                           <small>
@@ -2486,76 +2573,54 @@ export default function DirectorEditor({
                 </div>
               </>
             ) : modal === "versions" ? (
-              <>
-                <p className="modal-intro">
-                  Shots låser deres sceneversion. Ændringer i cast, farver eller
-                  placering flytter derfor aldrig dit tidligere godkendte
-                  billede.
-                </p>
-                <div className="version-summary">
-                  <span>
-                    <strong>v{p.draft.version}</strong> Arbejdsscene
-                  </span>
-                  <span>
-                    <strong>{p.scenes.length}</strong> Gemte versioner
-                  </span>
-                  <span>
-                    <strong>{affected.length}</strong> Berørte shots
-                  </span>
-                </div>
-                <div className="version-list">
-                  {shots.map((s, i) => (
-                    <div key={s.id}>
-                      <span className="version-index">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span>
-                        <strong>{s.name}</strong>
-                        <small>
-                          Scene v{sceneForShot(p, s).version} · shot v
-                          {s.version} · {s.cameraId}
-                        </small>
-                      </span>
-                      <span
-                        className={
-                          affected.some((a) => a.id === s.id)
-                            ? "version-affected"
-                            : "version-current"
-                        }
-                      >
-                        {affected.some((a) => a.id === s.id)
-                          ? "Tidligere scene"
-                          : "Matcher scenen"}
-                      </span>
-                      <button
-                        className="button subtle"
-                        onClick={() => {
-                          selectShot(s);
-                          setModal(null);
-                          setTab("scene");
-                        }}
-                      >
-                        Åbn
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  className="button primary full-width"
-                  onClick={() => {
-                    setModal(null);
-                    void capture(true);
-                  }}
-                  disabled={!!busy}
-                >
-                  <RefreshCw size={15} /> Optag alle shots fra den aktuelle
-                  scene
-                </button>
-                <p className="modal-footnote">
-                  Der oprettes nye versioner. Dine tidligere scener og shots
-                  bevares i projektpakken.
-                </p>
-              </>
+              <ContinuityPanel
+                project={p}
+                busy={!!busy}
+                onCapture={(ids) => {
+                  setModal(null);
+                  void capture(true, false, ids);
+                }}
+                onOpen={(selected) => {
+                  selectShot(selected);
+                  setModal(null);
+                  setTab("scene");
+                }}
+              />
+            ) : modal === "sequences" ? (
+              <SequenceHistoryPanel
+                project={p}
+                busy={!!busy}
+                onSave={(name) =>
+                  commit(
+                    (next) => saveSequenceVersion(next, name),
+                    "Sekvensen er gemt med sine shotversioner og lydspor.",
+                  )
+                }
+                onRestore={(id) =>
+                  commit((next) => {
+                    const restored = restoreSequenceVersion(next, id);
+                    setSelectedShot(restored.sequence[0] ?? "");
+                    setPlaying(false);
+                    setReviewing(false);
+                    setPlayhead(0);
+                    return restored;
+                  }, "Klipningen er gendannet. Din tidligere klipning er bevaret i historikken.")
+                }
+              />
+            ) : modal === "shotHistory" && shot ? (
+              <ShotHistoryPanel
+                project={p}
+                shot={shot}
+                busy={!!busy}
+                onRestore={(id) =>
+                  commit((next) => {
+                    const index = next.sequence.indexOf(shot.id),
+                      restored = restoreShotVersion(next, shot.id, id);
+                    setSelectedShot(restored.sequence[index]);
+                    return restored;
+                  }, "Det tidligere resultat er gemt som en ny shotversion.")
+                }
+              />
             ) : (
               <>
                 <div className="help-steps">

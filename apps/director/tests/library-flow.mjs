@@ -312,6 +312,7 @@ try {
   ownImage.shots = [
     {
       ...originalShot,
+      previousShotId: null,
       frame: null,
       frameRenderer: null,
       mediaId: "own_image",

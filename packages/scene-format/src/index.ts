@@ -195,6 +195,7 @@ export const mediaSchema = z
 export const shotSchema = z.object({
   id,
   version: z.number().int().positive(),
+  previousShotId: id.nullable().default(null),
   name: z.string().min(1).max(100),
   sceneVersionId: id,
   cameraId: id,
@@ -218,6 +219,16 @@ const audioSchema = z.object({
   fadeFrames: z.number().int().min(0).max(120),
   duck: z.boolean(),
 });
+export const sequenceVersionSchema = z.object({
+  id,
+  version: z.number().int().positive(),
+  name: z.string().min(1).max(100),
+  createdAt: z.string().datetime(),
+  sequence: z.array(id).min(1).max(30),
+  voice: audioSchema.nullable(),
+  music: audioSchema.nullable(),
+  captions: z.boolean(),
+});
 export const projectSchema = z
   .object({
     schemaVersion: z.literal(1),
@@ -231,6 +242,7 @@ export const projectSchema = z
     scenes: z.array(sceneSchema).min(1).max(100),
     shots: z.array(shotSchema).max(200),
     sequence: z.array(id).max(30),
+    sequenceVersions: z.array(sequenceVersionSchema).max(40).default([]),
     media: z.array(mediaSchema).max(40),
     voice: audioSchema.nullable(),
     music: audioSchema.nullable(),
@@ -239,11 +251,14 @@ export const projectSchema = z
   .superRefine((p, ctx) => {
     const issue = (message: string) =>
       ctx.addIssue({ code: "custom", message });
-    for (const list of [p.scenes, p.shots, p.media])
+    for (const list of [p.scenes, p.shots, p.media, p.sequenceVersions])
       if (new Set(list.map((x) => x.id)).size !== list.length)
         issue("Dubleret versions-id");
-    if (new Set(p.sequence).size !== p.sequence.length)
-      issue("Et shot må kun optræde én gang i sekvensen; duplikér det først");
+    if (
+      new Set(p.sequenceVersions.map((v) => v.version)).size !==
+      p.sequenceVersions.length
+    )
+      issue("Dubleret sekvensversionsnummer");
     for (const s of p.shots) {
       const scene = p.scenes.find((v) => v.id === s.sceneVersionId);
       if (!scene || !scene.cameras.some((c) => c.id === s.cameraId))
@@ -253,54 +268,73 @@ export const projectSchema = z
         !p.media.some((m) => m.id === s.mediaId && m.kind !== "audio")
       )
         issue("Shot-medie mangler");
-    }
-    for (const sid of p.sequence)
-      if (!p.shots.some((s) => s.id === sid))
-        issue("Sekvensen henviser til et manglende shot");
-    for (const a of [p.voice, p.music])
-      if (a && !p.media.some((m) => m.id === a.mediaId && m.kind === "audio"))
-        issue("Lydmedie mangler");
-    const sequence = p.sequence
-      .map((sid) => p.shots.find((s) => s.id === sid))
-      .filter((s): s is z.infer<typeof shotSchema> => !!s);
-    for (let i = 0; i < sequence.length; i++) {
-      const s = sequence[i];
-      if (i === 0 && s.transitionFrames)
-        issue("Første shot kan ikke overlappe et tidligere shot");
+      if (s.previousShotId) {
+        const previous = p.shots.find((old) => old.id === s.previousShotId);
+        if (!previous || previous.version + 1 !== s.version)
+          issue(
+            "Shotversionens forgænger mangler eller har forkert versionsnummer",
+          );
+      }
+      const media = p.media.find((m) => m.id === s.mediaId);
       if (
-        i > 0 &&
-        s.transitionFrames >=
-          Math.min(s.durationFrames, sequence[i - 1].durationFrames)
-      )
-        issue("Overgang skal være kortere end begge shots");
-      if (
-        i < sequence.length - 1 &&
-        s.transitionFrames + sequence[i + 1].transitionFrames >=
-          s.durationFrames
-      )
-        issue("To overgange må ikke overlappe hinanden inde i samme shot");
-      const m = p.media.find((m) => m.id === s.mediaId);
-      if (
-        m?.kind === "video" &&
-        m.durationFrames !== undefined &&
-        s.sourceIn + s.durationFrames > m.durationFrames
+        media?.kind === "video" &&
+        media.durationFrames !== undefined &&
+        s.sourceIn + s.durationFrames > media.durationFrames
       )
         issue("Kliptrim overskrider kildens varighed");
     }
-    for (const a of [p.voice, p.music]) {
-      if (!a) continue;
-      const media = p.media.find((m) => m.id === a.mediaId);
+    const validateSequence = (value: {
+      sequence: string[];
+      voice: z.infer<typeof audioSchema> | null;
+      music: z.infer<typeof audioSchema> | null;
+    }) => {
+      if (new Set(value.sequence).size !== value.sequence.length)
+        issue("Et shot må kun optræde én gang i sekvensen; duplikér det først");
+      for (const sid of value.sequence)
+        if (!p.shots.some((s) => s.id === sid))
+          issue("Sekvensen henviser til et manglende shot");
+      for (const a of [value.voice, value.music])
+        if (a && !p.media.some((m) => m.id === a.mediaId && m.kind === "audio"))
+          issue("Lydmedie mangler");
+      const sequence = value.sequence
+        .map((sid) => p.shots.find((s) => s.id === sid))
+        .filter((s): s is z.infer<typeof shotSchema> => !!s);
+      for (let i = 0; i < sequence.length; i++) {
+        const s = sequence[i];
+        if (i === 0 && s.transitionFrames)
+          issue("Første shot kan ikke overlappe et tidligere shot");
+        if (
+          i > 0 &&
+          s.transitionFrames >=
+            Math.min(s.durationFrames, sequence[i - 1].durationFrames)
+        )
+          issue("Overgang skal være kortere end begge shots");
+        if (
+          i < sequence.length - 1 &&
+          s.transitionFrames + sequence[i + 1].transitionFrames >=
+            s.durationFrames
+        )
+          issue("To overgange må ikke overlappe hinanden inde i samme shot");
+      }
+      for (const a of [value.voice, value.music]) {
+        if (!a) continue;
+        const media = p.media.find((m) => m.id === a.mediaId);
+        if (
+          media?.durationFrames !== undefined &&
+          a.sourceIn >= media.durationFrames
+        )
+          issue("Lydtrim ligger uden for optagelsen");
+      }
       if (
-        media?.durationFrames !== undefined &&
-        a.sourceIn >= media.durationFrames
+        sequence.reduce(
+          (n, s) => n + s.durationFrames - s.transitionFrames,
+          0,
+        ) > 2880
       )
-        issue("Lydtrim ligger uden for optagelsen");
-    }
-    if (
-      sequence.reduce((n, s) => n + s.durationFrames - s.transitionFrames, 0) >
-      2880
-    )
-      issue("Sekvensen må højst være 120 sekunder");
+        issue("Sekvensen må højst være 120 sekunder");
+    };
+    validateSequence(p);
+    for (const version of p.sequenceVersions) validateSequence(version);
   });
 export type SceneObject = z.infer<typeof objectSchema>;
 export type Camera = z.infer<typeof cameraSchema>;
@@ -308,6 +342,7 @@ export type SceneVersion = z.infer<typeof sceneSchema>;
 export type Shot = z.infer<typeof shotSchema>;
 export type Media = z.infer<typeof mediaSchema>;
 export type Project = z.infer<typeof projectSchema>;
+export type SequenceVersion = z.infer<typeof sequenceVersionSchema>;
 export type Vector = [number, number, number];
 export function parseProject(input: unknown): Project {
   const result = projectSchema.safeParse(input);
@@ -363,9 +398,11 @@ export function changedObjectIds(old: SceneVersion, current: SceneVersion) {
 }
 export function affectedShots(p: Project) {
   return orderedShots(p).filter((s) => {
+    if (s.mediaId) return false;
     const old = sceneForShot(p, s);
     return (
       changedObjectIds(old, p.draft).length > 0 ||
+      JSON.stringify(old.assets) !== JSON.stringify(p.draft.assets) ||
       JSON.stringify(old.light) !== JSON.stringify(p.draft.light) ||
       JSON.stringify(old.cameras.find((c) => c.id === s.cameraId)) !==
         JSON.stringify(p.draft.cameras.find((c) => c.id === s.cameraId))
@@ -396,6 +433,14 @@ export function reviseShot(
   patch: Partial<Omit<Shot, "id" | "version">>,
 ): Project {
   const next = clone(p);
+  appendShotRevision(next, shotId, patch);
+  return parseProject(next);
+}
+function appendShotRevision(
+  next: Project,
+  shotId: string,
+  patch: Partial<Omit<Shot, "id" | "version">>,
+) {
   const old = next.shots.find((s) => s.id === shotId);
   if (!old) throw Error("Shot findes ikke");
   const shot = {
@@ -403,10 +448,33 @@ export function reviseShot(
     ...patch,
     id: newId("shot"),
     version: old.version + 1,
+    previousShotId: old.id,
   };
   next.shots.push(shot);
   next.sequence = next.sequence.map((id) => (id === shotId ? shot.id : id));
   next.revision++;
+  return shot;
+}
+/** Reordering/removal may shorten the space for overlaps. Retain old versions and trim only impossible fades. */
+function fitSequenceTransitions(next: Project) {
+  for (let index = 0; index < next.sequence.length; index++) {
+    const shot = next.shots.find((s) => s.id === next.sequence[index])!,
+      previous = index
+        ? next.shots.find((s) => s.id === next.sequence[index - 1])!
+        : null,
+      allowed = previous
+        ? Math.max(
+            0,
+            Math.min(
+              shot.transitionFrames,
+              shot.durationFrames - 1,
+              previous.durationFrames - previous.transitionFrames - 1,
+            ),
+          )
+        : 0;
+    if (shot.transitionFrames !== allowed)
+      appendShotRevision(next, shot.id, { transitionFrames: allowed });
+  }
   return parseProject(next);
 }
 export function moveShot(p: Project, shotId: string, delta: number): Project {
@@ -418,11 +486,15 @@ export function moveShot(p: Project, shotId: string, delta: number): Project {
     next.sequence[dest],
     next.sequence[at],
   ];
-  const first = next.shots.find((s) => s.id === next.sequence[0]);
-  if (first?.transitionFrames)
-    return reviseShot(next, first.id, { transitionFrames: 0 });
   next.revision++;
-  return parseProject(next);
+  return fitSequenceTransitions(next);
+}
+export function removeShot(p: Project, shotId: string): Project {
+  if (!p.sequence.includes(shotId)) return p;
+  const next = clone(p);
+  next.sequence = next.sequence.filter((id) => id !== shotId);
+  next.revision++;
+  return fitSequenceTransitions(next);
 }
 export function rightsWarnings(p: Project) {
   return [
@@ -579,6 +651,7 @@ export function createSampleProject(): Project {
   const shots: Shot[] = names.map((name, i) => ({
     id: `shot_0${i + 1}_v1`,
     version: 1,
+    previousShotId: null,
     name,
     sceneVersionId: scene.id,
     cameraId: scene.cameras[i].id,
@@ -623,3 +696,11 @@ export { inspectGlb, type GlbInspection } from "./glb";
 /** Inspect dimensions before asking a browser/codec to allocate a decoded image. */
 export { inspectRaster } from "./raster";
 export { previewLayers, previewAudio, duckGain } from "./playback";
+export {
+  matchingSequenceVersion,
+  saveSequenceVersion,
+  restoreSequenceVersion,
+  shotVersionHistory,
+  restoreShotVersion,
+  duplicateShot,
+} from "./history";

@@ -7,6 +7,7 @@ import {
   timecode,
   timeline,
   totalFrames,
+  matchingSequenceVersion,
   type Project,
   type Shot,
 } from "@tre/scene-format";
@@ -306,6 +307,7 @@ export async function storyboardPdf(
       order: index + 1,
       id: shot.id,
       version: shot.version,
+      previousShotId: shot.previousShotId,
       name: shot.name,
       sceneVersionId: scene.id,
       sceneVersion: scene.version,
@@ -467,6 +469,7 @@ export async function storyboardPdf(
       fps: p.fps,
       aspect: p.aspect,
       totalFrames: totalFrames(p),
+      sequenceVersion: matchingSequenceVersion(p) ?? null,
     },
     shots: manifestShots,
     voice: p.voice,

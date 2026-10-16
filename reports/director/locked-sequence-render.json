@@ -1,0 +1,36 @@
+{
+  "checks": [
+    "named saved cut recorded in render status",
+    "caller edits do not mutate durable manifest",
+    "shot order, duration and 12-frame crossfade preserved",
+    "actual H.264/AAC 720p24 output matches 84 frames",
+    "manifest SHA remains unchanged after encoding"
+  ],
+  "result": {
+    "id": "e43dcf70-91c2-4ff8-91bd-9429963b303e",
+    "state": "succeeded",
+    "phase": "MP4 er produceret og kontrolleret med ffprobe.",
+    "createdAt": "2026-10-16T21:59:32.671Z",
+    "updatedAt": "2026-10-16T21:59:35.284Z",
+    "manifestHash": "1e4a035ea2e83d914080c19ef1556218e1c93643a070402a657d6f85d69c166c",
+    "expectedFrames": 84,
+    "sequenceVersion": {
+      "id": "sequence_7d29390b78094f7298b66bc1107c8db1",
+      "version": 1,
+      "name": "Godkendt klipning til eksport"
+    },
+    "reusedSegments": 0,
+    "metadata": {
+      "duration": 3.5,
+      "width": 1280,
+      "height": 720,
+      "fps": 24,
+      "audioSampleRate": 48000,
+      "codec": "h264",
+      "audioCodec": "aac",
+      "sha256": "2fb6477fe4c04d5ab909f33a3157f3c45885b8f85f778af6bd465d37115fd7a7",
+      "loudnessLufs": -70
+    }
+  },
+  "verifiedAt": "2026-10-16T21:59:35.292Z"
+}

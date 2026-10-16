@@ -4112,3 +4112,327 @@ button.wordmark {
   color: #3f2b1d;
   border-color: #6c472d;
 }
+
+/* Immutable scene, shot and sequence review. */
+.version-selection-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 3px 0 5px;
+  font-size: 12px;
+  color: #b9c4ce;
+}
+.version-selection-actions > span {
+  margin-left: auto;
+}
+.continuity-choice {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+.continuity-choice input {
+  width: 16px;
+  height: 16px;
+  accent-color: #bd7045;
+}
+.continuity-shot-info {
+  flex: 1;
+  min-width: 0;
+}
+.continuity-shot-info strong {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.continuity-list small {
+  color: #b2bdc9;
+  line-height: 1.5;
+}
+.continuity-list .version-index {
+  color: #c6aa91;
+}
+.continuity-list .version-current {
+  color: #b1ccbc;
+}
+.continuity-list .version-affected {
+  color: #e3ba91;
+}
+.sequence-save-panel {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 28px;
+  margin: 20px 0 25px;
+  padding: 25px;
+  background: #ece6da;
+  color: #243139;
+  border-radius: 7px;
+}
+.sequence-save-panel > div {
+  min-width: 0;
+}
+.sequence-save-panel strong {
+  display: block;
+  font: 30px var(--serif);
+  margin-top: 13px;
+}
+.sequence-save-panel p {
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+  color: #465751;
+}
+.sequence-save-panel .field {
+  margin: 0 0 12px;
+}
+.sequence-save-panel .field > span {
+  color: #3e4c50;
+  font-size: 12px;
+}
+.sequence-save-panel input {
+  background: #f9f6ee;
+  border-color: #a3aca8;
+  color: #233139;
+  color-scheme: light;
+  font-size: 13px;
+}
+.sequence-save-panel input::placeholder {
+  color: #66726b;
+}
+.sequence-save-panel .button {
+  width: 100%;
+  justify-content: center;
+}
+.sequence-versions {
+  display: grid;
+  gap: 13px;
+}
+.sequence-version-card {
+  padding: 20px;
+  border: 1px solid #495666;
+  border-radius: 7px;
+  background: #202b38;
+}
+.sequence-version-card.is-current {
+  border-color: #b5865c;
+}
+.sequence-version-heading {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.sequence-version-heading > div {
+  flex: 1;
+  min-width: 0;
+}
+.sequence-version-number {
+  padding: 6px 7px;
+  border: 1px solid #8e775e;
+  color: #edcca9;
+  font: 12px monospace;
+  border-radius: 3px;
+}
+.sequence-version-heading h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+.sequence-version-heading p {
+  color: #b6c2ce;
+  font-size: 11px;
+  margin-top: 7px;
+  line-height: 1.6;
+}
+.sequence-current {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 11px;
+  color: #b6d4bd;
+  padding-top: 6px;
+}
+.sequence-version-card details {
+  margin: 15px 0;
+  font-size: 12px;
+  color: #c2cbd3;
+}
+.sequence-version-card summary {
+  cursor: pointer;
+  line-height: 1.7;
+  padding: 3px 0;
+}
+.sequence-version-card ol {
+  padding: 8px 0 4px 20px;
+}
+.sequence-version-card li {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 10px 0;
+  border-bottom: 1px solid #43505e;
+}
+.sequence-version-card li > span:last-child {
+  flex-shrink: 0;
+  text-align: right;
+}
+.sequence-version-card li > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.sequence-version-card li small {
+  display: block;
+  color: #aebecb;
+  font-size: 11px;
+  margin-top: 6px;
+}
+.sequence-version-card details > p {
+  line-height: 1.8;
+  color: #b7c7d1;
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+.sequence-version-card > .button {
+  font-size: 12px;
+}
+.version-empty {
+  padding: 31px 20px;
+  text-align: center;
+  border: 1px dashed #586575;
+  border-radius: 6px;
+  color: #d9b28e;
+}
+.version-empty h3 {
+  font-size: 20px;
+  font-family: var(--serif);
+  font-weight: 400;
+  margin-top: 14px;
+}
+.version-empty p {
+  color: #b6c2ce;
+  font-size: 12px;
+  line-height: 1.8;
+  margin-top: 12px;
+}
+.shot-history-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 22px 0;
+}
+.shot-history-compare article {
+  min-width: 0;
+}
+.history-comparison-label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #dcc1a4;
+  margin-bottom: 10px;
+}
+.history-frame {
+  aspect-ratio: 16/9;
+  background: #101b22;
+  overflow: hidden;
+  border: 1px solid #53606c;
+  border-radius: 5px;
+}
+.history-frame img,
+.history-frame video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.history-frame .frame-placeholder {
+  height: 100%;
+}
+.history-frame-meta {
+  display: block;
+  font-size: 11px;
+  color: #c4b59f;
+  margin: 15px 0 8px;
+}
+.shot-history-compare h3 {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.shot-history-compare p {
+  color: #d6dee4;
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.shot-history-compare .history-note {
+  color: #afbfcb;
+}
+@media (max-width: 700px) {
+  .sequence-history-button {
+    font-size: 0;
+    gap: 0;
+    padding: 8px;
+  }
+  .sequence-history-button svg {
+    width: 16px;
+    height: 16px;
+  }
+  .sequence-save-panel {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 22px;
+  }
+  .sequence-save-panel input {
+    font-size: 16px;
+  }
+  .sequence-version-card {
+    padding: 16px;
+  }
+  .sequence-version-heading {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .sequence-current {
+    margin-left: 43px;
+    padding-top: 0;
+  }
+  .version-selection-actions {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .continuity-list > div {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 10px;
+  }
+  .continuity-choice {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .continuity-shot-info {
+    grid-column: 2 / 4;
+    grid-row: 1;
+  }
+  .continuity-list .version-current,
+  .continuity-list .version-affected {
+    grid-column: 2;
+    grid-row: 2;
+    margin-left: 0;
+    font-size: 11px;
+  }
+  .continuity-list .button {
+    grid-column: 3;
+    grid-row: 2;
+  }
+  .shot-history-compare {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .shot-history-compare article + article {
+    padding-top: 20px;
+    border-top: 1px solid #4b5864;
+  }
+}
