@@ -3,6 +3,8 @@ import {
   addArtifact,
   addDependency,
   addTask,
+  archiveProject,
+  assertProject,
   beginManualRun,
   changeProject,
   createProject,
@@ -159,5 +161,98 @@ describe("Studio One versioned production", () => {
         checks: [],
       }),
     ).toThrow("modtage");
+  });
+});
+
+describe("Studio recovery and immutable review boundaries", () => {
+  function ready() {
+    return addTask(
+      saveBrief(createProject("Arbejde"), {
+        goal: "Vis et resultat",
+        audience: "Mig",
+        constraints: "",
+        acceptance: ["Resultatet kan læses"],
+      }),
+      "Lav resultat",
+    );
+  }
+  it("archives and cancels pending work, preserves versions and permits an explicit restore", () => {
+    const p = ready(),
+      running = beginManualRun(p, p.tasks[0]!.id, "archive-run");
+    const archived = archiveProject(running);
+    expect(archived.archivedAt).toBeTruthy();
+    expect(archived.runs[0]!.state).toBe("cancelled");
+    expect(archived.briefVersions).toEqual(running.briefVersions);
+    expect(() => addTask(archived, "Et uventet nyt job")).toThrow("arkiveret");
+    expect(() => beginManualRun(archived, p.tasks[0]!.id, "new-run")).toThrow(
+      "arkiveret",
+    );
+    const restored = archiveProject(archived);
+    expect(restored.archivedAt).toBeNull();
+    expect(
+      beginManualRun(restored, p.tasks[0]!.id, "new-run").runs,
+    ).toHaveLength(2);
+  });
+  it("rejects a conflicting request key and two active deliveries for one task", () => {
+    const p = addTask(ready(), "En anden opgave"),
+      running = beginManualRun(p, p.tasks[0]!.id, "same-request");
+    expect(() =>
+      beginManualRun(running, p.tasks[1]!.id, "same-request"),
+    ).toThrow("anden opgave");
+    expect(() =>
+      beginManualRun(running, p.tasks[0]!.id, "other-request"),
+    ).toThrow("aktiv levering");
+  });
+  it("requires evidence for every locked acceptance criterion", async () => {
+    const p = ready();
+    const running = beginManualRun(p, p.tasks[0]!.id, "checks-run");
+    const artifact = await textArtifact(
+      running,
+      "resultat.txt",
+      "Hej",
+      "document",
+    );
+    const next = addArtifact(running, artifact);
+    expect(() =>
+      submitDelivery(next, next.runs[0]!.id, {
+        title: "Et resultat",
+        summary: "",
+        outputVersionIds: [artifact.id],
+        checks: [],
+      }),
+    ).toThrow("alle acceptkrav");
+    const imported = createSample().projects[0]!;
+    imported.deliveries[0]!.checks = [];
+    expect(() => assertProject(imported)).toThrow("acceptkrav");
+  });
+  it("rejects mutation of historic versions and stale asynchronous editor writes", () => {
+    const state = createSample(),
+      p = state.projects[0]!;
+    expect(() =>
+      changeProject(state, p.id, (next) => {
+        next.artifacts[0]!.content = "changed";
+        return next;
+      }),
+    ).toThrow("Historiske");
+    expect(() =>
+      changeProject(state, p.id, (next) => {
+        next.briefVersions[0]!.goal = "rewritten";
+        return next;
+      }),
+    ).toThrow("Historiske");
+    expect(() =>
+      changeProject(
+        state,
+        p.id,
+        (next) => addTask(next, "Sen ændring"),
+        p.revision - 1,
+      ),
+    ).toThrow("ændret");
+    expect(state.projects[0]).toEqual(p);
+  });
+  it("rejects IDs that can escape an exported path or application route", () => {
+    const state = createSample();
+    state.projects[0]!.id = "../other-project";
+    expect(() => validateStudio(state)).toThrow("Ugyldigt id");
   });
 });

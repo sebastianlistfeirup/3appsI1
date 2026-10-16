@@ -13,7 +13,7 @@
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2026-10-16T20:06:01.027Z",
+  "timestamp": "2026-10-16T20:37:02.603Z",
   "url": "http://localhost:3000/projects/realmread/overview",
   "toolOptions": {
     "runOnly": {
@@ -1508,7 +1508,7 @@
             }
           ],
           "impact": null,
-          "html": "<iframe title=\"Preview af seneste l...\" srcdoc=\"<!DOCTYPE html><html...\" sandbox=\"\" tabindex=\"-1\">",
+          "html": "<iframe title=\"Preview af seneste l...\" srcdoc=\"<!doctype html><html...\" sandbox=\"\" tabindex=\"-1\">",
           "target": [
             "iframe"
           ]

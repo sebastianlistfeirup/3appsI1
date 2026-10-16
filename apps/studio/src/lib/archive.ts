@@ -1,6 +1,7 @@
 import { strToU8, strFromU8, unzipSync, zipSync } from "fflate";
 import {
   artifactBytes,
+  latestBrief,
   assertProject,
   projectSchema,
   sha256,
@@ -28,7 +29,7 @@ export async function exportProject(project: Project): Promise<Uint8Array> {
       provenance: artifact.provenance,
     });
   }
-  const brief = project.briefVersions.at(-1)!;
+  const brief = latestBrief(project);
   files["brief.md"] = strToU8(
     `# ${project.name}\n\n${brief.goal}\n\n## Acceptkrav\n${brief.acceptance.map((a) => `- ${a}`).join("\n")}\n\n## Begrænsninger\n${brief.constraints}\n`,
   );

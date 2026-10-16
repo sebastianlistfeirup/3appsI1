@@ -1,4 +1,5 @@
 "use client";
+import { sandboxDocument } from "../lib/preview";
 import { useRef, useState } from "react";
 import Link from "next/link";
 import {
@@ -166,17 +167,20 @@ export function BriefPanel({ project, update, notify }: ProjectActions) {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              update((p) =>
-                saveBrief(p, {
-                  goal: goal.trim(),
-                  audience: audience.trim(),
-                  constraints: constraints.trim(),
-                  acceptance: criteria
-                    .split("\n")
-                    .map((s) => s.trim())
-                    .filter(Boolean),
-                }),
-              );
+              if (
+                !update((p) =>
+                  saveBrief(p, {
+                    goal: goal.trim(),
+                    audience: audience.trim(),
+                    constraints: constraints.trim(),
+                    acceptance: criteria
+                      .split("\n")
+                      .map((s) => s.trim())
+                      .filter(Boolean),
+                  }),
+                )
+              )
+                return;
               setVersion(brief.version + 1);
               setEditing(false);
               notify("Ny briefversion gemt. Tidligere versioner er bevaret.");
@@ -421,7 +425,7 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              update((p) => addTask(p, title, description));
+              if (!update((p) => addTask(p, title, description))) return;
               setTitle("");
               setDescription("");
               setCreating(false);
@@ -466,7 +470,7 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
               e.preventDefault();
               try {
                 const next = addDependency(project, from, to);
-                update(() => next);
+                if (!update(() => next)) return;
                 setDependency(false);
                 notify("Afhængigheden er tilføjet.");
               } catch (error) {
@@ -543,7 +547,8 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
               <button
                 className="button secondary"
                 onClick={() => {
-                  update((p) => setTaskState(p, detail.id, "blocked"));
+                  if (!update((p) => setTaskState(p, detail.id, "blocked")))
+                    return;
                   setDetail(null);
                 }}
               >
@@ -592,7 +597,7 @@ function DeliveryDialog({
     try {
       const next = beginManualRun(project, taskId, requestId);
       const run = next.runs.find((r) => r.idempotencyKey === requestId)!;
-      update(() => next);
+      if (!update(() => next)) return;
       setRunId(run.id);
     } catch (e) {
       notify(
@@ -636,7 +641,7 @@ function DeliveryDialog({
             : "Manuel aflevering. Kræver brugerens gennemgang før accept.",
         })),
       });
-      update(() => next);
+      if (!update(() => next)) return;
       onClose();
       notify(
         "Leverancen er klar til review. Den er ikke automatisk verificeret.",
@@ -844,7 +849,7 @@ export function AssetsPanel({ project, update, notify }: ProjectActions) {
         provenance,
         createdAt: new Date().toISOString(),
       });
-      update((p) => addArtifact(p, a));
+      if (!update((p) => addArtifact(p, a))) return;
       setUploading(false);
       notify(`${file.name} er tilføjet som version ${a.version}.`);
     } catch (e) {
@@ -978,7 +983,7 @@ export function AssetsPanel({ project, update, notify }: ProjectActions) {
             <iframe
               className="asset-preview"
               title={`Preview af ${selected.name}`}
-              srcDoc={selected.content}
+              srcDoc={sandboxDocument(selected.content)}
               sandbox=""
             />
           ) : selected.mime.startsWith("image/") &&
@@ -1047,7 +1052,7 @@ export function AssetsPanel({ project, update, notify }: ProjectActions) {
                 editing.artifactId,
               )
                 .then((a) => {
-                  update((p) => addArtifact(p, a));
+                  if (!update((p) => addArtifact(p, a))) return;
                   setEditing(null);
                   notify(
                     "Ny version gemt. Berørte leverancer viser ældre input.",
@@ -1188,7 +1193,7 @@ export function RunsPanel({ project, update, notify }: ProjectActions) {
                         <button
                           className="text-button"
                           onClick={() => {
-                            update((p) => cancelRun(p, run.id));
+                            if (!update((p) => cancelRun(p, run.id))) return;
                             notify(
                               "Manuel levering annulleret. Input er bevaret.",
                             );

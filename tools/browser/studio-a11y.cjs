@@ -1,9 +1,12 @@
 const { chromium } = require("@playwright/test");
-const { default: AxeBuilder } = require("@axe-core/playwright");
 const fs = require("node:fs");
 (async () => {
+  let failures = 0;
+  fs.mkdirSync("reports/studio/a11y", { recursive: true });
   const b = await chromium.launch({
-    executablePath: "/usr/bin/chromium",
+    executablePath:
+      process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ||
+      (fs.existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
     args: ["--no-sandbox"],
   });
   const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
@@ -29,6 +32,7 @@ const fs = require("node:fs");
         resultTypes: ["violations"],
       }),
     );
+    failures += results.violations.length;
     fs.writeFileSync(
       `reports/studio/a11y/${path}.json`,
       JSON.stringify(results, null, 2),
@@ -45,4 +49,5 @@ const fs = require("node:fs");
     );
   }
   await b.close();
+  if (failures) process.exitCode = 1;
 })();

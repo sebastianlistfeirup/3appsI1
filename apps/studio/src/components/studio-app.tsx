@@ -1,4 +1,5 @@
 "use client";
+import { sandboxDocument } from "../lib/preview";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -57,7 +58,7 @@ import {
 import { ReviewPanel } from "./review-panel";
 export type ProjectActions = {
   project: Project;
-  update: (action: (p: Project) => Project) => void;
+  update: (action: (p: Project) => Project) => boolean;
   notify: (message: string, error?: boolean) => void;
 };
 export function StudioApp() {
@@ -105,14 +106,22 @@ export function StudioApp() {
     [],
   );
   const update = (action: (p: Project) => Project) => {
-    if (!project) return;
+    if (!project) return false;
     try {
-      store.setData((state) => changeProject(state, project.id, action));
+      if (project.archivedAt)
+        throw new Error(
+          "Projektet er arkiveret. Gendan det under Produktioner før nye ændringer.",
+        );
+      store.setData((state) =>
+        changeProject(state, project.id, action, project.revision),
+      );
+      return true;
     } catch (e) {
       notify(
         e instanceof Error ? e.message : "Ændringen kunne ikke gemmes.",
         true,
       );
+      return false;
     }
   };
   async function exportCurrent() {
@@ -717,7 +726,11 @@ function ProjectsPanel({
                       ? "Arkiveret"
                       : "Under udvikling"}
                 </Badge>
-                <button className="text-button" onClick={() => onArchive(p.id)}>
+                <button
+                  className="text-button"
+                  aria-label={`${p.archivedAt ? "Gendan" : "Arkivér"} ${p.name}`}
+                  onClick={() => onArchive(p.id)}
+                >
                   {p.archivedAt ? "Gendan" : "Arkivér"}
                 </button>
               </div>
@@ -870,7 +883,7 @@ function Overview({
                 {preview ? (
                   <iframe
                     title="Preview af seneste leverance"
-                    srcDoc={preview.content}
+                    srcDoc={sandboxDocument(preview.content)}
                     sandbox=""
                     tabIndex={-1}
                   />

@@ -13,7 +13,7 @@
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2026-10-16T20:06:03.495Z",
+  "timestamp": "2026-10-16T20:37:05.207Z",
   "url": "http://localhost:3000/projects/realmread/review",
   "toolOptions": {
     "runOnly": {
@@ -1501,7 +1501,7 @@
             }
           ],
           "impact": null,
-          "html": "<iframe title=\"Efter: ny version\" srcdoc=\"<!DOCTYPE html><html...\" sandbox=\"\">",
+          "html": "<iframe title=\"Efter: ny version\" srcdoc=\"<!doctype html><html...\" sandbox=\"\">",
           "target": [
             "iframe"
           ]
@@ -1541,7 +1541,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<iframe title=\"Efter: ny version\" srcdoc=\"<!DOCTYPE html><html...\" sandbox=\"\">",
+          "html": "<iframe title=\"Efter: ny version\" srcdoc=\"<!doctype html><html...\" sandbox=\"\">",
           "target": [
             "iframe"
           ]

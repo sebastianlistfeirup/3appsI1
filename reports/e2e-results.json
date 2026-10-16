@@ -219,12 +219,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2713,
+                  "duration": 5461,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:06.161Z",
+                  "startTime": "2026-10-16T20:35:49.081Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -253,12 +253,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1961,
+                  "duration": 2542,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:09.166Z",
+                  "startTime": "2026-10-16T20:35:54.980Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -287,12 +287,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1745,
+                  "duration": 2217,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:11.141Z",
+                  "startTime": "2026-10-16T20:35:57.544Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -321,12 +321,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2114,
+                  "duration": 3157,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:12.903Z",
+                  "startTime": "2026-10-16T20:35:59.788Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -355,12 +355,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3400,
+                  "duration": 4995,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:15.030Z",
+                  "startTime": "2026-10-16T20:36:02.960Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -389,12 +389,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1997,
+                  "duration": 2795,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:18.445Z",
+                  "startTime": "2026-10-16T20:36:07.969Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -405,6 +405,74 @@
           "id": "64bdea7002f9c9cea9f4-2a30de67767a0bdcb25b",
           "file": "studio.spec.ts",
           "line": 200,
+          "column": 1
+        },
+        {
+          "title": "uploaded HTML preview blocks scripts and network subresources",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2135,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T20:36:10.787Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "64bdea7002f9c9cea9f4-1b37c1c6a7079674bf23",
+          "file": "studio.spec.ts",
+          "line": 217,
+          "column": 1
+        },
+        {
+          "title": "archived projects reject changes without closing the editor or showing false success",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3102,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T20:36:12.938Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "64bdea7002f9c9cea9f4-5b2fdc52bf02ae29b36f",
+          "file": "studio.spec.ts",
+          "line": 271,
           "column": 1
         },
         {
@@ -423,7 +491,7 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3507,
+                  "duration": 3387,
                   "errors": [],
                   "stdout": [],
                   "stderr": [
@@ -432,7 +500,7 @@
                     }
                   ],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:20.984Z",
+                  "startTime": "2026-10-16T20:36:16.655Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -461,12 +529,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2621,
+                  "duration": 2640,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:24.810Z",
+                  "startTime": "2026-10-16T20:36:20.415Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -495,12 +563,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2016,
+                  "duration": 2330,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:27.451Z",
+                  "startTime": "2026-10-16T20:36:23.069Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -529,12 +597,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2370,
+                  "duration": 3597,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:29.479Z",
+                  "startTime": "2026-10-16T20:36:25.409Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -563,12 +631,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3467,
+                  "duration": 4323,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:31.859Z",
+                  "startTime": "2026-10-16T20:36:29.017Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -597,12 +665,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2293,
+                  "duration": 2292,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:35.334Z",
+                  "startTime": "2026-10-16T20:36:33.353Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -613,6 +681,74 @@
           "id": "64bdea7002f9c9cea9f4-10e02cd82b9077e5a896",
           "file": "studio.spec.ts",
           "line": 200,
+          "column": 1
+        },
+        {
+          "title": "uploaded HTML preview blocks scripts and network subresources",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1873,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T20:36:35.653Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "64bdea7002f9c9cea9f4-3aca601a14520effc616",
+          "file": "studio.spec.ts",
+          "line": 217,
+          "column": 1
+        },
+        {
+          "title": "archived projects reject changes without closing the editor or showing false success",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2717,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T20:36:37.533Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "64bdea7002f9c9cea9f4-f75c8470dbaeeaf3760a",
+          "file": "studio.spec.ts",
+          "line": 271,
           "column": 1
         },
         {
@@ -631,7 +767,7 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2379,
+                  "duration": 2410,
                   "errors": [],
                   "stdout": [],
                   "stderr": [
@@ -640,7 +776,7 @@
                     }
                   ],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:38.379Z",
+                  "startTime": "2026-10-16T20:36:41.029Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -669,12 +805,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2235,
+                  "duration": 2176,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:40.866Z",
+                  "startTime": "2026-10-16T20:36:43.548Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -703,12 +839,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1929,
+                  "duration": 1934,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:43.115Z",
+                  "startTime": "2026-10-16T20:36:45.737Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -737,12 +873,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2766,
+                  "duration": 2206,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:45.071Z",
+                  "startTime": "2026-10-16T20:36:47.695Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -771,12 +907,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3675,
+                  "duration": 3523,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:47.858Z",
+                  "startTime": "2026-10-16T20:36:49.912Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -805,12 +941,12 @@
                   "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2493,
+                  "duration": 2468,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-16T20:04:51.542Z",
+                  "startTime": "2026-10-16T20:36:53.451Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -822,15 +958,83 @@
           "file": "studio.spec.ts",
           "line": 200,
           "column": 1
+        },
+        {
+          "title": "uploaded HTML preview blocks scripts and network subresources",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1843,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T20:36:55.929Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "64bdea7002f9c9cea9f4-b7fa5ab8060501d61247",
+          "file": "studio.spec.ts",
+          "line": 217,
+          "column": 1
+        },
+        {
+          "title": "archived projects reject changes without closing the editor or showing false success",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2867,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T20:36:57.782Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "64bdea7002f9c9cea9f4-c3d00fe83c53b6325616",
+          "file": "studio.spec.ts",
+          "line": 271,
+          "column": 1
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-16T20:04:05.518Z",
-    "duration": 48630.64,
-    "expected": 18,
+    "startTime": "2026-10-16T20:35:47.835Z",
+    "duration": 72907.976,
+    "expected": 24,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

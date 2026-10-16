@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-export const idSchema = z.string().min(1).max(120);
+export const idSchema = z
+  .string()
+  .min(1)
+  .max(120)
+  .regex(/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/, "Ugyldigt id.");
 const text = z.string().max(100_000);
 const timestamp = z.string().datetime();
 export const briefSchema = z.object({
@@ -171,6 +175,19 @@ export function assertProject(project: Project): Project {
       delivery.outputVersionIds.some((x) => !artifacts.has(x))
     )
       throw new Error("En leverance mangler sit run eller en filversion.");
+  for (const delivery of project.deliveries) {
+    const run = project.runs.find((r) => r.id === delivery.runId)!;
+    const brief = project.briefVersions.find(
+      (b) => b.version === run.briefVersion,
+    )!;
+    if (
+      duplicate(delivery.checks.map((c) => c.id)) ||
+      brief.acceptance.some(
+        (label) => !delivery.checks.some((c) => c.label === label),
+      )
+    )
+      throw new Error("Leverancen mangler acceptkrav fra det låste brief.");
+  }
   for (const review of project.reviews) {
     const delivery = project.deliveries.find((x) => x.id === review.deliveryId);
     if (!delivery) throw new Error("Et review mangler sin leverance.");
@@ -229,17 +246,59 @@ function event(project: Project, type: string, title: string): Project {
     ],
   };
 }
+function assertMutable(p: Project) {
+  if (p.archivedAt)
+    throw new Error(
+      "Projektet er arkiveret. Gendan det under Produktioner før nye ændringer.",
+    );
+}
+
 export function changeProject(
   state: Studio,
   id: string,
   action: (project: Project) => Project,
+  expectedRevision?: number,
 ): Studio {
   if (!state.projects.some((x) => x.id === id))
     throw new Error("Projektet findes ikke.");
   return {
     ...state,
     projects: state.projects.map((p) =>
-      p.id === id ? assertProject(action(structuredClone(p))) : p,
+      p.id === id
+        ? (() => {
+            if (
+              expectedRevision !== undefined &&
+              p.revision !== expectedRevision
+            )
+              throw new Error(
+                "Projektet er ændret, siden handlingen begyndte. Prøv igen med den aktuelle version.",
+              );
+            const next = assertProject(action(structuredClone(p)));
+            if (next.id !== p.id || next.createdAt !== p.createdAt)
+              throw new Error("Projektets identitet kan ikke ændres.");
+            for (const field of [
+              "briefVersions",
+              "artifacts",
+              "deliveries",
+              "reviews",
+              "activity",
+            ] as const) {
+              for (const previous of p[field]) {
+                const retained = next[field].find(
+                  (value) => value.id === previous.id,
+                );
+                if (
+                  !retained ||
+                  JSON.stringify(retained) !== JSON.stringify(previous)
+                )
+                  throw new Error(
+                    "Historiske versioner og beviser kan ikke ændres eller slettes.",
+                  );
+              }
+            }
+            return next;
+          })()
+        : p,
     ),
   };
 }
@@ -279,6 +338,7 @@ export function saveBrief(
   p: Project,
   input: Pick<Brief, "goal" | "audience" | "constraints" | "acceptance">,
 ) {
+  assertMutable(p);
   const brief = briefSchema.parse({
     ...input,
     id: uid("brief"),
@@ -292,6 +352,7 @@ export function saveBrief(
   );
 }
 export function addTask(p: Project, title: string, description = "") {
+  assertMutable(p);
   const brief = latestBrief(p);
   const task = taskSchema.parse({
     id: uid("task"),
@@ -311,6 +372,7 @@ export function addTask(p: Project, title: string, description = "") {
   );
 }
 export function setTaskState(p: Project, id: string, state: Task["state"]) {
+  assertMutable(p);
   const task = p.tasks.find((t) => t.id === id);
   if (!task) throw new Error("Opgaven findes ikke.");
   if (
@@ -336,6 +398,7 @@ export function setTaskState(p: Project, id: string, state: Task["state"]) {
   );
 }
 export function addDependency(p: Project, from: string, to: string) {
+  assertMutable(p);
   if (p.edges.some((e) => e.from === from && e.to === to)) return p;
   const edges = [...p.edges, { from, to }];
   assertAcyclic(
@@ -349,7 +412,24 @@ export function addDependency(p: Project, from: string, to: string) {
   );
 }
 export function beginManualRun(p: Project, taskId: string, requestId: string) {
-  if (p.runs.some((r) => r.idempotencyKey === requestId)) return p;
+  assertMutable(p);
+  const repeated = p.runs.find((r) => r.idempotencyKey === requestId);
+  if (repeated) {
+    if (repeated.taskId !== taskId)
+      throw new Error(
+        "Bestillings-id’et er allerede brugt til en anden opgave.",
+      );
+    return p;
+  }
+  if (
+    p.runs.some(
+      (r) =>
+        r.taskId === taskId && ["awaiting_upload", "review"].includes(r.state),
+    )
+  )
+    throw new Error(
+      "Opgaven har allerede en aktiv levering. Afslut eller annuller den først.",
+    );
   const task = p.tasks.find((t) => t.id === taskId);
   if (!task) throw new Error("Vælg en opgave.");
   if (task.state === "done")
@@ -393,7 +473,13 @@ export function beginManualRun(p: Project, taskId: string, requestId: string) {
       runs: [...p.runs, run],
       tasks: p.tasks.map((t) =>
         t.id === taskId
-          ? { ...t, state: "in_progress", revision: t.revision + 1 }
+          ? {
+              ...t,
+              state: "in_progress",
+              briefVersion: brief.version,
+              acceptance: brief.acceptance,
+              revision: t.revision + 1,
+            }
           : t,
       ),
     },
@@ -402,6 +488,7 @@ export function beginManualRun(p: Project, taskId: string, requestId: string) {
   );
 }
 export function addArtifact(p: Project, artifact: Artifact) {
+  assertMutable(p);
   if (
     p.artifacts.some(
       (a) =>
@@ -422,9 +509,20 @@ export function submitDelivery(
   runId: string,
   input: Pick<Delivery, "title" | "summary" | "outputVersionIds" | "checks">,
 ) {
+  assertMutable(p);
   const run = p.runs.find((x) => x.id === runId);
   if (!run || run.state !== "awaiting_upload")
     throw new Error("Dette run kan ikke modtage en ny leverance.");
+  const criteria = p.briefVersions.find(
+    (b) => b.version === run.briefVersion,
+  )!.acceptance;
+  if (
+    new Set(input.checks.map((c) => c.id)).size !== input.checks.length ||
+    criteria.some((label) => !input.checks.some((c) => c.label === label))
+  )
+    throw new Error(
+      "Leverancen skal dokumentere alle acceptkrav fra det låste brief.",
+    );
   const delivery = deliverySchema.parse({
     ...input,
     id: uid("delivery"),
@@ -481,6 +579,7 @@ export function reviewDelivery(
   deliveryId: string,
   input: Omit<Review, "id" | "deliveryId" | "createdAt">,
 ) {
+  assertMutable(p);
   const d = p.deliveries.find((x) => x.id === deliveryId);
   if (!d) throw new Error("Leverancen findes ikke.");
   if (latestReview(p, d.id))
@@ -490,6 +589,8 @@ export function reviewDelivery(
   const run = p.runs.find((x) => x.id === d.runId)!;
   if (input.reviewer === run.adapterId || input.reviewer === run.id)
     throw new Error("Et run kan ikke acceptere sig selv.");
+  if (input.checkedCriteria.some((id) => !d.checks.some((c) => c.id === id)))
+    throw new Error("Reviewet henviser til et ukendt acceptkrav.");
   if (input.decision === "accepted") {
     if (d.checks.some((c) => !c.passed))
       throw new Error(
@@ -546,13 +647,21 @@ export function reviewDelivery(
   );
 }
 export function archiveProject(p: Project) {
+  let next = p;
+  if (!p.archivedAt) {
+    for (const run of p.runs.filter((r) => r.state === "awaiting_upload"))
+      next = cancelRun(next, run.id);
+  }
   return event(
-    { ...p, archivedAt: p.archivedAt ? null : now() },
-    "project.archived",
-    p.archivedAt ? "Projekt gendannet" : "Projekt arkiveret",
+    { ...next, archivedAt: p.archivedAt ? null : now() },
+    p.archivedAt ? "project.restored" : "project.archived",
+    p.archivedAt
+      ? "Projekt gendannet"
+      : "Projekt arkiveret · afventende leveringer annulleret",
   );
 }
 export function cancelRun(p: Project, runId: string) {
+  assertMutable(p);
   const run = p.runs.find((x) => x.id === runId);
   if (!run || run.state !== "awaiting_upload")
     throw new Error("Kun en afventende manuel levering kan annulleres.");

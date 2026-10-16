@@ -6,10 +6,8 @@
       "app": "foundation",
       "goal": "Monorepo, locked dependencies and source specification",
       "dependencies": [],
-      "verification": [
-        "pnpm install --frozen-lockfile"
-      ],
-      "status": "in_progress",
+      "verification": ["pnpm install --frozen-lockfile"],
+      "status": "verified-local",
       "allowed_paths": [
         "packages",
         "services",
@@ -23,89 +21,57 @@
       "id": "S01",
       "app": "studio",
       "goal": "Versioned local project, brief, artifact, review and export",
-      "dependencies": [
-        "F00"
-      ],
+      "dependencies": ["F00"],
       "verification": [
         "pnpm --filter @tre/studio typecheck",
         "pnpm exec vitest run apps/studio/src/lib/model.test.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": [
-        "apps/studio"
-      ]
+      "allowed_paths": ["apps/studio"]
     },
     {
       "id": "S09",
       "app": "studio",
       "goal": "Browser core flows, responsive and accessibility",
-      "dependencies": [
-        "S01"
-      ],
-      "verification": [
-        "pnpm exec playwright test tests/e2e/studio.spec.ts"
-      ],
-      "status": "in_progress",
-      "allowed_paths": [
-        "apps/studio"
-      ]
+      "dependencies": ["S01"],
+      "verification": ["pnpm exec playwright test tests/e2e/studio.spec.ts"],
+      "status": "verified-local",
+      "allowed_paths": ["apps/studio"]
     },
     {
       "id": "L01",
       "app": "flowlab",
       "goal": "Correct reproducible simulation and editor",
-      "dependencies": [
-        "F00"
-      ],
-      "verification": [
-        "pnpm exec vitest run packages/flow-engine"
-      ],
-      "status": "in_progress",
-      "allowed_paths": [
-        "apps/flowlab"
-      ]
+      "dependencies": ["F00"],
+      "verification": ["pnpm exec vitest run packages/flow-engine"],
+      "status": "verified-local",
+      "allowed_paths": ["apps/flowlab"]
     },
     {
       "id": "D01",
       "app": "director",
       "goal": "Versioned scene/cameras/shots",
-      "dependencies": [
-        "F00"
-      ],
-      "verification": [
-        "pnpm exec vitest run packages/scene-format"
-      ],
-      "status": "in_progress",
-      "allowed_paths": [
-        "apps/director"
-      ]
+      "dependencies": ["F00"],
+      "verification": ["pnpm exec vitest run packages/scene-format"],
+      "status": "verified-local",
+      "allowed_paths": ["apps/director"]
     },
     {
       "id": "D05",
       "app": "director",
       "goal": "Actual MP4/PDF and recovery",
-      "dependencies": [
-        "D01"
-      ],
-      "verification": [
-        "ffprobe validated output"
-      ],
-      "status": "in_progress",
-      "allowed_paths": [
-        "apps/director"
-      ]
+      "dependencies": ["D01"],
+      "verification": ["ffprobe validated output"],
+      "status": "verified-local",
+      "allowed_paths": ["apps/director"]
     },
     {
       "id": "F03",
       "app": "foundation",
       "goal": "Postgres RLS, revision and transactional budget/job store",
-      "dependencies": [
-        "F00"
-      ],
-      "verification": [
-        "database integration suite"
-      ],
-      "status": "ready",
+      "dependencies": ["F00"],
+      "verification": ["database integration suite"],
+      "status": "verified-local",
       "allowed_paths": [
         "packages",
         "services",
@@ -119,13 +85,9 @@
       "id": "F04",
       "app": "foundation",
       "goal": "Durable pg-boss worker, idempotency and recovery",
-      "dependencies": [
-        "F03"
-      ],
-      "verification": [
-        "worker kill/restart integration"
-      ],
-      "status": "ready",
+      "dependencies": ["F03"],
+      "verification": ["worker kill/restart integration"],
+      "status": "in_progress",
       "allowed_paths": [
         "packages",
         "services",
@@ -139,14 +101,8 @@
       "id": "F06",
       "app": "foundation",
       "goal": "CI, local runbook, handoff and gates",
-      "dependencies": [
-        "S09",
-        "L01",
-        "D05"
-      ],
-      "verification": [
-        "pnpm check"
-      ],
+      "dependencies": ["S09", "L01", "D05"],
+      "verification": ["pnpm check"],
       "status": "ready",
       "allowed_paths": [
         "packages",
@@ -161,12 +117,8 @@
       "id": "F05",
       "app": "foundation",
       "goal": "Billing webhook contracts and tests",
-      "dependencies": [
-        "F03"
-      ],
-      "verification": [
-        "billing signature/dedup fixtures"
-      ],
+      "dependencies": ["F03"],
+      "verification": ["billing signature/dedup fixtures"],
       "status": "ready",
       "allowed_paths": [
         "packages",

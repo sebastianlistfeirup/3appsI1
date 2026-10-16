@@ -1,4 +1,5 @@
 "use client";
+import { sandboxDocument } from "../lib/preview";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -121,7 +122,7 @@ export function ReviewPanel({
         checkedCriteria: checked,
         acknowledgedStale: ack,
       });
-      update(() => next);
+      if (!update(() => next)) return;
       notify(
         decision === "accepted"
           ? "Leverancen er accepteret. Dit review og alle filversioner er bevaret."
@@ -147,7 +148,7 @@ export function ReviewPanel({
       return (
         <iframe
           title={old ? "Før: tidligere version" : "Efter: ny version"}
-          srcDoc={a.content}
+          srcDoc={sandboxDocument(a.content)}
           sandbox=""
         />
       );

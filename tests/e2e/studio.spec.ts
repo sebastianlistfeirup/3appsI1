@@ -213,3 +213,83 @@ test("concurrent tabs detect revision changes instead of overwriting", async ({
   await page.getByRole("button", { name: "Genindlæs gemt version" }).click();
   await expect(page.getByText("Gemt lokalt", { exact: true })).toBeVisible();
 });
+
+test("uploaded HTML preview blocks scripts and network subresources", async ({
+  page,
+}) => {
+  await open(page);
+  const requests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("preview-probe.example.test"))
+      requests.push(request.url());
+  });
+  await page.evaluate(async () => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open("tre-apps-studio-v1", 1);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const read = db.transaction("documents", "readonly");
+    const document = await new Promise<any>((resolve, reject) => {
+      const request = read.objectStore("documents").get("workspace");
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const artifact = document.data.projects[0].artifacts.find(
+      (a: { id: string }) => a.id === "menu-v2",
+    );
+    artifact.content =
+      '<h1>Kontrolleret preview</h1><img src="https://preview-probe.example.test/pixel"><script>document.body.dataset.scriptRan="yes";fetch("https://preview-probe.example.test/script")</script>';
+    const bytes = new TextEncoder().encode(artifact.content);
+    artifact.bytes = bytes.length;
+    artifact.sha256 = Array.from(
+      new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)),
+    )
+      .map((x) => x.toString(16).padStart(2, "0"))
+      .join("");
+    document.revision++;
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction("documents", "readwrite");
+      tx.objectStore("documents").put(document);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+  });
+  await page.goto("/projects/realmread/review");
+  const frame = page.frameLocator('iframe[title="Efter: ny version"]');
+  await expect(
+    frame.getByRole("heading", { name: "Kontrolleret preview" }),
+  ).toBeVisible();
+  await expect(frame.locator("body")).not.toHaveAttribute(
+    "data-script-ran",
+    "yes",
+  );
+  await expect.poll(() => requests.length).toBe(0);
+});
+
+test("archived projects reject changes without closing the editor or showing false success", async ({
+  page,
+}) => {
+  await open(page, "/projects");
+  await page.getByRole("button", { name: "Arkivér Realmread" }).click();
+  await open(page, "/projects/realmread/brief");
+  await expect(page.getByText(/Dette projekt er arkiveret/)).toBeVisible();
+  await page.getByRole("button", { name: "Ny briefversion" }).click();
+  await page
+    .getByLabel("Hvad vil du opnå?")
+    .fill("Må ikke overskrive et arkiv");
+  await page.getByRole("button", { name: "Gem ny version" }).click();
+  await expect(
+    page.getByRole("alert").filter({ hasText: "Projektet er arkiveret" }),
+  ).toContainText("Projektet er arkiveret");
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.getByLabel("Hvad vil du opnå?")).toHaveValue(
+    "Må ikke overskrive et arkiv",
+  );
+  await page.getByRole("button", { name: "Luk dialog" }).click();
+  await page.reload();
+  await expect(
+    page.getByText("Må ikke overskrive et arkiv", { exact: true }),
+  ).toHaveCount(0);
+});
