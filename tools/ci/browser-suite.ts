@@ -172,6 +172,16 @@ try {
         ["exec", "tsx", "apps/flowlab/tests/run-distribution-check.ts"],
         { FLOWLAB_BROWSER: browser },
       );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/scenario-library-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/csv-boundaries-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
     }
     await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
     await run("node", ["apps/flowlab/tests/canvas-check.mjs"]);
@@ -199,6 +209,9 @@ try {
       });
       await run("node", ["apps/director/tests/versions-flow.mjs"], {
         VERSIONS_ENGINE: browser,
+      });
+      await run("node", ["apps/director/tests/locations-flow.mjs"], {
+        LOCATION_ENGINE: browser,
       });
     }
     await run("node", ["apps/director/tests/editor-flow.mjs"]);

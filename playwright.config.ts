@@ -1,5 +1,4 @@
 import { defineConfig } from "@playwright/test";
-import { existsSync } from "node:fs";
 export default defineConfig({
   testDir: "./tests/e2e",
   timeout: 45_000,
@@ -19,9 +18,7 @@ export default defineConfig({
       use: {
         browserName: "chromium",
         launchOptions: {
-          executablePath:
-            process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ??
-            (existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
+          executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
           args: ["--no-sandbox"],
         },
       },

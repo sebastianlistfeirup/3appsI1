@@ -52,7 +52,9 @@ test("review selects every output and compares the locked input across interveni
   await expect(
     page.getByRole("heading", { name: "Præcist review." }),
   ).toBeVisible();
-  await page.goto("/projects/comparison/review");
+  // Exercise the user’s client navigation. A forced document replacement here
+  // aborts WebKit’s just-started Next prefetches and reports unload errors.
+  await page.locator('a[href="/projects/comparison/review"]').first().click();
   await expect(page.getByLabel("Fil til gennemgang")).toHaveValue("menu-v2");
   await expect(page.locator(".comparison-baseline")).toContainText(
     "Låst input v1 → leveret v3",
@@ -127,7 +129,9 @@ test("line-ending changes are visible and oversized comparisons keep downloads a
   await expect(
     page.getByRole("heading", { name: "Præcist review." }),
   ).toBeVisible();
-  await page.goto("/projects/comparison/review");
+  // Exercise the user’s client navigation. A forced document replacement here
+  // aborts WebKit’s just-started Next prefetches and reports unload errors.
+  await page.locator('a[href="/projects/comparison/review"]').first().click();
   await page.getByRole("tab", { name: "Kodediff" }).click();
   await expect(
     page.locator(".diff-eol").filter({ hasText: /^CRLF$/ }),

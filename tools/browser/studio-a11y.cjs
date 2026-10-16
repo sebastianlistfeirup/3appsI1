@@ -4,9 +4,7 @@ const fs = require("node:fs");
   let failures = 0;
   fs.mkdirSync("reports/studio/a11y", { recursive: true });
   const b = await chromium.launch({
-    executablePath:
-      process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ||
-      (fs.existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
+    executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
     args: ["--no-sandbox"],
   });
   const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
