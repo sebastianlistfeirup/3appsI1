@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CsvParser, parseCsv } from "./csv";
+import { CsvParser, parseCsv, parseTimestamp } from "./csv";
 describe("CSV data contract", () => {
   it("FL-AT09 marks specific negative duration rows and excludes them", () => {
     const r = parseCsv("case_id,started_at,finished_at\na,10,5\nb,10,20", {
@@ -115,4 +115,71 @@ it("rejects oversized and multiline identifiers without changing their contents"
   expect(result.rows).toEqual([
     { case_id: "okay", activity: "Step", started_at: "0" },
   ]);
+});
+
+it("rejects raw control characters before whitespace trimming in identities and times", () => {
+  const result = parseCsv(
+    'case_id,started_at,event_id\n"\tcase-a",0,a\ncase-b,"0\n",b\ncase-c,0,"\revent-c"\ncase-d,0,event-c\n"  case-e  ","  1  ",e',
+    { unit: "seconds" },
+  );
+  expect(result.excludedRows).toBe(3);
+  expect(result.issues.map(({ row, field }) => [row, field])).toEqual([
+    [2, "case_id"],
+    [3, "started_at"],
+    [4, "event_id"],
+  ]);
+  expect(result.rows).toEqual([
+    { case_id: "case-d", started_at: "0", event_id: "event-c" },
+    { case_id: "case-e", started_at: "1", event_id: "e" },
+  ]);
+  expect(result.preview[0].case_id).toBe("\\u0009case-a");
+  expect(result.preview[1].started_at).toBe("0\\u000a");
+  expect(Number.isNaN(parseTimestamp("\t0", "seconds"))).toBe(true);
+  expect(Number.isNaN(parseTimestamp("\n", "iso"))).toBe(true);
+});
+
+it("enforces the field bound on escaped quotes across chunks", () => {
+  const accepted: string[][] = [],
+    parser = new CsvParser(",", (row) => accepted.push(row));
+  parser.write('"');
+  parser.write('""'.repeat(100_000));
+  parser.write('"');
+  parser.finish();
+  expect(accepted[0][0]).toBe('"'.repeat(100_000));
+  const rejected = new CsvParser(",", () => {});
+  rejected.write('"' + '""'.repeat(100_000));
+  rejected.write('"');
+  expect(() => rejected.write('"')).toThrow("for langt");
+});
+
+it("rejects oversized and control-bearing headers before normalization", () => {
+  expect(() => parseCsv('"\tcase_id",started_at\na,0')).toThrow("kontroltegn");
+  expect(() => parseCsv('"case_id\n",started_at\na,0')).toThrow("kontroltegn");
+  expect(() => parseCsv(`${"h".repeat(201)},started_at\na,0`)).toThrow(
+    "200 tegn",
+  );
+  expect(() =>
+    parseCsv(`${Array.from({ length: 1001 }, (_, i) => `c${i}`).join(",")}\na`),
+  ).toThrow("1.000 kolonner");
+});
+
+it("bounds displayed previews without truncating valid data or substituting invalid rows", () => {
+  const time = "0".repeat(500) + "1";
+  const result = parseCsv(
+    `case_id,started_at\nvalid,${time}\n${"x".repeat(90000)},0`,
+    { unit: "seconds" },
+  );
+  expect(result.rows).toEqual([{ case_id: "valid", started_at: time }]);
+  expect(result.excludedRows).toBe(1);
+  expect(result.preview).toHaveLength(2);
+  expect(
+    result.preview.every((row) =>
+      Object.values(row).every((value) => value.length <= 240),
+    ),
+  ).toBe(true);
+  expect(result.preview[0].started_at.endsWith("…")).toBe(true);
+  expect(
+    result.warnings.filter((warning) => warning.includes("240 tegn")),
+  ).toHaveLength(1);
+  expect(result.observedStart).toBe(1000);
 });

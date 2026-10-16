@@ -1,0 +1,55 @@
+{
+  "executedAt": "2026-10-16T22:21:43.026Z",
+  "browser": "webkit",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "checks": [
+        "Complete >4 KB header and actual source hash",
+        "Bounded mapping search and pagination preserve hidden mappings",
+        "Raw control characters rejected before trimming",
+        "Escaped quotes enforce field budget",
+        "Malformed header blocked without replacing saved data",
+        "Late old-file failure cannot overwrite new-file state",
+        "Explicit exclusions produce exact cleaned CSV",
+        "WCAG2AA/21AA violations 0 and no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "height": 768,
+      "checks": [
+        "Complete >4 KB header and actual source hash",
+        "Bounded mapping search and pagination preserve hidden mappings",
+        "Raw control characters rejected before trimming",
+        "Escaped quotes enforce field budget",
+        "Malformed header blocked without replacing saved data",
+        "Late old-file failure cannot overwrite new-file state",
+        "Explicit exclusions produce exact cleaned CSV",
+        "WCAG2AA/21AA violations 0 and no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "checks": [
+        "Complete >4 KB header and actual source hash",
+        "Bounded mapping search and pagination preserve hidden mappings",
+        "Raw control characters rejected before trimming",
+        "Escaped quotes enforce field budget",
+        "Malformed header blocked without replacing saved data",
+        "Late old-file failure cannot overwrite new-file state",
+        "Explicit exclusions produce exact cleaned CSV",
+        "WCAG2AA/21AA violations 0 and no viewport overflow"
+      ],
+      "axeViolations": 0
+    }
+  ],
+  "errors": []
+}

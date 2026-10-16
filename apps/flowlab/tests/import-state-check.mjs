@@ -216,7 +216,7 @@ try {
       passed: true,
     });
     const close = page.getByRole("button", { name: "Luk besked", exact: true });
-    if (await close.isVisible()) await close.click();
+    await expect(close).toHaveCount(0, { timeout: 10000 });
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({
       path: `reports/flowlab/${engine}-${name}-import-state.png`,

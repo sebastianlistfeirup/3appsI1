@@ -15,9 +15,7 @@ import {
 } from "lucide-react";
 import {
   CSV_FIELDS,
-  CsvParser,
   cleanedCsv,
-  inferDelimiter,
   percentile,
   parseTimestamp,
   type Comparison,
@@ -30,6 +28,8 @@ import { downloadFile } from "@tre/persistence";
 import { formatNumber, type Dataset } from "../lib/document";
 import HoldoutPanel from "./holdout-panel";
 import { ActivityPicker } from "./activity-picker";
+import { readCsvHeader } from "../lib/csv-header";
+import { ColumnMapping } from "./column-mapping";
 import {
   planDatasetChange,
   datasetBytes,
@@ -71,6 +71,7 @@ export default function DataWorkshop({
     [result, setResult] = useState<CsvImport | null>(null),
     [sha256, setSha256] = useState(""),
     [error, setError] = useState(""),
+    [readingHeaders, setReadingHeaders] = useState(false),
     [progress, setProgress] = useState<number | null>(null),
     [exclude, setExclude] = useState(false),
     [allowHistoryRemoval, setAllowHistoryRemoval] = useState(false),
@@ -82,7 +83,13 @@ export default function DataWorkshop({
     worker = useRef<Worker | null>(null),
     fileSelection = useRef(0),
     previewId = useRef("");
-  useEffect(() => () => worker.current?.terminate(), []);
+  useEffect(
+    () => () => {
+      fileSelection.current++;
+      worker.current?.terminate();
+    },
+    [],
+  );
   const invalidateAnalysis = () => {
     worker.current?.terminate();
     worker.current = null;
@@ -103,6 +110,7 @@ export default function DataWorkshop({
     setResult(null);
     setExclude(false);
     setObservedActivity("");
+    setReadingHeaders(false);
     if (next.size > 10 * 1024 * 1024) {
       setError("Filen er større end 10 MB.");
       return;
@@ -111,27 +119,30 @@ export default function DataWorkshop({
       setError("Vælg en CSV-fil.");
       return;
     }
-    const text = await next.slice(0, 4096).text();
-    if (selection !== fileSelection.current) return;
-    let columns: string[] = [];
-    const parser = new CsvParser(inferDelimiter(text), (row) => {
-      if (!columns.length)
-        columns = row.map((c) => c.replace(/^\uFEFF/, "").trim());
-    });
-    parser.write(text);
-    if (!columns.length) parser.finish();
-    setHeaders(columns);
-    setMapping(
-      Object.fromEntries(
-        columns.map((h) => [
-          h,
-          CSV_FIELDS.includes(h as (typeof CSV_FIELDS)[number])
-            ? (h as (typeof CSV_FIELDS)[number])
-            : "",
-        ]),
-      ),
-    );
-    setFile(next);
+    setReadingHeaders(true);
+    try {
+      const { headers: columns } = await readCsvHeader(next);
+      if (selection !== fileSelection.current) return;
+      setHeaders(columns);
+      setMapping(
+        Object.fromEntries(
+          columns.map((h) => [
+            h,
+            CSV_FIELDS.includes(h as (typeof CSV_FIELDS)[number])
+              ? (h as (typeof CSV_FIELDS)[number])
+              : "",
+          ]),
+        ),
+      );
+      setFile(next);
+    } catch (error) {
+      if (selection === fileSelection.current)
+        setError(
+          error instanceof Error ? error.message : "Filen kunne ikke læses.",
+        );
+    } finally {
+      if (selection === fileSelection.current) setReadingHeaders(false);
+    }
   };
   const analyze = () => {
     if (!file || worker.current) return;
@@ -268,7 +279,7 @@ export default function DataWorkshop({
             onChange={(e) => {
               const f = e.target.files?.[0];
               e.target.value = "";
-              if (f) void loadFile(f).catch((e) => setError(e.message));
+              if (f) void loadFile(f);
             }}
           />
           <button
@@ -278,9 +289,18 @@ export default function DataWorkshop({
             <span className="upload-icon">
               <Upload size={24} />
             </span>
-            <strong>{file?.name ?? "Vælg en CSV-fil"}</strong>
+            <strong>
+              {readingHeaders
+                ? "Læser kolonneoverskrift…"
+                : (file?.name ?? "Vælg en CSV-fil")}
+            </strong>
             <span>Op til 10 MB · 100.000 rækker</span>
           </button>
+          {readingHeaders && (
+            <p role="status" className="field-hint">
+              Kontrollerer kolonnenavne. Du kan stadig vælge en anden fil.
+            </p>
+          )}
           <button
             className="text-button"
             onClick={() =>
@@ -317,29 +337,16 @@ export default function DataWorkshop({
                 ISO kræver Z eller fx +02:00. Manglende værdier bliver aldrig
                 udfyldt automatisk.
               </p>
-              {headers.map((header) => (
-                <label className="mapping-row" key={header}>
-                  <span>{header}</span>
-                  <select
-                    value={mapping[header] ?? ""}
-                    disabled={progress !== null}
-                    onChange={(e) => {
-                      invalidateAnalysis();
-                      setMapping({
-                        ...mapping,
-                        [header]: e.target.value as CsvMapping[string],
-                      });
-                    }}
-                  >
-                    <option value="">Udelad kolonne</option>
-                    {CSV_FIELDS.map((field) => (
-                      <option key={field} value={field}>
-                        {field}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              ))}
+              <ColumnMapping
+                key={previewId.current}
+                headers={headers}
+                mapping={mapping}
+                disabled={progress !== null}
+                onChange={(next) => {
+                  invalidateAnalysis();
+                  setMapping(next);
+                }}
+              />
               <button
                 className="button primary full"
                 disabled={progress !== null}

@@ -1,8 +1,5 @@
-import {
-  createCsvImporter,
-  inferDelimiter,
-  type CsvMapping,
-} from "@tre/flow-engine";
+import { createCsvImporter, type CsvMapping } from "@tre/flow-engine";
+import { readCsvHeader } from "../lib/csv-header";
 let cancelled = false;
 self.onmessage = async (
   event: MessageEvent<{
@@ -20,11 +17,11 @@ self.onmessage = async (
   try {
     const { file, mapping, unit } = event.data;
     if (file.size > 10 * 1024 * 1024) throw new Error("CSV-grænsen er 10 MB.");
-    const prefix = await file.slice(0, 4096).text(),
+    const { delimiter } = await readCsvHeader(file),
       importer = createCsvImporter({
         mapping,
         unit,
-        delimiter: inferDelimiter(prefix),
+        delimiter,
       }),
       reader = file.stream().getReader(),
       decoder = new TextDecoder("utf-8", { fatal: true });

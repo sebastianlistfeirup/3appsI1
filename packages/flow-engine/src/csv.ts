@@ -33,6 +33,27 @@ export interface CsvImport {
   observedStart: number | null;
   observedEnd: number | null;
 }
+const CONTROL_CHARACTER = /[\u0000-\u001f\u007f]/;
+export function normalizeCsvHeaders(cells: string[]): string[] {
+  if (cells.length > 1000) throw new Error("CSV-grænsen er 1.000 kolonner.");
+  const headers = cells.map((cell, index) => {
+    const value = index === 0 ? cell.replace(/^\uFEFF/, "") : cell;
+    if (CONTROL_CHARACTER.test(value))
+      throw new Error(
+        "Kolonnenavne må ikke indeholde linjeskift eller kontroltegn.",
+      );
+    if (value.length > 200)
+      throw new Error(
+        "Et kolonnenavn må højst være 200 tegn inklusive mellemrum.",
+      );
+    return value.trim();
+  });
+  if (!headers.length || headers.some((header) => !header))
+    throw new Error("Alle kolonner skal have et navn.");
+  if (new Set(headers).size !== headers.length)
+    throw new Error("Kolonnenavne må ikke gentages.");
+  return headers;
+}
 export class CsvParser {
   private current = "";
   private firstCharacter = true;
@@ -61,6 +82,8 @@ export class CsvParser {
           this.quotePending = false;
           if (char === '"') {
             this.current += '"';
+            if (this.current.length > 100_000)
+              throw new Error("Et CSV-felt er for langt.");
             continue;
           }
           this.quoted = false;
@@ -133,6 +156,7 @@ export function parseTimestamp(
   value: string,
   unit: "iso" | "seconds" | "minutes",
 ): number | null {
+  if (CONTROL_CHARACTER.test(value)) return NaN;
   if (!value.trim()) return null;
   if (unit !== "iso") {
     if (!/^\d+(?:[.,]\d+)?$/.test(value.trim())) return NaN;
@@ -187,24 +211,21 @@ export function createCsvImporter(options: {
       observedEnd: null,
     },
     eventIds = new Set<string>();
-  let line = 0;
+  let line = 0,
+    previewAdapted = false;
   const parser = new CsvParser(options.delimiter ?? ",", (cells) => {
     line++;
     if (line === 1) {
-      result.headers = cells.map((c) => c.replace(/^\uFEFF/, "").trim());
-      if (result.headers.length > 1000)
-        throw new Error("CSV-grænsen er 1.000 kolonner.");
-      if (result.headers.some((header) => !header))
-        throw new Error("Alle kolonner skal have et navn.");
-      if (new Set(result.headers).size !== result.headers.length)
-        throw new Error("Kolonnenavne må ikke gentages.");
+      result.headers = normalizeCsvHeaders(cells);
       return;
     }
-    if (cells.every((c) => !c.trim())) return;
+    if (cells.every((c) => !c.trim() && !CONTROL_CHARACTER.test(c))) return;
     result.rowCount++;
     if (result.rowCount > 100000)
       throw new Error("CSV-grænsen er 100.000 rækker.");
     const row: CsvRow = {},
+      preview: CsvRow = {},
+      invalidControls = new Set<string>(),
       issues: CsvIssue[] = [];
     const issue = (field: string, message: string) =>
       issues.push({ row: line, field, message });
@@ -221,9 +242,32 @@ export function createCsvImporter(options: {
         : CSV_FIELDS.includes(header as CsvField)
           ? header
           : "";
-      if (field) row[field] = (cells[i] ?? "").trim();
+      if (field) {
+        const raw = cells[i] ?? "";
+        row[field] = raw.trim();
+        if (CONTROL_CHARACTER.test(raw)) {
+          invalidControls.add(field);
+          issue(
+            field,
+            "Feltet indeholder linjeskift eller kontroltegn; de bliver ikke fjernet automatisk.",
+          );
+        }
+        if (result.preview.length < 6) {
+          const visible = raw
+            .replace(
+              /[\u0000-\u001f\u007f]/g,
+              (char) =>
+                `\\u${char.charCodeAt(0).toString(16).padStart(4, "0")}`,
+            )
+            .trim();
+          preview[field] =
+            visible.length > 240 ? `${visible.slice(0, 239)}…` : visible;
+          if (visible.length > 240 || invalidControls.has(field))
+            previewAdapted = true;
+        }
+      }
     });
-    if (result.preview.length < 6) result.preview.push(row);
+    if (result.preview.length < 6) result.preview.push(preview);
     if (!Object.keys(row).length)
       issue(
         "mapping",
@@ -239,7 +283,7 @@ export function createCsvImporter(options: {
       "event_id",
     ]) {
       const value = row[field];
-      if (value && (value.length > 100 || /[\u0000-\u001f\u007f]/.test(value)))
+      if (value && value.length > 100)
         issue(
           field,
           "Id og navne må højst være 100 tegn og må ikke indeholde linjeskift eller kontroltegn.",
@@ -276,7 +320,7 @@ export function createCsvImporter(options: {
       times.finished_at < times.arrived_at
     )
       issue("finished_at", "Afslutning ligger før ankomst.");
-    if (row.event_id) {
+    if (row.event_id && !invalidControls.has("event_id")) {
       if (eventIds.has(row.event_id))
         issue("event_id", "Dubleret hændelses-id.");
       eventIds.add(row.event_id);
@@ -303,6 +347,10 @@ export function createCsvImporter(options: {
     finish: () => {
       parser.finish();
       if (!result.headers.length) throw new Error("CSV-filen er tom.");
+      if (previewAdapted)
+        result.warnings.push(
+          "Forhåndsvisningen forkorter felter til 240 tegn og viser kontroltegn som \\u-koder. Kun visningen forkortes; gyldige dataværdier gemmes i fuld længde.",
+        );
       if (
         result.headers.some((h) => !CSV_FIELDS.includes(h as CsvField)) &&
         !options.mapping
