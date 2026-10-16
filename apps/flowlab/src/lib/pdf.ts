@@ -309,7 +309,7 @@ export async function renderReportPdf(
   paragraph(
     42,
     y + 20,
-    `Motor: ${c.engineVersion}. Modelversion: ${c.baseline.revision}. Målevindue: ${c.baseline.observationStart}–${c.baseline.horizon} ms. Fuld model, seeds, run-metrics, køkurver og inputdiff følger med i JSON-pakken.`,
+    `Motor: ${c.engineVersion}. Modelversion: ${c.baseline.revision}. Fælles seed: ${report.baseSeed}. Målevindue: ${c.baseline.observationStart}–${c.baseline.horizon} ms. Fuld model, seeds, run-metrics, køkurver og inputdiff følger med i JSON-pakken.`,
     511,
     9,
     3,
@@ -317,7 +317,12 @@ export async function renderReportPdf(
   const longNames =
     bold.widthOfTextAtSize(report.title, 9) > 511 ||
     regular.widthOfTextAtSize(`Baseline vs. ${report.scenarioName}`, 9) > 511;
-  if (hypothesisLines.length > 2 || decisionLines.length > 4 || longNames) {
+  if (
+    hypothesisLines.length > 2 ||
+    decisionLines.length > 4 ||
+    longNames ||
+    report.narrativeChanged
+  ) {
     addPage();
     text(42, 99, "Bilag · dine fulde overvejelser", 20, colors.ink, bold);
     let lineY = 136;
@@ -330,6 +335,18 @@ export async function renderReportPdf(
         : []),
       ["Hypotese", report.hypothesis],
       ["Beslutning", report.decision],
+      ...(report.narrativeChanged && report.runContext
+        ? [
+            [
+              "Kørslens grundlag",
+              `Startet ${report.runContext.startedAt}. Fælles seed: ${report.runContext.baseSeed}. Navn ved start: ${report.runContext.scenarioName}`,
+            ],
+            [
+              "Hypotesen ved kørslens start",
+              report.runContext.hypothesis || "Ingen hypotese angivet.",
+            ],
+          ]
+        : []),
     ]) {
       if (lineY > 710) {
         addPage();

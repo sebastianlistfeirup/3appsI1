@@ -11,11 +11,13 @@ import { strToU8, zipSync } from "fflate";
 import { holdoutDataset } from "./datasets";
 import {
   comparisonMatches,
+  narrativeChanged,
   sameModel,
   formatMetric,
   formatDifference,
   type FlowDocument,
   type Dataset,
+  type RunContext,
 } from "./document";
 export interface DecisionReport {
   reportVersion: 1;
@@ -24,6 +26,9 @@ export interface DecisionReport {
   scenarioName: string;
   hypothesis: string;
   decision: string;
+  baseSeed: number;
+  runContext: RunContext | null;
+  narrativeChanged: boolean;
   dataBasis: string;
   limitations: string[];
   diagnostics: { code: string; message: string }[];
@@ -36,7 +41,7 @@ export function createReport(doc: FlowDocument): DecisionReport {
   if (!doc.comparison) throw new Error("Kør en sammenligning først.");
   if (!comparisonMatches(doc))
     throw new Error(
-      "Modellen er ændret siden den seneste sammenligning. Kør igen, før du eksporterer en rapport for de aktuelle input.",
+      "Modellen eller det fælles seed er ændret siden den seneste sammenligning. Kør igen, før du eksporterer en rapport for de aktuelle input.",
     );
   assertReportReady(doc.comparison);
   const sourceDataset = holdoutDataset(doc);
@@ -47,6 +52,9 @@ export function createReport(doc: FlowDocument): DecisionReport {
     scenarioName: doc.scenarioName,
     hypothesis: doc.hypothesis,
     decision: doc.decision,
+    baseSeed: doc.baseSeed,
+    runContext: doc.comparisonContext,
+    narrativeChanged: narrativeChanged(doc),
     dataBasis: doc.comparison.baseline.evidence,
     limitations: [
       "Resultaterne er simulerede og er ikke dokumentation for realiserede gevinster.",
@@ -55,6 +63,15 @@ export function createReport(doc: FlowDocument): DecisionReport {
       "Modellen er ikke automatisk kalibreret mod faktisk drift. Ingen kundedata eller cloudintegration er tilkoblet.",
     ],
     diagnostics: [
+      ...(narrativeChanged(doc)
+        ? [
+            {
+              code: "report_narrative_changed",
+              message:
+                "Rapportens navn eller hypotese er redigeret efter kørslens start. Det oprindelige navn, den oprindelige hypotese og starttidspunktet er bevaret under kørslens grundlag i PDF og JSON.",
+            },
+          ]
+        : []),
       ...[
         ...new Set(
           [

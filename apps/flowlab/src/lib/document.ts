@@ -5,17 +5,28 @@ import {
   inputDiff,
   membershipTemplate,
   modelSchema,
+  seedList,
   type FlowModel,
   type Comparison,
   type CsvImport,
   type HoldoutAssessment,
 } from "@tre/flow-engine";
+export interface ExperimentContext {
+  scenarioName: string;
+  hypothesis: string;
+  baseSeed: number;
+}
+export interface RunContext extends ExperimentContext {
+  startedAt: string;
+  trainingDataHashes: string[];
+}
 export interface ModelSnapshot {
   id: string;
   label: string;
   savedAt: string;
   baseline: FlowModel;
   scenario: FlowModel;
+  context?: ExperimentContext;
 }
 export interface Dataset {
   id: string;
@@ -32,10 +43,12 @@ export interface FlowDocument {
   scenarioName: string;
   hypothesis: string;
   decision: string;
+  baseSeed: number;
   versions: ModelSnapshot[];
   dataset: Dataset | null;
   datasetHistory: Dataset[];
   comparison: Comparison | null;
+  comparisonContext: RunContext | null;
   holdout: HoldoutAssessment | null;
   trainingDataHashes: string[];
 }
@@ -51,14 +64,21 @@ export function initialDocument(): FlowDocument {
     hypothesis:
       "En ekstra sagsbehandler reducerer ventetid og restkø. Den simulerede effekt skal vurderes op imod den ekstra lønkapacitet.",
     decision: "",
+    baseSeed: 2026,
     versions: [],
     dataset: null,
     datasetHistory: [],
     comparison: null,
+    comparisonContext: null,
     holdout: null,
     trainingDataHashes: [],
   };
 }
+const experimentSchema = z.object({
+  scenarioName: z.string().max(200),
+  hypothesis: z.string().max(4000),
+  baseSeed: z.number().int().min(0).max(4294967295),
+});
 const documentSchema = z.object({
   schemaVersion: z.literal(1),
   baseline: modelSchema,
@@ -66,6 +86,7 @@ const documentSchema = z.object({
   scenarioName: z.string().max(200),
   hypothesis: z.string().max(4000),
   decision: z.string().max(10000),
+  baseSeed: experimentSchema.shape.baseSeed.default(2026),
   versions: z
     .array(
       z.object({
@@ -74,12 +95,20 @@ const documentSchema = z.object({
         savedAt: z.iso.datetime(),
         baseline: modelSchema,
         scenario: modelSchema,
+        context: experimentSchema.optional(),
       }),
     )
     .max(30),
   dataset: datasetSchema.nullable(),
   datasetHistory: z.array(datasetSchema).max(3).default([]),
   comparison: comparisonSchema.nullable(),
+  comparisonContext: experimentSchema
+    .extend({
+      startedAt: z.iso.datetime(),
+      trainingDataHashes: z.array(z.string().regex(/^[a-f0-9]{64}$/)).max(100),
+    })
+    .nullable()
+    .default(null),
   holdout: holdoutSchema.nullable().default(null),
   trainingDataHashes: z
     .array(z.string().regex(/^[a-f0-9]{64}$/))
@@ -112,8 +141,27 @@ export function comparisonMatches(doc: FlowDocument) {
   return (
     !!doc.comparison &&
     doc.comparison.engineVersion === ENGINE_VERSION &&
+    (!doc.comparisonContext ||
+      doc.comparisonContext.baseSeed === doc.baseSeed) &&
+    seedList(doc.baseSeed, doc.comparison.requestedSeeds.length).every(
+      (seed, index) => seed === doc.comparison!.requestedSeeds[index],
+    ) &&
     sameModel(doc.baseline, doc.comparison.baseline) &&
     sameModel(doc.scenario, doc.comparison.scenario)
+  );
+}
+export function experimentContext(doc: FlowDocument): ExperimentContext {
+  return {
+    scenarioName: doc.scenarioName,
+    hypothesis: doc.hypothesis,
+    baseSeed: doc.baseSeed,
+  };
+}
+export function narrativeChanged(doc: FlowDocument): boolean {
+  return (
+    !!doc.comparisonContext &&
+    (doc.scenarioName !== doc.comparisonContext.scenarioName ||
+      doc.hypothesis !== doc.comparisonContext.hypothesis)
   );
 }
 

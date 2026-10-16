@@ -3318,3 +3318,21 @@ textarea:focus {
     grid-column: 3;
   }
 }
+.run-context {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 0 0 20px;
+  overflow-wrap: anywhere;
+}
+.run-context summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.run-context p {
+  line-height: 1.6;
+  font-size: 14px;
+  margin: 10px 0 0;
+}

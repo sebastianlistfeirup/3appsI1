@@ -1,0 +1,49 @@
+{
+  "executedAt": "2026-10-16T21:38:02.306Z",
+  "browser": "chromium",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "checks": [
+        "Custom base seed persists through reload and gates stale reports",
+        "Version restores immutable hypothesis, title and seed without losing later decision",
+        "Actual report retains current narrative and original run context",
+        "Actual shared 30-seed list matches persisted seed",
+        "PDF retains original Danish hypothesis",
+        "WCAG2AA/21AA violations 0 and no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "height": 768,
+      "checks": [
+        "Custom base seed persists through reload and gates stale reports",
+        "Version restores immutable hypothesis, title and seed without losing later decision",
+        "Actual report retains current narrative and original run context",
+        "Actual shared 30-seed list matches persisted seed",
+        "PDF retains original Danish hypothesis",
+        "WCAG2AA/21AA violations 0 and no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "checks": [
+        "Custom base seed persists through reload and gates stale reports",
+        "Version restores immutable hypothesis, title and seed without losing later decision",
+        "Actual report retains current narrative and original run context",
+        "Actual shared 30-seed list matches persisted seed",
+        "PDF retains original Danish hypothesis",
+        "WCAG2AA/21AA violations 0 and no viewport overflow"
+      ],
+      "axeViolations": 0
+    }
+  ],
+  "errors": []
+}

@@ -57,6 +57,8 @@ import {
 import { downloadFile, usePersistentDocument } from "@tre/persistence";
 import {
   comparisonMatches,
+  experimentContext,
+  narrativeChanged,
   formatMetric,
   formatNumber,
   initialDocument,
@@ -66,6 +68,7 @@ import {
 import { createReport, reportPdf, reportZip } from "../lib/report";
 import {
   appendVersion,
+  restoreVersion,
   workspaceCopy,
   workspaceError,
   versionBytes,
@@ -129,7 +132,6 @@ export default function FlowLab() {
     [partial, setPartial] = useState<Comparison | null>(null),
     [showPalette, setShowPalette] = useState(false),
     [showHelp, setShowHelp] = useState(false),
-    [seed, setSeed] = useState(2026),
     [historyCount, setHistoryCount] = useState(0);
   const pendingRun = useRef<{
     baseline: FlowModel;
@@ -253,6 +255,11 @@ export default function FlowLab() {
     (count = 30) => {
       if (worker.current) return;
       const snapshot = structuredClone(currentDoc.current),
+        context = {
+          ...experimentContext(snapshot),
+          startedAt: new Date().toISOString(),
+          trainingDataHashes: [...snapshot.trainingDataHashes],
+        },
         allIssues = [
           ...validateModel(snapshot.baseline),
           ...validateModel(snapshot.scenario),
@@ -268,7 +275,7 @@ export default function FlowLab() {
       pendingRun.current = {
         baseline: snapshot.baseline,
         scenario: snapshot.scenario,
-        seeds: seedList(seed, count),
+        seeds: seedList(snapshot.baseSeed, count),
         baselineRuns: [],
         scenarioRuns: [],
       };
@@ -292,7 +299,11 @@ export default function FlowLab() {
             const result = message.result as Comparison;
             if (result.status === "completed") {
               const latest = currentDoc.current;
-              setData({ ...latest, comparison: result });
+              setData({
+                ...latest,
+                comparison: result,
+                comparisonContext: context,
+              });
               notify(
                 `${result.seeds.length} parrede kørsler er færdige. Resultatet er gemt lokalt.`,
               );
@@ -318,11 +329,11 @@ export default function FlowLab() {
         type: "run",
         baseline: snapshot.baseline,
         scenario: snapshot.scenario,
-        seed,
+        seed: snapshot.baseSeed,
         count,
       });
     },
-    [seed, setData],
+    [setData],
   );
   const cancelRun = () => {
     worker.current?.terminate();
@@ -817,9 +828,10 @@ export default function FlowLab() {
                 <div className="notice stale-notice">
                   <History size={17} />
                   <p>
-                    Modellen eller motoren er opdateret. Resultater viser det
-                    senest fuldførte snapshot. Kør igen for at se effekten af
-                    dine nye antagelser og eksportere en aktuel rapport.
+                    Modellen, det fælles seed eller motoren er opdateret.
+                    Resultater viser det senest fuldførte snapshot. Kør igen for
+                    at se effekten af dine nye antagelser og eksportere en
+                    aktuel rapport.
                   </p>
                 </div>
               )}
@@ -1260,17 +1272,18 @@ export default function FlowLab() {
                             type="number"
                             min={0}
                             max={4294967295}
-                            value={seed}
+                            value={doc.baseSeed}
                             onChange={(e) =>
-                              setSeed(
-                                Math.max(
+                              update({
+                                ...doc,
+                                baseSeed: Math.max(
                                   0,
                                   Math.min(
                                     4294967295,
                                     Math.round(Number(e.target.value)),
                                   ),
                                 ),
-                              )
+                              })
                             }
                           />
                         </label>
@@ -1432,6 +1445,37 @@ export default function FlowLab() {
                         <span className="eyebrow">HYPOTESE</span>
                         <p>{doc.hypothesis}</p>
                       </div>
+                      {doc.comparisonContext && (
+                        <details className="run-context">
+                          <summary>Grundlaget ved kørslens start</summary>
+                          <p>
+                            {new Date(
+                              doc.comparisonContext.startedAt,
+                            ).toLocaleString("da-DK")}{" "}
+                            · Fælles seed {doc.comparisonContext.baseSeed}
+                          </p>
+                          <p>
+                            <strong>
+                              {doc.comparisonContext.scenarioName}
+                            </strong>
+                          </p>
+                          <p>
+                            {doc.comparisonContext.hypothesis ||
+                              "Ingen hypotese angivet ved kørslens start."}
+                          </p>
+                          <p className="field-hint">
+                            Den oprindelige hypotese følger med i rapportpakken.
+                            Din beslutning kan du skrive efter analysen.
+                          </p>
+                        </details>
+                      )}
+                      {narrativeChanged(doc) && (
+                        <p className="notice-text">
+                          Rapportens navn eller hypotese er redigeret efter
+                          kørslens start. Den oprindelige formulering bevares i
+                          PDF og JSON, så ændringen er synlig.
+                        </p>
+                      )}
                       {comparison ? (
                         <>
                           <h3>Det peger simulationen på</h3>
@@ -1679,13 +1723,9 @@ export default function FlowLab() {
                             <button
                               className="text-button"
                               onClick={() => {
-                                update({
-                                  ...doc,
-                                  baseline: structuredClone(v.baseline),
-                                  scenario: structuredClone(v.scenario),
-                                });
+                                update(restoreVersion(doc, v));
                                 notify(
-                                  `${v.label} er indlæst. Fortryd er tilgængelig.`,
+                                  `${v.label} er indlæst${v.context ? " med hypotese og fælles seed" : ". Dette ældre snapshot indeholder kun modellerne"}. Fortryd er tilgængelig.`,
                                 );
                               }}
                             >

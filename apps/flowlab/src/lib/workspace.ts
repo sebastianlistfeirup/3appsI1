@@ -2,6 +2,7 @@ import { CSV_FIELDS, createCsvImporter } from "@tre/flow-engine";
 import { datasetBytes, MAX_DATASET_BYTES } from "./datasets";
 import {
   validateDocument,
+  experimentContext,
   type FlowDocument,
   type ModelSnapshot,
 } from "./document";
@@ -9,7 +10,7 @@ export const MAX_WORKSPACE_BYTES = 128 * 1024 * 1024;
 export const MAX_VERSION_BYTES = 16 * 1024 * 1024;
 /** Simulation details belong in a report export. A workspace restores inputs and recalculates them. */
 export function workspaceCopy(doc: FlowDocument): FlowDocument {
-  return { ...doc, comparison: null };
+  return { ...doc, comparison: null, comparisonContext: null };
 }
 export function serializeWorkspace(doc: FlowDocument): string {
   return JSON.stringify(workspaceCopy(doc));
@@ -21,7 +22,12 @@ export function importWorkspace(text: string): FlowDocument {
   if (!value || typeof value !== "object" || Array.isArray(value))
     throw new Error("Modelpakken skal indeholde et FlowLab-arbejdsrum.");
   // Imported results are never evidence. Validate and recompute input, including old-format exports.
-  const doc = validateDocument({ ...value, comparison: null, holdout: null });
+  const doc = validateDocument({
+    ...value,
+    comparison: null,
+    comparisonContext: null,
+    holdout: null,
+  });
   const datasets = [doc.dataset, ...doc.datasetHistory].filter(
     (dataset) => dataset !== null,
   );
@@ -99,6 +105,7 @@ export function appendVersion(
     savedAt,
     baseline: structuredClone(doc.baseline),
     scenario: structuredClone(doc.scenario),
+    context: experimentContext(doc),
   };
   const versions = [snapshot, ...doc.versions].slice(0, 30);
   if (versionBytes(versions) > MAX_VERSION_BYTES)
@@ -106,6 +113,17 @@ export function appendVersion(
       "Versionslageret har en grænse på 16 MB. Eksportér arbejdsrummet, og fjern et tidligere snapshot, før du gemmer et nyt. Dine modeller er bevaret.",
     );
   return { snapshot, versions };
+}
+export function restoreVersion(
+  doc: FlowDocument,
+  snapshot: ModelSnapshot,
+): FlowDocument {
+  return {
+    ...doc,
+    baseline: structuredClone(snapshot.baseline),
+    scenario: structuredClone(snapshot.scenario),
+    ...(snapshot.context ?? {}),
+  };
 }
 export function workspaceError(error: unknown): string {
   if (error instanceof SyntaxError)
