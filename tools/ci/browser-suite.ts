@@ -224,6 +224,9 @@ try {
       await run("node", ["apps/director/tests/large-library-flow.mjs"], {
         LIBRARY_ENGINE: browser,
       });
+      await run("node", ["apps/director/tests/archive-flow.mjs"], {
+        ARCHIVE_ENGINE: browser,
+      });
       await run("node", ["apps/director/tests/storyboard-flow.mjs"], {
         STORYBOARD_ENGINE: browser,
       });
