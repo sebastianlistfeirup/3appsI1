@@ -1,0 +1,16 @@
+{
+  "verifiedAt": "2026-10-16T22:28:07.243Z",
+  "label": "firefox-delivery-draft-tablet",
+  "engine": {
+    "name": "axe-core",
+    "version": "4.11.4"
+  },
+  "environment": {
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+    "windowWidth": 1024,
+    "windowHeight": 768,
+    "orientationAngle": 0,
+    "orientationType": "landscape-primary"
+  },
+  "violations": []
+}

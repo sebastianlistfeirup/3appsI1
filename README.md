@@ -43,7 +43,7 @@ Tryk **Eksportér → MP4**. Den lokale worker samler ægte 1280×720, 24 fps H.
 
 Bestilling, opgaver med afhængigheder, immutable filversioner, manuelle leveringer, før/efter-preview, review og ZIP med SHA-256-manifest. Uploadet HTML vises isoleret, uden scripts eller eksterne netværkskald. Et manuelt resultat bliver aldrig kaldt en verificeret ekstern build.
 
-Projektpakker bevarer hele historikken og kan åbnes som selvstændige kopier. Pakning kører i en browser-worker, og ugemte ændringer kan eksporteres ved lagerfejl. Se [pakkeformat, grænser og gendannelse](docs/studio-project-packages.md).
+Ufærdige manuelle leverancer gemmes som kladder og kan genoptages efter genåbning. Projektpakker bevarer hele historikken og kan åbnes som selvstændige kopier. Pakning kører i en browser-worker, og ugemte ændringer kan eksporteres ved lagerfejl. Se [pakkeformat, grænser og gendannelse](docs/studio-project-packages.md).
 
 ### FlowLab
 
@@ -63,12 +63,14 @@ En deterministisk diskret hændelsesmotor, proceseditor, ressourcepuljer, kalend
 pnpm typecheck
 pnpm test
 pnpm test:db
+# Med PostgreSQL 17+ klientværktøjer installeret:
+pnpm test:restore
 pnpm build
 pnpm exec playwright install --with-deps chromium firefox webkit
 pnpm test:browser
 ```
 
-Browserpakken kræver også `ffmpeg`, `ffprobe` og `pdftotext` fra Poppler. Firefox-lydtesten kræver en lydtjeneste; brug den dokumenterede [lokale PulseAudio-testopsætning](docs/director-verification.md#render-and-recovery-gate) på en Linux-server uden lydkort. Luk lokale appservere før `pnpm test:browser`, som starter sine egne produktionsbuilds på port 3000–3002. GitHub Actions kører de samme gates og gemmer rapporter. Ét fejlet check stopper kørslen; tests, der ikke er udført, mærkes ikke som bestået.
+Browserkontrollerne bruger de fastlåste Playwright-browsere. En anden Chromium kan kun vælges med den eksplicitte variabel `PLAYWRIGHT_CHROMIUM_EXECUTABLE`. Browserpakken kræver også `ffmpeg`, `ffprobe` og `pdftotext` fra Poppler. Firefox-lydtesten kræver en lydtjeneste; brug den dokumenterede [lokale PulseAudio-testopsætning](docs/director-verification.md#render-and-recovery-gate) på en Linux-server uden lydkort. Luk lokale appservere før `pnpm test:browser`, som starter sine egne produktionsbuilds på port 3000–3002. GitHub Actions kører de samme gates og gemmer rapporter. Ét fejlet check stopper kørslen; tests, der ikke er udført, mærkes ikke som bestået.
 
 `test:db` opretter en isoleret lokal PostgreSQL 17.10-instans, kører de rigtige migrationer og tester RLS, budgetter, pg-boss, revisioner og leases. Den rører ikke en ekstern database. [Backendprofilen](docs/backend-profile.md) beskriver det verificerede fundament og de forbindelser, der stadig mangler.
 

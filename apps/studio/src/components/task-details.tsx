@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link";
+import Link from "./local-link";
 import { ArrowRight, Check, Pause, Pencil, Play } from "lucide-react";
 import { editTask, setTaskState } from "../lib/model";
 import { Badge, Modal, Notice } from "./primitives";

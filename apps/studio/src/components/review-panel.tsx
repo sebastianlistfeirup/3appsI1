@@ -2,7 +2,7 @@
 import { sandboxDocument } from "../lib/preview";
 import { useEffect, useMemo, useState } from "react";
 import { compareText, comparisonInput, contextRows } from "../lib/comparison";
-import Link from "next/link";
+import Link from "./local-link";
 import {
   ArrowDownToLine,
   ArrowLeft,

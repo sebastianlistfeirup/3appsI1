@@ -27,3 +27,11 @@ UTF-8 files preserve a leading BOM, Danish characters and emoji through upload, 
 `apps/studio/src/lib/archive.test.ts` covers v1/v2 compatibility, actual incompressible multi-megabyte data, metadata tampering, invalid ZIPs, budget rejection, independent copies and exact UTF-8 hashes. `tests/e2e/studio-archive.spec.ts` exercises actual browser workers, an 11.2 MB binary project, forced IndexedDB quota failure and duplicate import at desktop, tablet and mobile sizes. Each browser path runs in Chromium, Firefox and WebKit; accessibility results and screenshots are retained under `reports/studio`.
 
 These packages provide local portability. They do not demonstrate a hosted backup, encrypted object store or recovery of files after the browser's data has already been removed.
+
+## Afleveringskladder
+
+Når input er låst til en manuel levering, gemmes titel, forklaring, filindhold, filnavn, valgt eksisterende filversion og markeringen af kendte fejl som en kladde. Gemmestatus i dialogen viser, om browserlagringen er bekræftet. Ændringer gemmes efter en kort skrivepause; lukning af dialogen lægger også den sidste ændring i projektet. Ved en lagerfejl bliver den aktuelle tekst i sessionen, og både kladden og projektpakken kan hentes. Genindlæs først siden, når det vigtige arbejde er eksporteret.
+
+Kladden følger med ZIP-pakken og kan desuden hentes og indlæses som `studio-delivery-draft` JSON, højst 2 MB. Indlæsning genbruger indholdet i det aktuelle leveringsforløb og ændrer ikke dets låste input. Filreferencer fra et andet projekt afvises med henvisning til at importere hele projektpakken. Uafsluttede og tomme felter er tilladt i kladder.
+
+Ved aflevering fjernes arbejds­kladden i samme ændring, som opretter den uforanderlige leverance og filversion. Ved annullering bevares kladden i historikken og kan hentes under Aktivitet. Den kan indlæses i et nyt forløb uden at genåbne det gamle. Kladdetekst indgår i projektets eksisterende grænse på 4 MB metadata. Ældre projektpakker uden kladder kan fortsat læses.

@@ -90,6 +90,19 @@ export const reviewSchema = z.object({
   checkedCriteria: z.array(idSchema).max(40),
   createdAt: timestamp,
 });
+export const deliveryDraftFieldsSchema = z.object({
+  title: z.string().max(300),
+  summary: text,
+  mode: z.enum(["text", "existing"]),
+  artifactId: z.union([idSchema, z.literal("")]),
+  content: z.string().max(100_000),
+  name: z.string().max(200),
+  risk: z.boolean(),
+});
+export const deliveryDraftSchema = deliveryDraftFieldsSchema.extend({
+  runId: idSchema,
+  updatedAt: timestamp,
+});
 export const projectSchema = z.object({
   id: idSchema,
   name: z.string().min(1).max(100),
@@ -105,6 +118,7 @@ export const projectSchema = z.object({
   runs: z.array(runSchema).max(1000),
   deliveries: z.array(deliverySchema).max(1000),
   reviews: z.array(reviewSchema).max(2000),
+  deliveryDrafts: z.array(deliveryDraftSchema).max(1000).optional(),
   activity: z
     .array(
       z.object({
@@ -134,6 +148,7 @@ export type Task = z.infer<typeof taskSchema>;
 export type Delivery = z.infer<typeof deliverySchema>;
 export type Review = z.infer<typeof reviewSchema>;
 export type Brief = z.infer<typeof briefSchema>;
+export type DeliveryDraftFields = z.infer<typeof deliveryDraftFieldsSchema>;
 export const uid = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
 export const now = () => new Date().toISOString();
 
@@ -161,6 +176,20 @@ export function assertProject(project: Project): Project {
     throw new Error("En leverance må kun have ét endeligt review.");
   if (duplicate(project.deliveries.map((x) => x.runId)))
     throw new Error("Et run må kun aflevere én uforanderlig leverance.");
+  if (duplicate((project.deliveryDrafts ?? []).map((draft) => draft.runId)))
+    throw new Error("Et run må kun have én afleveringskladde.");
+  for (const draft of project.deliveryDrafts ?? []) {
+    const run = project.runs.find((candidate) => candidate.id === draft.runId);
+    if (!run || !["awaiting_upload", "cancelled"].includes(run.state))
+      throw new Error(
+        "En afleveringskladde mangler et gyldigt leveringsforløb.",
+      );
+    if (
+      draft.artifactId &&
+      !project.artifacts.some((a) => a.id === draft.artifactId)
+    )
+      throw new Error("Kladdens valgte filversion findes ikke.");
+  }
   const artifacts = new Set(project.artifacts.map((x) => x.id));
   const tasks = new Set(project.tasks.map((x) => x.id));
   const briefs = new Set(project.briefVersions.map((x) => x.version));
@@ -282,6 +311,33 @@ function assertMutable(p: Project) {
 }
 
 export function assertProjectUpdate(previous: Project, next: Project): void {
+  for (const draft of next.deliveryDrafts ?? []) {
+    const priorRun = previous.runs.find((run) => run.id === draft.runId);
+    if (
+      priorRun &&
+      priorRun.state !== "awaiting_upload" &&
+      !previous.deliveryDrafts?.some((prior) => prior.runId === draft.runId)
+    )
+      throw new Error("Et afsluttet forløb kan ikke få en ny kladde.");
+  }
+  for (const prior of previous.deliveryDrafts ?? []) {
+    const oldRun = previous.runs.find((run) => run.id === prior.runId)!;
+    const retained = next.deliveryDrafts?.find(
+      (draft) => draft.runId === prior.runId,
+    );
+    if (
+      oldRun.state === "cancelled" &&
+      JSON.stringify(prior) !== JSON.stringify(retained)
+    )
+      throw new Error("Kladden fra et annulleret forløb skal bevares uændret.");
+    if (
+      !retained &&
+      !next.deliveries.some((delivery) => delivery.runId === prior.runId)
+    )
+      throw new Error(
+        "En kladde kan først fjernes, når resultatet er afleveret.",
+      );
+  }
   for (const prior of previous.tasks) {
     const retained = next.tasks.find((task) => task.id === prior.id);
     if (
@@ -757,6 +813,9 @@ export function submitDelivery(
     {
       ...p,
       deliveries: [...p.deliveries, delivery],
+      deliveryDrafts: p.deliveryDrafts?.filter(
+        (draft) => draft.runId !== runId,
+      ),
       runs: p.runs.map((r) =>
         r.id === runId ? { ...r, state: "review", completedAt: now() } : r,
       ),
@@ -769,6 +828,36 @@ export function submitDelivery(
     "delivery.ready",
     `${input.title} er klar til review`,
   );
+}
+export function saveDeliveryDraft(
+  p: Project,
+  runId: string,
+  fields: DeliveryDraftFields,
+): Project {
+  assertMutable(p);
+  const run = p.runs.find((candidate) => candidate.id === runId);
+  if (!run || run.state !== "awaiting_upload")
+    throw new Error("Kun et afventende leveringsforløb kan ændre sin kladde.");
+  const draft = deliveryDraftSchema.parse({
+    ...fields,
+    runId,
+    updatedAt: now(),
+  });
+  if (
+    draft.artifactId &&
+    !p.artifacts.some((artifact) => artifact.id === draft.artifactId)
+  )
+    throw new Error("Kladdens valgte filversion findes ikke.");
+  const next = {
+    ...p,
+    revision: p.revision + 1,
+    deliveryDrafts: [
+      ...(p.deliveryDrafts ?? []).filter((item) => item.runId !== runId),
+      draft,
+    ],
+  };
+  assertProjectBudget(next);
+  return next;
 }
 export function isStale(p: Project, d: Delivery) {
   const run = p.runs.find((r) => r.id === d.runId);

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T22:09:16.158725+00:00",
+  "updatedAt": "2026-10-16T22:30:47.756728+00:00",
   "status": "building",
   "activeTasks": [
-    "F06-ci-reliability",
-    "S09-delivery-drafts",
-    "L12-scenario-library",
-    "D11-locations"
+    "F06-remote-ci",
+    "F09-private-artifacts",
+    "L14-tail-metrics",
+    "D12-library-thumbnails"
   ],
   "profile": "demo",
   "connectedIntegrations": [],
@@ -16,6 +16,7 @@
     "Asymmetric JWT → API → RLS",
     "Separate worker process restart",
     "Local FFmpeg H.264/AAC",
-    "Two-cluster PostgreSQL and immutable-file restore"
+    "Two-cluster PostgreSQL and immutable-file restore",
+    "Separate worker reconnect after actual idle session termination"
   ]
 }

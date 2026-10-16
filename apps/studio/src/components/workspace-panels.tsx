@@ -1,7 +1,7 @@
 "use client";
 import { sandboxDocument } from "../lib/preview";
 import { useRef, useState } from "react";
-import Link from "next/link";
+import Link from "./local-link";
 import {
   ArrowDownToLine,
   ArrowRight,
@@ -31,12 +31,11 @@ import {
   addTask,
   artifactBytes,
   artifactSchema,
-  beginManualRun,
   cancelRun,
+  deliveryDraftFieldsSchema,
   latestBrief,
   saveBrief,
   sha256,
-  submitDelivery,
   textArtifact,
   uid,
   type Artifact,
@@ -55,6 +54,7 @@ import {
 } from "./primitives";
 import type { ProjectActions } from "./studio-app";
 import { TaskDetails } from "./task-details";
+import { DeliveryDialog, type DraftStorage } from "./delivery-dialog";
 
 export function BriefPanel({ project, update, notify }: ProjectActions) {
   const brief = latestBrief(project);
@@ -274,7 +274,12 @@ const taskLabels: Record<Task["state"], string> = {
   done: "Afsluttet",
   blocked: "Blokeret",
 };
-export function TasksPanel({ project, update, notify }: ProjectActions) {
+export function TasksPanel({
+  project,
+  update,
+  notify,
+  storage,
+}: ProjectActions & { storage: DraftStorage }) {
   const [creating, setCreating] = useState(false);
   const [dependency, setDependency] = useState(false);
   const [title, setTitle] = useState("");
@@ -608,6 +613,7 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
       )}
       {deliverTask && (
         <DeliveryDialog
+          storage={storage}
           project={project}
           taskId={deliverTask}
           update={update}
@@ -631,228 +637,6 @@ export function TasksPanel({ project, update, notify }: ProjectActions) {
         />
       )}
     </>
-  );
-}
-function DeliveryDialog({
-  project,
-  taskId,
-  update,
-  notify,
-  onClose,
-}: ProjectActions & { taskId: string; onClose: () => void }) {
-  const task = project.tasks.find((t) => t.id === taskId)!;
-  const existing = project.runs.find(
-    (r) => r.taskId === taskId && r.state === "awaiting_upload",
-  );
-  const [runId, setRunId] = useState(existing?.id ?? "");
-  const [requestId] = useState(() => uid("request"));
-  const [title, setTitle] = useState(task.title);
-  const [summary, setSummary] = useState("");
-  const [artifactId, setArtifactId] = useState("");
-  const [content, setContent] = useState("");
-  const [name, setName] = useState("resultat.html");
-  const [busy, setBusy] = useState(false);
-  const [mode, setMode] = useState<"text" | "existing">("text");
-  const [risk, setRisk] = useState(false);
-  function start() {
-    try {
-      const next = beginManualRun(project, taskId, requestId);
-      const run = next.runs.find((r) => r.idempotencyKey === requestId)!;
-      if (!update(() => next)) return;
-      setRunId(run.id);
-    } catch (e) {
-      notify(
-        e instanceof Error ? e.message : "Leveringen kunne ikke startes.",
-        true,
-      );
-    }
-  }
-  async function deliver() {
-    setBusy(true);
-    try {
-      let next = project;
-      let outputId = artifactId;
-      if (mode === "text") {
-        const previous = project.artifacts.find((a) => a.name === name);
-        const artifact = await textArtifact(
-          project,
-          name,
-          content,
-          "code",
-          previous?.artifactId,
-        );
-        next = addArtifact(next, artifact);
-        outputId = artifact.id;
-      }
-      const run = next.runs.find((r) => r.id === runId)!;
-      const brief = next.briefVersions.find(
-        (b) => b.version === run.briefVersion,
-      )!;
-      next = submitDelivery(next, runId, {
-        title,
-        summary,
-        outputVersionIds: [outputId],
-        checks: brief.acceptance.map((label, i) => ({
-          id: `criterion-${i}`,
-          label,
-          passed: !risk,
-          source: "manual",
-          evidence: risk
-            ? "Afleverer har markeret kendt fejl. Kræver rettelse."
-            : "Manuel aflevering. Kræver brugerens gennemgang før accept.",
-        })),
-      });
-      if (!update(() => next)) return;
-      onClose();
-      notify(
-        "Leverancen er klar til review. Den er ikke automatisk verificeret.",
-      );
-    } catch (e) {
-      notify(e instanceof Error ? e.message : "Leveringen fejlede.", true);
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <Modal
-      title={
-        runId ? "Aflevér et konkret resultat" : "Lås input. Skab noget godt."
-      }
-      description={
-        runId
-          ? "Dit arbejde bliver en ny leverance. Tidligere versioner bliver bevaret."
-          : `Opgave: ${task.title}`
-      }
-      onClose={onClose}
-    >
-      {!runId ? (
-        <>
-          <div className="input-snapshot">
-            <span className="small-label">DIT INPUTSNAPSHOT</span>
-            <h3>Bestilling v{latestBrief(project).version}</h3>
-            <p>
-              {
-                project.artifacts.filter(
-                  (a) =>
-                    !project.artifacts.some(
-                      (b) =>
-                        b.artifactId === a.artifactId && b.version > a.version,
-                    ),
-                ).length
-              }{" "}
-              aktuelle filversioner · 0 kr. i eksternt forbrug
-            </p>
-          </div>
-          <Notice>
-            Dette starter en manuel levering. Studio One udfører ikke kode eller
-            AI-arbejde i denne profil.
-          </Notice>
-          <div className="modal-actions">
-            <button className="button primary" onClick={start}>
-              Lås input og fortsæt <ArrowRight size={16} />
-            </button>
-          </div>
-        </>
-      ) : (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            void deliver();
-          }}
-        >
-          <Badge kind="purple">INPUT LÅST · MANUAL</Badge>
-          <label>
-            Leverancens titel
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              maxLength={300}
-            />
-          </label>
-          <label>
-            Hvad er ændret?
-            <textarea
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              required
-              rows={2}
-            />
-          </label>
-          <div className="segmented">
-            <button
-              type="button"
-              className={mode === "text" ? "selected" : ""}
-              onClick={() => setMode("text")}
-            >
-              Ny tekst-/kodefil
-            </button>
-            <button
-              type="button"
-              className={mode === "existing" ? "selected" : ""}
-              onClick={() => setMode("existing")}
-            >
-              Eksisterende fil
-            </button>
-          </div>
-          {mode === "text" ? (
-            <>
-              <label>
-                Filnavn
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  maxLength={200}
-                />
-              </label>
-              <label>
-                Filindhold
-                <textarea
-                  className="code-input"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  required
-                  rows={7}
-                  maxLength={100000}
-                />
-              </label>
-            </>
-          ) : (
-            <label>
-              Vælg outputversion
-              <select
-                required
-                value={artifactId}
-                onChange={(e) => setArtifactId(e.target.value)}
-              >
-                <option value="">Vælg fil</option>
-                {project.artifacts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.name} · v{a.version}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-          <label className="checkbox-row">
-            <input
-              type="checkbox"
-              checked={risk}
-              onChange={(e) => setRisk(e.target.checked)}
-            />
-            <span>
-              Der er en kendt fejl. Leverancen må ikke accepteres endnu.
-            </span>
-          </label>
-          <div className="modal-actions">
-            <button className="button primary" disabled={busy}>
-              {busy ? "Gemmer…" : "Send til review"} <ArrowRight size={16} />
-            </button>
-          </div>
-        </form>
-      )}
-    </Modal>
   );
 }
 export function AssetsPanel({ project, update, notify }: ProjectActions) {
@@ -1187,7 +971,12 @@ export function AssetsPanel({ project, update, notify }: ProjectActions) {
     </>
   );
 }
-export function RunsPanel({ project, update, notify }: ProjectActions) {
+export function RunsPanel({
+  project,
+  update,
+  notify,
+  storage,
+}: ProjectActions & { storage: DraftStorage }) {
   const [taskId, setTaskId] = useState<string | null>(null);
   return (
     <>
@@ -1250,6 +1039,41 @@ export function RunsPanel({ project, update, notify }: ProjectActions) {
                       <small>FORBRUG</small>0,00 kr.
                     </span>
                   </div>
+                  {project.deliveryDrafts?.some(
+                    (draft) => draft.runId === run.id,
+                  ) && (
+                    <div className="run-draft-note">
+                      <span>
+                        {run.state === "cancelled"
+                          ? "Kladden er bevaret fra det annullerede forløb."
+                          : "En kladde venter. Fortsæt, hvor du slap."}
+                      </span>
+                      <button
+                        className="text-button"
+                        onClick={() => {
+                          const draft = project.deliveryDrafts!.find(
+                            (item) => item.runId === run.id,
+                          )!;
+                          downloadFile(
+                            `afleveringskladde-${run.id}.json`,
+                            JSON.stringify(
+                              {
+                                app: "studio-delivery-draft",
+                                schemaVersion: 1,
+                                projectId: project.id,
+                                runId: run.id,
+                                fields: deliveryDraftFieldsSchema.parse(draft),
+                              },
+                              null,
+                              2,
+                            ),
+                          );
+                        }}
+                      >
+                        Hent kladde <ArrowDownToLine size={14} />
+                      </button>
+                    </div>
+                  )}
                   <div className="run-footer">
                     <span>{formatDate(run.startedAt)}</span>
                     {run.state === "awaiting_upload" ? (
@@ -1325,6 +1149,7 @@ export function RunsPanel({ project, update, notify }: ProjectActions) {
       </div>
       {taskId && (
         <DeliveryDialog
+          storage={storage}
           project={project}
           taskId={taskId}
           update={update}

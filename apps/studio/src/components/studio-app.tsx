@@ -1,7 +1,7 @@
 "use client";
 import { sandboxDocument } from "../lib/preview";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "./local-link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowDownToLine,
@@ -473,6 +473,7 @@ export function StudioApp() {
                     />
                   ) : section === "tasks" ? (
                     <TasksPanel
+                      storage={{ saveState: store.saveState }}
                       project={project}
                       update={update}
                       notify={notify}
@@ -494,6 +495,7 @@ export function StudioApp() {
                     />
                   ) : section === "runs" ? (
                     <RunsPanel
+                      storage={{ saveState: store.saveState }}
                       project={project}
                       update={update}
                       notify={notify}

@@ -128,6 +128,66 @@
         "docs",
         "reports"
       ]
+    },
+    {
+      "id": "S10",
+      "app": "studio",
+      "goal": "Durable manual delivery drafts and actual quota recovery",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm exec playwright test tests/e2e/studio-drafts.spec.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/studio"]
+    },
+    {
+      "id": "F07",
+      "app": "foundation",
+      "goal": "Actual database and immutable object restoration",
+      "dependencies": ["F00"],
+      "verification": ["pnpm test:restore"],
+      "status": "verified-local",
+      "allowed_paths": ["packages", "services", "tools", "docs", "reports"]
+    },
+    {
+      "id": "F08",
+      "app": "foundation",
+      "goal": "Worker survives actual idle database session loss",
+      "dependencies": ["F00"],
+      "verification": ["pnpm test:db tests/integration/worker-process.test.ts"],
+      "status": "verified-local",
+      "allowed_paths": ["packages", "services", "tools", "docs", "reports"]
+    },
+    {
+      "id": "L12",
+      "app": "flowlab",
+      "goal": "Named scenario library preserves changed drafts",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/scenario-library-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/flowlab"]
+    },
+    {
+      "id": "L13",
+      "app": "flowlab",
+      "goal": "CSV raw field boundaries and complete wide mappings",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/csv-boundaries-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/flowlab"]
+    },
+    {
+      "id": "D11",
+      "app": "director",
+      "goal": "Versioned real studio and courtyard locations",
+      "dependencies": ["F00"],
+      "verification": ["node apps/director/tests/locations-flow.mjs"],
+      "status": "verified-local",
+      "allowed_paths": ["apps/director"]
     }
   ]
 }

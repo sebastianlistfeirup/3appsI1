@@ -1,0 +1,16 @@
+{
+  "verifiedAt": "2026-10-16T22:27:11.657Z",
+  "label": "chromium-delivery-draft-mobile",
+  "engine": {
+    "name": "axe-core",
+    "version": "4.11.4"
+  },
+  "environment": {
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36",
+    "windowWidth": 390,
+    "windowHeight": 844,
+    "orientationAngle": 0,
+    "orientationType": "landscape-primary"
+  },
+  "violations": []
+}

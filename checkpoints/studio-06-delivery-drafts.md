@@ -1,0 +1,11 @@
+# Studio — durable unfinished deliveries
+
+Manual delivery fields now persist as a bounded project draft after input is locked. Title, explanation, text, filename, existing file selection and the known-error flag survive closing the dialog and reloading. The dialog shows actual persistence state, flushes its latest local edit on close and keeps its primary actions reachable on smaller screens. A short debounce avoids a write for every keystroke.
+
+Drafts travel with the existing checksummed ZIP format. A separate versioned JSON transfer can recover a draft when IndexedDB quota is exhausted. Import preserves the current run's locked input and rejects references to another project's file versions. Incomplete fields remain valid drafts. A final delivery removes the working draft atomically with its immutable output; cancellation retains an immutable historical draft that can be downloaded and reused in a new run. Existing project packages remain compatible, and drafts count against the established four-megabyte metadata budget.
+
+Four domain fixtures verify exact ZIP roundtrip, locked input identity, partial fields, cancellation immutability, successful-only cleanup, size/reference constraints and revision conflicts. The production build passes the full **63 Playwright tests** across Chromium, Firefox and WebKit, including twelve draft journeys and a genuine injected IndexedDB quota error. Nine responsive draft screenshots and twelve related axe scans have zero violations. Desktop 1440×900, tablet 1024×768 and mobile 390×844 were visually inspected.
+
+Production testing exposed WebKit errors when a hard reload aborted Next's speculative route-shell requests. All local Studio sections render the same client workspace, so their links now disable unnecessary prefetch while retaining client navigation. Reload tests still collect and reject page errors. Chromium 156 also reports a request event for CSP-blocked images; the preview test now uses a real loopback HTTP probe, first proves the browser can reach it, then verifies zero requests from the sandbox and no script execution. No security assertion was removed.
+
+The local demo remains MANUAL. These checks do not claim server synchronization, an external code build or paid generation.
