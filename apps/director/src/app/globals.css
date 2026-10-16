@@ -1800,9 +1800,16 @@ h1 {
   margin-top: 4px;
 }
 .movie-export p.capability-note {
-  font-size: 11px;
-  color: #90877e;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #b6aaa0;
   margin-bottom: 0;
+}
+.render-capability .text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
 }
 .modal-footnote {
   font-size: 11px;

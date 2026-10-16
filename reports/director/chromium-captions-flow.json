@@ -3,23 +3,23 @@
   "phases": [
     {
       "name": "import long complete dialogue and actual audio",
-      "at": "2026-10-16T23:23:30.308Z"
+      "at": "2026-10-16T23:36:18.355Z"
     },
     {
       "name": "preview exact cue boundaries and midpoint handover",
-      "at": "2026-10-16T23:23:34.208Z"
+      "at": "2026-10-16T23:36:22.688Z"
     },
     {
       "name": "download whole current SRT and VTT and review reading warnings",
-      "at": "2026-10-16T23:23:34.620Z"
+      "at": "2026-10-16T23:36:23.010Z"
     },
     {
       "name": "render actual movie and verify locked quality report and subtitle downloads",
-      "at": "2026-10-16T23:23:36.592Z"
+      "at": "2026-10-16T23:36:25.073Z"
     },
     {
       "name": "passed",
-      "at": "2026-10-16T23:23:41.294Z"
+      "at": "2026-10-16T23:36:30.382Z"
     }
   ],
   "scans": [
@@ -60,7 +60,7 @@
     "audioSampleRate": 48000,
     "codec": "h264",
     "audioCodec": "aac",
-    "sha256": "41bafc96d0f393150b2c8500973663e295ef5cf590e341b06cbd68fb972f9985",
+    "sha256": "fbb198b83516420df97fd141f0694ce0ef8d3e44b3bfd1f9f1354782aac6ecfb",
     "loudnessLufs": -21.9,
     "audioSilent": false,
     "truePeakDbfs": -21

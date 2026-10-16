@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { RenderCapability } from "../lib/render-capability";
 import {
   Camera,
   Clapperboard,
@@ -228,7 +229,9 @@ export default function DirectorEditor({
       "shot" | "voice" | "music" | "model"
     >("shot"),
     [renderJob, setRenderJob] = useState<RenderState | null>(null),
-    [capability, setCapability] = useState<boolean | null>(null);
+    [capability, setCapability] = useState<RenderCapability | null>(null),
+    [checkingCapability, setCheckingCapability] = useState(false);
+  const capabilityRequest = useRef<AbortController | null>(null);
   const history = useRef<Project[]>([]),
     future = useRef<Project[]>([]),
     [historyTick, setHistoryTick] = useState(0);
@@ -252,6 +255,42 @@ export default function DirectorEditor({
         .filter((s) => s.startFrame <= playhead)
         .at(-1)
     : undefined;
+  const checkCapability = useCallback(async (refresh = false) => {
+    capabilityRequest.current?.abort();
+    const controller = new AbortController();
+    capabilityRequest.current = controller;
+    const deadline = setTimeout(() => controller.abort("timeout"), 30000);
+    setCheckingCapability(true);
+    try {
+      const response = await fetch(
+        `/api/exports${refresh ? "?refresh=1" : ""}`,
+        { signal: controller.signal },
+      );
+      if (!response.ok) throw Error("Renderkontrollen kunne ikke hentes");
+      const result: RenderCapability = await response.json();
+      if (
+        capabilityRequest.current === controller &&
+        !controller.signal.aborted
+      )
+        setCapability(result);
+    } catch {
+      if (
+        capabilityRequest.current === controller &&
+        (!controller.signal.aborted || controller.signal.reason === "timeout")
+      )
+        setCapability({
+          available: false,
+          profile: "local-only",
+          cloudConnected: false,
+          reason:
+            "Renderkontrollen svarede ikke. Prøv igen, når den lokale server er klar.",
+        });
+    } finally {
+      clearTimeout(deadline);
+      if (capabilityRequest.current === controller)
+        setCheckingCapability(false);
+    }
+  }, []);
   useEffect(() => {
     setPlayhead((frame) => Math.min(frame, Math.max(0, frames - 1)));
     if (!frames) setPlaying(false);
@@ -405,24 +444,29 @@ export default function DirectorEditor({
     };
   }, [modal]);
   useEffect(() => {
+    const controller = new AbortController();
     const id =
       localStorage.getItem(`director-last-render:${documentKey}`) ??
       (documentKey === "production"
         ? localStorage.getItem("director-last-render")
         : null);
     if (id && /^[a-f0-9-]{36}$/.test(id))
-      fetch(`/api/exports/${id}`)
+      fetch(`/api/exports/${id}`, { signal: controller.signal })
         .then((r) => {
           if (!r.ok) throw Error("Eksporten er ikke tilgængelig");
           return r.json();
         })
-        .then(setRenderJob)
+        .then((job) => {
+          if (!controller.signal.aborted) setRenderJob(job);
+        })
         .catch(() => {});
-    fetch("/api/exports")
-      .then((r) => r.json())
-      .then((v) => setCapability(v.available === true))
-      .catch(() => setCapability(false));
-  }, []);
+    void checkCapability();
+    return () => {
+      controller.abort();
+      capabilityRequest.current?.abort();
+      capabilityRequest.current = null;
+    };
+  }, [documentKey, checkCapability]);
   useEffect(() => {
     if (!playing) return;
     const start = performance.now(),
@@ -2445,21 +2489,48 @@ export default function DirectorEditor({
                     <button
                       className="button primary full-width"
                       onClick={exportMovie}
-                      disabled={!!busy || !capability || !shots.length}
+                      disabled={
+                        !!busy ||
+                        checkingCapability ||
+                        !capability?.available ||
+                        !shots.length
+                      }
                     >
                       <Film size={15} />
-                      {capability
-                        ? "Eksportér animatic"
-                        : "Lokal render er ikke aktiveret"}
+                      {checkingCapability
+                        ? "Kontrollerer renderprofil …"
+                        : capability?.available
+                          ? "Eksportér animatic"
+                          : "Lokal render er ikke klar"}
                     </button>
                   )}
-                  {!capability && (
+                  {!capability?.available && (
                     <p className="capability-note">
+                      {capability?.reason}
+                      {capability?.reason ? ". " : ""}
                       Storyboard og projektpakke virker i browseren. MP4 kræver
                       den lokale renderworker med FFmpeg; cloud-render er ikke
                       tilkoblet.
                     </p>
                   )}
+                  <div className="render-capability" aria-live="polite">
+                    {capability?.available && (
+                      <p className="capability-note">
+                        720p / 24 fps · H.264 / AAC · dansk tekst · lydmåling
+                        afprøvet på serveren.
+                      </p>
+                    )}
+                    <button
+                      className="text-button"
+                      disabled={checkingCapability || !!busy}
+                      onClick={() => void checkCapability(true)}
+                    >
+                      <RefreshCw size={14} />{" "}
+                      {checkingCapability
+                        ? "Kontrollerer …"
+                        : "Kontrollér render igen"}
+                    </button>
+                  </div>
                 </div>
                 {rightsWarnings(p).length > 0 && (
                   <p className="rights-warning">

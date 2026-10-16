@@ -1,0 +1,86 @@
+{
+  "checks": [
+    "actual 30-frame H264/AAC encode, decode, FFprobe and EBU R128 passed",
+    "21 concurrent callers share one probe; cached refresh is bounded",
+    "missing executable, missing font and invalid font fail with actual dependencies",
+    "executable claiming all filters and returning zero is rejected when no actual movie exists",
+    "deadline kills stalled native process",
+    "all success/failure probe directories are removed"
+  ],
+  "results": {
+    "healthy": {
+      "available": true,
+      "profile": "local-only",
+      "cloudConnected": false,
+      "checkedAt": "2026-10-16T23:34:33.309Z",
+      "reason": "Lokal render er afprøvet og klar",
+      "checks": [
+        "FFmpeg og FFprobe starter",
+        "Billede-, overgangs-, tekst- og lydfiltre findes",
+        "30 faktiske H.264-frames, crossfade og dansk tekst kodet",
+        "AAC stereo / 48 kHz og varighed verificeret af FFprobe",
+        "Filmens billede og lyd er afkodet; lyden er målt med EBU R128"
+      ],
+      "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+      "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers",
+      "fontSha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+    },
+    "missingFfmpeg": {
+      "available": false,
+      "profile": "local-only",
+      "cloudConnected": false,
+      "checkedAt": "2026-10-16T23:34:34.054Z",
+      "reason": "ffmpeg er ikke installeret eller findes ikke i serverens PATH",
+      "checks": []
+    },
+    "missingFont": {
+      "available": false,
+      "profile": "local-only",
+      "cloudConnected": false,
+      "checkedAt": "2026-10-16T23:34:34.057Z",
+      "reason": "Skrifttypen DejaVu Sans mangler på render-serveren",
+      "checks": [
+        "FFmpeg og FFprobe starter",
+        "Billede-, overgangs-, tekst- og lydfiltre findes"
+      ],
+      "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+      "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+    },
+    "invalidFont": {
+      "available": false,
+      "profile": "local-only",
+      "cloudConnected": false,
+      "checkedAt": "2026-10-16T23:34:34.306Z",
+      "reason": "Skrifttypen kunne ikke afkodes med danske bogstaver",
+      "checks": [
+        "FFmpeg og FFprobe starter",
+        "Billede-, overgangs-, tekst- og lydfiltre findes"
+      ],
+      "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+      "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+    },
+    "falseClaims": {
+      "available": false,
+      "profile": "local-only",
+      "cloudConnected": false,
+      "checkedAt": "2026-10-16T23:34:34.619Z",
+      "reason": "ffprobe kunne ikke gennemføre prøverenderingen",
+      "checks": [
+        "FFmpeg og FFprobe starter",
+        "Billede-, overgangs-, tekst- og lydfiltre findes"
+      ],
+      "ffmpeg": "ffmpeg test executable",
+      "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers",
+      "fontSha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+    },
+    "timeout": {
+      "available": false,
+      "profile": "local-only",
+      "cloudConnected": false,
+      "checkedAt": "2026-10-16T23:34:34.931Z",
+      "reason": "Kontrollen overskred sin tidsgrænse",
+      "checks": []
+    }
+  },
+  "elapsedMs": 2236
+}

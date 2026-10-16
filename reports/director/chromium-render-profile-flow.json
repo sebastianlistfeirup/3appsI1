@@ -1,0 +1,63 @@
+{
+  "engine": "chromium",
+  "phases": [
+    {
+      "name": "start isolated production server with missing FFmpeg",
+      "at": "2026-10-16T23:34:33.543Z"
+    },
+    {
+      "name": "repair server environment and recheck from existing open editor",
+      "at": "2026-10-16T23:34:39.076Z"
+    },
+    {
+      "name": "passed",
+      "at": "2026-10-16T23:34:41.828Z"
+    }
+  ],
+  "checks": [
+    "actual missing executable disables GET and returns POST 503; cross-site gate runs before profile",
+    "UI explains actual missing tool while browser exports remain enabled",
+    "same editor recovers after server repair via actual synthetic encode/decode"
+  ],
+  "scans": [
+    {
+      "name": "desktop",
+      "violations": []
+    },
+    {
+      "name": "tablet",
+      "violations": []
+    },
+    {
+      "name": "mobile",
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "serverLogs": [
+    "▲ Next.js 16.4.2\n",
+    "- Local:         http://127.0.0.1:3107\n",
+    "- Network:       http://127.0.0.1:3107\n",
+    "✓ Ready in 124ms\n",
+    "✓ Running next.config.ts took 33ms\n",
+    "▲ Next.js 16.4.2\n- Local:         http://127.0.0.1:3107\n- Network:       http://127.0.0.1:3107\n✓ Ready in 115ms\n",
+    "✓ Running next.config.ts took 29ms\n"
+  ],
+  "profile": {
+    "available": true,
+    "profile": "local-only",
+    "cloudConnected": false,
+    "checkedAt": "2026-10-16T23:34:39.714Z",
+    "reason": "Lokal render er afprøvet og klar",
+    "checks": [
+      "FFmpeg og FFprobe starter",
+      "Billede-, overgangs-, tekst- og lydfiltre findes",
+      "30 faktiske H.264-frames, crossfade og dansk tekst kodet",
+      "AAC stereo / 48 kHz og varighed verificeret af FFprobe",
+      "Filmens billede og lyd er afkodet; lyden er målt med EBU R128"
+    ],
+    "ffmpeg": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers",
+    "ffprobe": "ffprobe version 7.1.5-0+deb13u1 Copyright (c) 2007-2026 the FFmpeg developers",
+    "fontSha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  }
+}

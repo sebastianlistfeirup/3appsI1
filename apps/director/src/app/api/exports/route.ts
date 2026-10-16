@@ -1,4 +1,5 @@
 import { after } from "next/server";
+import { renderCapability } from "../../../lib/server/render-profile";
 import {
   claimRenderInput,
   releaseRenderInput,
@@ -10,14 +11,19 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
-  return Response.json(
-    {
-      available: localRenderAvailable(request),
-      profile: "local-only",
-      cloudConnected: false,
-    },
-    { headers: { "Cache-Control": "no-store" } },
-  );
+  const capability = localRenderAvailable(request)
+    ? await renderCapability(
+        new URL(request.url).searchParams.get("refresh") === "1",
+      )
+    : {
+        available: false,
+        profile: "local-only",
+        cloudConnected: false,
+        reason: "Lokal render er ikke aktiveret for denne forbindelse",
+      };
+  return Response.json(capability, {
+    headers: { "Cache-Control": "no-store" },
+  });
 }
 export async function POST(request: Request) {
   if (!localRenderAvailable(request))
@@ -36,6 +42,12 @@ export async function POST(request: Request) {
   try {
     if (!request.headers.get("content-type")?.startsWith("application/json"))
       return Response.json({ error: "JSON-manifest kræves" }, { status: 415 });
+    const capability = await renderCapability();
+    if (!capability.available)
+      return Response.json(
+        { error: capability.reason, capability },
+        { status: 503, headers: { "Cache-Control": "no-store" } },
+      );
     const input = await readBoundedJson(request);
     const state = await createRender(input.project);
     after(() => executeRender(state.id));

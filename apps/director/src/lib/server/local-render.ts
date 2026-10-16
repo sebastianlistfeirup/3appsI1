@@ -3,6 +3,7 @@ import { promises as fs } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawn } from "node:child_process";
 import { AsyncLocalStorage } from "node:async_hooks";
+import { CAPTION_FONT } from "./render-profile";
 import { buildCaptionTrack, captionFile, type CaptionCue } from "../captions";
 import {
   inspectRaster,
@@ -454,7 +455,7 @@ async function segment(
       .replaceAll("\\", "\\\\")
       .replaceAll(":", "\\:")
       .replaceAll("'", "\\'");
-    videoFilter += `,drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf:textfile='${escaped}':expansion=none:fontsize=28:fontcolor=white:box=1:boxcolor=black@0.65:boxborderw=12:line_spacing=7:x=(w-text_w)/2:y=h-text_h-42:enable='gte(n,${cue.startFrame})*lt(n,${cue.endFrame})'`;
+    videoFilter += `,drawtext=fontfile=${CAPTION_FONT}:textfile='${escaped}':expansion=none:fontsize=28:fontcolor=white:box=1:boxcolor=black@0.65:boxborderw=12:line_spacing=7:x=(w-text_w)/2:y=h-text_h-42:enable='gte(n,${cue.startFrame})*lt(n,${cue.endFrame})'`;
   }
   await run("ffmpeg", [
     ...ffbase,
