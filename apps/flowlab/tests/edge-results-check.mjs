@@ -1,12 +1,9 @@
 import { chromium, expect } from "@playwright/test";
-import { existsSync } from "node:fs";
 import { writeFile, readFile } from "node:fs/promises";
 import { unzipSync, strFromU8 } from "fflate";
 import { execFileSync } from "node:child_process";
 const browser = await chromium.launch({
-  executablePath:
-    process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ??
-    (existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
+  executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
   args: ["--no-sandbox"],
 });
 const context = await browser.newContext({

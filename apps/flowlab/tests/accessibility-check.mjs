@@ -1,4 +1,3 @@
-import { existsSync } from "node:fs";
 import { chromium } from "@playwright/test";
 import { createRequire } from "node:module";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -7,9 +6,7 @@ const axe = createRequire(require.resolve("@axe-core/playwright"))(
   "axe-core",
 ).source;
 const browser = await chromium.launch({
-  executablePath:
-    process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ??
-    (existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
+  executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
   args: ["--no-sandbox"],
 });
 const summary = [];

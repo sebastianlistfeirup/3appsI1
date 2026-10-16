@@ -1,4 +1,3 @@
-import { existsSync } from "node:fs";
 import { chromium, firefox, webkit } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 const browserName = process.env.FLOWLAB_BROWSER ?? "chromium";
@@ -7,9 +6,7 @@ if (!browserType) throw new Error("Unknown browser");
 const browser = await browserType.launch(
   browserName === "chromium"
     ? {
-        executablePath:
-          process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ??
-          (existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
+        executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
         headless: true,
         args: ["--no-sandbox"],
       }

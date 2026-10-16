@@ -1,4 +1,3 @@
-import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
@@ -12,9 +11,7 @@ async function main() {
   const browser = await { chromium, firefox, webkit }[engine].launch({
     ...(engine === "chromium"
       ? {
-          executablePath:
-            process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ??
-            (existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
+          executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
           args: ["--no-sandbox"],
         }
       : {}),
