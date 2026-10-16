@@ -1,4 +1,5 @@
 import { CSV_FIELDS, createCsvImporter } from "@tre/flow-engine";
+import { datasetBytes, MAX_DATASET_BYTES } from "./datasets";
 import {
   validateDocument,
   type FlowDocument,
@@ -21,8 +22,17 @@ export function importWorkspace(text: string): FlowDocument {
     throw new Error("Modelpakken skal indeholde et FlowLab-arbejdsrum.");
   // Imported results are never evidence. Validate and recompute input, including old-format exports.
   const doc = validateDocument({ ...value, comparison: null, holdout: null });
-  if (doc.dataset) {
-    const { result, unit } = doc.dataset;
+  const datasets = [doc.dataset, ...doc.datasetHistory].filter(
+    (dataset) => dataset !== null,
+  );
+  if (new Set(datasets.map((dataset) => dataset.id)).size !== datasets.length)
+    throw new Error("Dataversionernes id’er må ikke gentages.");
+  if (datasetBytes(datasets) > MAX_DATASET_BYTES)
+    throw new Error(
+      "Dataversionerne overstiger datalagerets grænse på 32 MB. Eksportér eller fjern ældre dataversioner i det oprindelige arbejdsrum først.",
+    );
+  for (const dataset of datasets) {
+    const { result, unit } = dataset;
     if (
       result.rowCount !== result.rows.length + result.excludedRows ||
       result.issueCount < result.excludedRows
@@ -53,7 +63,7 @@ export function importWorkspace(text: string): FlowDocument {
         `Modelpakkens datagrundlag indeholder ${checked.excludedRows} ugyldige rækker. Importér den oprindelige CSV igen for et konkret kvalitetstjek.`,
       );
     // Derived duration/period summaries are recalculated from the preserved rows and explicit unit.
-    doc.dataset.result = {
+    dataset.result = {
       ...result,
       rows: checked.rows,
       durationMs: checked.durationMs,
@@ -62,6 +72,10 @@ export function importWorkspace(text: string): FlowDocument {
       warnings: [...new Set([...result.warnings, ...checked.warnings])],
     };
   }
+  if (datasetBytes(datasets) > MAX_DATASET_BYTES)
+    throw new Error(
+      "Det validerede datalager overstiger 32 MB. Brug færre eller mindre dataversioner.",
+    );
   return doc;
 }
 export function versionBytes(versions: ModelSnapshot[]): number {

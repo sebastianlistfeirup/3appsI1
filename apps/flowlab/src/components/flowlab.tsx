@@ -79,6 +79,7 @@ import {
   ResultsPanel,
 } from "./results";
 import DataWorkshop from "./data-workshop";
+import { replaceDataset } from "../lib/datasets";
 const ModelCanvas = dynamic(() => import("./model-canvas"), {
   ssr: false,
   loading: () => (
@@ -151,6 +152,13 @@ export default function FlowLab() {
     stale = comparison && !comparisonMatches(doc),
     issues = validateModel(model);
   const notify = (message: string) => setToast(message);
+  useEffect(() => {
+    if (!model.nodes.some((node) => node.id === selected))
+      setSelected(
+        model.nodes.find((node) => node.kind === "activity")?.id ??
+          model.nodes[0].id,
+      );
+  }, [model.nodes, selected]);
   useEffect(() => {
     if (!toast) return;
     const timer = setTimeout(() => setToast(""), 4500);
@@ -501,7 +509,8 @@ export default function FlowLab() {
   const comparisonReady =
     !!comparison &&
     comparison.status === "completed" &&
-    comparison.seeds.length >= 30;
+    comparison.seeds.length >= 30 &&
+    !stale;
   const diff = inputDiff(doc.baseline, doc.scenario).filter(
     (d) =>
       !["revision", "id"].includes(d.path) && !d.path.includes(".position."),
@@ -808,9 +817,9 @@ export default function FlowLab() {
                 <div className="notice stale-notice">
                   <History size={17} />
                   <p>
-                    Modellen eller motoren er opdateret. Resultater og rapport
-                    viser det senest fuldførte snapshot. Kør igen for at se
-                    effekten af dine nye antagelser.
+                    Modellen eller motoren er opdateret. Resultater viser det
+                    senest fuldførte snapshot. Kør igen for at se effekten af
+                    dine nye antagelser og eksportere en aktuel rapport.
                   </p>
                 </div>
               )}
@@ -1319,6 +1328,28 @@ export default function FlowLab() {
               {tab === "data" && (
                 <DataWorkshop
                   dataset={doc.dataset}
+                  datasetHistory={doc.datasetHistory}
+                  onExportWorkspace={() => workspaceTask("export")}
+                  onDeleteDataset={(id) => {
+                    update({
+                      ...doc,
+                      datasetHistory: doc.datasetHistory.filter(
+                        (dataset) => dataset.id !== id,
+                      ),
+                    });
+                    notify("Dataversionen er fjernet. Fortryd gendanner den.");
+                  }}
+                  onRestoreDataset={(id) => {
+                    const dataset = doc.datasetHistory.find(
+                      (item) => item.id === id,
+                    );
+                    if (dataset) {
+                      update(replaceDataset(doc, dataset));
+                      notify(
+                        "Dataversionen er gendannet; dine modelantagelser er uændrede.",
+                      );
+                    }
+                  }}
                   model={doc.scenario}
                   baseline={doc.baseline}
                   comparison={doc.comparison}
@@ -1330,11 +1361,17 @@ export default function FlowLab() {
                       "Holdout-vurderingen er gemt med den præcise baseline og dataperiode.",
                     );
                   }}
-                  onSave={(dataset) => {
-                    update({ ...doc, dataset });
-                    notify(
-                      "Validerede data er gemt lokalt. Modellen er fortsat ikke kalibreret.",
-                    );
+                  onSave={(dataset, allowRemoval) => {
+                    try {
+                      update(replaceDataset(doc, dataset, allowRemoval));
+                      notify(
+                        "Dataversionen er gemt lokalt. Modellen er fortsat ikke kalibreret.",
+                      );
+                      return true;
+                    } catch (error) {
+                      setError(workspaceError(error));
+                      return false;
+                    }
                   }}
                   onCalibrate={(nodeId, duration, sourceHash) => {
                     update({
@@ -1519,7 +1556,9 @@ export default function FlowLab() {
                       <p className="field-hint">
                         {comparisonReady
                           ? `${comparison!.seeds.length} fuldførte par · ${comparison!.engineVersion}`
-                          : "En komplet rapport kræver mindst 30 fuldførte, parrede kørsler."}
+                          : stale
+                            ? "Modellen er ændret. Kør sammenligningen igen, før du eksporterer den aktuelle rapport."
+                            : "En komplet rapport kræver mindst 30 fuldførte, parrede kørsler."}
                       </p>
                     </aside>
                   </div>

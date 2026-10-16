@@ -17,6 +17,7 @@ export interface HoldoutAssessment {
   model: FlowModel;
   seeds: number[];
   source: {
+    id?: string;
     name: string;
     sha256: string;
     unit: "iso" | "seconds" | "minutes";
@@ -71,6 +72,7 @@ export function assessHoldout(input: {
   runs: SimulationResult[];
   dataset: CsvImport;
   sourceName: string;
+  sourceId?: string;
   sourceHash: string;
   unit: "iso" | "seconds" | "minutes";
   periodStart: number;
@@ -322,6 +324,7 @@ export function assessHoldout(input: {
     model: structuredClone(model),
     seeds: runs.map((r) => r.seed),
     source: {
+      ...(input.sourceId ? { id: input.sourceId } : {}),
       name: input.sourceName,
       sha256: input.sourceHash,
       unit: input.unit,

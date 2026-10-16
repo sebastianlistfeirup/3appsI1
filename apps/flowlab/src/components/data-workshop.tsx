@@ -9,6 +9,9 @@ import {
   X,
   Database,
   ShieldCheck,
+  History,
+  RotateCcw,
+  Trash2,
 } from "lucide-react";
 import {
   CSV_FIELDS,
@@ -27,8 +30,17 @@ import { downloadFile } from "@tre/persistence";
 import { formatNumber, type Dataset } from "../lib/document";
 import HoldoutPanel from "./holdout-panel";
 import { ActivityPicker } from "./activity-picker";
+import {
+  planDatasetChange,
+  datasetBytes,
+  holdoutDataset,
+} from "../lib/datasets";
 export default function DataWorkshop({
   dataset,
+  datasetHistory,
+  onRestoreDataset,
+  onDeleteDataset,
+  onExportWorkspace,
   model,
   onSave,
   onCalibrate,
@@ -39,8 +51,12 @@ export default function DataWorkshop({
   onHoldout,
 }: {
   dataset: Dataset | null;
+  datasetHistory: Dataset[];
+  onRestoreDataset: (id: string) => void;
+  onDeleteDataset: (id: string) => void;
+  onExportWorkspace: () => void;
   model: FlowModel;
-  onSave: (dataset: Dataset) => void;
+  onSave: (dataset: Dataset, allowRemoval: boolean) => boolean;
   onCalibrate: (nodeId: string, duration: number, sourceHash: string) => void;
   baseline: FlowModel;
   comparison: Comparison | null;
@@ -57,13 +73,15 @@ export default function DataWorkshop({
     [error, setError] = useState(""),
     [progress, setProgress] = useState<number | null>(null),
     [exclude, setExclude] = useState(false),
+    [allowHistoryRemoval, setAllowHistoryRemoval] = useState(false),
     [observedActivity, setObservedActivity] = useState(""),
     [target, setTarget] = useState(
       model.nodes.find((n) => n.kind === "activity")?.id ?? "",
     );
   const input = useRef<HTMLInputElement>(null),
     worker = useRef<Worker | null>(null),
-    fileSelection = useRef(0);
+    fileSelection = useRef(0),
+    previewId = useRef("");
   useEffect(() => () => worker.current?.terminate(), []);
   const invalidateAnalysis = () => {
     worker.current?.terminate();
@@ -72,9 +90,11 @@ export default function DataWorkshop({
     setResult(null);
     setSha256("");
     setExclude(false);
+    setAllowHistoryRemoval(false);
   };
   const loadFile = async (next: File) => {
     const selection = ++fileSelection.current;
+    previewId.current = crypto.randomUUID();
     invalidateAnalysis();
     setFile(null);
     setHeaders([]);
@@ -185,6 +205,33 @@ export default function DataWorkshop({
     )
       ? target
       : (model.nodes.find((node) => node.kind === "activity")?.id ?? "");
+  const savePlan = useMemo(() => {
+    if (!result || !file || !sha256) return { plan: null, error: "" };
+    try {
+      return {
+        plan: planDatasetChange(
+          { dataset, datasetHistory },
+          {
+            id: previewId.current,
+            name: file.name,
+            importedAt: new Date().toISOString(),
+            sha256,
+            unit,
+            result,
+          },
+        ),
+        error: "",
+      };
+    } catch (error) {
+      return {
+        plan: null,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Dataversionen kunne ikke forberedes.",
+      };
+    }
+  }, [result, file, sha256, unit, dataset, datasetHistory]);
   return (
     <div className="data-workshop">
       <div className="section-heading">
@@ -423,21 +470,59 @@ export default function DataWorkshop({
                       rækker. Ingen værdier imputeres.
                     </label>
                   )}
+                  {savePlan.error && (
+                    <p className="error-box" role="alert">
+                      {savePlan.error}
+                    </p>
+                  )}
+                  {!!savePlan.plan?.removed.length && (
+                    <div className="retention-notice">
+                      <p>
+                        Datalageret bevarer op til fire dataversioner inden for
+                        32 MB. Den nye import kræver plads.
+                      </p>
+                      <button
+                        className="text-button"
+                        onClick={onExportWorkspace}
+                      >
+                        <ArrowDownToLine size={15} />
+                        Eksportér arbejdsrum før oprydning
+                      </button>
+                      <label className="checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={allowHistoryRemoval}
+                          onChange={(event) =>
+                            setAllowHistoryRemoval(event.target.checked)
+                          }
+                        />
+                        Jeg vil fjerne{" "}
+                        {savePlan.plan.removed
+                          .map((item) => item.name)
+                          .join(", ")}{" "}
+                        fra datalageret, når den nye version gemmes.
+                      </label>
+                      <p className="field-hint">
+                        Gemte vurderinger bevares, men fjernede kildedata kommer
+                        ikke med i senere rapportpakker. Eksportér først, hvis
+                        du skal beholde dem.
+                      </p>
+                    </div>
+                  )}
                   <button
                     className="button primary full"
                     disabled={
+                      !savePlan.plan ||
                       result.rows.length === 0 ||
-                      (result.excludedRows > 0 && !exclude)
+                      (result.excludedRows > 0 && !exclude) ||
+                      (!!savePlan.plan.removed.length && !allowHistoryRemoval)
                     }
                     onClick={() => {
-                      onSave({
-                        id: crypto.randomUUID(),
-                        name: file!.name,
-                        importedAt: new Date().toISOString(),
-                        sha256,
-                        unit,
-                        result,
-                      });
+                      if (
+                        !savePlan.plan ||
+                        !onSave(savePlan.plan.dataset, allowHistoryRemoval)
+                      )
+                        return;
                       setResult(null);
                       setFile(null);
                       setHeaders([]);
@@ -552,23 +637,25 @@ export default function DataWorkshop({
             </label>
             <button
               className="button secondary"
-              disabled={
-                !median ||
-                !selectedTarget ||
-                (!!result?.excludedRows && !exclude)
-              }
+              disabled={!median || !!result || !selectedTarget}
               onClick={() => {
-                if (median)
+                if (median && !result && dataset)
                   onCalibrate(
                     selectedTarget,
                     Math.round(median),
-                    result ? sha256 : dataset!.sha256,
+                    dataset.sha256,
                   );
               }}
             >
               Brug median som fast varighed
             </button>
           </div>
+          {result && (
+            <p className="field-hint">
+              Gem det validerede datagrundlag, før du overfører en varighed. Så
+              følger kildens version med dit arbejde.
+            </p>
+          )}
           <p className="notice-text">
             Dette ændrer én antagelse. Kalibrering kræver en separat
             holdout-periode og sammenligning med faktisk throughput og median
@@ -577,9 +664,83 @@ export default function DataWorkshop({
           </p>
         </section>
       )}
+      {dataset && (
+        <section className="panel dataset-history">
+          <div className="section-title">
+            <div>
+              <span className="eyebrow">DATAVERSIONER</span>
+              <h3>Bevar grundlaget for dine valg.</h3>
+            </div>
+            <span className="small-badge">
+              {1 + datasetHistory.length} / 4 ·{" "}
+              {formatNumber(
+                datasetBytes([dataset, ...datasetHistory]) / 1024 / 1024,
+                1,
+              )}{" "}
+              / 32 MB
+            </span>
+          </div>
+          <p className="field-hint">
+            Aktuelt: {dataset.name}. Tidligere versioner bevarer rensede rækker,
+            enhed og kildehash. Gendannelse ændrer datagrundlaget;
+            modelantagelser overføres fortsat kun ved dit valg.
+          </p>
+          {datasetHistory.length ? (
+            <div className="version-list">
+              {datasetHistory.map((version) => (
+                <div key={version.id}>
+                  <span className="version-icon">
+                    <History size={18} />
+                  </span>
+                  <span className="dataset-version-name">
+                    <strong>{version.name}</strong>
+                    <small>
+                      {new Date(version.importedAt).toLocaleString("da-DK")} ·{" "}
+                      {formatNumber(version.result.rows.length)} rækker ·{" "}
+                      {version.id.slice(0, 8)}
+                    </small>
+                  </span>
+                  <button
+                    className="text-button"
+                    onClick={() => {
+                      invalidateAnalysis();
+                      setFile(null);
+                      setHeaders([]);
+                      setObservedActivity("");
+                      onRestoreDataset(version.id);
+                    }}
+                  >
+                    <RotateCcw size={14} />
+                    Gendan data
+                  </button>
+                  <button
+                    className="icon-button"
+                    aria-label={`Fjern dataversion ${version.name}`}
+                    onClick={() => onDeleteDataset(version.id)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="field-hint">
+              Når du gemmer næste datagrundlag, lægges den aktuelle version i
+              historikken.
+            </p>
+          )}
+          <button className="text-button" onClick={onExportWorkspace}>
+            <ArrowDownToLine size={15} />
+            Eksportér alle dataversioner med arbejdsrummet
+          </button>
+        </section>
+      )}
       <HoldoutPanel
         key={dataset?.id ?? "no-dataset"}
         dataset={dataset}
+        sourceAvailable={
+          !!holdoutDataset({ dataset, datasetHistory, holdout: assessment })
+        }
         baseline={baseline}
         comparison={comparison}
         assessment={assessment}

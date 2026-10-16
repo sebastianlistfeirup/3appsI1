@@ -2,6 +2,7 @@ import { z } from "zod";
 import { comparisonSchema, datasetSchema, holdoutSchema } from "./validation";
 import {
   ENGINE_VERSION,
+  inputDiff,
   membershipTemplate,
   modelSchema,
   type FlowModel,
@@ -33,6 +34,7 @@ export interface FlowDocument {
   decision: string;
   versions: ModelSnapshot[];
   dataset: Dataset | null;
+  datasetHistory: Dataset[];
   comparison: Comparison | null;
   holdout: HoldoutAssessment | null;
   trainingDataHashes: string[];
@@ -51,6 +53,7 @@ export function initialDocument(): FlowDocument {
     decision: "",
     versions: [],
     dataset: null,
+    datasetHistory: [],
     comparison: null,
     holdout: null,
     trainingDataHashes: [],
@@ -66,15 +69,16 @@ const documentSchema = z.object({
   versions: z
     .array(
       z.object({
-        id: z.string(),
-        label: z.string(),
-        savedAt: z.string(),
+        id: z.string().min(1).max(100),
+        label: z.string().min(1).max(200),
+        savedAt: z.iso.datetime(),
         baseline: modelSchema,
         scenario: modelSchema,
       }),
     )
     .max(30),
   dataset: datasetSchema.nullable(),
+  datasetHistory: z.array(datasetSchema).max(3).default([]),
   comparison: comparisonSchema.nullable(),
   holdout: holdoutSchema.nullable().default(null),
   trainingDataHashes: z
@@ -102,12 +106,14 @@ export const formatMetric = (key: string, n: number | null) =>
         : key === "cost"
           ? `${formatNumber(n)} kr.`
           : formatNumber(n, n % 1 ? 1 : 0);
+export const sameModel = (left: FlowModel, right: FlowModel) =>
+  inputDiff(left, right).length === 0;
 export function comparisonMatches(doc: FlowDocument) {
   return (
     !!doc.comparison &&
     doc.comparison.engineVersion === ENGINE_VERSION &&
-    JSON.stringify(doc.baseline) === JSON.stringify(doc.comparison.baseline) &&
-    JSON.stringify(doc.scenario) === JSON.stringify(doc.comparison.scenario)
+    sameModel(doc.baseline, doc.comparison.baseline) &&
+    sameModel(doc.scenario, doc.comparison.scenario)
   );
 }
 

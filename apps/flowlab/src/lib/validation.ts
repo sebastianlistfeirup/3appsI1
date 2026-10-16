@@ -231,6 +231,7 @@ export const holdoutSchema = z.object({
   model: modelSchema,
   seeds: z.array(count.max(0xffffffff)).min(30).max(100),
   source: z.object({
+    id: z.string().min(1).max(100).optional(),
     name: z.string().max(255),
     sha256: z.string().regex(/^[a-f0-9]{64}$/),
     unit: z.enum(["iso", "seconds", "minutes"]),

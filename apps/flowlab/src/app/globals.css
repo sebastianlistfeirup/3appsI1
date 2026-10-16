@@ -3277,3 +3277,44 @@ textarea:focus {
   outline: 3px solid #007e76;
   outline-offset: 3px;
 }
+
+.retention-notice {
+  padding: 16px;
+  background: #fbf7e9;
+  border: 1px solid #e3dbc2;
+  border-radius: 9px;
+  margin: 18px 0;
+}
+.retention-notice p {
+  font-size: 13px;
+  line-height: 1.65;
+}
+.dataset-version-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.dataset-history .section-title {
+  flex-wrap: wrap;
+}
+.dataset-history .version-icon,
+.dataset-history .icon-button {
+  flex-shrink: 0;
+}
+@media (max-width: 760px) {
+  .dataset-history .version-list > div {
+    display: grid;
+    grid-template-columns: 31px minmax(0, 1fr) 34px;
+    align-items: start;
+  }
+  .dataset-history .dataset-version-name {
+    grid-column: 2 / 4;
+  }
+  .dataset-history .version-list .text-button {
+    grid-column: 2;
+    margin-left: 0;
+    justify-self: start;
+  }
+  .dataset-history .version-list .icon-button {
+    grid-column: 3;
+  }
+}

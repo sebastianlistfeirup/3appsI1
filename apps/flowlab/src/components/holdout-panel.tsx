@@ -15,9 +15,15 @@ import {
   type HoldoutAssessment,
 } from "@tre/flow-engine";
 import { downloadFile } from "@tre/persistence";
-import { formatMetric, formatNumber, type Dataset } from "../lib/document";
+import {
+  formatMetric,
+  formatNumber,
+  sameModel,
+  type Dataset,
+} from "../lib/document";
 export default function HoldoutPanel({
   dataset,
+  sourceAvailable,
   baseline,
   comparison,
   assessment,
@@ -25,6 +31,7 @@ export default function HoldoutPanel({
   onSave,
 }: {
   dataset: Dataset | null;
+  sourceAvailable: boolean;
   baseline: FlowModel;
   comparison: Comparison | null;
   assessment: HoldoutAssessment | null;
@@ -68,15 +75,12 @@ export default function HoldoutPanel({
     selected = completion || (activities.length === 1 ? activities[0] : "");
   const stale =
     assessment &&
-    (JSON.stringify(assessment.model) !== JSON.stringify(baseline) ||
+    (!sameModel(assessment.model, baseline) ||
       assessment.engineVersion !== comparison?.engineVersion);
   const evaluate = () => {
     try {
       if (!dataset) throw new Error("Gem et valideret holdout-datasæt først.");
-      if (
-        !comparison ||
-        JSON.stringify(comparison.baseline) !== JSON.stringify(baseline)
-      )
+      if (!comparison || !sameModel(comparison.baseline, baseline))
         throw new Error("Kør sammenligningen på den aktuelle baseline først.");
       const periodStart = parseTimestamp(startValue, unit),
         periodEnd = parseTimestamp(end || defaultEnd, unit);
@@ -88,6 +92,7 @@ export default function HoldoutPanel({
           runs: comparison.baselineRuns,
           dataset: dataset.result,
           sourceName: dataset.name,
+          sourceId: dataset.id,
           sourceHash: dataset.sha256,
           unit,
           periodStart,
@@ -204,6 +209,23 @@ export default function HoldoutPanel({
       )}
       {assessment && (
         <div className="holdout-result">
+          {!sourceAvailable && (
+            <p className="notice-text">
+              Vurderingens rensede kildedata er fjernet fra arbejdsrummet. Tal
+              og kildehenvisning er bevaret; brug en tidligere eksport, hvis du
+              skal genskabe datagrundlaget.
+            </p>
+          )}
+          {dataset &&
+            (assessment.source.id
+              ? assessment.source.id !== dataset.id
+              : assessment.source.sha256 !== dataset.sha256 ||
+                assessment.source.unit !== dataset.unit) && (
+              <p className="notice-text">
+                Vurderingen nedenfor bygger på {assessment.source.name}. Du har
+                valgt {dataset.name} som grundlag for den næste vurdering.
+              </p>
+            )}
           {stale && (
             <p className="notice-text">
               Baseline er ændret siden denne vurdering. Nedenfor vises den gemte

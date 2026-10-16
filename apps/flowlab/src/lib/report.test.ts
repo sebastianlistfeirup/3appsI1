@@ -137,6 +137,16 @@ describe("Decision report integrity", () => {
       "0",
     ]);
   });
+  it("requires a new run after model input changes while preserving the last complete result", async () => {
+    const doc = initialDocument();
+    doc.comparison = await compareModels(doc.baseline, doc.scenario);
+    const prior = doc.comparison;
+    doc.scenario.resources[0].capacity++;
+    expect(() => createReport(doc)).toThrow("Modellen er ændret");
+    expect(doc.comparison).toBe(prior);
+    doc.comparison = await compareModels(doc.baseline, doc.scenario);
+    expect(createReport(doc).comparison.scenario.resources[0].capacity).toBe(5);
+  });
   it("validates persisted and imported structure before trusting metrics or datasets", () => {
     const doc = initialDocument();
     expect(validateDocument(doc)).toEqual(doc);

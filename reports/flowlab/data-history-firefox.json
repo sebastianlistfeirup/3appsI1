@@ -1,0 +1,45 @@
+{
+  "executedAt": "2026-10-16T21:27:02.904Z",
+  "results": [
+    {
+      "viewport": "desktop",
+      "checks": [
+        "Saved data required before manual calibration",
+        "Four versions retain exact rows and source identity",
+        "Report includes archived holdout source after three new imports",
+        "Fifth version requires explicit removal and offers a working backup",
+        "Retention removal can be undone; archived data can be restored and survives reload",
+        "Stale model input blocks report until 30 paired reruns complete",
+        "WCAG2AA/21AA zero violations; no overflow"
+      ],
+      "violations": []
+    },
+    {
+      "viewport": "tablet",
+      "checks": [
+        "Saved data required before manual calibration",
+        "Four versions retain exact rows and source identity",
+        "Report includes archived holdout source after three new imports",
+        "Fifth version requires explicit removal and offers a working backup",
+        "Retention removal can be undone; archived data can be restored and survives reload",
+        "Stale model input blocks report until 30 paired reruns complete",
+        "WCAG2AA/21AA zero violations; no overflow"
+      ],
+      "violations": []
+    },
+    {
+      "viewport": "mobile",
+      "checks": [
+        "Saved data required before manual calibration",
+        "Four versions retain exact rows and source identity",
+        "Report includes archived holdout source after three new imports",
+        "Fifth version requires explicit removal and offers a working backup",
+        "Retention removal can be undone; archived data can be restored and survives reload",
+        "Stale model input blocks report until 30 paired reruns complete",
+        "WCAG2AA/21AA zero violations; no overflow"
+      ],
+      "violations": []
+    }
+  ],
+  "errors": []
+}

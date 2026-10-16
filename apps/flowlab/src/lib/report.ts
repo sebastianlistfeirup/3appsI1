@@ -8,7 +8,10 @@ import {
   type HoldoutAssessment,
 } from "@tre/flow-engine";
 import { strToU8, zipSync } from "fflate";
+import { holdoutDataset } from "./datasets";
 import {
+  comparisonMatches,
+  sameModel,
   formatMetric,
   formatDifference,
   type FlowDocument,
@@ -31,7 +34,12 @@ export interface DecisionReport {
 }
 export function createReport(doc: FlowDocument): DecisionReport {
   if (!doc.comparison) throw new Error("Kør en sammenligning først.");
+  if (!comparisonMatches(doc))
+    throw new Error(
+      "Modellen er ændret siden den seneste sammenligning. Kør igen, før du eksporterer en rapport for de aktuelle input.",
+    );
   assertReportReady(doc.comparison);
+  const sourceDataset = holdoutDataset(doc);
   return {
     reportVersion: 1,
     generatedAt: new Date().toISOString(),
@@ -47,24 +55,31 @@ export function createReport(doc: FlowDocument): DecisionReport {
       "Modellen er ikke automatisk kalibreret mod faktisk drift. Ingen kundedata eller cloudintegration er tilkoblet.",
     ],
     diagnostics: [
-      ...new Set(
-        [
-          ...doc.comparison.baselineRuns,
-          ...doc.comparison.scenarioRuns,
-        ].flatMap((run) => run.warningCodes),
-      ),
-    ].map((code) => ({ code, message: describeEngineCode(code) })),
+      ...[
+        ...new Set(
+          [
+            ...doc.comparison.baselineRuns,
+            ...doc.comparison.scenarioRuns,
+          ].flatMap((run) => run.warningCodes),
+        ),
+      ].map((code) => ({ code, message: describeEngineCode(code) })),
+      ...(doc.holdout && !sourceDataset
+        ? [
+            {
+              code: "holdout_source_missing",
+              message:
+                "Det rensede holdout-grundlag er ikke længere i arbejdsrummet. Vurderingens tal og kildehenvisning er bevaret, men dens rå rækker kan ikke reproduceres fra denne rapportpakke alene.",
+            },
+          ]
+        : []),
+    ],
     comparison: doc.comparison,
     holdout: doc.holdout,
-    holdoutDataset:
-      doc.holdout && doc.dataset?.sha256 === doc.holdout.source.sha256
-        ? doc.dataset
-        : null,
+    holdoutDataset: sourceDataset,
     holdoutMatchesBaseline:
       !!doc.holdout &&
       doc.holdout.engineVersion === doc.comparison.engineVersion &&
-      JSON.stringify(doc.holdout.model) ===
-        JSON.stringify(doc.comparison.baseline),
+      sameModel(doc.holdout.model, doc.comparison.baseline),
   };
 }
 import type { ReportFonts } from "./pdf";
