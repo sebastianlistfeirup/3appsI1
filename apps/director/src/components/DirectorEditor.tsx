@@ -66,6 +66,7 @@ import {
   type Vector,
 } from "@tre/scene-format";
 import { SceneViewport } from "./SceneViewport";
+import { ShotFrame as Frame } from "./ShotFrame";
 import { SequencePreview } from "./SequencePreview";
 import { PreviewAudio } from "../lib/preview-audio";
 import { renderFrame } from "../lib/scene-renderer";
@@ -76,7 +77,6 @@ import {
   importGlb,
   verifyMedia,
 } from "../lib/project-files";
-import { storyboardPdf } from "../lib/storyboard-pdf";
 
 type Tab = "scene" | "storyboard" | "story";
 type Modal = "export" | "import" | "help" | "versions" | null;
@@ -161,23 +161,6 @@ function IconButton({
     >
       {children}
     </button>
-  );
-}
-function Frame({ project, shot }: { project: Project; shot: Shot }) {
-  const media = project.media.find((m) => m.id === shot.mediaId);
-  return media?.kind === "video" ? (
-    <video src={media.dataUrl} muted preload="metadata" />
-  ) : media?.kind === "image" || shot.frame ? (
-    <img
-      src={media?.kind === "image" ? media.dataUrl : shot.frame!}
-      alt={`Kameraframe: ${shot.name}`}
-      draggable={false}
-    />
-  ) : (
-    <div className="frame-placeholder">
-      <Camera size={24} />
-      <span>Tag kameraframe</span>
-    </div>
   );
 }
 export default function DirectorEditor({
@@ -711,6 +694,7 @@ export default function DirectorEditor({
         unsavedCopy = true;
       });
       const project = current.current;
+      let exportWarning = "";
       const slug = project.title
         .toLocaleLowerCase("da-DK")
         .replace(/[^a-zæøå0-9]+/g, "-");
@@ -726,16 +710,26 @@ export default function DirectorEditor({
           (await exportPackage(project)) as Uint8Array<ArrayBuffer>,
           "application/zip",
         );
-      if (kind === "pdf")
+      if (kind === "pdf") {
+        const { storyboardPdf } = await import("../lib/storyboard-pdf");
         downloadFile(
-          `${slug}-storyboard.pdf`,
-          (await storyboardPdf(project)) as Uint8Array<ArrayBuffer>,
+          `${slug}-storyboard-v${project.revision}.pdf`,
+          (await storyboardPdf(project, {
+            onProgress: (done, total) =>
+              setBusy(`Forbereder storyboard ${done} af ${total} …`),
+            onWarning: (message) => {
+              exportWarning = message;
+            },
+          })) as Uint8Array<ArrayBuffer>,
           "application/pdf",
         );
+      }
       setNotice(
         unsavedCopy
           ? "Lagring fejlede. Din aktuelle kladde er hentet som en lokal kopi."
-          : "Din eksport er klar til download.",
+          : exportWarning
+            ? `Din PDF er hentet. ${exportWarning}`
+            : "Din eksport er klar til download.",
       );
     });
   const exportMovie = () =>

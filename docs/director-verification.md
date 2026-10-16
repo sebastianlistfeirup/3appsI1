@@ -21,11 +21,16 @@ pnpm exec node apps/director/tests/a11y-smoke.mjs
 LIBRARY_ENGINE=chromium pnpm exec node apps/director/tests/library-flow.mjs
 LIBRARY_ENGINE=firefox pnpm exec node apps/director/tests/library-flow.mjs
 LIBRARY_ENGINE=webkit pnpm exec node apps/director/tests/library-flow.mjs
+STORYBOARD_ENGINE=chromium pnpm exec node apps/director/tests/storyboard-flow.mjs
+STORYBOARD_ENGINE=firefox pnpm exec node apps/director/tests/storyboard-flow.mjs
+STORYBOARD_ENGINE=webkit pnpm exec node apps/director/tests/storyboard-flow.mjs
 ```
 
 Cross-browser covers Chromium, Firefox and WebKit with native capabilities and with WebGL explicitly disabled: initial frames, immutable edit, undo, GLB load/capture, reload, modal focus/Escape, storyboard and page errors. Editor flow adds malformed imports, full ZIP/GLB roundtrip, duration/crossfade/reorder and responsive empty/error states. Axe checks ten desktop/mobile views and dialogs against WCAG2A/2AA/2.1AA tags. Automated scans do not constitute a full accessibility certification.
 
 The production-library flow creates independent empty and sample films, duplicates and edits a copy, restores the last-opened film, imports a project as a new film and preserves invalid/future documents for raw backup. It injects a real IndexedDB quota error and proves a rejected save blocks switching films while the current memory copy remains downloadable. It also imports an own-image-only film with no camera frames and verifies that reload and bulk camera capture preserve the actual media. Every engine checks desktop/tablet/mobile overflow and six automated accessibility states.
+
+The storyboard gate uses an actual red-then-blue clip and checks that source trim produces the blue PDF image, full long multilingual dialogue/notes survive, the embedded manifest matches the sources and actual image hashes, and export leaves the project unchanged. See `docs/director-storyboard.md` for the browser-decoding boundary and required Poppler commands.
 
 ## Render and recovery gate
 

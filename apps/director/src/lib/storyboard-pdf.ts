@@ -1,203 +1,522 @@
+import { PDFDocument, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit";
 import {
+  parseProject,
   orderedShots,
   sceneForShot,
   timecode,
+  timeline,
+  totalFrames,
   type Project,
+  type Shot,
 } from "@tre/scene-format";
-import { dataUrlBytes } from "./project-files";
-const latin = (s: string) =>
-  Uint8Array.from(s, (c) => (c.charCodeAt(0) <= 255 ? c.charCodeAt(0) : 45));
-const concat = (chunks: Uint8Array[]) => {
-  const all = new Uint8Array(chunks.reduce((n, c) => n + c.length, 0));
-  let at = 0;
-  for (const c of chunks) {
-    all.set(c, at);
-    at += c.length;
-  }
-  return all;
-};
-const esc = (s: string) =>
-  s
-    .replaceAll("\\", "\\\\")
-    .replaceAll("(", "\\(")
-    .replaceAll(")", "\\)")
-    .replace(/[\r\n]/g, " ");
-function lines(text: string, length = 58) {
-  const words = text.split(/\s+/);
-  const result: string[] = [];
-  let line = "";
-  for (const word of words) {
-    if ((line + " " + word).length > length && line) {
-      result.push(line);
-      line = "";
+import { dataUrlBytes, sha256 } from "./project-files";
+import { shotPoster, type ShotPoster } from "./shot-poster";
+
+export interface StoryboardFonts {
+  regular: Uint8Array;
+  bold: Uint8Array;
+  license: string;
+}
+interface StoryboardOptions {
+  fonts?: StoryboardFonts;
+  poster?: (project: Project, shot: Shot) => Promise<ShotPoster | null>;
+  onProgress?: (completed: number, total: number) => void;
+  onWarning?: (message: string) => void;
+}
+let fontsRequest: Promise<StoryboardFonts> | null = null;
+async function loadFonts() {
+  if (!fontsRequest)
+    fontsRequest = Promise.all(
+      ["DejaVuSans.ttf", "DejaVuSans-Bold.ttf", "DejaVu-LICENSE.txt"].map(
+        async (name) => {
+          const response = await fetch(`/fonts/${name}`);
+          if (!response.ok)
+            throw Error(
+              "Storyboardets skrifter kunne ikke indlæses. Prøv igen.",
+            );
+          return new Uint8Array(await response.arrayBuffer());
+        },
+      ),
+    )
+      .then(([regular, bold, license]) => ({
+        regular,
+        bold,
+        license: new TextDecoder().decode(license),
+      }))
+      .catch((error) => {
+        fontsRequest = null;
+        throw error;
+      });
+  return fontsRequest;
+}
+
+/** Measured line wrapping preserves paragraphs and splits long tokens without dropping text. */
+export function wrapPdfText(
+  value: string,
+  font: PDFFont,
+  size: number,
+  width: number,
+) {
+  const lines: string[] = [];
+  for (const paragraph of value.replace(/\r\n?/g, "\n").split("\n")) {
+    let line = "";
+    for (const word of paragraph.replace(/\t/g, "    ").split(/ +/)) {
+      if (!word) continue;
+      const next = line ? `${line} ${word}` : word;
+      if (font.widthOfTextAtSize(next, size) <= width) {
+        line = next;
+        continue;
+      }
+      if (line) {
+        lines.push(line);
+        line = "";
+      }
+      for (const character of word) {
+        if (line && font.widthOfTextAtSize(line + character, size) > width) {
+          lines.push(line);
+          line = "";
+        }
+        line += character;
+      }
     }
-    line += (line ? " " : "") + word;
+    lines.push(line);
   }
-  if (line) result.push(line);
-  return result;
+  return lines;
 }
-async function jpeg(frame: string) {
-  return new Promise<{ bytes: Uint8Array; width: number; height: number }>(
-    (resolve, reject) => {
-      const image = new Image();
-      image.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = 1280;
-        canvas.height = 720;
-        const ctx = canvas.getContext("2d")!;
-        ctx.fillStyle = "#161a22";
-        ctx.fillRect(0, 0, 1280, 720);
-        const ratio = Math.min(1280 / image.width, 720 / image.height);
-        ctx.drawImage(
-          image,
-          (1280 - image.width * ratio) / 2,
-          (720 - image.height * ratio) / 2,
-          image.width * ratio,
-          image.height * ratio,
-        );
-        resolve({
-          bytes: dataUrlBytes(canvas.toDataURL("image/jpeg", 0.88)),
-          width: 1280,
-          height: 720,
-        });
-      };
-      image.onerror = () =>
-        reject(Error("Et storyboard-frame kunne ikke åbnes"));
-      image.src = frame;
-    },
-  );
-}
-export async function storyboardPdf(p: Project) {
-  const shots = orderedShots(p);
+
+export async function storyboardPdf(
+  input: Project,
+  options: StoryboardOptions = {},
+) {
+  const p = parseProject(input),
+    shots = orderedShots(p);
   if (!shots.length) throw Error("Tilføj et shot først");
-  const images = await Promise.all(
-    shots.map((s) => {
-      const m = p.media.find((m) => m.id === s.mediaId);
-      const frame = m?.kind === "image" ? m.dataUrl : s.frame;
-      return frame ? jpeg(frame) : Promise.resolve(null);
-    }),
-  );
-  const objects: Uint8Array[] = [];
-  const add = (body: string | Uint8Array) => {
-    objects.push(typeof body === "string" ? latin(body) : body);
-    return objects.length;
+  const doc = await PDFDocument.create(),
+    fonts = options.fonts ?? (await loadFonts());
+  doc.registerFontkit(fontkit);
+  const regular = await doc.embedFont(fonts.regular, { subset: true }),
+    bold = await doc.embedFont(fonts.bold, { subset: true });
+  doc.setTitle(`${p.title} · storyboard`);
+  doc.setAuthor("Director");
+  doc.setCreator("Director · lokalt filmværksted");
+  doc.setProducer("Director / pdf-lib");
+  doc.setLanguage("da-DK");
+  const color = {
+    paper: rgb(0.953, 0.945, 0.914),
+    ink: rgb(0.1, 0.15, 0.18),
+    muted: rgb(0.34, 0.39, 0.4),
+    copper: rgb(0.61, 0.28, 0.12),
+    line: rgb(0.76, 0.76, 0.7),
+    dark: rgb(0.086, 0.102, 0.133),
   };
-  add("<< /Type /Catalog /Pages 2 0 R >>");
-  add("");
-  const font = add(
-    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>",
-  );
-  const bold = add(
-    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>",
-  );
-  const pageIds: number[] = [];
-  for (let page = 0; page < Math.ceil(shots.length / 2); page++) {
-    let commands = "0.95 0.94 0.9 rg 0 0 842 595 re f\n";
-    const write = (
-      s: string,
-      x: number,
-      y: number,
-      size = 11,
-      b = false,
-      color = ".15 .18 .2",
-    ) => {
-      commands += `${color} rg BT /${b ? "B" : "F"} ${size} Tf ${x} ${y} Td (${esc(s)}) Tj ET\n`;
-    };
-    write("DIRECTOR  /  STORYBOARD", 38, 553, 10, true, ".65 .31 .17");
-    write(p.title, 38, 518, 26, true);
-    write(
-      `24 fps  |  16:9  |  Revision ${p.revision}  |  ${timecode(shots.reduce((n, s) => n + s.durationFrames - s.transitionFrames, 0))}`,
+  const glyphs = new Set(regular.getCharacterSet()),
+    boldGlyphs = new Set(bold.getCharacterSet()),
+    unsupported = new Set<string>(),
+    warnings: string[] = [];
+  const safe = (value: string, font = regular) =>
+    Array.from(value)
+      .map((char) => {
+        if (/^[\n\r\t]$/.test(char)) return char;
+        const point = char.codePointAt(0)!;
+        if ((font === bold ? boldGlyphs : glyphs).has(point)) return char;
+        const code = `U+${point.toString(16).toUpperCase().padStart(4, "0")}`;
+        unsupported.add(code);
+        return `[${code}]`;
+      })
+      .join("");
+  const draw = (
+    page: PDFPage,
+    value: string,
+    x: number,
+    y: number,
+    size = 10,
+    font = regular,
+    ink = color.ink,
+  ) => {
+    page.drawText(safe(value, font).replace(/[\r\n\t]/g, " "), {
+      x,
+      y,
+      size,
+      font,
+      color: ink,
+    });
+  };
+  const fit = (value: string, font: PDFFont, max: number, width: number) =>
+    Math.min(
+      max,
+      (max * width) /
+        Math.max(1, font.widthOfTextAtSize(safe(value, font), max)),
+    );
+  const page = (section: string) => {
+    const out = doc.addPage([842, 595]);
+    out.drawRectangle({
+      x: 0,
+      y: 0,
+      width: 842,
+      height: 595,
+      color: color.paper,
+    });
+    draw(out, `DIRECTOR  /  ${section}`, 38, 557, 9, bold, color.copper);
+    draw(out, p.title, 38, 518, fit(p.title, bold, 24, 766), bold);
+    draw(
+      out,
+      `24 fps  ·  16:9  ·  Revision ${p.revision}  ·  ${timecode(totalFrames(p))}`,
       38,
       493,
       10,
+      regular,
+      color.muted,
     );
-    const resources: string[] = [];
-    for (let col = 0; col < 2; col++) {
-      const index = page * 2 + col;
-      const shot = shots[index];
-      if (!shot) continue;
-      const x = 38 + col * 392,
-        img = images[index];
-      if (img) {
-        const imageId = add(
-          concat([
-            latin(
-              `<< /Type /XObject /Subtype /Image /Width ${img.width} /Height ${img.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${img.bytes.length} >>\nstream\n`,
-            ),
-            img.bytes,
-            latin("\nendstream"),
-          ]),
-        );
-        resources.push(`/Im${col} ${imageId} 0 R`);
-        commands += `q 366 0 0 205.875 ${x} 269 cm /Im${col} Do Q\n`;
-      } else {
-        commands += `.1 .13 .16 rg ${x} 269 366 206 re f\n`;
-        write("Kameraframe mangler", x + 100, 365, 12, false, ".7 .7 .7");
-      }
-      write(
-        `SHOT ${String(index + 1).padStart(2, "0")}  /  ${shot.durationFrames / 24} sek.`,
-        x,
-        247,
-        10,
-        true,
-        ".65 .31 .17",
-      );
-      write(shot.name, x, 222, 17, true);
-      let y = 199;
-      for (const line of lines(shot.dialogue, 53).slice(0, 4)) {
-        write(line, x, y, 11);
-        y -= 15;
-      }
-      y -= 13;
-      for (const line of lines(shot.notes, 64).slice(0, 3)) {
-        write(line, x, y, 9, false, ".35 .38 .38");
-        y -= 13;
-      }
-      const scene = sceneForShot(p, shot);
-      write(
-        `Scene v${scene.version}  /  ${shot.cameraId}  /  Shot v${shot.version}`,
-        x,
-        80,
-        9,
-      );
-      write(`${scene.rendererVersion}  |  ${shot.id}`, x, 65, 7);
+    out.drawLine({
+      start: { x: 38, y: 481 },
+      end: { x: 804, y: 481 },
+      thickness: 0.6,
+      color: color.line,
+    });
+    return out;
+  };
+  const continuation: {
+    index: number;
+    shot: Shot;
+    page: PDFPage;
+    x: number;
+  }[] = [];
+  const manifestShots: Record<string, unknown>[] = [];
+  let board: PDFPage;
+  const clipTimeline = timeline(p);
+  for (let index = 0; index < shots.length; index++) {
+    const shot = shots[index],
+      scene = sceneForShot(p, shot),
+      media = p.media.find((m) => m.id === shot.mediaId),
+      x = 38 + (index % 2) * 392;
+    if (index % 2 === 0) board = page("STORYBOARD");
+    let poster: ShotPoster | null = null,
+      posterError: string | null = null;
+    try {
+      poster = await (options.poster ?? shotPoster)(p, shot);
+    } catch (error) {
+      posterError =
+        error instanceof Error ? error.message : "Billedet kunne ikke læses";
+      warnings.push(`Shot ${index + 1}: ${posterError}`);
     }
-    write(
-      `Lokal produktion  /  ${page + 1} af ${Math.ceil(shots.length / 2)}`,
-      38,
-      28,
+    if (poster) {
+      const image = await doc.embedJpg(poster.bytes);
+      board!.drawImage(image, { x, y: 263, width: 366, height: 205.875 });
+    } else {
+      board!.drawRectangle({
+        x,
+        y: 263,
+        width: 366,
+        height: 205.875,
+        color: color.dark,
+      });
+      draw(
+        board!,
+        media?.kind === "video"
+          ? "Klipframe kan ikke vises"
+          : "Kameraframe mangler",
+        x + 34,
+        368,
+        13,
+        bold,
+        color.paper,
+      );
+      draw(
+        board!,
+        "Kilden er bevaret i projektet",
+        x + 34,
+        346,
+        10,
+        regular,
+        color.paper,
+      );
+    }
+    const sourceLabel =
+      media?.kind === "video"
+        ? `KLIP · fra ${timecode(shot.sourceIn)}`
+        : media?.kind === "image"
+          ? "EGET BILLEDE"
+          : shot.frameMode === "plan"
+            ? "2D-PLAN"
+            : "KAMERAFRAME";
+    draw(
+      board!,
+      `SHOT ${String(index + 1).padStart(2, "0")}  ·  ${shot.durationFrames / p.fps} sek.  ·  ${sourceLabel}`,
+      x,
+      246,
+      8.5,
+      bold,
+      color.copper,
+    );
+    let y = 223;
+    for (const line of wrapPdfText(safe(shot.name, bold), bold, 16, 366)) {
+      draw(board!, line, x, y, 16, bold);
+      y -= 20;
+    }
+    const blocks = [
+      ...wrapPdfText(
+        safe(shot.dialogue || "Ingen replik"),
+        regular,
+        10,
+        366,
+      ).map((line) => ({ line, note: false })),
+      { line: "", note: true },
+      ...wrapPdfText(safe(shot.notes || "Ingen noter"), regular, 9, 366).map(
+        (line) => ({ line, note: true }),
+      ),
+    ];
+    let overflow = false;
+    for (const item of blocks) {
+      if (y < 100) {
+        overflow = true;
+        break;
+      }
+      draw(
+        board!,
+        item.line,
+        x,
+        y,
+        item.note ? 9 : 10,
+        regular,
+        item.note ? color.muted : color.ink,
+      );
+      y -= 14;
+    }
+    if (overflow) continuation.push({ index, shot, page: board!, x });
+    draw(
+      board!,
+      `Scene v${scene.version}  ·  Shot v${shot.version}  ·  ${shot.cameraId}`,
+      x,
+      65,
+      8,
+      regular,
+      color.muted,
+    );
+    draw(
+      board!,
+      shot.id,
+      x,
+      52,
+      fit(shot.id, regular, 7, 366),
+      regular,
+      color.muted,
+    );
+    manifestShots.push({
+      order: index + 1,
+      id: shot.id,
+      version: shot.version,
+      name: shot.name,
+      sceneVersionId: scene.id,
+      sceneVersion: scene.version,
+      camera: scene.cameras.find((c) => c.id === shot.cameraId),
+      rendererVersion: shot.frameRenderer ?? scene.rendererVersion,
+      frameMode: media ? media.kind : shot.frameMode,
+      timeline: {
+        startFrame: clipTimeline[index].startFrame,
+        endFrame: clipTimeline[index].endFrame,
+        durationFrames: shot.durationFrames,
+        transitionFrames: shot.transitionFrames,
+      },
+      source: media
+        ? {
+            id: media.id,
+            name: media.name,
+            sha256: media.sha256,
+            bytes: media.bytes,
+            sourceIn: shot.sourceIn,
+            sourceOutExclusive: shot.sourceIn + shot.durationFrames,
+            clipAudio: shot.clipAudio,
+            rights: media.rights,
+            provenance: media.source,
+          }
+        : null,
+      cameraFrameSha256:
+        !media && shot.frame ? await sha256(dataUrlBytes(shot.frame)) : null,
+      poster: poster
+        ? {
+            source: poster.source,
+            sourceFrame: poster.sourceFrame,
+            sha256: await sha256(poster.bytes),
+            width: 1280,
+            height: 720,
+          }
+        : { error: posterError ?? "Kameraframe mangler" },
+      dialogue: shot.dialogue,
+      notes: shot.notes,
+      tags: shot.tags,
+      objects: scene.objects.map((object) => ({
+        id: object.id,
+        name: object.name,
+        assetVersion: object.assetVersion,
+        assetId: object.assetId,
+        transform: object.transform,
+        color: object.color,
+        source: object.source,
+        rights: object.rights,
+      })),
+      assets: scene.assets.map(({ dataUrl: _, ...asset }) => asset),
+      light: scene.light,
+    });
+    options.onProgress?.(index + 1, shots.length);
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+  }
+  let textPage: PDFPage,
+    y = 0,
+    section = "PRODUKTIONSNOTER";
+  const freshTextPage = () => {
+    textPage = page(section);
+    y = 457;
+  };
+  const textBlock = (label: string, content: string, size = 11) => {
+    if (y < 100) freshTextPage();
+    draw(textPage, label, 38, y, 10, bold, color.copper);
+    y -= 22;
+    for (const line of wrapPdfText(safe(content), regular, size, 766)) {
+      if (y < 55) freshTextPage();
+      draw(textPage, line, 38, y, size);
+      y -= size + 5;
+    }
+    y -= 15;
+  };
+  for (const item of continuation) {
+    section = `SHOT ${String(item.index + 1).padStart(2, "0")} / FULD TEKST`;
+    freshTextPage();
+    draw(
+      item.page,
+      `Fuld replik og noter: side ${doc.getPageCount()}`,
+      item.x,
+      83,
+      8,
+      bold,
+      color.copper,
+    );
+    textBlock("INDSTILLING", item.shot.name, 15);
+    textBlock("REPLIK", item.shot.dialogue || "Ingen replik");
+    textBlock("NOTER", item.shot.notes || "Ingen noter");
+    if (item.shot.tags.length)
+      textBlock("KONTINUITETSMÆRKER", item.shot.tags.join(" · "));
+  }
+  section = "VERSIONSMANIFEST";
+  freshTextPage();
+  textBlock(
+    "PRODUKTION",
+    `${p.title}\nProjekt: ${p.id}\nRevision: ${p.revision}\nSekvens: ${totalFrames(p)} frames ved ${p.fps} fps · ${timecode(totalFrames(p))}`,
+  );
+  if (p.brief) textBlock("BRIEF OG TONE", p.brief);
+  textBlock(
+    "OM DENNE FIL",
+    "Storyboardets billeder er faste kameraframes, egne billeder eller det importerede videoklips første frame efter trim. En 2D-plan er mærket som 2D-plan. Overgange reducerer sekvensens samlede varighed. Fuld tekst, versionsreferencer, kamera, objekter, kildehashes og billedhashes er også indlejret i director-manifest.json. Originale medier hentes med projektpakken.",
+    10,
+  );
+  for (let index = 0; index < shots.length; index++) {
+    const shot = shots[index],
+      scene = sceneForShot(p, shot),
+      data = manifestShots[index],
+      media = p.media.find((m) => m.id === shot.mediaId),
+      range = clipTimeline[index];
+    textBlock(
+      `SHOT ${String(index + 1).padStart(2, "0")} · ${shot.name}`,
+      [
+        `Shot: ${shot.id} · v${shot.version}`,
+        `Scene: ${scene.id} · v${scene.version} · kamera ${shot.cameraId}`,
+        `Sekvens: ${timecode(range.startFrame)} → ${timecode(range.endFrame)} · ${shot.durationFrames} frames · overgang ${shot.transitionFrames} frames`,
+        media
+          ? `Kilde: ${media.name} · ${media.kind} · ${media.bytes} bytes\nSHA-256: ${media.sha256}\nTrim: ${shot.sourceIn} → ${shot.sourceIn + shot.durationFrames} frames (slut eksklusiv) · kliplyd ${shot.clipAudio ? "til" : "fra"}`
+          : `Billedtype: ${shot.frameMode === "plan" ? "2D-plan" : "kameraframe"} · renderer ${shot.frameRenderer ?? scene.rendererVersion}`,
+        `Scene-assets: ${scene.assets.length} · objektversioner: ${scene.objects.map((o) => `${o.name} v${o.assetVersion}`).join(", ") || "ingen"}`,
+        shot.tags.length ? `Kontinuitetsmærker: ${shot.tags.join(" · ")}` : "",
+        (data.poster as { error?: string }).error
+          ? `BILLEDE MANGLER: ${(data.poster as { error: string }).error}`
+          : "",
+      ]
+        .filter(Boolean)
+        .join("\n"),
       9,
     );
-    const content = add(
-      `<< /Length ${latin(commands).length} >>\nstream\n${commands}endstream`,
-    );
-    const pageId = add(
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 842 595] /Resources << /Font << /F ${font} 0 R /B ${bold} 0 R >> /XObject << ${resources.join(" ")} >> >> /Contents ${content} 0 R >>`,
-    );
-    pageIds.push(pageId);
   }
-  objects[1] = latin(
-    `<< /Type /Pages /Kids [${pageIds.map((id) => `${id} 0 R`).join(" ")}] /Count ${pageIds.length} >>`,
+  for (const [label, track] of [
+    ["VOICEOVER", p.voice],
+    ["MUSIK", p.music],
+  ] as const) {
+    if (!track) continue;
+    const media = p.media.find((m) => m.id === track.mediaId)!;
+    textBlock(
+      label,
+      `${media.name}\nSHA-256: ${media.sha256}\nStart i sekvens: ${track.startFrame} frames · kilde fra ${track.sourceIn} frames · fade ${track.fadeFrames} frames\nLydstyrke: ${track.volume} · ducking: ${track.duck ? "til" : "fra"}`,
+      9,
+    );
+  }
+  if (unsupported.size) {
+    const message = `${unsupported.size} tegn vises som Unicode-koder i PDF. Originalteksten er bevaret i det indlejrede manifest.`;
+    warnings.push(message);
+    textBlock(
+      "TEGN UDEN FOR DEN INDBYGGEDE SKRIFT",
+      `${message}\n${[...unsupported].join(", ")}`,
+      9,
+    );
+  }
+  const manifest = {
+    format: "director-storyboard-manifest",
+    schemaVersion: 1,
+    production: {
+      id: p.id,
+      title: p.title,
+      revision: p.revision,
+      brief: p.brief,
+      fps: p.fps,
+      aspect: p.aspect,
+      totalFrames: totalFrames(p),
+    },
+    shots: manifestShots,
+    voice: p.voice,
+    music: p.music,
+    warnings,
+  };
+  await doc.attach(
+    new TextEncoder().encode(JSON.stringify(manifest, null, 2)),
+    "director-manifest.json",
+    {
+      mimeType: "application/json",
+      description: "Versionsmanifest med fuld originaltekst og kildehashes",
+    },
   );
-  const chunks = [latin("%PDF-1.4\n%âãÏÓ\n")];
-  let offset = chunks[0].length;
-  const offsets = [0];
-  for (let i = 0; i < objects.length; i++) {
-    offsets.push(offset);
-    const bytes = concat([
-      latin(`${i + 1} 0 obj\n`),
-      objects[i],
-      latin("\nendobj\n"),
-    ]);
-    chunks.push(bytes);
-    offset += bytes.length;
+  await doc.attach(
+    new TextEncoder().encode(fonts.license),
+    "DejaVu-LICENSE.txt",
+    {
+      mimeType: "text/plain",
+      description: "Licens til indlejrede DejaVu-skrifter",
+    },
+  );
+  const pages = doc.getPages();
+  for (const [index, current] of pages.entries()) {
+    current.drawLine({
+      start: { x: 38, y: 40 },
+      end: { x: 804, y: 40 },
+      thickness: 0.6,
+      color: color.line,
+    });
+    draw(
+      current,
+      "Lokal produktion · dine egne materialer",
+      38,
+      23,
+      8,
+      regular,
+      color.muted,
+    );
+    const footer = `${index + 1} / ${pages.length}`;
+    draw(
+      current,
+      footer,
+      804 - regular.widthOfTextAtSize(footer, 8),
+      23,
+      8,
+      regular,
+      color.muted,
+    );
   }
-  const xref = `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n${offsets
-    .slice(1)
-    .map((n) => `${String(n).padStart(10, "0")} 00000 n \n`)
-    .join(
-      "",
-    )}trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${offset}\n%%EOF`;
-  chunks.push(latin(xref));
-  return concat(chunks);
+  if (warnings.length) options.onWarning?.(warnings.join(" "));
+  return doc.save();
 }

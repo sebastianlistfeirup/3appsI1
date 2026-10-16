@@ -13,7 +13,7 @@
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2026-10-16T20:51:38.393Z",
+  "timestamp": "2026-10-16T21:38:04.701Z",
   "url": "http://localhost:3002/",
   "toolOptions": {
     "runOnly": {
@@ -1826,7 +1826,7 @@
           "all": [],
           "none": [],
           "impact": "serious",
-          "html": "<span>Alle indstillinger er gemt som nye shotversioner.</span>",
+          "html": "<span>Kameraframes er gemt som nye shotversioner. Egne medier er bevaret.</span>",
           "target": [
             ".toast > span"
           ],

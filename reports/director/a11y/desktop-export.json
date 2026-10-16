@@ -13,7 +13,7 @@
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2026-10-16T20:51:32.335Z",
+  "timestamp": "2026-10-16T21:37:56.860Z",
   "url": "http://localhost:3002/",
   "toolOptions": {
     "runOnly": {
@@ -1826,7 +1826,7 @@
           "all": [],
           "none": [],
           "impact": "serious",
-          "html": "<small>Revision 6 · 2 sceneversioner</small>",
+          "html": "<small>Revision 5 · 1 sceneversioner</small>",
           "target": [
             "span > small:nth-child(3)"
           ],

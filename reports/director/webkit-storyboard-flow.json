@@ -1,0 +1,20 @@
+{
+  "engine": "webkit",
+  "browser": "27.2",
+  "checks": [
+    "actual H264 clip decoded at sourceIn=96 into blue PDF image, not red first frame or stale camera frame",
+    "full long Danish/Greek/Cyrillic dialogue and notes retained across pages",
+    "measured long-token wrapping",
+    "embedded JSON manifest preserves original text, immutable versions, timeline and source/poster hashes",
+    "PDF export leaves project byte-equivalent",
+    "trim creates new shot version and updates actual thumbnail source time"
+  ],
+  "posterRgb": [
+    0,
+    0,
+    252
+  ],
+  "pdfMetadata": "Title:           Blå efter kliptrim · Æøå Ω Привет · storyboard\nAuthor:          Director\nCreator:         Director · lokalt filmværksted\nProducer:        Director / pdf-lib\nCreationDate:    Fri Oct 16 21:37:26 2026 UTC\nModDate:         Fri Oct 16 21:37:26 2026 UTC\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           5\nEncrypted:       no\nPage size:       842 x 595 pts (A4)\nPage rot:        0\nFile size:       113225 bytes\nOptimized:       no\nPDF version:     1.7\n",
+  "pageErrors": [],
+  "verifiedAt": "2026-10-16T21:37:30.157Z"
+}

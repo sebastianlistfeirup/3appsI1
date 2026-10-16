@@ -13,7 +13,7 @@
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2026-10-16T20:51:37.972Z",
+  "timestamp": "2026-10-16T21:38:04.020Z",
   "url": "http://localhost:3002/",
   "toolOptions": {
     "runOnly": {
@@ -1310,26 +1310,26 @@
         {
           "any": [
             {
+              "id": "button-has-visible-text",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Element has inner text that is visible to screen readers"
+            },
+            {
               "id": "aria-label",
               "data": null,
               "relatedNodes": [],
               "impact": "critical",
               "message": "aria-label attribute exists and is not empty"
-            },
-            {
-              "id": "non-empty-title",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "critical",
-              "message": "Element has a title attribute"
             }
           ],
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" title=\"Fortryd (⌘/Ctrl Z)\" aria-label=\"Fortryd (⌘/Ctrl Z)\" class=\"icon-button \">",
+          "html": "<button class=\"wordmark\" aria-label=\"Director · produktioner\">DIRECTOR<span>FILMVÆRKSTED</span></button>",
           "target": [
-            "button[title=\"Fortryd (⌘/Ctrl Z)\"]"
+            ".wordmark"
           ]
         }
       ]
@@ -1456,7 +1456,7 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<div class=\"wordmark\">DIRECTOR<span>FILMVÆRKSTED</span></div>",
+          "html": "<button class=\"wordmark\" aria-label=\"Director · produktioner\">DIRECTOR<span>FILMVÆRKSTED</span></button>",
           "target": [
             ".wordmark"
           ]
@@ -1801,9 +1801,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<button type=\"button\" title=\"Fortryd (⌘/Ctrl Z)\" aria-label=\"Fortryd (⌘/Ctrl Z)\" class=\"icon-button \">",
+          "html": "<button class=\"wordmark\" aria-label=\"Director · produktioner\">DIRECTOR<span>FILMVÆRKSTED</span></button>",
           "target": [
-            "button[title=\"Fortryd (⌘/Ctrl Z)\"]"
+            ".wordmark"
           ]
         }
       ]
