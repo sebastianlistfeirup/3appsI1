@@ -3674,3 +3674,310 @@ textarea:focus {
     line-height: 1.6;
   }
 }
+
+.run-distribution {
+  margin: 22px 0;
+}
+.run-distribution > .section-title h3 {
+  font-size: 20px;
+  line-height: 1.4;
+  margin: 5px 0;
+}
+.run-distribution > .section-title p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.distribution-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  justify-content: space-between;
+  margin: 24px 0 12px;
+}
+.distribution-controls label {
+  margin: 0;
+  width: min(100%, 340px);
+}
+.distribution-controls > button {
+  margin-bottom: 9px;
+}
+.run-distribution > .field-hint {
+  font-size: 13px;
+  line-height: 1.8;
+  max-width: 860px;
+}
+.distribution-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 22px 0;
+}
+.distribution-summary > div {
+  border: 1px solid var(--line);
+  background: #f8faf8;
+  border-radius: 12px;
+  padding: 15px 18px;
+}
+.distribution-summary strong {
+  display: block;
+  font-family: Manrope, sans-serif;
+  font-size: 27px;
+}
+.distribution-summary span {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 5px;
+}
+.histogram {
+  display: flex;
+  padding: 20px 0 0;
+  gap: 13px;
+}
+.histogram-y {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 38px;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 0 0 28px;
+  text-align: right;
+}
+.histogram-bars {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  flex: 1;
+  min-width: 0;
+  border-bottom: 1px solid var(--line);
+  padding: 0 6px;
+}
+.histogram-bin {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 190px;
+  max-width: 180px;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 8px 8px 0 0;
+}
+.histogram-bin:only-child {
+  margin: auto;
+  width: 40%;
+  flex: 0 1 180px;
+}
+.histogram-bin:hover {
+  background: #e7f4ee;
+}
+.histogram-bar {
+  position: relative;
+  display: block;
+  width: 100%;
+  background: #138a7f;
+  border-radius: 6px 6px 0 0;
+  min-height: 0;
+  max-height: 145px;
+}
+.histogram-bin.selected .histogram-bar {
+  background: #005d58;
+  box-shadow: 0 0 0 3px #bbd8d0;
+}
+.histogram-bar b {
+  position: absolute;
+  left: 50%;
+  top: -24px;
+  transform: translateX(-50%);
+  color: var(--text);
+  font-size: 13px;
+}
+.histogram-bin-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 3px 1px;
+  white-space: nowrap;
+}
+.histogram-range {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+  margin: 10px 6px 0 51px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.histogram-range span:nth-child(2) {
+  text-align: center;
+}
+.histogram-help {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted);
+  margin: 14px 0 20px;
+}
+.distribution-quantiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  padding: 18px;
+  background: #eff7f3;
+  border: 1px solid #d5e8dd;
+  border-radius: 12px;
+  margin-bottom: 22px;
+}
+.distribution-quantiles span,
+.distribution-pair-detail span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.distribution-quantiles b {
+  font-size: 15px;
+}
+.distribution-empty {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #f5f8f6;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+.distribution-empty svg {
+  flex-shrink: 0;
+}
+.distribution-filter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: #f7f5ee;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.8;
+  margin-bottom: 18px;
+}
+.distribution-filter .text-button {
+  flex-shrink: 0;
+}
+.distribution-pairs {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.75fr) minmax(0, 2fr);
+  gap: 22px;
+  align-items: end;
+}
+.distribution-pairs label {
+  margin: 0;
+}
+.distribution-pair-detail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding-bottom: 8px;
+}
+.distribution-pair-detail strong {
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+.distribution-table {
+  margin: 24px 0;
+  font-size: 14px;
+}
+.distribution-table summary {
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 0;
+}
+.distribution-table .table-scroll {
+  margin-top: 14px;
+}
+.distribution-table table {
+  min-width: 580px;
+  font-size: 13px;
+}
+@media (max-width: 760px) {
+  .distribution-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    margin-top: 20px;
+  }
+  .distribution-controls label {
+    width: 100%;
+  }
+  .distribution-controls > button {
+    align-self: flex-start;
+  }
+  .distribution-summary {
+    gap: 7px;
+  }
+  .distribution-summary > div {
+    padding: 11px 9px;
+  }
+  .distribution-summary strong {
+    font-size: 24px;
+  }
+  .distribution-summary span {
+    font-size: 12px;
+  }
+  .histogram {
+    gap: 7px;
+  }
+  .histogram-bars {
+    gap: 5px;
+    padding: 0 2px;
+  }
+  .histogram-y {
+    min-width: 30px;
+    font-size: 12px;
+  }
+  .histogram-range {
+    margin-left: 37px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .histogram-range span:nth-child(2) {
+    order: 1;
+    flex-basis: 100%;
+    font-size: 12px;
+  }
+  .distribution-quantiles {
+    padding: 14px 10px;
+    gap: 7px;
+  }
+  .distribution-quantiles b {
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+  .distribution-filter {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .distribution-pairs {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .distribution-pair-detail {
+    gap: 9px;
+  }
+  .distribution-pair-detail strong {
+    font-size: 15px;
+  }
+  .distribution-pair-detail span {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+}

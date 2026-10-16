@@ -1,0 +1,52 @@
+{
+  "executedAt": "2026-10-16T21:58:05.618Z",
+  "browser": "chromium",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "checks": [
+        "Actual bucket counts and engine percentiles agree for 30 runs",
+        "Keyboard interval selection filters exact seed list",
+        "Selected pair and CSV preserve actual per-seed values and units",
+        "All seven metrics match numerical distribution",
+        "Constant golden deltas use one real bin",
+        "Missing alternative values remain unavailable in chart and 30-row table",
+        "WCAG2AA/21AA violations 0; no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "height": 768,
+      "checks": [
+        "Actual bucket counts and engine percentiles agree for 30 runs",
+        "Keyboard interval selection filters exact seed list",
+        "Selected pair and CSV preserve actual per-seed values and units",
+        "All seven metrics match numerical distribution",
+        "Constant golden deltas use one real bin",
+        "Missing alternative values remain unavailable in chart and 30-row table",
+        "WCAG2AA/21AA violations 0; no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "checks": [
+        "Actual bucket counts and engine percentiles agree for 30 runs",
+        "Keyboard interval selection filters exact seed list",
+        "Selected pair and CSV preserve actual per-seed values and units",
+        "All seven metrics match numerical distribution",
+        "Constant golden deltas use one real bin",
+        "Missing alternative values remain unavailable in chart and 30-row table",
+        "WCAG2AA/21AA violations 0; no viewport overflow"
+      ],
+      "axeViolations": 0
+    }
+  ],
+  "errors": []
+}

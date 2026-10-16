@@ -370,7 +370,7 @@ export default function CaseExplorer({
                               <p className="field-hint">
                                 Uafsluttet ved {formatTime(value.measuredUntil)}
                                 . Den endelige gennemløbstid er ukendt og indgår
-                                ikke i runnets gennemløbstid.
+                                ikke i kørslens gennemløbstid.
                               </p>
                             )}
                             {item.completedAt !== null &&
@@ -378,7 +378,7 @@ export default function CaseExplorer({
                                 value.model.observationStart && (
                                 <p className="field-hint">
                                   Afsluttet før målevinduet. Sagen indgår ikke i
-                                  runnets gennemløbstid eller throughput.
+                                  kørslens gennemløbstid eller throughput.
                                 </p>
                               )}
                           </>

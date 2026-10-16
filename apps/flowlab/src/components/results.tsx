@@ -15,6 +15,7 @@ import {
 } from "@tre/flow-engine";
 import { formatMetric, formatDifference, formatNumber } from "../lib/document";
 import CaseExplorer from "./case-explorer";
+import RunDistribution from "./run-distribution";
 export function MetricCards({ comparison }: { comparison: Comparison | null }) {
   return (
     <div className="metric-grid">
@@ -303,7 +304,7 @@ export function ResultsPanel({
       <div className="panel spread-panel">
         <div className="section-title">
           <div>
-            <h3>Hvor sikkert er udfaldet?</h3>
+            <h3>Alle målinger i samme overblik</h3>
             <p>10.–90.-percentil af forskellen mellem alternativ og baseline</p>
           </div>
           <Info size={20} />
@@ -350,6 +351,7 @@ export function ResultsPanel({
           afgørende.
         </p>
       </div>
+      <RunDistribution comparison={comparison} />
       <div className="panel">
         <h3>Sagerne, du endnu ikke kan se hele udfaldet af</h3>
         <div className="cohort-grid">
