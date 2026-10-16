@@ -58,6 +58,7 @@ try {
         "run",
         "--config",
         "vitest.db.config.ts",
+        ...process.argv.slice(2),
       ],
       {
         stdio: "inherit",
@@ -87,8 +88,24 @@ try {
       2,
     ),
   );
+} catch (error) {
+  console.error(
+    "Database verification failed:",
+    error instanceof Error ? error.message : "unknown error",
+  );
+  code = 1;
 } finally {
-  await db.stop();
-  await rm(directory, { recursive: true, force: true });
+  try {
+    await db.stop();
+    await rm(directory, { recursive: true, force: true });
+  } catch (error) {
+    console.error(
+      "Fixture cleanup failed:",
+      error instanceof Error ? error.message : "unknown error",
+    );
+    code = 1;
+  }
 }
-process.exitCode = code;
+// embedded-postgres's async-exit-hook hardcodes beforeExit=0. Cleanup is complete;
+// explicitly preserve Vitest's status so a failing suite cannot make CI green.
+process.exit(code);

@@ -1,0 +1,114 @@
+import { spawn, type ChildProcess } from "node:child_process";
+import { mkdir, open } from "node:fs/promises";
+import { createServer } from "node:net";
+const servers: ChildProcess[] = [];
+const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
+async function run(
+  command: string,
+  args: string[],
+  env: Record<string, string> = {},
+) {
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn(command, args, {
+      stdio: "inherit",
+      env: { ...process.env, ...env },
+    });
+    child.on("error", reject);
+    child.on("exit", (code, signal) =>
+      code === 0
+        ? resolve()
+        : reject(
+            new Error(
+              `${command} ${args.join(" ")} failed (${code ?? signal}).`,
+            ),
+          ),
+    );
+  });
+}
+async function start(app: string, port: number) {
+  await new Promise<void>((resolve, reject) => {
+    const probe = createServer();
+    probe.on("error", () =>
+      reject(
+        new Error(
+          `Port ${port} is in use. Stop existing app servers before this isolated browser suite.`,
+        ),
+      ),
+    );
+    probe.listen(port, "127.0.0.1", () => probe.close(() => resolve()));
+  });
+  const logfile = await open(`reports/ci/${app}-server.log`, "w");
+  const child = spawn("pnpm", ["--filter", `@tre/${app}`, "start"], {
+    detached: true,
+    stdio: ["ignore", logfile.fd, logfile.fd],
+    env: {
+      ...process.env,
+      DIRECTOR_LOCAL_RENDER: app === "director" ? "1" : undefined,
+    },
+  });
+  servers.push(child);
+  await logfile.close();
+  let startupError: Error | undefined;
+  child.on("error", (error) => (startupError = error));
+  const deadline = Date.now() + 60000;
+  while (Date.now() < deadline) {
+    if (startupError) throw startupError;
+    if (child.exitCode !== null)
+      throw new Error(
+        `${app} server exited before readiness; inspect reports/ci/${app}-server.log.`,
+      );
+    try {
+      const response = await fetch(
+        `http://${app === "director" ? "127.0.0.1" : "localhost"}:${port}/api/health`,
+        { signal: AbortSignal.timeout(2000) },
+      );
+      if (response.ok) return;
+    } catch {}
+    await pause(250);
+  }
+  throw new Error(`${app} server did not become ready in 60 seconds.`);
+}
+function stop(child: ChildProcess, signal: NodeJS.Signals) {
+  if (child.pid)
+    try {
+      process.kill(-child.pid, signal);
+    } catch {
+      child.kill(signal);
+    }
+}
+await mkdir("reports/ci", { recursive: true });
+try {
+  await start("studio", 3000);
+  await start("flowlab", 3001);
+  await start("director", 3002);
+  await run("pnpm", ["exec", "playwright", "test", "tests/e2e/studio.spec.ts"]);
+  await run("node", ["tools/browser/studio-a11y.cjs"]);
+  for (const browser of ["chromium", "firefox", "webkit"])
+    await run("node", ["apps/flowlab/tests/browser-check.mjs"], {
+      FLOWLAB_BROWSER: browser,
+    });
+  await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
+  await run("node", ["apps/flowlab/tests/canvas-check.mjs"]);
+  await run("node", ["apps/flowlab/tests/accessibility-check.mjs"]);
+  await run("pnpm", ["exec", "tsx", "apps/flowlab/tests/holdout-check.ts"]);
+  await run("node", ["apps/flowlab/tests/edge-results-check.mjs"]);
+  await run("node", ["apps/director/tests/cross-browser.mjs"]);
+  await run("node", ["apps/director/tests/editor-flow.mjs"]);
+  await run("node", ["apps/director/tests/storage-recovery.mjs"]);
+  await run("node", ["apps/director/tests/a11y-smoke.mjs"]);
+  await run("node", ["apps/director/tests/render-smoke.mjs"]);
+  await run("node", ["apps/director/tests/recovery-smoke.mjs"]);
+  await run("node", ["apps/director/tests/media-ui-flow.mjs"]);
+  for (const browser of ["firefox", "webkit"])
+    await run("node", ["apps/director/tests/media-ui-flow.mjs"], {
+      MEDIA_ENGINE: browser,
+      DIRECTOR_SKIP_RENDER: "1",
+    });
+  await run("node", ["apps/director/tests/clip-audio-smoke.mjs"]);
+  await run("node", ["apps/director/tests/cancellation-smoke.mjs"]);
+} finally {
+  for (const server of servers) stop(server, "SIGTERM");
+  await pause(500);
+  for (const server of servers)
+    if (server.exitCode === null) stop(server, "SIGKILL");
+}

@@ -12,12 +12,14 @@
     "dev:flowlab": "pnpm --filter @tre/flowlab dev",
     "dev:director": "pnpm --filter @tre/director dev",
     "build": "pnpm -r --workspace-concurrency=1 --filter \"./apps/*\" build",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm -r typecheck && tsc --project tsconfig.tools.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "check": "pnpm typecheck && pnpm test && pnpm build",
-    "test:db": "tsx tools/database/run-tests.ts"
+    "test:db": "tsx tools/database/run-tests.ts",
+    "test:browser": "tsx tools/ci/browser-suite.ts",
+    "test:a11y:studio": "node tools/browser/studio-a11y.cjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.11.1",
@@ -31,7 +33,9 @@
     "prettier": "3.9.10",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "jose": "6.2.12",
+    "zod": "4.6.7"
   },
   "type": "module"
 }

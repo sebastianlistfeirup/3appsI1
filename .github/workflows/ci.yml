@@ -1,0 +1,55 @@
+name: Verify three apps
+on:
+  push:
+    branches: [main, "task/**"]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.19.0"
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          version: 11.25.0
+          run_install: false
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm test:db
+      - run: pnpm build
+      - name: Install real browser and media dependencies
+        run: |
+          pnpm exec playwright install --with-deps chromium firefox webkit
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg poppler-utils pulseaudio fonts-dejavu-core
+      - name: Start isolated real audio sink for Firefox
+        run: |
+          pulse_dir="$(mktemp -d)"
+          chmod 700 "$pulse_dir"
+          PULSE_RUNTIME_PATH="$pulse_dir" pulseaudio -n --daemonize=yes --exit-idle-time=-1 --use-pid-file=no \
+            -L "module-null-sink sink_name=director_test" \
+            -L "module-native-protocol-unix socket=$pulse_dir/native auth-anonymous=1"
+          echo "PULSE_SERVER=unix:$pulse_dir/native" >> "$GITHUB_ENV"
+      - name: Browser, accessibility and actual export gates
+        run: pnpm test:browser
+      - name: Retain actual verification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: verification-${{ github.sha }}
+          path: |
+            reports/
+            test-results/
+          retention-days: 7

@@ -1,14 +1,20 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T20:25:05.483393+00:00",
+  "updatedAt": "2026-10-16T20:59:04.141328+00:00",
   "status": "building",
   "activeTasks": [
-    "F03-data-jobs",
-    "F04-auth-isolation",
-    "L03-model-audit",
-    "D06-glb"
+    "F04-api-ci",
+    "S06-project-recovery",
+    "L06-import-provenance",
+    "D07-media-library"
   ],
   "profile": "demo",
   "connectedIntegrations": [],
-  "verifiedLocalServices": ["PostgreSQL 17.10", "pg-boss 12.38.0"]
+  "verifiedLocalServices": [
+    "PostgreSQL 17.10",
+    "pg-boss 12.38.0",
+    "Asymmetric JWT \u2192 API \u2192 RLS",
+    "Separate worker process restart",
+    "Local FFmpeg H.264/AAC"
+  ]
 }

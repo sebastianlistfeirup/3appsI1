@@ -143,6 +143,7 @@ export function assertProject(project: Project): Project {
     project.runs,
     project.deliveries,
     project.reviews,
+    project.activity,
   ])
     if (duplicate(list.map((x) => x.id)))
       throw new Error("Projektet indeholder dublerede id’er.");
@@ -253,6 +254,55 @@ function assertMutable(p: Project) {
     );
 }
 
+export function assertProjectUpdate(previous: Project, next: Project): void {
+  for (const prior of previous.runs) {
+    const retained = next.runs.find((run) => run.id === prior.id);
+    if (!retained) throw new Error("Historiske runs kan ikke slettes.");
+    const {
+      state: _oldState,
+      completedAt: _oldCompleted,
+      ...oldSnapshot
+    } = prior;
+    const {
+      state: _newState,
+      completedAt: _newCompleted,
+      ...newSnapshot
+    } = retained;
+    if (JSON.stringify(oldSnapshot) !== JSON.stringify(newSnapshot))
+      throw new Error("Et runs låste input og bestilling kan ikke ændres.");
+    if (
+      prior.completedAt !== null &&
+      retained.completedAt !== prior.completedAt
+    )
+      throw new Error("Et runs færdigtidspunkt kan ikke ændres.");
+    const allowed =
+      prior.state === "awaiting_upload"
+        ? ["awaiting_upload", "review", "succeeded", "failed", "cancelled"]
+        : prior.state === "review"
+          ? ["review", "succeeded", "failed"]
+          : [prior.state];
+    if (!allowed.includes(retained.state))
+      throw new Error("Et afsluttet run kan ikke genåbnes eller ændre udfald.");
+  }
+  if (next.id !== previous.id || next.createdAt !== previous.createdAt)
+    throw new Error("Projektets identitet kan ikke ændres.");
+  for (const field of [
+    "briefVersions",
+    "artifacts",
+    "deliveries",
+    "reviews",
+    "activity",
+  ] as const) {
+    for (const prior of previous[field]) {
+      const retained = next[field].find((value) => value.id === prior.id);
+      if (!retained || JSON.stringify(retained) !== JSON.stringify(prior))
+        throw new Error(
+          "Historiske versioner og beviser kan ikke ændres eller slettes.",
+        );
+    }
+  }
+}
+
 export function changeProject(
   state: Studio,
   id: string,
@@ -274,28 +324,7 @@ export function changeProject(
                 "Projektet er ændret, siden handlingen begyndte. Prøv igen med den aktuelle version.",
               );
             const next = assertProject(action(structuredClone(p)));
-            if (next.id !== p.id || next.createdAt !== p.createdAt)
-              throw new Error("Projektets identitet kan ikke ændres.");
-            for (const field of [
-              "briefVersions",
-              "artifacts",
-              "deliveries",
-              "reviews",
-              "activity",
-            ] as const) {
-              for (const previous of p[field]) {
-                const retained = next[field].find(
-                  (value) => value.id === previous.id,
-                );
-                if (
-                  !retained ||
-                  JSON.stringify(retained) !== JSON.stringify(previous)
-                )
-                  throw new Error(
-                    "Historiske versioner og beviser kan ikke ændres eller slettes.",
-                  );
-              }
-            }
+            assertProjectUpdate(p, next);
             return next;
           })()
         : p,

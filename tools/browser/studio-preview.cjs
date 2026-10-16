@@ -2,7 +2,9 @@ const { chromium } = require("@playwright/test");
 const fs = require("node:fs");
 (async () => {
   const browser = await chromium.launch({
-    executablePath: "/usr/bin/chromium",
+    executablePath:
+      process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ||
+      (fs.existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
     headless: true,
     args: ["--no-sandbox"],
   });

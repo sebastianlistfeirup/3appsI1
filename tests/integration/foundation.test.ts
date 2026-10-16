@@ -196,7 +196,7 @@ describe("Real PostgreSQL tenant boundaries and durable budgets", () => {
           document: {},
         }),
       ),
-    ).rejects.toMatchObject({ status: 409 });
+    ).rejects.toMatchObject({ status: 403 });
     await expect(
       withTrustedUser(pool, viewer, (c) =>
         createProject(c, {

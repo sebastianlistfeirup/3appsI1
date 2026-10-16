@@ -63,7 +63,11 @@ describe("Verified bearer identity", () => {
       ).rejects.toMatchObject({ status: 401 });
   });
   it("rejects service identities, anonymous identities and non-UUID subjects", async () => {
-    for (const payload of [{ role: "service_role" }, { role: "anon" }])
+    for (const payload of [
+      { role: "service_role" },
+      { role: "anon" },
+      { role: undefined },
+    ])
       await expect(
         verifyBearer(`Bearer ${await token(payload)}`, config),
       ).rejects.toMatchObject({ status: 401 });
@@ -104,6 +108,7 @@ describe("Verified bearer identity", () => {
   it("requires an explicit HTTPS identity origin and exposes no credentials", () => {
     for (const url of [
       "http://identity.example.test",
+      "https://identity.example.test/unexpected-path",
       "https://user:password@identity.example.test",
       "https://identity.example.test/?token=secret",
     ])

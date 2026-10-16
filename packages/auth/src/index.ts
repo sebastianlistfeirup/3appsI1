@@ -21,7 +21,7 @@ export async function verifyBearer(
   header: string | null,
   config: AuthConfig,
 ): Promise<VerifiedIdentity> {
-  if (!header || !/^Bearer [^\s]+$/i.test(header))
+  if (!header || header.length > 16384 || !/^Bearer [^\s]+$/i.test(header))
     throw new DomainError("AUTH_REQUIRED", "Log ind for at fortsætte.", 401);
   try {
     const { payload } = await jwtVerify(header.slice(7), config.keys, {
@@ -32,7 +32,7 @@ export async function verifyBearer(
       clockTolerance: 5,
     });
     const userId = z.string().uuid().parse(payload.sub);
-    if (payload.role !== undefined && payload.role !== "authenticated")
+    if (payload.role !== "authenticated")
       throw new Error("Role is not an end-user");
     return {
       userId,
@@ -54,7 +54,8 @@ export function supabaseAuthConfig(url: string): AuthConfig {
     base.username ||
     base.password ||
     base.search ||
-    base.hash
+    base.hash ||
+    base.pathname !== "/"
   )
     throw new Error("SUPABASE_URL must be an HTTPS origin");
   const issuer = `${base.origin}/auth/v1`;

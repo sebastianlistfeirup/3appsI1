@@ -6,7 +6,7 @@
     "dev": "next dev --hostname 0.0.0.0 --port 3001",
     "build": "next build",
     "start": "next start --hostname 0.0.0.0 --port 3001",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "1.1.1",

@@ -1,4 +1,4 @@
-import { Pool } from "@tre/database";
+import { Pool, assertRuntimePrincipal } from "@tre/database";
 import {
   startQueue,
   dispatchOutbox,
@@ -23,7 +23,18 @@ const dispatcherPool = new Pool({
   max: 2,
   application_name: "tre-outbox",
 });
-const boss = await startQueue(required("QUEUE_DATABASE_URL"));
+const queueUrl = required("QUEUE_DATABASE_URL");
+const queueCheck = new Pool({ connectionString: queueUrl, max: 1 });
+try {
+  await Promise.all([
+    assertRuntimePrincipal(appPool, "tre_worker"),
+    assertRuntimePrincipal(dispatcherPool, "tre_dispatcher"),
+    assertRuntimePrincipal(queueCheck, "tre_queue"),
+  ]);
+} finally {
+  await queueCheck.end();
+}
+const boss = await startQueue(queueUrl, { role: "tre_queue" });
 const log = (event: object) =>
   process.stdout.write(
     `${JSON.stringify({ at: new Date().toISOString(), ...event })}\n`,

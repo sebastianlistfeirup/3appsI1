@@ -81,6 +81,7 @@ function databaseError(error: unknown): never {
     FORBIDDEN: [403, "Du har ikke adgang til denne handling."],
     AUTH_REQUIRED: [401, "Log ind for at fortsætte."],
     PROJECT_NOT_FOUND: [404, "Projektet findes ikke."],
+    PROJECT_ARCHIVED: [409, "Projektet er arkiveret."],
     BUDGET_EXCEEDED: [429, "Jobbet overskrider det tilgængelige budget."],
     IDEMPOTENCY_CONFLICT: [
       409,
@@ -191,6 +192,19 @@ export async function updateProject(
   input: { name: string; document: Json },
 ): Promise<ProjectRow> {
   const previous = await getProject(client, id, appKey);
+  if (
+    !(
+      await client.query(
+        "select app.has_role($1,array['owner','editor']) as allowed",
+        [previous.workspace_id],
+      )
+    ).rows[0]?.allowed
+  )
+    throw new DomainError(
+      "FORBIDDEN",
+      "Du har ikke adgang til denne handling.",
+      403,
+    );
   if (previous.archived_at)
     throw new DomainError("ARCHIVED", "Projektet er arkiveret.", 409);
   z.number().int().positive().parse(expectedRevision);
@@ -549,5 +563,58 @@ export async function cancelJob(
       id,
       expectedRevision,
     ])
+  ).rows[0]!;
+}
+
+/** Refuse accidentally configured migration/admin credentials at runtime. */
+export async function assertRuntimePrincipal(
+  pool: Pool,
+  role: "authenticated" | "tre_worker" | "tre_dispatcher" | "tre_queue",
+): Promise<void> {
+  const row = (
+    await pool.query<{
+      rolsuper: boolean;
+      rolbypassrls: boolean;
+      rolcreaterole: boolean;
+      rolcreatedb: boolean;
+      member: boolean;
+      owns_app: boolean;
+      dangerous_membership: boolean;
+      other_runtime_role: boolean;
+    }>(
+      "select r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,pg_has_role(current_user,$1,'MEMBER') as member,exists(select 1 from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='app' and c.relowner=r.oid) as owns_app,exists(select 1 from pg_roles inherited where pg_has_role(current_user,inherited.oid,'MEMBER') and (inherited.rolsuper or inherited.rolbypassrls or inherited.rolcreaterole or inherited.rolcreatedb or exists(select 1 from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='app' and c.relowner=inherited.oid))) as dangerous_membership,exists(select 1 from pg_roles other where other.rolname in ('authenticated','tre_worker','tre_dispatcher','tre_queue') and other.rolname<>$1 and pg_has_role(current_user,other.oid,'MEMBER')) as other_runtime_role from pg_roles r where rolname=current_user",
+      [role],
+    )
+  ).rows[0];
+  if (
+    !row ||
+    row.rolsuper ||
+    row.rolbypassrls ||
+    row.rolcreaterole ||
+    row.rolcreatedb ||
+    row.owns_app ||
+    row.dangerous_membership ||
+    row.other_runtime_role ||
+    !row.member
+  )
+    throw new Error(
+      `Unsafe runtime database principal for ${role}. Provision a separate restricted login; migration credentials are not allowed.`,
+    );
+}
+export async function archiveProject(
+  client: PoolClient,
+  id: string,
+  appKey: AppKey,
+  expectedRevision: number,
+  archived = true,
+): Promise<ProjectRow> {
+  uuid.parse(id);
+  appKeySchema.parse(appKey);
+  z.number().int().positive().parse(expectedRevision);
+  return (
+    await client.query<ProjectRow>(
+      "select * from app.archive_project($1,$2,$3,$4)",
+      [id, appKey, expectedRevision, archived],
+    )
   ).rows[0]!;
 }

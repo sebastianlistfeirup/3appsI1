@@ -256,3 +256,55 @@ describe("Studio recovery and immutable review boundaries", () => {
     expect(() => validateStudio(state)).toThrow("Ugyldigt id");
   });
 });
+
+describe("Run snapshot history", () => {
+  it("rejects changing locked inputs even when the replacement brief exists", () => {
+    const state = createSample(),
+      project = state.projects[0]!;
+    const updated = saveBrief(project, {
+      ...latestBrief(project),
+      goal: "Nyt brief",
+    });
+    state.projects[0] = updated;
+    expect(() =>
+      changeProject(state, project.id, (p) => ({
+        ...p,
+        runs: p.runs.map((r) => ({ ...r, briefVersion: 2 })),
+      })),
+    ).toThrow("låste input");
+    expect(() =>
+      changeProject(state, project.id, (p) => ({
+        ...p,
+        runs: p.runs.map((r) => ({ ...r, inputVersionIds: [] })),
+      })),
+    ).toThrow("låste input");
+  });
+  it("preserves terminal runs and their completion timestamp after review", () => {
+    const state = createSample(),
+      p = state.projects[0]!,
+      d = p.deliveries[0]!;
+    const accepted = reviewDelivery(p, d.id, {
+      decision: "accepted",
+      reviewer: "Mig",
+      comment: "Godkendt",
+      acknowledgedStale: false,
+      checkedCriteria: d.checks.map((c) => c.id),
+    });
+    state.projects[0] = accepted;
+    expect(() =>
+      changeProject(state, p.id, (value) => ({
+        ...value,
+        runs: value.runs.map((r) => ({ ...r, state: "review" as const })),
+      })),
+    ).toThrow("genåbnes");
+    expect(() =>
+      changeProject(state, p.id, (value) => ({
+        ...value,
+        runs: value.runs.map((r) => ({
+          ...r,
+          completedAt: "2026-10-16T21:00:00.000Z",
+        })),
+      })),
+    ).toThrow("færdigtidspunkt");
+  });
+});

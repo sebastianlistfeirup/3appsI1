@@ -30,3 +30,11 @@ Install the pinned queue schema once with `installQueue` using migration credent
 ## Evidence limits
 
 The tests use actual PostgreSQL and the actual pg-boss package. Simulated network failures and provider references are explicitly synthetic fixtures; they do not demonstrate a live provider contract. Hosted identity, payment, provider circuit breakers and administrative reconciliation UI are not yet connected. A green local backend suite does not promote all three apps to `CONNECTED` or `PRIVATE_BETA`.
+
+## Optional API and process proof
+
+Studio includes an opt-in [authenticated server API](backend-api.md), disabled by default. Its tests use real asymmetric test tokens and an actual restricted PostgreSQL login. Archive/reservation ordering is serialized in migration 0003; direct archival writes are revoked so cancellation cannot be bypassed. The worker checks all three principals at startup and explicitly enters the queue role even when its login uses NOINHERIT.
+
+The actual worker entry point is launched as a separate Node process in `tests/integration/worker-process.test.ts`, using a dedicated fixture database and three restricted logins. The test verifies a real result, SIGKILL, new work queued during downtime, restart without a duplicate result/usage event, and graceful SIGTERM. Other fixtures exercise an unknown in-flight outcome and retained reservation. These are separate claims; a restart after a completed job does not prove a paid provider can be retried safely.
+
+The database runner preserves failing child exit codes explicitly after cleanup. `embedded-postgres`'s transitive exit hook otherwise resets a natural process exit to zero; the failure path was reproduced with an invalid Vitest argument before rerunning the normal suite. CI must never treat a printed failed suite as a passed gate.

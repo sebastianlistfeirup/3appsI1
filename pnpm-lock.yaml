@@ -32,6 +32,9 @@ importers:
       embedded-postgres:
         specifier: 17.10.0-beta.17
         version: 17.10.0-beta.17
+      jose:
+        specifier: 6.2.12
+        version: 6.2.12
       prettier:
         specifier: 3.9.10
         version: 3.9.10
@@ -44,6 +47,9 @@ importers:
       vitest:
         specifier: 5.0.5
         version: 5.0.5(@opentelemetry/api@1.9.1)(@types/node@24.10.1)(vite@8.3.4(@types/node@24.10.1)(esbuild@0.27.7)(tsx@4.21.0))
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
 
   apps/director:
     dependencies:
@@ -131,9 +137,18 @@ importers:
 
   apps/studio:
     dependencies:
+      '@tre/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@tre/backend':
+        specifier: workspace:*
+        version: link:../../packages/backend
       '@tre/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@tre/database':
+        specifier: workspace:*
+        version: link:../../packages/database
       '@tre/persistence':
         specifier: workspace:*
         version: link:../../packages/persistence
@@ -170,6 +185,21 @@ importers:
       jose:
         specifier: 6.2.12
         version: 6.2.12
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
+
+  packages/backend:
+    dependencies:
+      '@tre/auth':
+        specifier: workspace:*
+        version: link:../auth
+      '@tre/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@tre/database':
+        specifier: workspace:*
+        version: link:../database
       zod:
         specifier: 4.6.7
         version: 4.6.7
