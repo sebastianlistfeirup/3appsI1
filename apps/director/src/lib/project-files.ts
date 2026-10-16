@@ -1,3 +1,8 @@
+import {
+  parseEmbeddedGlb,
+  disposeModelResources,
+  validateGlbImages,
+} from "./glb-resources";
 import { unzipSync, zipSync, strFromU8, strToU8 } from "fflate";
 import {
   inspectRaster,
@@ -73,7 +78,7 @@ export async function importPackage(buffer: ArrayBuffer): Promise<Project> {
 export async function verifyMedia(project: Project) {
   const checked = new Map<
     string,
-    { url: string; bytes: number; triangles: number }
+    { url: string; bytes: number; triangles: number; textureBytes: number }
   >();
   for (const scene of [...project.scenes, project.draft])
     for (const asset of scene.assets) {
@@ -82,7 +87,8 @@ export async function verifyMedia(project: Project) {
         prior &&
         prior.url === asset.dataUrl &&
         prior.bytes === asset.bytes &&
-        prior.triangles === asset.triangles
+        prior.triangles === asset.triangles &&
+        prior.textureBytes === asset.textureBytes
       )
         continue;
       const bytes = dataUrlBytes(asset.dataUrl);
@@ -92,12 +98,18 @@ export async function verifyMedia(project: Project) {
       )
         throw Error(`GLB-filen ${asset.name} matcher ikke dens checksum`);
       const info = inspectGlb(new Uint8Array(bytes).buffer);
-      if (info.triangles !== asset.triangles)
+      if (
+        info.triangles !== asset.triangles ||
+        info.textureBytes !== asset.textureBytes
+      )
         throw Error("GLB-geometri matcher ikke manifestet");
+      if (info.images.length && typeof document !== "undefined")
+        await validateGlbImages(new Uint8Array(bytes).buffer, info);
       checked.set(asset.sha256, {
         url: asset.dataUrl,
         bytes: asset.bytes,
         triangles: asset.triangles,
+        textureBytes: asset.textureBytes,
       });
     }
   for (const shot of project.shots)
@@ -250,23 +262,8 @@ export async function importGlb(
   const dataUrl = await fileDataUrl(
     new File([buffer], file.name, { type: "model/gltf-binary" }),
   );
-  const { GLTFLoader } =
-    await import("three/examples/jsm/loaders/GLTFLoader.js");
-  const { LoadingManager, Mesh } = await import("three");
-  const manager = new LoadingManager();
-  manager.setURLModifier(() => {
-    throw Error("Eksterne GLB-ressourcer er ikke tilladt");
-  });
-  const parsed = await new GLTFLoader(manager).parseAsync(buffer, "");
-  parsed.scene.traverse((object) => {
-    if (object instanceof Mesh) {
-      object.geometry.dispose();
-      for (const material of Array.isArray(object.material)
-        ? object.material
-        : [object.material])
-        material.dispose();
-    }
-  });
+  const parsed = await parseEmbeddedGlb(buffer);
+  disposeModelResources(parsed.scenes);
   return {
     id: `glb_${crypto.randomUUID().replaceAll("-", "")}`,
     name: file.name,
@@ -274,6 +271,7 @@ export async function importGlb(
     sha256: await sha256(bytes),
     bytes: bytes.length,
     triangles: inspected.triangles,
+    textureBytes: inspected.textureBytes,
     source: "Egen lokal GLB-fil",
     rights,
   };

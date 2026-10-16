@@ -15,6 +15,7 @@ After starting the app on loopback, preferably the production build in CI:
 ```sh
 pnpm exec node apps/director/tests/cross-browser.mjs
 pnpm exec node apps/director/tests/editor-flow.mjs
+pnpm exec node apps/director/tests/textured-glb-flow.mjs
 pnpm exec node apps/director/tests/storage-recovery.mjs
 pnpm exec node apps/director/tests/a11y-smoke.mjs
 ```

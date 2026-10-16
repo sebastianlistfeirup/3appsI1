@@ -3,7 +3,7 @@
 
 
  Test Files  5 passed (5)
-      Tests  26 passed (26)
-   Start at  20:49:00
-   Duration  475ms (import 54%, tests 27%, transform 16%, worker 3%)
+      Tests  32 passed (32)
+   Start at  21:02:39
+   Duration  498ms (import 48%, tests 25%, transform 25%, worker 2%)
 

@@ -1442,6 +1442,12 @@ export default function DirectorEditor() {
                           next.draft.objects = next.draft.objects.filter(
                             (o) => o.id !== object.id,
                           );
+                          next.draft.assets = next.draft.assets.filter(
+                            (asset) =>
+                              next.draft.objects.some(
+                                (o) => o.assetId === asset.id,
+                              ),
+                          );
                           next.revision++;
                           setSelectedObject(null);
                           return next;
@@ -2327,7 +2333,7 @@ export default function DirectorEditor() {
                   <strong>Vælg en fil fra din computer</strong>
                   <span>
                     {mediaTarget === "model"
-                      ? "GLB · maks. 100.000 trekanter"
+                      ? "GLB · 100.000 trekanter · 2K teksturer"
                       : mediaTarget === "shot"
                         ? "PNG, JPEG, MP4 eller WebM"
                         : "WAV, MP3, M4A, OGG eller WebM"}{" "}
@@ -2336,10 +2342,10 @@ export default function DirectorEditor() {
                 </button>
                 {mediaTarget === "model" && (
                   <p className="modal-footnote">
-                    Statiske modeller med indlejret geometri og materialefarver.
-                    Teksturer, eksterne filer, animation og rigs afvises i denne
-                    profil. Importen ændrer først scenen, når valideringen er
-                    bestået.
+                    Statiske modeller med indlejret geometri og
+                    PNG/JPEG-teksturer op til 2048 × 2048 pixels. Eksterne
+                    filer, animation og rigs afvises i denne profil. Importen
+                    ændrer først scenen, når valideringen er bestået.
                   </p>
                 )}
                 {(mediaTarget === "voice" || mediaTarget === "music") &&

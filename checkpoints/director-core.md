@@ -32,7 +32,7 @@ Local browser IndexedDB only. WebGL renderer and local file exports are real. No
 
 ## Known limits
 
-- Static embedded GLB import/render is implemented. Textured/animated/rigged/compressed models remain explicitly unsupported in this profile.
+- Static embedded GLB import/render is implemented. Embedded static PNG/JPEG textures up to 2K are now supported; animated/rigged/compressed models remain explicitly unsupported in this profile.
 - Animatic export uses held frames or imported clips. It is not continuous 3D animation.
 - Render service must be explicitly enabled and bound to localhost. Host/Origin checks are defense in depth and do not authenticate a public deployment.
 - No tenant/viewer claims; D-AT11 awaits a real authenticated backend.
@@ -73,3 +73,11 @@ The shared persistence race is fixed by coordinator commit 4b93720 (integrated i
 - 26 deterministic tests, Director TypeScript and optimized production build passed. The expanded media accessibility scan caught marginal volume-label contrast and the labels were corrected.
 
 Final fourth-milestone production-server gates passed: six core browser paths; full editor import/roundtrip flow; two storage recovery scenarios; three real media browser flows; ten baseline axe scans plus twelve media/dialog scans with **zero violations**. Chromium UI rendered and downloaded the verified 7.5-second MP4. All evidence is local, reproduced without AI/provider calls.
+
+## Fifth milestone — actual embedded 2K model textures
+
+- Static GLB now accepts embedded PNG/JPEG textures up to 2048×2048, with bounded images/samplers, UV/material references, decoded image allocation per model/scene, source hashes and immutable asset metadata. Model instances share geometry and textures within a renderer; material tints stay per instance. Scene disposal closes ImageBitmaps and releases geometry/materials/textures. Removing unused draft models frees their draft budget while old scenes and Undo retain them.
+- Original generated 12-triangle PNG and JPEG crate fixtures are actually imported and rendered; Chromium's screenshot shows both textured models in the set. Fixture source is committed and uses no external asset library.
+- Adversarial imports revealed different browser tolerance for damaged PNG data. The profile now verifies PNG chunk bounds/CRC, rejects APNG, and performs bounded streaming zlib decompression before image decoding; it also treats GLTFLoader image failures as fatal. A deliberately invalid compressed payload with a correctly recomputed PNG chunk CRC is rejected in all three browser flows while preserving the entire scene.
+- 32 deterministic tests and production build pass. Real Chromium/Firefox/WebKit flows cover PNG/JPEG import, saved texture budgets, captured frames, invalid compressed payload, forged budget metadata, ZIP roundtrip, reload, draft cleanup and undo. Chromium uses real 3D capture; Firefox/WebKit use their available renderer or the explicitly labeled fallback. No external HTTP requests occur.
+- `docs/director-imports.md` documents the supported profile and its resource boundaries; it does not equate base decoded RGBA allocation with all GPU/mipmap overhead.

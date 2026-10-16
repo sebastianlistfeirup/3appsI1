@@ -1,3 +1,4 @@
+import { parseEmbeddedGlb, disposeModelResources } from "./glb-resources";
 import * as THREE from "three";
 import type { Camera, SceneObject, SceneVersion } from "@tre/scene-format";
 
@@ -317,15 +318,7 @@ export function createRenderer(canvas?: HTMLCanvasElement) {
   return renderer;
 }
 export function disposeScene(scene: THREE.Scene) {
-  scene.traverse((o) => {
-    if (o instanceof THREE.Mesh || o instanceof THREE.Points) {
-      o.geometry.dispose();
-      for (const material of Array.isArray(o.material)
-        ? o.material
-        : [o.material])
-        material.dispose();
-    }
-  });
+  disposeModelResources([scene, ...(scene.userData.glbRoots ?? [])]);
 }
 /** A real 720p floor-plan frame keeps the editor usable without WebGL. */
 export function renderPlanFrame(version: SceneVersion, camera: Camera) {
@@ -446,25 +439,41 @@ export async function loadSceneModels(
   selectedId?: string,
 ) {
   if (!version.objects.some((o) => o.kind === "glb")) return;
-  const { GLTFLoader } =
-    await import("three/examples/jsm/loaders/GLTFLoader.js");
-  const manager = new THREE.LoadingManager();
-  manager.setURLModifier(() => {
-    throw Error("Eksterne GLB-ressourcer er ikke tilladt");
-  });
-  const loader = new GLTFLoader(manager);
+  const loaded = new Map<string, THREE.Group>();
+  scene.userData.glbRoots ??= [];
   for (const object of version.objects.filter((o) => o.kind === "glb")) {
     const asset = version.assets.find((a) => a.id === object.assetId);
     if (!asset) throw Error("GLB-modelversion mangler");
-    const raw = atob(asset.dataUrl.slice(asset.dataUrl.indexOf(",") + 1));
-    const bytes = Uint8Array.from(raw, (c) => c.charCodeAt(0));
-    const { inspectGlb } = await import("@tre/scene-format");
-    inspectGlb(bytes.buffer);
-    const gltf = await loader.parseAsync(bytes.buffer, "");
+    let source = loaded.get(asset.sha256);
+    if (!source) {
+      const raw = atob(asset.dataUrl.slice(asset.dataUrl.indexOf(",") + 1));
+      const bytes = Uint8Array.from(raw, (c) => c.charCodeAt(0));
+      const gltf = await parseEmbeddedGlb(bytes.buffer);
+      source = gltf.scene;
+      loaded.set(asset.sha256, source);
+      scene.userData.glbRoots.push(...gltf.scenes);
+    }
+    const instance = source.clone(true);
+    const copiedMaterials = new Map<THREE.Material, THREE.Material>();
+    instance.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        const copy = (material: THREE.Material) => {
+          let next = copiedMaterials.get(material);
+          if (!next) {
+            next = material.clone();
+            copiedMaterials.set(material, next);
+          }
+          return next;
+        };
+        child.material = Array.isArray(child.material)
+          ? child.material.map(copy)
+          : copy(child.material);
+      }
+    });
     const group = new THREE.Group();
     group.name = object.id;
     group.userData.objectId = object.id;
-    group.add(gltf.scene);
+    group.add(instance);
     group.position.fromArray(object.transform.position);
     group.quaternion.fromArray(object.transform.quaternion);
     group.scale.fromArray(object.transform.scale);

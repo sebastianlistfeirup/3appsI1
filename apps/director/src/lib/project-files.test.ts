@@ -1,7 +1,17 @@
+import { readFileSync } from "node:fs";
 import { describe, it, expect } from "vitest";
 import { zipSync, strToU8 } from "fflate";
-import { createSampleProject, inspectRaster } from "@tre/scene-format";
-import { exportPackage, importPackage, sha256 } from "./project-files";
+import {
+  createSampleProject,
+  inspectRaster,
+  parseProject,
+} from "@tre/scene-format";
+import {
+  exportPackage,
+  importPackage,
+  sha256,
+  verifyMedia,
+} from "./project-files";
 const buffer = (value: Uint8Array) => new Uint8Array(value).buffer;
 describe("Portable project and media safety", () => {
   it("D-AT12: ZIP preserves every scene, shot and media hash", async () => {
@@ -87,5 +97,47 @@ describe("Portable project and media safety", () => {
     v.setUint32(16, 50000);
     expect(() => inspectRaster(bytes)).toThrow("8192");
     expect(() => inspectRaster(new Uint8Array([1, 2, 3]))).toThrow();
+  });
+  it("verifies real GLB texture allocation rather than trusting a package's budget field", async () => {
+    const project = createSampleProject(),
+      bytes = new Uint8Array(
+        readFileSync(
+          new URL(
+            "../../../../fixtures/director-textured-crate.glb",
+            import.meta.url,
+          ),
+        ),
+      );
+    project.draft.assets.push({
+      id: "textured",
+      name: "crate.glb",
+      dataUrl:
+        "data:model/gltf-binary;base64," +
+        Buffer.from(bytes).toString("base64"),
+      sha256: await sha256(bytes),
+      bytes: bytes.length,
+      triangles: 12,
+      textureBytes: 262144,
+      source: "Original fixture",
+      rights: "owned",
+    });
+    await verifyMedia(project);
+    project.draft.assets[0].textureBytes = 0;
+    await expect(verifyMedia(project)).rejects.toThrow("manifestet");
+  });
+  it("bounds total retained scene texture allocation across distinct assets", () => {
+    const project = createSampleProject();
+    project.draft.assets = Array.from({ length: 3 }, (_, i) => ({
+      id: `model_${i}`,
+      name: "crate.glb",
+      dataUrl: "data:model/gltf-binary;base64,AA==",
+      sha256: "0".repeat(64),
+      bytes: 1,
+      triangles: 12,
+      textureBytes: 64 * 1024 * 1024,
+      source: "Original fixture",
+      rights: "owned",
+    }));
+    expect(() => parseProject(project)).toThrow("128 MB");
   });
 });

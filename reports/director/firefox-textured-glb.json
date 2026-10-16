@@ -1,0 +1,18 @@
+{
+  "engine": "firefox",
+  "checks": [
+    "actual embedded PNG and JPEG decoding/import",
+    "12 triangles per original model and 262144 decoded texture bytes",
+    "immutable existing frames",
+    "new captured frame with actual 3D materials or explicit 2D fallback",
+    "corrupt compressed image rejected before replacing scene",
+    "tampered texture budget rejected",
+    "ZIP roundtrip and browser reload",
+    "removed model releases draft budget while immutable versions and undo retain it",
+    "no external HTTP requests"
+  ],
+  "frameMode": "plan",
+  "pageErrors": [],
+  "externalRequests": [],
+  "verifiedAt": "2026-10-16T21:06:26.001Z"
+}

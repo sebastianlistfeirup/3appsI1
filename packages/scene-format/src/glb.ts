@@ -1,11 +1,29 @@
+import { inspectRaster } from "./raster";
 export interface GlbInspection {
   /** Includes mesh instances in the selected default scene. */
   triangles: number;
   textureCount: number;
+  textureBytes: number;
+  images: Array<{
+    offset: number;
+    bytes: number;
+    width: number;
+    height: number;
+    mime: "image/png" | "image/jpeg";
+  }>;
   meshCount: number;
   nodeCount: number;
   warnings: string[];
 }
+const crcTable = Uint32Array.from({ length: 256 }, (_, n) => {
+  for (let k = 0; k < 8; k++) n = n & 1 ? 0xedb88320 ^ (n >>> 1) : n >>> 1;
+  return n >>> 0;
+});
+const crc32 = (bytes: Uint8Array) => {
+  let crc = 0xffffffff;
+  for (const byte of bytes) crc = crcTable[(crc ^ byte) & 255] ^ (crc >>> 8);
+  return (crc ^ 0xffffffff) >>> 0;
+};
 const integer = (n: unknown): n is number =>
   Number.isInteger(n) && Number(n) >= 0;
 const record = (n: unknown): n is Record<string, any> =>
@@ -18,7 +36,7 @@ const finiteVector = (value: unknown, size: number, limit = 1_000_000) =>
   );
 
 /** Bounded static, embedded-only GLB 2.0 subset. Validate before allocating GPU buffers.
- * No network, plugins, animation, rigs, textures or arbitrary application extensions.
+ * No network, plugins, animation, rigs or arbitrary application extensions.
  */
 export function inspectGlb(buffer: ArrayBuffer): GlbInspection {
   if (buffer.byteLength > 50 * 1024 * 1024)
@@ -54,6 +72,7 @@ export function inspectGlb(buffer: ArrayBuffer): GlbInspection {
     "buffers",
     "images",
     "textures",
+    "samplers",
     "animations",
     "skins",
     "scenes",
@@ -84,10 +103,6 @@ export function inspectGlb(buffer: ArrayBuffer): GlbInspection {
     data.images?.some((i: any) => i.uri !== undefined)
   )
     throw Error("Eksterne teksturer og buffer-URLer er ikke tilladt");
-  if (data.images?.length || data.textures?.length)
-    throw Error(
-      "Teksturerede GLB-filer kræver en billedvalidator og kan endnu ikke importeres",
-    );
   if (data.animations?.length || data.skins?.length)
     throw Error(
       "Animation og rigs er ikke understøttet i statiske GLB-importer",
@@ -134,6 +149,118 @@ export function inspectGlb(buffer: ArrayBuffer): GlbInspection {
     )
       throw Error("Ugyldigt GLB-stride");
   }
+  if (
+    (data.images?.length ?? 0) > 8 ||
+    (data.textures?.length ?? 0) > 16 ||
+    (data.samplers?.length ?? 0) > 16
+  )
+    throw Error("GLB må højst have 8 billeder og 16 teksturer/samplere");
+  const images: GlbInspection["images"] = (data.images ?? []).map(
+    (image: any) => {
+      const b = data.bufferViews?.[image.bufferView];
+      if (
+        !integer(image.bufferView) ||
+        !b ||
+        b.byteStride !== undefined ||
+        !b.byteLength ||
+        b.byteLength > 16 * 1024 * 1024 ||
+        !["image/png", "image/jpeg"].includes(image.mimeType)
+      )
+        throw Error("GLB-teksturer skal være indlejrede PNG/JPEG-billeder");
+      const offset = binaryStart + (b.byteOffset ?? 0),
+        raster = inspectRaster(new Uint8Array(buffer, offset, b.byteLength));
+      if (image.mimeType !== `image/${raster.format}`)
+        throw Error("GLB-teksturens filtype matcher ikke billedet");
+      if (raster.format === "png") {
+        const bytes = new Uint8Array(buffer, offset, b.byteLength),
+          png = new DataView(buffer, offset, b.byteLength);
+        let at = 8,
+          chunks = 0,
+          ended = false,
+          hasData = false;
+        while (at + 12 <= bytes.length) {
+          if (++chunks > 4096)
+            throw Error("GLB-teksturen har for mange PNG-chunks");
+          const length = png.getUint32(at),
+            type = String.fromCharCode(...bytes.slice(at + 4, at + 8));
+          if (length > bytes.length - at - 12)
+            throw Error("Ugyldig PNG-teksturchunk");
+          if (
+            crc32(bytes.subarray(at + 4, at + 8 + length)) !==
+            png.getUint32(at + 8 + length)
+          )
+            throw Error("GLB-teksturens PNG-checksum matcher ikke");
+          if (["acTL", "fcTL", "fdAT"].includes(type))
+            throw Error("Animerede GLB-teksturer understøttes ikke");
+          if (type === "IDAT") hasData = true;
+          at += length + 12;
+          if (type === "IEND") {
+            ended = length === 0 && at === bytes.length;
+            break;
+          }
+        }
+        if (!ended || !hasData)
+          throw Error("GLB-teksturen mangler gyldige PNG-billeddata");
+      }
+      if (raster.width > 2048 || raster.height > 2048)
+        throw Error("GLB-teksturer må højst være 2048 × 2048 pixels");
+      return {
+        offset,
+        bytes: b.byteLength,
+        width: raster.width,
+        height: raster.height,
+        mime: image.mimeType,
+      };
+    },
+  );
+  for (const sampler of data.samplers ?? []) {
+    for (const [key, allowed] of [
+      ["magFilter", [9728, 9729]],
+      ["minFilter", [9728, 9729, 9984, 9985, 9986, 9987]],
+      ["wrapS", [33071, 33648, 10497]],
+      ["wrapT", [33071, 33648, 10497]],
+    ] as const)
+      if (
+        sampler[key] !== undefined &&
+        !allowed.includes(sampler[key] as never)
+      )
+        throw Error("Ugyldig GLB-tekstursampler");
+  }
+  let textureBytes = 0;
+  for (const texture of data.textures ?? []) {
+    if (
+      !integer(texture.source) ||
+      !images[texture.source] ||
+      (texture.sampler !== undefined &&
+        (!integer(texture.sampler) || !data.samplers?.[texture.sampler]))
+    )
+      throw Error("GLB-teksturen mangler billede eller sampler");
+    textureBytes +=
+      images[texture.source].width * images[texture.source].height * 4;
+  }
+  if (
+    textureBytes > 64 * 1024 * 1024 ||
+    images.reduce((n, i) => n + i.width * i.height * 4, 0) > 64 * 1024 * 1024
+  )
+    throw Error("GLB-teksturer må højst kræve 64 MB afkodet billedhukommelse");
+  const textureInfo = (info: any) => {
+    if (
+      !record(info) ||
+      !integer(info.index) ||
+      !data.textures?.[info.index] ||
+      ![0, 1].includes(info.texCoord ?? 0)
+    )
+      throw Error("Ugyldig GLB-teksturreference");
+    for (const key of ["scale", "strength"])
+      if (
+        info[key] !== undefined &&
+        (typeof info[key] !== "number" ||
+          !Number.isFinite(info[key]) ||
+          Math.abs(info[key]) > 10)
+      )
+        throw Error("Ugyldig GLB-teksturstyrke");
+    return info.texCoord ?? 0;
+  };
   const sizes: Record<number, number> = {
     5120: 1,
     5121: 1,
@@ -280,18 +407,49 @@ export function inspectGlb(buffer: ArrayBuffer): GlbInspection {
         (!integer(p.material) || !data.materials?.[p.material])
       )
         throw Error("GLB-materiale mangler");
+      const material = data.materials?.[p.material];
+      if (material)
+        for (const info of [
+          material.normalTexture,
+          material.occlusionTexture,
+          material.emissiveTexture,
+          material.pbrMetallicRoughness?.baseColorTexture,
+          material.pbrMetallicRoughness?.metallicRoughnessTexture,
+        ])
+          if (info !== undefined) {
+            const channel = textureInfo(info);
+            if (p.attributes[`TEXCOORD_${channel}`] === undefined)
+              throw Error("GLB-teksturen mangler UV-koordinater");
+          }
     }
     return count;
   });
   for (const material of data.materials ?? []) {
     for (const key of ["normalTexture", "occlusionTexture", "emissiveTexture"])
-      if (material[key] !== undefined)
-        throw Error("Teksturer understøttes ikke");
+      if (material[key] !== undefined) textureInfo(material[key]);
     const pbr = material.pbrMetallicRoughness;
     if (pbr !== undefined && !record(pbr))
       throw Error("Ugyldigt GLB-materiale");
-    if (pbr?.baseColorTexture || pbr?.metallicRoughnessTexture)
-      throw Error("Teksturer understøttes ikke");
+    for (const key of ["baseColorTexture", "metallicRoughnessTexture"])
+      if (pbr?.[key] !== undefined) textureInfo(pbr[key]);
+    if (
+      material.alphaMode !== undefined &&
+      !["OPAQUE", "MASK", "BLEND"].includes(material.alphaMode)
+    )
+      throw Error("Ugyldig GLB-alphaindstilling");
+    if (
+      material.alphaCutoff !== undefined &&
+      (typeof material.alphaCutoff !== "number" ||
+        !Number.isFinite(material.alphaCutoff) ||
+        material.alphaCutoff < 0 ||
+        material.alphaCutoff > 1)
+    )
+      throw Error("Ugyldig GLB-alphagrænse");
+    if (
+      material.doubleSided !== undefined &&
+      typeof material.doubleSided !== "boolean"
+    )
+      throw Error("Ugyldig GLB-materialeside");
     if (
       pbr?.baseColorFactor !== undefined &&
       !finiteVector(pbr.baseColorFactor, 4, 1)
@@ -398,7 +556,9 @@ export function inspectGlb(buffer: ArrayBuffer): GlbInspection {
     throw Error("Modellen må højst have 100.000 trekanter inklusive instanser");
   return {
     triangles,
-    textureCount: 0,
+    textureCount: data.textures?.length ?? 0,
+    textureBytes,
+    images,
     meshCount: meshes.length,
     nodeCount: nodes.length,
     warnings:
