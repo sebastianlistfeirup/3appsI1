@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FlowLab numerical contract > locks the PRNG sequence 1`] = `
+[
+  0.31822484731674194,
+  0.48780467780306935,
+  0.8836330168414861,
+]
+`;

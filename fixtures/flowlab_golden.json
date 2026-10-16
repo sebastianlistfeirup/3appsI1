@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "source": "Masterbibel v1, FlowLab page 11",
+  "timeUnit": "milliseconds",
+  "engineVersion": "flow-des/1.0.0",
+  "cases": [
+    {"id":"FL-AT01","arrivals":[0,60000,120000],"capacity":1,"service":90000,"horizon":300000,"starts":[0,90000,180000],"completions":[90000,180000,270000],"queueTimes":[0,30000,60000],"meanQueueTime":30000,"meanLeadTime":120000,"throughput":3,"backlog":0,"utilization":0.9},
+    {"id":"FL-AT03","horizon":200000,"throughput":2,"backlog":1,"active":1},
+    {"id":"FL-AT04","capacity":2,"queueTimes":[0,0,0],"completions":[90000,150000,210000]},
+    {"id":"FL-AT05","arrivals":[0],"service":90000,"calendar":[[0,60000],[120000,300000]],"completion":150000}
+  ]
+}
