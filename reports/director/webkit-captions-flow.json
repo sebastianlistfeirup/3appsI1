@@ -1,0 +1,75 @@
+{
+  "engine": "webkit",
+  "phases": [
+    {
+      "name": "import long complete dialogue and actual audio",
+      "at": "2026-10-16T23:23:52.695Z"
+    },
+    {
+      "name": "preview exact cue boundaries and midpoint handover",
+      "at": "2026-10-16T23:23:54.487Z"
+    },
+    {
+      "name": "download whole current SRT and VTT and review reading warnings",
+      "at": "2026-10-16T23:23:54.836Z"
+    },
+    {
+      "name": "render actual movie and verify locked quality report and subtitle downloads",
+      "at": "2026-10-16T23:23:56.307Z"
+    },
+    {
+      "name": "passed",
+      "at": "2026-10-16T23:24:01.505Z"
+    }
+  ],
+  "scans": [
+    {
+      "name": "desktop-caption-options",
+      "violations": []
+    },
+    {
+      "name": "tablet-caption-options",
+      "violations": []
+    },
+    {
+      "name": "mobile-caption-options",
+      "violations": []
+    },
+    {
+      "name": "desktop-measured-quality",
+      "violations": []
+    },
+    {
+      "name": "tablet-measured-quality",
+      "violations": []
+    },
+    {
+      "name": "mobile-measured-quality",
+      "violations": []
+    }
+  ],
+  "checks": [
+    "Preview uses the same complete cues and midpoint handover; exact SRT/VTT downloads preserve long Unicode dialogue; real 3.5-second MP4 quality report hashes match; locked subtitle remains unchanged after editing and reload; six responsive axe states are clean"
+  ],
+  "errors": [],
+  "metadata": {
+    "duration": 3.5,
+    "width": 1280,
+    "height": 720,
+    "fps": 24,
+    "audioSampleRate": 48000,
+    "codec": "h264",
+    "audioCodec": "aac",
+    "sha256": "13af5385bc23a68f170100af20492fc3e71f211f17aa27933cf5e7cccce6bfa0",
+    "loudnessLufs": -21.9,
+    "audioSilent": false,
+    "truePeakDbfs": -21
+  },
+  "browserPlayback": {
+    "duration": 3.5,
+    "width": 1280,
+    "height": 720,
+    "presentedFrames": 1,
+    "mediaTime": 0.083333
+  }
+}

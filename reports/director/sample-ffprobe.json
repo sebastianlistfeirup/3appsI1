@@ -34,7 +34,7 @@
             "start_time": "0.000000",
             "duration_ts": 737280,
             "duration": "60.000000",
-            "bit_rate": "93927",
+            "bit_rate": "103919",
             "bits_per_raw_sample": "8",
             "nb_frames": "1440",
             "extradata_size": 50,
@@ -133,15 +133,15 @@
         "format_long_name": "QuickTime / MOV",
         "start_time": "0.000000",
         "duration": "60.000000",
-        "size": "765204",
-        "bit_rate": "102027",
+        "size": "840149",
+        "bit_rate": "112019",
         "probe_score": 100,
         "tags": {
             "major_brand": "isom",
             "minor_version": "512",
             "compatible_brands": "isomiso2avc1mp41",
             "encoder": "Lavf61.7.103",
-            "comment": "Director animatic; manifest=d2bcaf00628ffd2c0f46f330aefbc3ce4d2000be5eecd30745a2a9ca98e755c5"
+            "comment": "Director animatic; manifest=ec73199be4761fba6bfa1a0d3e47733584b7ea2145d29ea9d733dd1cd1b0289c"
         }
     }
 }

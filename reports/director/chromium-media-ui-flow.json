@@ -47,7 +47,7 @@
         "start_time": "0.000000",
         "duration_ts": 92160,
         "duration": "7.500000",
-        "bit_rate": "1205452",
+        "bit_rate": "1199958",
         "bits_per_raw_sample": "8",
         "nb_frames": "180",
         "extradata_size": 45,
@@ -141,15 +141,15 @@
       "format_long_name": "QuickTime / MOV",
       "start_time": "0.000000",
       "duration": "7.500000",
-      "size": "1271329",
-      "bit_rate": "1356084",
+      "size": "1266162",
+      "bit_rate": "1350572",
       "probe_score": 100,
       "tags": {
         "major_brand": "isom",
         "minor_version": "512",
         "compatible_brands": "isomiso2avc1mp41",
         "encoder": "Lavf61.7.103",
-        "comment": "Director animatic; manifest=c48ac2851f710ef17c6de31609d240474256d612b7eac033b82d632e9e5d15db"
+        "comment": "Director animatic; manifest=df1c1f502b3631a9c0923693da3524facd74db55551238a7491cc358ead4a76f"
       }
     }
   },
@@ -172,5 +172,5 @@
     }
   ],
   "pageErrors": [],
-  "verifiedAt": "2026-10-16T22:14:21.134Z"
+  "verifiedAt": "2026-10-16T23:24:42.720Z"
 }

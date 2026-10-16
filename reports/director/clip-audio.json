@@ -15,8 +15,9 @@
         "audioSampleRate": 48000,
         "codec": "h264",
         "audioCodec": "aac",
-        "sha256": "7a4d5a71b6ba0909e4fbdd02d1646626476cba15ed2ec93ee33519387a966936",
+        "sha256": "a344ac3d9c1d2332e6709d09cde776b6bc1b0e9f1b8652d8e9d9e253a6222b29",
         "loudnessLufs": -21.3,
+        "audioSilent": false,
         "truePeakDbfs": -20.5
       }
     },
@@ -31,10 +32,11 @@
         "audioSampleRate": 48000,
         "codec": "h264",
         "audioCodec": "aac",
-        "sha256": "8792aede9cd4546b971bc618e219d1ee298cfbca7d46b6508ea1107d1f0838e1",
-        "loudnessLufs": -70
+        "sha256": "be3a41ca13f3acb75974298b2465db67e981a78b1c15607221de748f874b6d0e",
+        "loudnessLufs": -70,
+        "audioSilent": true
       }
     }
   ],
-  "verifiedAt": "2026-10-16T20:37:00.615Z"
+  "verifiedAt": "2026-10-16T23:21:33.450Z"
 }

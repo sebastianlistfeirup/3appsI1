@@ -1,79 +1,181 @@
 DIRECTOR / STORYBOARD
 
-Det sidste signal
-24 fps | 16:9 | Revision 6 | 01:00:00
 
-SHOT 01 / 12 sek.
-
-SHOT 02 / 12 sek.
 
 Det sidste signal
+24 fps · 16:9 · Revision 5 · 01:00:00
 
-Noget derude
 
-Station 07. Sidste vagt før solopgang.
 
-Vent. Der er noget på den gamle frekvens.
 
-Total. Et øde observationsdæk ved en fremmed horisont.
+SHOT 01 · 12 sek. · KAMERAFRAME                          SHOT 02 · 12 sek. · KAMERAFRAME
 
-Halvnær på Liv. Hun lytter til signalet.
+Det sidste signal                                        Noget derude
+Station 07. Sidste vagt før solopgang.                   Vent. Der er noget på den gamle frekvens.
 
-Scene v2 / cam_01 / Shot v2
+Total. Et øde observationsdæk ved en fremmed horisont.   Halvnær på Liv. Hun lytter til signalet.
 
-Scene v2 / cam_02 / Shot v2
 
-director-primitives-1.0 | shot_91b0bec267be4f6b8aabd383dbe19347
 
-director-primitives-1.0 | shot_e0e4e977e5a54b3ba6bcaff0dd2a5cd6
 
-Lokal produktion / 1 af 3
+Scene v1 · Shot v2 · cam_01                              Scene v1 · Shot v2 · cam_02
+shot_33cb41fe424f4712a4668bb93e6d7013                    shot_3210d5c373494f099ed9d55ba617a2c2
 
+
+
+Lokal produktion · dine egne materialer                                                              1/6
 DIRECTOR / STORYBOARD
 
+
+
 Det sidste signal
-24 fps | 16:9 | Revision 6 | 01:00:00
+24 fps · 16:9 · Revision 5 · 01:00:00
 
-SHOT 03 / 12 sek.
 
-SHOT 04 / 12 sek.
 
-En gammel frekvens
 
-Vi er ikke alene
+SHOT 03 · 12 sek. · KAMERAFRAME           SHOT 04 · 12 sek. · KAMERAFRAME
 
-Det er ikke støj. Nogen svarer os.
+En gammel frekvens                        Vi er ikke alene
+Det er ikke støj. Nogen svarer os.        Efter alle de år … vi er ikke alene.
 
-Efter alle de år - vi er ikke alene.
+Modbillede. Noa finder en kendt rytme.    Indklip på terminalen. Håbet tænder.
 
-Modbillede. Noa finder en kendt rytme.
 
-Indklip på terminalen. Håbet tænder.
 
-Scene v2 / cam_03 / Shot v2
 
-Scene v2 / cam_04 / Shot v2
+Scene v1 · Shot v2 · cam_03               Scene v1 · Shot v2 · cam_04
+shot_4416061c87a943599b291ae0e42ed33b     shot_99a4c1e33b944eefb796963b887cd357
 
-director-primitives-1.0 | shot_e133fdc58ab64b5e8c3369efc342d030
 
-director-primitives-1.0 | shot_33fe9898a0fb448aad3151feda7910f6
 
-Lokal produktion / 2 af 3
-
+Lokal produktion · dine egne materialer                                           2/6
 DIRECTOR / STORYBOARD
 
-Det sidste signal
-24 fps | 16:9 | Revision 6 | 01:00:00
 
-SHOT 05 / 12 sek.
+
+Det sidste signal
+24 fps · 16:9 · Revision 5 · 01:00:00
+
+
+
+
+SHOT 05 · 12 sek. · KAMERAFRAME
 
 Sæt kursen
 Sæt kursen. Vi tager hjem.
+
 Total. To figurer vender sig mod den nye dag.
 
-Scene v2 / cam_05 / Shot v2
-director-primitives-1.0 | shot_b4863dfad3f34d76b46e6382249ed6c5
 
-Lokal produktion / 3 af 3
 
+
+Scene v1 · Shot v2 · cam_05
+shot_757d836cbac34a168358a110c460a248
+
+
+
+Lokal produktion · dine egne materialer         3/6
+DIRECTOR / VERSIONSMANIFEST
+
+
+
+Det sidste signal
+24 fps · 16:9 · Revision 5 · 01:00:00
+
+
+PRODUKTION
+
+Det sidste signal
+Projekt: station_07
+Revision: 5
+Sekvens: 1440 frames ved 24 fps · 01:00:00
+
+BRIEF OG TONE
+
+En stille science fiction-fortælling om to mennesker, et forladt observationsdæk og et signal, der ændrer alt. Varmt lys mod en kold
+verden. Fra isolation til håb.
+
+OM DENNE FIL
+
+Storyboardets billeder er faste kameraframes, egne billeder eller det importerede videoklips første frame efter trim. En 2D-plan er mærket som
+2D-plan. Overgange reducerer sekvensens samlede varighed. Fuld tekst, versionsreferencer, kamera, objekter, kildehashes og billedhashes er også
+indlejret i director-manifest.json. Originale medier hentes med projektpakken.
+
+
+SHOT 01 · Det sidste signal
+
+Shot: shot_33cb41fe424f4712a4668bb93e6d7013 · v2
+Scene: scene_v1 · v1 · kamera cam_01
+Sekvens: 00:00:00 → 00:12:00 · 288 frames · overgang 0 frames
+Billedtype: kameraframe · renderer director-primitives-1.0
+Scene-assets: 0 · objektversioner: Kaptajn Liv v1, Tekniker Noa v1, Signalterminal v1, Forsyningskasse v1, Signallys v1
+Kontinuitetsmærker: Total
+
+
+
+
+Lokal produktion · dine egne materialer                                                                                                           4/6
+DIRECTOR / VERSIONSMANIFEST
+
+
+
+Det sidste signal
+24 fps · 16:9 · Revision 5 · 01:00:00
+
+
+SHOT 02 · Noget derude
+
+Shot: shot_3210d5c373494f099ed9d55ba617a2c2 · v2
+Scene: scene_v1 · v1 · kamera cam_02
+Sekvens: 00:12:00 → 00:24:00 · 288 frames · overgang 0 frames
+Billedtype: kameraframe · renderer director-primitives-1.0
+Scene-assets: 0 · objektversioner: Kaptajn Liv v1, Tekniker Noa v1, Signalterminal v1, Forsyningskasse v1, Signallys v1
+Kontinuitetsmærker: Halvnær
+
+
+SHOT 03 · En gammel frekvens
+
+Shot: shot_4416061c87a943599b291ae0e42ed33b · v2
+Scene: scene_v1 · v1 · kamera cam_03
+Sekvens: 00:24:00 → 00:36:00 · 288 frames · overgang 0 frames
+Billedtype: kameraframe · renderer director-primitives-1.0
+Scene-assets: 0 · objektversioner: Kaptajn Liv v1, Tekniker Noa v1, Signalterminal v1, Forsyningskasse v1, Signallys v1
+Kontinuitetsmærker: Halvnær
+
+
+SHOT 04 · Vi er ikke alene
+
+Shot: shot_99a4c1e33b944eefb796963b887cd357 · v2
+Scene: scene_v1 · v1 · kamera cam_04
+Sekvens: 00:36:00 → 00:48:00 · 288 frames · overgang 0 frames
+Billedtype: kameraframe · renderer director-primitives-1.0
+Scene-assets: 0 · objektversioner: Kaptajn Liv v1, Tekniker Noa v1, Signalterminal v1, Forsyningskasse v1, Signallys v1
+Kontinuitetsmærker: Indklip
+
+
+
+
+Lokal produktion · dine egne materialer                                                                                   5/6
+DIRECTOR / VERSIONSMANIFEST
+
+
+
+Det sidste signal
+24 fps · 16:9 · Revision 5 · 01:00:00
+
+
+SHOT 05 · Sæt kursen
+
+Shot: shot_757d836cbac34a168358a110c460a248 · v2
+Scene: scene_v1 · v1 · kamera cam_05
+Sekvens: 00:48:00 → 01:00:00 · 288 frames · overgang 0 frames
+Billedtype: kameraframe · renderer director-primitives-1.0
+Scene-assets: 0 · objektversioner: Kaptajn Liv v1, Tekniker Noa v1, Signalterminal v1, Forsyningskasse v1, Signallys v1
+Kontinuitetsmærker: Total
+
+
+
+
+Lokal produktion · dine egne materialer                                                                                   6/6
 

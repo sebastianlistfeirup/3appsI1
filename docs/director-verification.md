@@ -117,3 +117,18 @@ beviser rigtig worker, afbrydelse, originale hashes, komplet v2-roundtrip,
 v1-kompatibilitet og bevaret arbejde ved fejl. Lokal watchdog er fire
 minutter; en fem minutters CI-command-timeout er et passende ekstra loft.
 Se `docs/director-project-archive.md` for format, grænser og afgrænsninger.
+
+Komplet undertekst og målt eksportkvalitet:
+
+```bash
+node --import tsx apps/director/tests/caption-render-smoke.mjs
+node --import tsx apps/director/tests/captions-ui-flow.mjs
+CAPTION_ENGINE=firefox node --import tsx apps/director/tests/captions-ui-flow.mjs
+CAPTION_ENGINE=webkit node --import tsx apps/director/tests/captions-ui-flow.mjs
+```
+
+CLI-gaten bruger sin egen private jobmappe og har fem minutters watchdog.
+UI-gates kræver den aktiverede lokale renderprofil og køres sekventielt;
+hver har fire minutters watchdog. De åbner deres faktisk downloadede MP4 i
+den valgte browser. Testresultater og 21 videopixel-sammenligninger findes i
+`reports/director/caption-render.json` og `*-captions-flow.json`.

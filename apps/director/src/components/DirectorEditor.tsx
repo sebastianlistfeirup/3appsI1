@@ -81,6 +81,10 @@ import {
   ShotHistoryPanel,
 } from "./VersionPanels";
 import { SequencePreview } from "./SequencePreview";
+import { CaptionExport } from "./CaptionExport";
+import { RenderQuality } from "./RenderQuality";
+import { captionFile } from "../lib/captions";
+import type { RenderState } from "../lib/server/local-render";
 import {
   exportProjectArchive,
   importProjectArchive,
@@ -223,20 +227,7 @@ export default function DirectorEditor({
     [mediaTarget, setMediaTarget] = useState<
       "shot" | "voice" | "music" | "model"
     >("shot"),
-    [renderJob, setRenderJob] = useState<{
-      id: string;
-      state: string;
-      phase: string;
-      sequenceVersion?: { id: string; version: number; name: string };
-      error?: string;
-      metadata?: {
-        duration: number;
-        width: number;
-        height: number;
-        fps: number;
-        sha256: string;
-      };
-    } | null>(null),
+    [renderJob, setRenderJob] = useState<RenderState | null>(null),
     [capability, setCapability] = useState<boolean | null>(null);
   const history = useRef<Project[]>([]),
     future = useRef<Project[]>([]),
@@ -394,7 +385,7 @@ export default function DirectorEditor({
       if (e.key !== "Tab" || !el) return;
       const all = [
         ...el.querySelectorAll<HTMLElement>(
-          "button:not(:disabled),input,select,textarea,a[href]",
+          "button:not(:disabled),input,select,textarea,a[href],summary",
         ),
       ];
       const first = all[0],
@@ -746,7 +737,7 @@ export default function DirectorEditor({
       }, "Mediet er valideret og gemt lokalt.");
       setModal(null);
     });
-  const exportFile = (kind: "json" | "zip" | "pdf") =>
+  const exportFile = (kind: "json" | "zip" | "pdf" | "srt" | "vtt") =>
     act("Forbereder eksport …", async () => {
       let unsavedCopy = false;
       await storage.flush().catch(() => {
@@ -762,6 +753,14 @@ export default function DirectorEditor({
           `${slug}-v${project.revision}.json`,
           JSON.stringify(project, null, 2),
           "application/json",
+        );
+      if (kind === "srt" || kind === "vtt")
+        downloadFile(
+          `${slug}-v${project.revision}.${kind}`,
+          captionFile(project, kind),
+          kind === "vtt"
+            ? "text/vtt;charset=utf-8"
+            : "application/x-subrip;charset=utf-8",
         );
       if (kind === "zip")
         downloadFile(
@@ -2341,6 +2340,11 @@ export default function DirectorEditor({
                     <Download size={16} />
                   </button>
                 </div>
+                <CaptionExport
+                  project={p}
+                  busy={Boolean(busy)}
+                  onExport={exportFile}
+                />
                 <div className="movie-export">
                   <div>
                     <Film size={23} />
@@ -2395,6 +2399,7 @@ export default function DirectorEditor({
                             {renderJob.metadata?.fps} fps ·{" "}
                             {renderJob.metadata?.duration.toFixed(3)} sek.
                           </small>
+                          <RenderQuality job={renderJob} project={p} />
                           <a
                             className="button primary"
                             href={`/api/exports/${renderJob.id}?download=1`}

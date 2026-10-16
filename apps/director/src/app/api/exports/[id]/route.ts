@@ -7,6 +7,7 @@ import {
   localRenderAvailable,
   movieFile,
   reserveResume,
+  renderArtifact,
 } from "../../../../lib/server/local-render";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,6 +20,23 @@ export async function GET(
   try {
     const { id } = await context.params;
     const state = await getRender(id);
+    const artifact = new URL(request.url).searchParams.get("artifact");
+    if (artifact) {
+      const file = await renderArtifact(id, artifact);
+      return new Response(new Uint8Array(file), {
+        headers: {
+          "Content-Type": artifact.endsWith(".json")
+            ? "application/json; charset=utf-8"
+            : artifact.endsWith(".vtt")
+              ? "text/vtt; charset=utf-8"
+              : "application/x-subrip; charset=utf-8",
+          "Content-Disposition": `attachment; filename="director-${id.slice(0, 8)}-${artifact}"`,
+          "Cache-Control": "private, no-store",
+          "Content-Length": String(file.length),
+          "X-Content-Type-Options": "nosniff",
+        },
+      });
+    }
     if (new URL(request.url).searchParams.get("download") === "1") {
       const file = await movieFile(id);
       return new Response(new Uint8Array(file), {

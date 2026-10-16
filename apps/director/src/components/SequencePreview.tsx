@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import {
   previewLayers,
@@ -8,6 +8,7 @@ import {
   type Media,
 } from "@tre/scene-format";
 import { PreviewAudio } from "../lib/preview-audio";
+import { buildCaptionTrack } from "../lib/captions";
 
 function ClockedMedia({
   media,
@@ -113,6 +114,12 @@ export function SequencePreview({
   graph: PreviewAudio | null;
 }) {
   const [level, setLevel] = useState(0);
+  const captions = useMemo(() => buildCaptionTrack(project), [project]);
+  const caption = project.captions
+    ? captions.cues.find(
+        (cue) => frame >= cue.startFrame && frame < cue.endFrame,
+      )
+    : undefined;
   useEffect(() => {
     if (!graph) return;
     let id = 0,
@@ -127,8 +134,7 @@ export function SequencePreview({
     id = requestAnimationFrame(sample);
     return () => cancelAnimationFrame(id);
   }, [graph, playing, project.music?.duck]);
-  const layers = previewLayers(project, frame),
-    current = layers.at(-1);
+  const layers = previewLayers(project, frame);
   return (
     <div className="playback-frame" data-review-frame={frame}>
       {layers.map((layer) => {
@@ -182,8 +188,10 @@ export function SequencePreview({
           />
         ) : null;
       })}
-      {project.captions && (
-        <div className="playback-caption">{current?.dialogue}</div>
+      {caption && (
+        <div className="playback-caption" data-caption-id={caption.id}>
+          {caption.text}
+        </div>
       )}
       <span className="preview-label">
         {playing ? "AFSPILNING" : "PAUSE"} ·{" "}

@@ -3,6 +3,7 @@ import { promises as fs } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawn } from "node:child_process";
 import { AsyncLocalStorage } from "node:async_hooks";
+import { buildCaptionTrack, captionFile, type CaptionCue } from "../captions";
 import {
   inspectRaster,
   parseProject,
@@ -24,6 +25,7 @@ export type RenderState = {
   updatedAt: string;
   manifestHash: string;
   expectedFrames: number;
+  source?: { projectId: string; title: string; revision: number };
   sequenceVersion?: { id: string; version: number; name: string };
   error?: string;
   metadata?: {
@@ -37,9 +39,18 @@ export type RenderState = {
     audioCodec: string;
     truePeakDbfs?: number;
     loudnessLufs?: number;
+    audioSilent?: boolean;
   };
   reusedSegments?: number;
+  captions?: {
+    burnedIn: boolean;
+    cues: number;
+    warningShots: number;
+    errors: string[];
+  };
+  artifacts?: Record<string, { sha256: string; bytes: number }>;
 };
+const PIPELINE_VERSION = "director-animatic-3.0";
 // Runtime data must not be traced into a deployment bundle.
 const ROOT = process.env.DIRECTOR_RENDER_DIR
   ? resolve(/* turbopackIgnore: true */ process.env.DIRECTOR_RENDER_DIR)
@@ -147,6 +158,9 @@ export async function createRender(input: unknown) {
   try {
     const p = parseProject(input);
     if (!p.sequence.length) throw Error("Sekvensen er tom");
+    const captions = buildCaptionTrack(p);
+    if (p.captions && captions.errors.length)
+      throw Error(captions.errors.join(" "));
     for (const shot of orderedShots(p))
       if (!shot.frame && !shot.mediaId)
         throw Error(`Kameraframe mangler: ${shot.name}`);
@@ -175,6 +189,13 @@ export async function createRender(input: unknown) {
       updatedAt: now(),
       manifestHash: sha(manifest),
       expectedFrames: totalFrames(p),
+      source: { projectId: p.id, title: p.title, revision: p.revision },
+      captions: {
+        burnedIn: p.captions,
+        cues: captions.cues.length,
+        warningShots: captions.warnings.length,
+        errors: captions.errors,
+      },
       ...(savedSequence
         ? {
             sequenceVersion: {
@@ -344,16 +365,32 @@ const ffbase = [
   "-filter_complex_threads",
   "1",
 ];
-async function segment(jobDir: string, p: Project, shot: Shot, index: number) {
+async function segment(
+  jobDir: string,
+  p: Project,
+  shot: Shot,
+  index: number,
+  cues: CaptionCue[],
+) {
   const m = p.media.find((m) => m.id === shot.mediaId);
+  const start = timeline(p)[index].startFrame;
+  const captions = p.captions
+    ? cues
+        .filter((cue) => cue.shotId === shot.id)
+        .map((cue) => ({
+          ...cue,
+          startFrame: cue.startFrame - start,
+          endFrame: cue.endFrame - start,
+        }))
+    : [];
   const fingerprint = sha(
     JSON.stringify({
       frame: shot.frame,
       media: m?.sha256,
       in: shot.sourceIn,
       duration: shot.durationFrames,
-      caption: p.captions ? shot.dialogue : null,
-      renderer: "ffmpeg-animatic-v2",
+      captions,
+      renderer: PIPELINE_VERSION,
     }),
   );
   const out = join(jobDir, `segment-${index}-${fingerprint}.mp4`);
@@ -408,27 +445,16 @@ async function segment(jobDir: string, p: Project, shot: Shot, index: number) {
   }
   let videoFilter =
     "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=24,format=yuv420p";
-  if (p.captions && shot.dialogue.trim()) {
-    const captionPath = join(jobDir, `caption-${index}.txt`);
-    const words = shot.dialogue.trim().split(/\s+/);
-    const lines: string[] = [];
-    let line = "";
-    for (const word of words) {
-      if (line.length + word.length > 70 && line) {
-        lines.push(line);
-        line = "";
-      }
-      line += (line ? " " : "") + word;
-    }
-    if (line) lines.push(line);
-    await fs.writeFile(captionPath, lines.slice(0, 3).join("\n"), {
+  for (const [cueIndex, cue] of captions.entries()) {
+    const captionPath = join(jobDir, `caption-${index}-${cueIndex}.txt`);
+    await fs.writeFile(captionPath, cue.text, {
       mode: 0o600,
     });
     const escaped = captionPath
       .replaceAll("\\", "\\\\")
       .replaceAll(":", "\\:")
       .replaceAll("'", "\\'");
-    videoFilter += `,drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf:textfile='${escaped}':expansion=none:fontsize=24:fontcolor=white:box=1:boxcolor=black@0.5:boxborderw=12:line_spacing=7:x=(w-text_w)/2:y=h-text_h-42`;
+    videoFilter += `,drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf:textfile='${escaped}':expansion=none:fontsize=28:fontcolor=white:box=1:boxcolor=black@0.65:boxborderw=12:line_spacing=7:x=(w-text_w)/2:y=h-text_h-42:enable='gte(n,${cue.startFrame})*lt(n,${cue.endFrame})'`;
   }
   await run("ffmpeg", [
     ...ffbase,
@@ -663,6 +689,10 @@ export async function executeRender(id: string) {
       if (sha(raw) !== saved.manifestHash)
         throw Error("Manifestet er ændret efter låsning");
       const p = parseProject(JSON.parse(raw));
+      const source = { projectId: p.id, title: p.title, revision: p.revision };
+      const captions = buildCaptionTrack(p);
+      if (p.captions && captions.errors.length)
+        throw Error(captions.errors.join(" "));
       await update(id, {
         state: "running",
         phase: "Kontrollerer medier og kameraframes",
@@ -674,7 +704,7 @@ export async function executeRender(id: string) {
         await update(id, {
           phase: `Forbereder shot ${i + 1} af ${shots.length}`,
         });
-        const result = await segment(jobDir, p, shots[i], i);
+        const result = await segment(jobDir, p, shots[i], i, captions.cues);
         segments.push(result.path);
         if (result.reused) reused++;
         await atomic(join(jobDir, "checkpoint.json"), {
@@ -689,10 +719,28 @@ export async function executeRender(id: string) {
         reusedSegments: reused,
       });
       let output = join(jobDir, "assembly.mp4");
+      const assemblyFingerprint = sha(
+        `${saved.manifestHash}:${PIPELINE_VERSION}`,
+      );
       try {
-        await validateMovie(output, totalFrames(p));
+        const previous = JSON.parse(
+          await fs.readFile(join(jobDir, "assembly.json"), "utf8"),
+        );
+        const validated = await validateMovie(output, totalFrames(p));
+        if (
+          previous.fingerprint !== assemblyFingerprint ||
+          previous.sha256 !== validated.sha256
+        )
+          throw Error(
+            "Tidligere samling matcher ikke manifest og renderprofil",
+          );
       } catch {
         output = await assemble(jobDir, p, segments);
+        const validated = await validateMovie(output, totalFrames(p));
+        await atomic(join(jobDir, "assembly.json"), {
+          fingerprint: assemblyFingerprint,
+          ...validated,
+        });
       }
       await update(id, {
         state: "validating",
@@ -719,24 +767,85 @@ export async function executeRender(id: string) {
       const integrated = [...loudness.matchAll(/I:\s+(-?[\d.]+) LUFS/g)].at(
         -1,
       )?.[1];
-      const peak = [...loudness.matchAll(/Peak:\s+(-?[\d.]+) dBFS/g)].at(
+      const peak = [...loudness.matchAll(/Peak:\s+(-?inf|-?[\d.]+) dBFS/g)].at(
         -1,
       )?.[1];
-      if (integrated) metadata.loudnessLufs = Number(integrated);
-      if (peak) metadata.truePeakDbfs = Number(peak);
+      if (
+        !integrated ||
+        !peak ||
+        !Number.isFinite(Number(integrated)) ||
+        (peak !== "-inf" && !Number.isFinite(Number(peak)))
+      )
+        throw Error("Lydmålingen kunne ikke verificeres");
+      metadata.loudnessLufs = Number(integrated);
+      metadata.audioSilent = peak === "-inf";
+      if (peak !== "-inf") metadata.truePeakDbfs = Number(peak);
       await fs.copyFile(output, join(jobDir, "film.mp4"));
-      await atomic(join(jobDir, "validation.json"), {
-        ...metadata,
-        manifestHash: saved.manifestHash,
-        expectedFrames: totalFrames(p),
-        verifiedAt: now(),
-        loudnessMeasurement: loudness.slice(-5000),
-      });
+      const artifacts: NonNullable<RenderState["artifacts"]> = {};
+      const saveArtifact = async (name: string, value: string) => {
+        await fs.writeFile(join(jobDir, name), value, { mode: 0o600 });
+        artifacts[name] = {
+          sha256: sha(value),
+          bytes: Buffer.byteLength(value),
+        };
+      };
+      if (!captions.errors.length && captions.cues.length) {
+        await saveArtifact("captions.srt", captionFile(p, "srt"));
+        await saveArtifact("captions.vtt", captionFile(p, "vtt"));
+      }
+      await saveArtifact(
+        "captions.json",
+        JSON.stringify(
+          {
+            fps: p.fps,
+            handover: "visual-crossfade-midpoint",
+            burnedIn: p.captions,
+            sources: shots.map((shot) => ({
+              shotId: shot.id,
+              text: shot.dialogue,
+            })),
+            ...captions,
+          },
+          null,
+          2,
+        ),
+      );
+      await saveArtifact(
+        "validation.json",
+        JSON.stringify(
+          {
+            ...metadata,
+            manifestHash: saved.manifestHash,
+            rendererVersion: PIPELINE_VERSION,
+            source,
+            expectedFrames: totalFrames(p),
+            verifiedAt: now(),
+            captions: {
+              burnedIn: p.captions,
+              cues: captions.cues.length,
+              warnings: captions.warnings,
+              errors: captions.errors,
+            },
+            artifacts,
+            loudnessMeasurement: loudness.slice(-5000),
+          },
+          null,
+          2,
+        ),
+      );
       await update(id, {
         state: "succeeded",
         phase: "MP4 er produceret og kontrolleret med ffprobe.",
         metadata,
+        source,
         reusedSegments: reused,
+        captions: {
+          burnedIn: p.captions,
+          cues: captions.cues.length,
+          warningShots: captions.warnings.length,
+          errors: captions.errors,
+        },
+        artifacts,
       });
     } catch (error) {
       const cancelled =
@@ -765,6 +874,25 @@ export async function movieFile(id: string) {
   if (state.state !== "succeeded") throw Error("Filmen er ikke færdig");
   const bytes = await fs.readFile(join(dir(id), "film.mp4"));
   if (sha(bytes) !== state.metadata?.sha256)
+    throw Error("Eksportfilens checksum matcher ikke");
+  return bytes;
+}
+export async function renderArtifact(id: string, name: string) {
+  if (
+    ![
+      "captions.srt",
+      "captions.vtt",
+      "captions.json",
+      "validation.json",
+    ].includes(name)
+  )
+    throw Error("Ukendt eksportfil");
+  const state = await getRender(id),
+    expected = state.artifacts?.[name];
+  if (state.state !== "succeeded" || !expected)
+    throw Error("Eksportfilen er ikke klar");
+  const bytes = await fs.readFile(join(dir(id), name));
+  if (bytes.length !== expected.bytes || sha(bytes) !== expected.sha256)
     throw Error("Eksportfilens checksum matcher ikke");
   return bytes;
 }

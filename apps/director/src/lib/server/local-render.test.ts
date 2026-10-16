@@ -1,10 +1,12 @@
 import { afterEach, describe, it, expect } from "vitest";
+import { createSampleProject } from "@tre/scene-format";
 import {
   claimRenderInput,
   releaseRenderInput,
   localRenderAvailable,
   readBoundedJson,
   createRender,
+  renderArtifact,
 } from "./local-render";
 const original = process.env.DIRECTOR_LOCAL_RENDER;
 afterEach(() => {
@@ -60,5 +62,22 @@ describe("Local renderer boundary and admission", () => {
       body: "{}",
     });
     await expect(readBoundedJson(request)).rejects.toThrow("64 MB");
+  });
+  it("rejects impossibly short complete captions before creating a render and releases admission", async () => {
+    const project = createSampleProject();
+    project.sequence = project.sequence.slice(0, 1);
+    project.shots[0].durationFrames = 1;
+    project.shots[0].dialogue = "Alt indhold skal bevares. ".repeat(20);
+    project.captions = true;
+    await expect(createRender(project)).rejects.toThrow("billedframes");
+    expect(claimRenderInput()).toBe(true);
+  });
+  it("rejects undeclared sidecar names before any file access", async () => {
+    await expect(
+      renderArtifact("not-a-job", "../manifest.json"),
+    ).rejects.toThrow("Ukendt eksportfil");
+    await expect(
+      renderArtifact("not-a-job", "captions.srt\r\nInjected: true"),
+    ).rejects.toThrow("Ukendt eksportfil");
   });
 });
