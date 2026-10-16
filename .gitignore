@@ -1,0 +1,11 @@
+node_modules/
+.next/
+dist/
+.env*
+!.env.example
+*.tsbuildinfo
+playwright-report/
+test-results/
+.runtime/
+*.log
+.DS_Store

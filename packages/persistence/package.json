@@ -1,0 +1,17 @@
+{
+  "name": "@tre/persistence",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "4.6.7",
+    "idb": "8.0.4",
+    "react": "19.3.1"
+  }
+}

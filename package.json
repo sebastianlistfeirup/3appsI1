@@ -1,0 +1,31 @@
+{
+  "name": "tre-apps",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "dev:studio": "pnpm --filter @tre/studio dev",
+    "dev:flowlab": "pnpm --filter @tre/flowlab dev",
+    "dev:director": "pnpm --filter @tre/director dev",
+    "build": "pnpm -r --workspace-concurrency=1 --filter \"./apps/*\" build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "check": "pnpm typecheck && pnpm test && pnpm build"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.10.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.2.3",
+    "@types/three": "0.186.0",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5",
+    "tsx": "4.21.0"
+  }
+}

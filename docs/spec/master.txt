@@ -1,0 +1,698 @@
+PRODUKT / DESIGN / TEKNIK / AUTONOM UDVIKLING
+
+
+
+
+TRE APPS / ÉT PROGRAM
+
+
+Masterbibel for Studio One, FlowLab og Director
+
+
+
+
+   VISION                                    SYSTEM                        BEVIS
+
+
+   Et tydeligt produktløfte                  Kontrakter og arbejdsgange    Tests, eksport og drift
+
+
+
+
+Et fælles fundament. Tre selvstændige produkter. Bevis ved hver
+aflevering.
+
+
+
+Version 1.0 / 16. oktober 2026
+
+Ferieprofil -> fuld værktøjskæde -> privat beta -> kommerciel validering
+
+           TRE APPS / ÉT PROGRAM                                                  UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Indhold og læsevej
+Læs produktløftet først. Brug derefter milestones, accepttests og startordre som
+implementeringskontrakt. Delte krav er gentaget i hver appbibel, så den kan stå alene.
+
+
+
+Programmandat og leverancens status                                                                   3
+
+Prioritering og arbejdsdeling                                                                         4
+
+Repository, ejerskab og versionsdisciplin                                                             5
+
+Autonomi, mandat og de få reelle blokeringer                                                          6
+
+Sådan kan arbejdet fortsætte i timer og dage                                                          7
+
+Tilstand, beviser og konfliktfri overdragelse                                                         8
+
+Faseplan - de første to uger og videre                                                                9
+
+Værktøjskæde og integrationsrækkefølge                                                              10
+
+Fælles kvalitets- og releasegates                                                                   11
+
+Forretningsplan og økonomisk disciplin                                                              12
+
+Startpakken og den første aktivering                                                                13
+
+
+
+Komplette appbibler i denne samlede PDF
+
+Studio One                                                                                PDF-side 14
+
+FlowLab                                                                                   PDF-side 36
+
+Director                                                                                  PDF-side 57
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                          2
+
+         TRE APPS / ÉT PROGRAM                                                       UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Programmandat og leverancens
+status
+Denne masterbibel samler styring, fælles opgaver og de tre fulde appbibler i samme PDF.
+
+
+Brugerens mål
+Start udviklingen i ferieugen med den computeradgang, der er til rådighed. Fortsæt næste uge med
+fuld adgang til computer og værktøjskæde. Produkterne skal være flotte, nyttige for Sebastian og
+have en troværdig vej til indtjening. Koordinatoren skal kunne arbejde i lange blokke uden
+rutinemæssige afbrydelser.
+
+Valgt fortolkning
+De tre apps er Studio One, FlowLab og Director, som blev fremhævet samlet i idélisten. Vi følger den
+nyeste besked om computeradgang; telefon/tablet er desuden understøttet til status og relevante
+brugerflows. Der antages hverken en tændt hoved-PC, bestemte credentials eller nye betalte
+abonnementer under ferien.
+
+Status ved overdragelse
+Dette er en færdig produkt- og implementeringsspecifikation med startpakke, backlog og
+koordinatorkontrakt. Apps, cloudmiljøer, repositories, API-integrationer og betaling er ikke bygget
+eller aktiveret af denne dokumentleverance. SPEC_READY betyder klar til implementering, ikke
+produktionsklar software.
+
+Definition af programslut
+Tre uafhængigt deploybare apps med verificeret kernerejse, vedvarende data, isolerede
+workspaces, fejl- og recoveryflow, rimelig tilgængelighed, faktisk eksport, testbetaling, drift og en
+brugbar onboarding. LIVE afhænger af godkendt produktionsmiljø og ekstern kommerciel validering.
+Ingen indtægtsgaranti.
+
+
+   Mål: maksimal selvstændig fremdrift og konkrete resultater. En ny dependency, en flot
+   prototype eller et langt statusresumé er ikke i sig selv en leverance.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                             3
+
+         TRE APPS / ÉT PROGRAM                                                                      UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Prioritering og arbejdsdeling
+Alle tre produkter skal fremad; fælles problemer løses én gang, og et blokeret spor må ikke
+holde de andre tilbage.
+
+
+  Spor                                Ansvar / værdi
+
+
+  Foundation                          Workspace, auth, storage, jobs, budget, billing, UI-primitiver og
+                                      releaseinfrastruktur.
+
+
+  Studio One                          Produktionsobjekter, opgavegraf, versionsreview og kodeadapter. Personlig
+                                      anvendelse som første test.
+
+
+  FlowLab                             Korrekt simulation, scenarier og beslutningsrapport. Tidligst målrettet
+                                      B2B-pilot.
+
+
+  Director                            Scene, kamera, shotliste og reel medieeksport. Visuelt stærk demonstration.
+
+
+  Dev coordinator                     Fører backlog, branches, checks, checkpoint, budget og status. Afhænger
+                                      ikke af Studio One.
+
+
+
+Kapacitetsregel
+Efter bootstrap fordeles tiden som udgangspunkt 35 procent FlowLab, 35 procent Studio One og 30
+procent Director. Afvig når en fælles afhængighed eller kort vej til verificeret leverance gør det
+rationelt. Ingen app må stå stille gennem tre aktive arbejdsblokke, hvis der findes en klar, ublokeret
+opgave.
+
+Parallelitet uden filkonflikter
+Én koordinator integrerer. Ved faktisk understøttet delegation: højst to specialister ad gangen i
+separate worktrees. Hver opgave får branch, allowed_paths og owner. Kun foundation-ejer ændrer
+delte contracts, database og lockfile. Andre foreslår ændringer gennem en separat foundation-task.
+Delegation bruger kun de tilladelser, den aktive session faktisk har.
+
+Medfølgende koordinator
+Startpakken indeholder en lille Python-koordinator til serialiserede, genoptagelige agentblokke på
+tværs af alle tre apps. Den har dry-run, state, timeout, retries og verifikation. Den er en
+startmekanisme, ikke en hosted platform eller færdig parallel orkestrator. Parallel agentkørsel er et
+senere kvalificeret integrationsvalg.
+
+Byg ikke intern platform først
+Delte komponenter trækkes ud, når mindst to apps har et konkret behov. Der afsættes ikke uger til
+en generisk agentplatform før et produkt virker. Studio One skal ikke automatisk overtage
+udviklingsstyringen, før den har dokumenteret stabilitet.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                            4
+
+         TRE APPS / ÉT PROGRAM                                                                         UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Repository, ejerskab og
+versionsdisciplin
+Referenceformen er ét privat monorepo med selvstændige apps. Den kan oprettes af
+kodeagenten i det autoriserede målmiljø.
+
+
+  Sti                                                     Indhold / ejer
+
+
+  apps/studio                                             Studio One UI og appspecifikke serverroutes. Studio-spor
+                                                          ejer.
+
+
+  apps/flowlab                                            FlowLab UI, modeller og analyse. FlowLab-spor ejer.
+
+
+  apps/director                                           Director editor, shots og review. Director-spor ejer.
+
+
+  packages/flow-engine                                    Ren numerisk motor, seeds og fixtures. FlowLab-spor.
+
+
+  packages/scene-format                                   Scene-/shotkontrakter og migrations. Director-spor.
+
+
+  packages/ui, auth, contracts                            Delte komponenter og fælles kontrakter. Foundation-ejer.
+
+
+  services/worker                                         Vedvarende jobs og adaptere. Foundation + udpeget
+                                                          app-specialist.
+
+
+  docs, program, tools                                    Bibler, beslutninger, backlog og koordinatorkode.
+                                                          Koordinator.
+
+
+  reports, checkpoints                                    Tests, screenshots, commitreferencer og
+                                                          genoptagelsesstate. Ingen secrets.
+
+
+
+Branchpolitik
+Main er seneste integrerede grønne version. Arbejde sker på task/<id>-<kort-navn>. Agenten må
+committe og ved autorisation pushe arbejdsbranches. Integration udføres først efter relevant
+checkpakke og review af diff. Beskyttede branchregler omgås ikke. Repositoryets eksisterende
+instruktioner har betydning og må ikke skrives om for at fjerne et check.
+
+Migrationer
+Første milepæl fastlåser schemas. Senere changes er additive hvor muligt: tilføj, migrér data, skift
+læsning, fjern i senere release. Alle migrationer køres på en kopi af tidligere data. Ingen destruktiv
+migration mod brugerdata som automatisk genvej.
+
+Uafhængig levering
+Hver app har egen environment-konfiguration og healthcheck. Fælles ændringer kræver tests i alle
+berørte apps. Én defekt app må ikke fjerne adgang til de andre. Abonnementer har app_key, så
+rettigheder ikke smitter mellem produkter.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                               5
+
+         TRE APPS / ÉT PROGRAM                                                                      UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Autonomi, mandat og de få reelle
+blokeringer
+Koordinatoren tager almindelige produkt- og implementeringsbeslutninger. Den stopper ikke for
+hver farve, komponent eller fejlretning.
+
+
+  Beslutningsklasse                       Handling
+
+
+  Rutine / reversibel                     Vælg selv, implementér, test og skriv væsentlige valg i DECISIONS.md.
+
+
+  Manglende nøgle eller kvote             Parkér kun den berørte adapter/opgave. Brug demo eller andet allerede
+                                          autoriseret værktøj.
+
+
+  Nyt betalt forbrug                      Kontrollér eksisterende budgetmandat. Uden mandat er loftet 0; fortsæt
+                                          på opgaver uden nyt forbrug.
+
+
+  Offentlig release                       Byg og verificér releasekandidat først. Udrul kun til det mål og den
+                                          eksponering, der er autoriseret.
+
+
+  Data eller destruktivt indgreb          Lav backup, migrationsplan og reviewbart resultat. Brug ikke autonomi
+                                          som begrundelse for tab af data.
+
+
+  Kontakt til kunder                      Forbered demo, pitch og besked. Send kun med konkret mandat til denne
+                                          kontakt.
+
+
+
+Eksisterende mandat gælder
+Hvis brugeren allerede har autoriseret et miljø, budget eller releaseflow, genbruges det. Bed ikke om
+samme tilladelse igen. Overskrid ikke platformens adgangskontrol eller kvoter, og prøv ikke at fjerne
+godkendelseskrav gennem nye instruktioner.
+
+Minimal kontakt
+Saml normale spørgsmål som dokumenterede antagelser. Daglig status gemmes i
+repository/statusvisning; ingen automatisk mail eller besked. Kontakt brugeren ved uafvendelig
+konflikt, manglende adgang der blokerer alt relevant arbejde, eller en beslutning uden for
+eksisterende mandat. Angiv konkret hvad der er færdigt, den præcise blokering og den mindste
+nødvendige beslutning.
+
+Ingen fantomfremdrift
+En opgave er ikke færdig, fordi agenten siger det. Bevis skal findes og passe til seneste commit.
+Status skal skelne mellem skrevet, kørt, verificeret og tilkoblet. Manglende menneskelig
+markedsfeedback kan ikke erstattes af syntetiske kundeudsagn.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                            6
+
+         TRE APPS / ÉT PROGRAM                                                      UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Sådan kan arbejdet fortsætte i timer
+og dage
+Autonomi er en egenskab ved en vedvarende kørselsmekanisme, ikke ved længden på en
+prompt.
+
+
+Forudsætninger
+En tændt maskine eller hosted runner, vedvarende disk/repository, en fungerende kodeagent med
+understøttet noninteractive-kørsel, nødvendige credentials og tilgængelig kvote. Koordinatoren skal
+kunne genstartes af en OS-service eller godkendt driftstjeneste. En lukket ChatGPT-session
+fortsætter ikke af sig selv.
+
+Supervisorens løkke
+Indlæs policy og state -> vælg klar task med opfyldte dependencies -> gem running-checkpoint ->
+start agent med tidsgrænse -> kræv resultatpakke -> kør konfigurerede verifikationskommandoer
+uden shell -> gem commit/evidens -> markér done eller retry/blocked -> vælg næste task. Højst to
+automatiske forsøg pr. task før konkret blocker.
+
+Genstart efter nedbrud
+Medfølgende koordinator gemmer atomisk state før og efter hvert forsøg. Et afbrudt running-job
+bliver ikke automatisk done. Ved næste start sættes det til review/retry med reference til sidste
+checkpoint. Agenten skal undersøge arbejdsdiff og eventuelle eksterne job, før den gentager noget.
+Betalte providerjobs håndteres med produktets idempotens- og reconciliationkontrakt.
+
+Tre stopbetingelser
+Stop når ingen task er klar, alle tasks er færdige, eller det konfigurerede antal blokke/runtimebudget
+er brugt. En OS-supervisor kan starte næste begrænsede session efter policy. Ved auth- eller global
+kvotefejl bruges backoff; ingen endeløs genlogin-/retryløkke.
+
+Kvalificering før lang kørsel
+Start med dry-run. Kør derefter én billig opgave med en faktisk adapter og eksterne checks.
+Gennemfør processtop/genstart, timeouts og fejlet verifikation på et testrepository. Først når dette
+virker, aktiveres flere blokke og eventuelt OS-autostart. Det må ikke rapporteres som aktivt, før
+kvalificeringen er gennemført.
+
+
+   Den leverede runner er en kildepakke med tests. Agentadapter og produktchecks skal
+   konfigureres i brugerens miljø; denne leverance starter ingen baggrundsproces på
+   brugerens computer.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                            7
+
+         TRE APPS / ÉT PROGRAM                                                                        UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Tilstand, beviser og konfliktfri
+overdragelse
+Et nyt agentkald skal kunne fortsætte uden at kende den oprindelige samtale.
+
+
+  Fil                                             Minimumsindhold
+
+
+  program/tasks.json                              Task-id, app, dependency-id, mål, acceptkrav, allowed_paths,
+                                                  verification_profile og prioritet.
+
+
+  program/policy.json                             Budget, adgang, miljøprofil, runtime, forsøg og regler for offentlige
+                                                  handlinger.
+
+
+  STATE.json                                      Schema, taskstatus, forsøg, aktiv task, sidste resultat, blocker og
+                                                  opdateringstid.
+
+
+  checkpoints/<id>.md                             Hvad er ændret, hvad er kørt, hvad virker, hvad mangler, næste
+                                                  konkrete handling.
+
+
+  reports/<id>/result.json                        Task-id, resultatstatus, evidensstier, commit, ændrede filer, kendte
+                                                  begrænsninger.
+
+
+  DECISIONS.md                                    Beslutning, begrundelse, alternativer, konsekvens og berørte krav.
+
+
+  STATUS.md                                       Kort status for hver app, faktisk sidste leverance, blockers og
+                                                  næste blok.
+
+
+
+Evidence gate
+Koordinatoren kræver resultatfil, checkpoint og mindst én eksisterende evidensfil. Eksterne
+verificeringskommandoer skal være konfigureret og afsluttes med exit 0. Agentens eget done-flag er
+utilstrækkeligt. Før kode integreres kontrolleres commit og diff. UI-ændringer kræver visuel evidens;
+numeriske ændringer kræver fixtures.
+
+Ejerskab og stale arbejde
+Task-id reserveres af koordinatoren; worktree og branch er entydige. Shared kontrakter har én
+writer. En specialist med forældet schema må genbasere og køre tests før integration.
+Resultatpakken identificerer den version, den er testet mod.
+
+Handoff mellem ferie og hjem
+Push accepterede commits til autoriseret repository, gem komplet checkpoint og kontrollér at store
+filer er overført. På fuld maskine: hent repo, læs state, installér låste dependencies, kør
+baseline-checks og fortsæt næste task. Ingen kopiering af hemmeligheder i Git; nye nøgler tilkobles
+gennem secretstore/environment.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                              8
+
+         TRE APPS / ÉT PROGRAM                                                                      UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Faseplan - de første to uger og
+videre
+Den aktuelle dato er fredag 16. oktober 2026. Derfor behandles resten af ferieugen som
+opstart, ikke som et urealistisk fuldt produktionsløfte.
+
+
+  Tidsrum                                Programresultat
+
+
+  16.-18. oktober                        F00-F02: miljø, repository, UI-primitiver og sampleprojekter. Studio:
+                                         projekt/review. FlowLab: golden motor og scenario. Director: scene, kamera
+                                         og shots.
+
+
+  19.-21. oktober                        F03-F04: auth/data og varige jobs. Knyt appenes kerneflows til rigtig
+                                         persistence. Test isolation og genstart.
+
+
+  22.-25. oktober                        F05-F06: betalingstest og releaseinfrastruktur. Appintegrationer, eksport,
+                                         visuel polish og intern ende-til-ende-test.
+
+
+  Derefter                               Private pilotforløb, rettelser, økonomimålinger og releasekandidater.
+                                         Varighed fastsættes efter målte tasks og ekstern feedback.
+
+
+
+Definition af en god første weekend
+Alle tre apps kan åbnes og demonstrere deres kerne med tydeligt mærkede sampledata.
+Koordinatoren kan forklare præcist, hvad der er lokalt, hvad der er tilkoblet og hvad der er næste
+task. Der findes mindst ét checkpoint pr. app. En app må gerne være længere end de andre, hvis det
+skaber mere samlet værdi.
+
+Definition af en god næste uge
+Mindst ét produkt har en ægte end-to-end-rejse med persistens og eksport. De andre har fungerende
+kerner og konkrete integrationer. Hvis alle tre når privat beta med grønne gates, er det bedre;
+planen må ikke snyde med mockbetaling eller statiske resultater for at ramme en dato.
+
+Kapacitetsestimat
+Efter de første seks færdige tasks beregnes faktisk gennemløbstid og blokeringstid. Replanlæg
+resten ud fra median og spænd, ikke agentens optimisme. Status bruger leverancer og gates frem
+for procent færdig. Scope må reduceres inden for efter-v1-listen, aldrig ved at fjerne kernekrav eller
+skjule fejl.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                            9
+
+          TRE APPS / ÉT PROGRAM                                                                    UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Værktøjskæde og
+integrationsrækkefølge
+Brug de værktøjer, der er tilgængelige, men undgå at gøre nogen bestemt leverandør til en
+skjult stopklods.
+
+
+  Rolle                                  Primær anvendelse / fallback
+
+
+  Koordinator                            Codex eller Claude Code. Én aktiv ansvarlig; Cursor kan være IDE.
+                                         Dokumenteret CLI/API-adapter før unattended.
+
+
+  Kode og review                         Tilgængelig kodeagent; Kimi/andre kun med verificeret adgang. Lokal
+                                         Qwen er valgfri efter ferien.
+
+
+  Research                               Browser-/søgeværktøj og officielle docs. Gem kilde og kontroltidspunkt for
+                                         integrationer.
+
+
+  Lyd                                    Egne filer først; ElevenLabs som valgfri API-adapter med budget.
+
+
+  3D                                     Primitive objekter og egne GLB-filer. Blender/Meshy først ved konkret
+                                         assetbehov.
+
+
+  Video                                  Egne klip og FFmpeg-assembly først. HeyGen eller anden provider kun
+                                         inden for faktisk capability.
+
+
+  Drift                                  Node-webserver + Postgres + persistent worker. OS-service/hosted runner
+                                         kvalificeres særskilt.
+
+
+
+Capability-registry
+Hver adapter har id, version, access_method, supported_operations, cost_model, data_policy, status
+og last_smoke_test. Browser-login tæller ikke som en API. En MCP-integration i denne chatsession er
+ikke automatisk tilgængelig på brugerens lokale maskine eller for appens kunder.
+
+Første adaptertest
+Kør healthcheck uden at skrive kundeindhold. Afprøv en minimal tilladt operation med kendt
+forventet output, timeout, afbrudt kald og fejlstatus. Gem resultat og versionsdata. Aktiver først
+capabilities, der er bekræftet. Ingen opdigtede modelnavne eller API-parametre.
+
+Værktøjsbudget
+Nye betalte kald er slået fra, indtil et beløbsloft findes. Begræns parallel agentkørsel efter faktisk
+kvote. Ved leverandørstop fortsætter design, tests, domain code, fixtures og dokumentation;
+koordinatoren må ikke forveksle manglende generation med total projektblokering.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                          10
+
+         TRE APPS / ÉT PROGRAM                                                                        UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Fælles kvalitets- og releasegates
+Gates er en kontrakt mellem koordinator, produkt og bruger. De er ens på tværs af de tre apps.
+
+
+  Gate                                    Bevis før næste niveau
+
+
+  G0 / BOOTSTRAPPED                       Miljø registreret, repo og dependencies låst, sampledata og første build.
+
+
+  G1 / CORE_WORKS                         Appens kernerejse virker med mærkede demo-data og domænefixtures.
+
+
+  G2 / CONNECTED                          Rigtige persistence/integrationer, tenant-isolation og eksporter.
+
+
+  G3 / RESILIENT                          Workerstop, browserluk, retry, budget og duplicate events testet.
+
+
+  G4 / PRIVATE_BETA                       En ny bruger kan gennemføre hovedflow; ingen P0/P1; kendte limits
+                                          synlige.
+
+
+  G5 / RELEASE_CANDIDATE                  Betaling i testmode, rollback, restore, drift, hjælpetekst og prisvilkår.
+
+
+  G6 / LIVE                               Autoriseret produktion og live betaling kontrolleret; faktiske kunder følges.
+
+
+  G7 / BUSINESS_VALIDATED                 Betalingsvillighed, gentagen brug og enhedsøkonomi målt; ingen
+                                          automatisk slutdato.
+
+
+
+Eksempler på P0/P1
+P0: data lækkes mellem tenants, betaling dobbeltudføres, eller data ødelægges. P1: kernerejse kan
+ikke færdiggøres, genstart mister en accepteret leverance, FlowLab giver forkert facit eller Director
+eksporterer en ubrugelig film. Visuelle småfejl er lavere prioritet, medmindre de gør handlinger
+utilgængelige.
+
+Visuel kvalitetsgate
+Hver app skal have gennemført kontrol af tom, aktiv, fejlet og færdig tilstand på tre skærmstørrelser.
+Layoutet har tydeligt hierarki, kontrast, tastaturfokus og reelle sampledata. Ingen falske grafer, fake
+kundeudtalelser, knapper uden funktion eller tilfældige stock-billeder som erstatning for
+produktdesign.
+
+Stop når beviset er tilstrækkeligt
+Tests udvides for konkrete risici, ikke for at generere lange rapporter. Efter en grøn gate fortsættes
+til næste leverance. Ved ekstern pilotafhængighed afsluttes alt internt reviewbart arbejde først.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                             11
+
+         TRE APPS / ÉT PROGRAM                                                                 UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Forretningsplan og økonomisk
+disciplin
+De tre produkter er selvstændige tilbud. Et samlet abonnement overvejes først efter
+dokumenteret brug af mere end én app.
+
+
+  App                              Første køber / indtægtsmodel / bevis
+
+
+  Studio One                       Solo-udvikler og lille studio. 299/799 DKK abonnementshypotese + målt
+                                   forbrug. Bevis: ugentligt accepterede leverancer.
+
+
+  FlowLab                          Teamleder og proceskonsulent. 1.499/3.999 DKK abonnementshypotese;
+                                   afgrænset betalt pilot. Bevis: brugbar beslutningsrapport.
+
+
+  Director                         Kreatør og lille spil-/videoteam. 199/599 DKK abonnementshypotese +
+                                   generation. Bevis: sekvens anvendt i reel produktion.
+
+
+
+Indtjening må ikke forveksles med omsætning
+Mål nettoomsætning minus providerforbrug, lager, render, betaling, refunds og faktisk support.
+Arbejdstid, marketing, udvikling og faste udgifter følger bagefter. De første marginregnestykker i
+appbiblerne er antagelser, som skal erstattes med data. Byg metering før åbent forbrug.
+
+Første kommercielle prioritet
+FlowLab får først et fokuseret betalt pilottilbud, fordi en konkret procesbeslutning kan afgrænses.
+Studio One og Director bruges i egne produktioner og af få testkreatører. Denne rækkefølge er en
+strategisk vurdering, ikke en påstand om sikrest marked.
+
+Beslutningspunkter
+Efter fem relevante observationer pr. produkt: Hvad kan brugerne gennemføre? Hvad vender de
+tilbage til? Hvad vil de betale for? Efter de første betalinger: Er support og compute bæredygtigt?
+Hvis svaret er nej, ændres produktets kerne eller pris før flere features. Syntetiske testbrugere kan
+finde UI-fejl, men kan ikke bevise betalingsvillighed.
+
+Launchmateriale
+Forbered en virkelig demo, en præcis prisside, tre konkrete anvendelser, hjælpetekst og
+begrænsninger. Brug kun faktisk opnåede resultater. Forretningsnavne, domæner, vilkår og
+databehandlerforhold skal afklares før offentlig lancering; denne bibel er ikke en juridisk
+godkendelse.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                      12
+
+         TRE APPS / ÉT PROGRAM                                                       UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Startpakken og den første aktivering
+Brug hele ZIP-pakken, når kodeagenten skal bygge. Den samlede PDF er god til læsning, men
+Markdown og JSON er lettere at vedligeholde i repository.
+
+
+Filer i pakken
+• README_START_HER.md: kort startvej og status på leverancen.
+• docs/master.md, studio.md, flowlab.md, director.md: komplette redigerbare bibler.
+• program/tasks.json, policy.json, STATE.json: opgaver, mandat og genoptagelig status.
+• prompts/START_ALLE_TRE.md og tre appprompter: konkrete overdragelser.
+• fixtures/: numeriske facitcases og en Director-sekvens med fem shots.
+• tools/dev_coordinator.py: serialiseret supervisor-startmekanisme.
+• tools/runner.example.json og tests/: konfiguration og smoke-tests.
+• pdf/: tre selvstændige bibler og samlet master. CHECKSUMS.sha256: filintegritet.
+
+
+Én startordre
+Giv kodeagenten START_ALLE_TRE.md og repositoryadgang i et miljø, hvor den kan arbejde. Den
+skal først kontrollere adgang og faktiske capabilities, oprette/verificere fundamentet og gennemføre
+første opgave. Den må ikke nøjes med at gentage denne plan. Runner kvalificeres i testmiljø, før den
+får flere tidsblokke.
+
+Ved en enkelt app
+Brug den tilhørende appprompt og bibel. Behold fælles contracts og policies, men planlæg kun
+appens dependencies og tasks. De andre apps er ikke nødvendige for at demonstrere eller udgive
+den valgte app.
+
+Bevis på at autonom drift faktisk er aktiv
+Der findes en kørende, observeret supervisor/service, et vedvarende stateområde, et gennemført
+adapter-smoke-test, et kontrolleret restart og en næste planlagt blok. Uden disse ting skal status
+være klar til opsætning, ikke arbejder videre i dagevis.
+
+
+   De følgende tre dele indeholder de komplette selvstændige appbibler. Ved modstrid:
+   eksplicit ny brugerbeslutning, derefter masterpolicy for tværgående drift, derefter appens
+   seneste domænespecifikation. Modstrid logges og løses uden at skjule ændringen.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                            13

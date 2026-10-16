@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "profile": "demo",
+  "externalPaidBudgetDkk": 0,
+  "maxSpecialists": 2,
+  "maxAutomaticAttempts": 2,
+  "maxBlockMinutes": 45,
+  "requestedWorkHours": 8,
+  "startedAt": "2026-10-16T19:30:28Z",
+  "targetUntil": "2026-10-17T03:30:28Z",
+  "repository": "sebastianlistfeirup/3appsI1",
+  "publicProductionRelease": false,
+  "customerContact": false,
+  "runtime": "active-session",
+  "supervisorQualified": false
+}

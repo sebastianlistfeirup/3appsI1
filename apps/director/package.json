@@ -1,0 +1,25 @@
+{
+  "name": "@tre/director",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0 --port 3002",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0 --port 3002",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "lucide-react": "1.58.0",
+    "zod": "4.6.7",
+    "fflate": "0.8.3",
+    "idb": "8.0.4",
+    "@tre/persistence": "workspace:*",
+    "@tre/contracts": "workspace:*",
+    "@tre/ui": "workspace:*",
+    "three": "0.186.1",
+    "@tre/scene-format": "workspace:*"
+  }
+}

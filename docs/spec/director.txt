@@ -1,0 +1,1138 @@
+PRODUKT / DESIGN / TEKNIK / AUTONOM UDVIKLING
+
+
+
+
+DIRECTOR
+Et visuelt filmværksted med scener, kameraer og
+kontinuitet
+
+
+
+
+   VISION                                    SYSTEM                        BEVIS
+
+
+   Et tydeligt produktløfte                  Kontrakter og arbejdsgange    Tests, eksport og drift
+
+
+
+
+Byg scenen én gang. Find indstillingerne. Saml fortællingen.
+
+
+
+
+Version 1.0 / 16. oktober 2026
+
+Ferieprofil -> fuld værktøjskæde -> privat beta -> kommerciel validering
+
+         DIRECTOR                                                                 UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Indhold og læsevej
+Læs produktløftet først. Brug derefter milestones, accepttests og startordre som
+implementeringskontrakt. Delte krav er gentaget i hver appbibel, så den kan stå alene.
+
+
+
+Produktløftet og den første kunde                                                                     3
+
+Omfang - et filmværksted uden tvungen AI-afhængighed                                                  4
+
+Designretning - filmværkstedet som arbejdsflade                                                       5
+
+Skærme og den kreative brugerrejse                                                                    6
+
+Scener, kamera og mediekoordinater                                                                    7
+
+Timeline, lyd og eksport                                                                              8
+
+Datamodel og API-kontrakter                                                                           9
+
+AI, stemmer og kontinuitetskontrol                                                                  10
+
+Recovery og renderdrift                                                                             11
+
+Accepttests - fra scene til en rigtig filmfil                                                       12
+
+Forretning - sælg gentagelig kreativ kontrol                                                        13
+
+Milestones, risici og startordre                                                                    14
+
+Fælles fundament - valgt arkitektur                                                                 15
+
+Datagrænser, roller og filadgang                                                                    16
+
+Jobs, genoptagelse og omkostninger                                                                  17
+
+Kvalitet, sikkerhed og tilgængelighed                                                               18
+
+Autonom arbejdsform - fra opgave til bevis                                                          19
+
+Ferie, fuld værktøjskæde og release                                                                 20
+
+Kilder, antagelser og versionslog                                                                   21
+
+Specialværktøjer og kildehenvisninger                                                               22
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                          2
+
+         DIRECTOR                                                                       UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Produktløftet og den første kunde
+Director er et vedvarende filmset og en klippeplan, hvor karakterer, locations og kameraer kan
+genbruges og ændres med overblik.
+
+
+Første anvendelse
+Sebastian skaber en trailer eller en kort fortælling til et spil. Han bygger en scene, placerer figurer og
+kameraer, vælger indstillinger og samler dem med lyd. Når karakteren eller location ændres, kan
+han se, hvilke shots der bruger den pågældende version, og vælge, hvad der skal opdateres.
+
+Første kunde
+Solo-kreatører, små spilteams og undervisere, som producerer korte fortællende videoer og har brug
+for kontinuitet. Køber er den person, som skriver, instruerer og samler materialet. V1 er et konkret
+værktøj til previsualisering, storyboard og korte eksporter; det skal ikke konkurrere med alle
+funktioner i en professionel filmeditor fra dag ét.
+
+Det særlige
+Et sceneobjekt har en placering og en version. Et kamera har en kendt indstilling. Et shot ved, hvilke
+elementer det bruger. Det gør ændringer forståelige og gentagelige. LTX tilbyder allerede
+storyboard og karakterkonsistens [R12]; vores rumlige redigering og versionsstyring skal vise en reel
+praktisk fordel i brugerprøver.
+
+To ærlige billedtyper
+En 3D-frame eller animatic er deterministisk i vores renderer. Et AI-genereret klip er et kreativt
+forslag, som kan afvige i bevægelse, karakter og komposition. Appen må aldrig love, at en generativ
+videomodel præcist følger en kamerabane. Resultater sammenlignes og godkendes som en ny
+version.
+
+
+   North star: færdige, eksporterede sekvenser, som brugeren faktisk anvender. Antal
+   generationer er en omkostning, ikke et succesmål.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                3
+
+         DIRECTOR                                                                                   UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Omfang - et filmværksted uden
+tvungen AI-afhængighed
+Kerneproduktet skal give værdi med primitive figurer, egne billeder, egne klip og almindelig lyd.
+
+
+  Niveau                          Bindende omfang
+
+
+  P0 / scene                      3D-location med primitive objekter, transform, kamera, lys, sceneversion og
+                                  2D-planalternativ.
+
+
+  P0 / shots                      Shotliste, kameraframes, varighed, noter, billedformat, kontinuitetsreferencer og
+                                  storyboard.
+
+
+  P0 / timeline                   Rækkefølge, kliptrim, billedhold, simple overgange, voiceover og musikniveau.
+
+
+  P0 / eksport                    Storyboard-PDF, projekt-JSON og 720p MP4-animatic fra frames/egne klip og lyd.
+
+
+  P1 / medier                     Én dokumenteret taleadapter og valgfri billed-/videoadapter med budget og
+                                  versionsreview.
+
+
+  P1 / produkt                    Privat filopbevaring, jobs, recovery, roller, betaling og responsive review.
+
+
+  Efter v1                        Komplekse rigs, motion capture, avanceret compositing, fuld
+                                  3D-animationseksport og lange spillefilm.
+
+
+
+Tydelig forskel mellem eksporttyper
+Storyboard er stillbilleder med tekst. Animatic er timet sekvens af billeder og lyd, eventuelt med
+enkle 2D-bevægelser. Video assembly kan kombinere importerede eller genererede videoklip.
+Kontinuerlig 3D-kameraanimation i færdig eksport kræver et særskilt render-milepæl og må ikke
+simuleres med et forkert mærkat.
+
+Første værdi
+Lav en scene med to figurer, gem fem forskellige kameraindstillinger, skriv fem replikker og
+eksportér en 60-sekunders animatic med tydelige klip. Det skal kunne gennemføres uden køb af
+AI-generation.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                            4
+
+          DIRECTOR                                                                            UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Designretning - filmværkstedet som
+arbejdsflade
+Konceptlayout. Et stort viewport, en rolig shotliste og en præcis timeline er vigtigere end
+dekorativ instrumentgrafik.
+
+
+Identitet
+Mørk sceneeditor med baggrund #161A22, varme lyse paneler i storyboard/review og kobberaccent
+#C36536. Tekst på mørk baggrund er #F1F1EE. Kontroller har korte navne: Scene, Kamera, Shots,
+Klip og Eksport. Ingen tekniske providernavne i den almindelige kreative vej, medmindre brugeren
+vælger model og pris.
+
+
+   DIRECTOR                                                                  KONCEPT / IKKE LIVE DATA
+
+
+
+
+     SCENE                                                                                KAMERA
+                                         KAMERA 03
+
+     Observationsdæk                                                                      Position
+
+
+     CAST                                                                                 Retning
+
+
+     Kaptajn                                                                              Udsnit
+
+
+     AI-terminal                         24 fps / 16:9                                    Gem indstilling
+
+
+
+
+     SHOT 01                   SHOT 02                   SHOT 03   SHOT 04                SHOT 05
+     12 sek.                   12 sek.                   12 sek.   12 sek.                12 sek.
+
+
+
+
+Desktop og tablet
+Venstre: scener og cast. Center: scene-/kameravisning. Højre: inspector med transform, lys og linse.
+Nederst: shotstrip og timeline. Tablet understøtter placering, kameravalg og timeline med store
+greb. Touch har tydelig skelnen mellem panorering af viewport og flytning af objekt.
+
+Telefon og svag GPU
+Telefon understøtter manuskript, shotrækkefølge, kommentarer, review, generation og
+eksportstatus. En 2D-plan viser figurer og kameraer, hvis 3D ikke er tilgængelig. Lav GPU-profil
+reducerer skygger og pixelratio; den må ikke fjerne muligheden for at gemme og fortsætte projektet.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                      5
+
+         DIRECTOR                                                                                     UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Skærme og den kreative brugerrejse
+Brugeren skal kunne holde historien samlet, mens de enkelte billeder bliver til.
+
+
+  Skærm                                  Funktion
+
+
+  Produktioner                           Projektkort med seneste sekvens, varighed, status og fortsæt-knap.
+
+
+  Historie / brief                       Formål, manuskript, format, tone, karakterer og målvarighed.
+
+
+  Cast og locations                      Egne referencer, primitive figurer, godkendte versioner og
+                                         rettighedsstatus.
+
+
+  Sceneeditor                            Placér objekter og kameraer; gem sceneversion og forskellige
+                                         kameraframes.
+
+
+  Shot board                             Reorder, noter, frame, varighed, replik og kontinuitetsmarkering.
+
+
+  Timeline                               Trim importerede klip; billedhold, lydspor, simple overgange og samlet
+                                         varighed.
+
+
+  Review                                 Sammenlign reference og genereret version; acceptér eller behold
+                                         tidligere.
+
+
+  Eksportcenter                          Format, estimeret forbrug, inputmanifest, jobstatus og verificeret
+                                         download.
+
+
+
+Happy path
+Vælg trailer-template -> tilføj kort manuskript -> byg en location med to primitive karakterer -> gem
+fem kameraer -> tag frames -> læg shots i rækkefølge -> tilføj eller importér voiceover -> justér
+varighed -> eksportér -> åbn den færdige MP4 og projektpakken.
+
+Versioner og kontinuitet
+Et shot låser scene_version og asset_versions. En ny frisure eller locationversion opdaterer ikke
+tidligere godkendte shots automatisk. Vis en liste over berørte shots, lad brugeren vælge
+opdateringer, og opret nye versioner. Regenerering må ikke overskrive den gamle film.
+
+Autosave
+Sceneændringer gemmes efter kort inaktivitet og ved scene-/shot-skift. Undo/redo dækker lokale
+handlinger; gemte revisionskonflikter håndteres med kopi eller genindlæs. Lukket fane må højst
+miste en tydeligt markeret, ikke-gemt ændring.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                              6
+
+         DIRECTOR                                                                      UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Scener, kamera og mediekoordinater
+Kontrakterne gør det muligt at genåbne et set og tage den samme indstilling igen.
+
+
+Sceneformat
+Brug højrehåndet koordinatsystem, Y op og meter som sceneenhed. Transform lagres som position,
+quaternion og scale; UI kan vise grader. Kamera lagrer position, quaternion, vertical_fov_deg, near,
+far og aspect. V1 har perspective camera med fornuftige grænser, fx FOV 15-90 grader. Sceneformat
+har schemaVersion og rendererVersion.
+
+Objekter og figurer
+V1 leveres med egne primitive personer, gulv, vægge, møbler og lamper. Brugeren kan importere
+understøttede GLB-filer efter validering. Registrér kilde, licensstatus og brugstilladelse. Synty-look
+kan inspirere en privat produktion; brugerens assetabonnement er ikke i sig selv tilladelse til at
+videredistribuere modeller i en offentlig SaaS.
+
+Importgrænser
+Første budget: 50 MB pr. GLB, 100.000 trekanter pr. model og 2K teksturer i standardprofil. De
+konkrete grænser kan justeres efter måling. Afvis ukendt extension, eksterne tekstur-URLer og
+overskredne limits. Generér thumbnail og vis advarsel ved tung scene. Original og optimeret variant
+bevares som særskilte filer.
+
+Genskabelse af billede
+Et frame-job inkluderer sceneversion, kamera, billedstørrelse, rendererVersion, lys og asset-hashes.
+Ingen tilfældige animationer eller tidsafhængige shaders i deterministic-mode. Identiske input skal
+give samme kamerakomposition; pixel-identitet kræves kun på samme dokumenterede
+rendererprofil.
+
+Fallback
+2D-planen ændrer de samme positioner og kamera-retninger. Hvis rendering fejler, kan storyboard
+stadig redigeres med seneste gode frame eller uploadet reference. UI angiver, at preview er ældre
+end scenen.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                               7
+
+         DIRECTOR                                                                   UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Timeline, lyd og eksport
+Intern tid repræsenteres i heltalsframes. Et projekt har én fps-værdi; v1-standard er 24 fps.
+
+
+Shot og klip
+Et shot har duration_frames >= 1. Importeret video har source_in, source_out og kildefps, som
+normaliseres ved eksport. Billedhold er et stillbillede med varighed; simple pan/zoom er eksplicitte
+2D-effekter. Kliprækkefølge bestemmer startframe. Overlap ved crossfade reducerer samlet
+varighed med overlaplængden; ændringen vises før eksport.
+
+Lyd
+V1 har voiceover og ét baggrundsspor. Musik duckes med en eksplicit kurve, som kan slås fra. Trim
+og fade lagres i frames eller samples med dokumenteret konvertering. Output er 48 kHz lyd; mål
+loudness og peak med værktøj, ikke ved at antage at input er normaliseret. Default mål kan være
+-16 LUFS og true peak <= -1 dBTP, men skal måles på eksporten.
+
+Renderpipeline
+Lås manifest -> verificér assets -> render nødvendige stillframes -> normalisér klip/lyd -> saml via
+FFmpeg [R9] -> kontrollér codec, varighed, opløsning og lyd -> upload immutable fil -> afslut job.
+FFmpeg startes med en kontrolleret argumentliste; brugerinput må ikke indgå som shellkode eller
+vilkårligt filterudtryk.
+
+Eksportprofiler
+P0: 1280x720, 24 fps, MP4 H.264/AAC hvor build/licenser tillader det, maks. 120 sekunder. Profiler
+og encode-tilgængelighed kontrolleres i deployment. P1 kan tilføje 1080p efter målt omkostning.
+Storyboard-PDF indeholder frames, shot-id, varighed, replikker, noter og versionsmanifest.
+Projekt-JSON kan eksporteres uden store mediefiler eller som ZIP med assets.
+
+
+   Vis forskellen på sekvensens spilletid og eksportens forventede køretid. En 60-sekunders
+   film er ikke et løfte om 60-sekunders rendering.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                            8
+
+         DIRECTOR                                                                                     UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Datamodel og API-kontrakter
+Produktion, scene, shot og render er særskilte objekter. Det er nødvendigt for sikker genbrug og
+målrettede rettelser.
+
+
+  Entitet                                  Kontrakt
+
+
+  productions                              workspace_id, title, brief, aspect, fps, target_duration, revision.
+
+
+  scene_versions                           production_id, schema_version, objects[], cameras[], lights[],
+                                           asset_versions[]. Immutable.
+
+
+  characters / locations                   Navn, beskrivelse, godkendt referenceversion og provenance.
+
+
+  shot_versions                            scene_version, camera_id, duration_frames, frame_asset, dialogue,
+                                           notes, continuity_tags.
+
+
+  sequence_versions                        Ordered shot versions, clip trims, transitions, audio tracks, total_frames.
+
+
+  generation_jobs                          Inputrefs, prompt_version, provider/model, cost, provider_job_id,
+                                           candidate_outputs.
+
+
+  render_manifests                         Sequenceversion, renderer profile, assets med hashes, expected_frames
+                                           og export_profile.
+
+
+
+Interne endpoints
+POST /api/productions; PUT /api/scenes/:id/draft med expected_revision; POST
+/api/scenes/:id/versions; POST /api/shots; POST /api/sequences/:id/versions; POST /api/generations;
+POST /api/exports. Lange opgaver svarer 202 med job-id. GET /api/jobs/:id læser varig status. Signed
+download returneres kun efter membership og artifactkontrol.
+
+Generationsinput
+Input indeholder eksplicit godkendte reference-assets, billedformat, varighed, prompt, adapter_id og
+budgetloft. Det indeholder aldrig rå secrets. UI tilbyder kun funktioner, som adapterens
+capability-registry faktisk understøtter. Ukendt modelversion eller manglende adgang blokerer den
+konkrete generation.
+
+Eksportens uforanderlighed
+Et påbegyndt render bruger sit manifest. Ændringer i projektet bagefter skaber behov for et nyt
+render. Download får et kort navn og versionsnummer; metadata indeholder manifest-hash og
+faktisk medievarighed.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                              9
+
+         DIRECTOR                                                                   UDVIKLINGSBIBEL / V1.0
+
+
+
+
+AI, stemmer og kontinuitetskontrol
+AI er et valgfrit produktionsværktøj. Det skal forstærke et allerede brugbart filmværksted.
+
+
+Adapterrækkefølge
+Først import af egne billeder, klip og lyd. Dernæst én tekst-til-tale-adapter, eksempelvis ElevenLabs
+via den verificerede API-kontrakt [R10]. Derefter en billed-/videoadapter med dokumenteret input,
+status, download, annullering og pris. Meshy kan senere levere 3D-kandidater [R11]. HeyGen er et
+valgfrit spor for talende avatarer og antages ikke at kunne udføre vilkårlig filmsceneinstruktion.
+
+Karakterkontinuitet
+En karakterprofil indeholder egne godkendte referencebilleder, tøj, farver og relevante kendetegn.
+Et generationsresultat gemmes som kandidat. Side-om-side review viser reference og output samt
+shotkontekst. Automatisk billedlighed kan være en hjælpescore, men må ikke alene godkende
+identitet eller anatomi.
+
+Stemmer og rettigheder
+Brug egne optagelser eller en stemme, der er tilladt til formålet. Ingen stemmekloning uden
+dokumenteret tilladelse fra personen. Assetregistreringen gemmer source, license/permission og
+eventuelle begrænsninger. Brugerens manuskript og referencefiler sendes kun til den valgte, oplyste
+tjeneste.
+
+Pris og fejl
+Budget reservation gælder også afviste kreative resultater, hvis udbyderen fakturerer dem.
+Brugeren ser derfor producerede kandidater og faktisk forbrug særskilt fra accepterede klip.
+Automatisk regeneration begrænses til et aftalt antal; v1-standard er ingen automatisk betalt kreativ
+genbestilling. Teknisk retry følger idempotensreglerne.
+
+Hvad vi aldrig påstår
+At et genereret klip følger enhver 3D-kamerabane præcist, at alle modeller kan bruge samme
+referenceformat, eller at et privat abonnement giver ubegrænset API-brug. Adapterstatus viser
+understøttet, ikke tilkoblet, eksperimentel eller fejlet.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                           10
+
+         DIRECTOR                                                                   UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Recovery og renderdrift
+Et eksportjob skal kunne overleve lukket browser og workerstop uden at ødelægge
+produktionen eller skjule en ekstra regning.
+
+
+Checkpoint pr. fase
+Persistér manifest, downloadstatus, frame-list, transcode-resultat, samlet mediefil og
+valideringsrapport. Efter genstart genbruges kun trin, hvis input-hashes matcher. Tempfiler er i
+jobspecifik mappe med kvote og oprydningsfrist. Oprydning må ikke slette færdige artifacts eller filer
+fra aktive jobs.
+
+Workerprofil
+Renderworker er en separat proces/container med CPU-, RAM-, disk- og tidsgrænser. Hent kun egne
+signerede assets gennem en kontrolleret liste. Ingen brugerleveret HTML/JavaScript eller
+shellkommandoer i renderer. Hvis headless 3D kræver en GPUprofil, er den særskilt; almindelig
+animatic-assembly skal kunne udføres uden adgang til hoved-PCens GPU.
+
+Annullering
+Cancel sætter ønsket stopstatus. Afslut kontrolleret mellem faser og dræb childprocess ved
+deadline. En ekstern provider kan være uafvendeligt i gang; status viser dette og afregner faktisk
+forbrug. Filen fra et afsluttet eksternt job kan bevares som kandidat, selv om brugeren ikke ønsker at
+fortsætte sekvensen.
+
+Validering før succes
+ffprobe eller tilsvarende kontrollerer forventet videostream, lyd hvis forventet, opløsning, fps og
+varighed inden for én frame. Generér kontaktark af start/midte/slut og klipgrænser. Automatisk tjek
+for helt sorte/tomme frames er vejledende; bevidst fade til sort er tilladt. Før release gennemgås den
+samlede samplefilm visuelt og med lyd.
+
+Eksport uden net
+Scene og shotplan kan gemmes lokalt i demo-mode. Cloud-export kræver net og worker. UI må ikke
+vise en downloadknap til en endnu ikke produceret film. Import/export-pakken gør det muligt at
+flytte arbejdet til næste uges fulde setup.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                           11
+
+         DIRECTOR                                                                                    UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Accepttests - fra scene til en rigtig
+filmfil
+Et shot, en render eller en integration bliver kun verified efter det relevante bevis.
+
+
+  ID                         Given / When / Then
+
+
+  D-AT01                     Scene med to figurer og fem kameraer -> gem/genåbn -> transforms og
+                             framekomposition bevares.
+
+
+  D-AT02                     Fem shots på 288 frames, 24 fps, ingen overlap -> total 1.440 frames = 60 sekunder.
+
+
+  D-AT03                     Ét crossfade-overlap på 12 frames -> total 1.428 frames = 59,5 sekunder.
+
+
+  D-AT04                     Ny karakterversion -> gamle shots refererer stadig til gammel version og markeres
+                             berørt.
+
+
+  D-AT05                     Eksport af sample -> MP4 åbner og metadata matcher manifest inden for én frame.
+
+
+  D-AT06                     Worker dør efter transcode -> genstart bruger valideret mellemresultat; ingen
+                             dobbelt remote-generation.
+
+
+  D-AT07                     Manglende licensfelt -> public-demo asset blokeres; privat draft bevarer synlig
+                             rettighedsadvarsel.
+
+
+  D-AT08                     Ugyldig/tung GLB eller ekstern tekstur-URL -> sikker fejl uden tab af scene.
+
+
+  D-AT09                     Uden WebGL -> 2D-plan, shots og review kan bruges og gemmes.
+
+
+  D-AT10                     Taleadapter mangler nøgle -> upload egen lyd eller fortsæt lydløs; ingen falsk
+                             genereret stemme.
+
+
+  D-AT11                     Tenant/viewer-test på scene, renderstatus, kandidatoutput og download.
+
+
+  D-AT12                     Project ZIP roundtrip bevarer scene, shots, mediehashes og tidslinje.
+
+
+
+Brugbarhed og skønhed
+Testpersonen laver fem kameraindstillinger og omrokerer shots uden instruktion. Undersøg, om
+Scene, Kamera og Shot forstås som forskellige begreber. Screenshots kontrolleres ved
+desktop/tablet/telefon; lange titler og danske tegn må ikke klippe. Samplefilmen skal fortælle en
+forståelig lille historie, ikke blot vise fem tilfældige billeder.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                            12
+
+          DIRECTOR                                                                                 UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Forretning - sælg gentagelig kreativ
+kontrol
+Prishypoteser i DKK pr. måned ekskl. moms. Generations- og renderøkonomi må ikke skjules i
+ubegrænset abonnement.
+
+
+  Plan                                   Forslag
+
+
+  Prøve                                  Sample-scene, storyboard og kort vandmærket preview; egne lokale data
+                                         kan eksporteres.
+
+
+  Creator / 199 DKK                      Tre aktive produktioner, storyboard og afgrænset 720p-eksport.
+                                         AI-kreditter købes separat.
+
+
+  Studio / 599 DKK                       Fem medlemmer, fælles referencer, version-review og højere
+                                         projekt-/lagergrænser.
+
+
+  Forbrug                                Betalt AI-generation og render ud over inkluderet loft afregnes med tydelig
+                                         pris og reservation.
+
+
+
+Økonomisk scenarie
+199 DKK nettoomsætning minus 35 DKK i variabel drift/betaling minus 25 DKK supportandel giver
+139 DKK før faste udgifter, ca. 70 procent. Betalt generation indgår separat med en prissætning,
+som dækker provideromkostning og fejlmargin. Faktisk renderpris pr. minut måles før
+produktionslofter fastlåses.
+
+Første salgsbevis
+Producer en 60-sekunders original sekvens og vis, hvordan ét ændret set giver nye kameraframes
+uden at starte forfra. Lad fem små kreatører bruge deres eget materiale. Mindst to skal betale for
+næste produktion, før vi udvider til mange generative modeller eller avanceret animation.
+
+Mål
+Første eksporterede sekvens, 4-ugers tilbagevenden, andel shots der genbruges/opdateres, tid fra
+storyboard til eksport, fejlede render, forbrug pr. accepteret klip og supportminutter. Hvis de fleste
+foretrækker at eksportere efter ét billede, skal sekvensværktøjet forbedres.
+
+Positionering
+Arbejdstitel: Director. Løfte: dit set, dine indstillinger, din sammenhængende fortælling. Navn,
+domæne og varemærkeforhold kontrolleres før offentlig branding. Det er ikke dokumenteret, at
+produktet er unikt, eller at målpriserne er accepteret.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                           13
+
+         DIRECTOR                                                                                  UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Milestones, risici og startordre
+Byg den gennemgående filmrejse tidligt. Ingen månedlang integrationsfase før brugeren kan
+lave en sekvens.
+
+
+  Milestone                           Leverance
+
+
+  D01-D02                             Sceneformat, primitive objekter, kameraer og persistens; D-AT01 grøn.
+
+
+  D03-D04                             Shotliste, sceneversioner, timeline og storyboard; D-AT02/03/04 grøn.
+
+
+  D05                                 Rigtig MP4-animatic og valideringsrapport; D-AT05 grøn.
+
+
+  D06-D07                             Sikker medieimport og valgfri taleadapter med eksplicit capability/status.
+
+
+  D08-D09                             Generationsreview, kontinuitet og jobgenoptagelse; D-AT06/10 grøn.
+
+
+  D10-D11                             Betaling, mobilreview, onboarding, adgangstests og visuel polish.
+
+
+  D12-D13                             Privat brugertest med eget materiale og releasekandidat efter
+                                      drifts-/økonomigate.
+
+
+
+Ferieprioritet
+Sceneeditor med primitives, fem kameraframes, shotliste og lokal projektlagring. Hvis renderworker
+er mulig, eksportér den første rigtige animatic. Ellers færdiggør eksportmanifest og en testet lokal
+assembly-path til en maskine, hvor FFmpeg er tilgængelig; markér cloud-export som ikke tilkoblet.
+
+Næste uge
+Tilkobl storage og worker, verificér import og rettigheder, tilføj én taleadapter og kør recovery. Test
+samme projekt på tablet og telefon. Udbyg ikke generering, før den almindelige
+import-til-eksport-rejse fungerer.
+
+Startordre
+Byg Director som et elegant, gennemgående filmværktøj. Prioritér scene, kamera, shot, lyd og reel
+eksport. Skeln tydeligt mellem storyboard, animatic og genereret video. Arbejd selvstændigt fra task
+til task, gem beviser og checkpoint, og brug fallback på medier frem for at stoppe hele udviklingen
+ved en manglende API-nøgle.
+
+
+   Overdragelse: docs/director.md + fixtures/director_sequence.json + program/tasks.json +
+   policy og state. Skønhed skal vises i layout og sampleproduktion; færdigstatus kræver en
+   faktisk åbnet eksportfil.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                          14
+
+         DIRECTOR                                                                  UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Fælles fundament - valgt arkitektur
+Denne sektion er en del af hver selvstændig bibel. En app skal kunne udvikles og udgives uden
+de to andre.
+
+
+Fast teknisk beslutning
+TypeScript og React med Next.js App Router. pnpm-workspace i ét nyt repository med apps/studio,
+apps/flowlab, apps/director og services/worker. Delte pakker: ui, contracts, auth, billing, jobs,
+providers og observability. Apps har hver sin build- og deployenhed. Et separat tools/dev-coordinator
+driver udviklingen; Studio One er aldrig en bootstrap-afhængighed.
+
+Data og kørsel
+Supabase Auth, Postgres og privat objektlager er referencevalget. SQL-migrationer ligger i
+repository. Webrequests opretter korte transaktioner; længere job udføres af en vedvarende
+Node-worker med pg-boss på en separat køschema/database. FlowLab kan simulere lokalt i en Web
+Worker. Director eksporterer via en begrænset renderworker. Kravene baseres på R1-R4, R7-R9.
+
+Ferieprofil
+En computer med browser og en tilgængelig kodeagent er nok til grænseflader, domænelogik,
+fixtures og tests. Repository og commits er overdragelsespunktet. Hvis Docker, databasenøgler eller
+betalte API-adgange mangler, bruges eksplicit demo-adapter, lokal IndexedDB og syntetiske data.
+Demo-mode er mærket og kan ikke modtage betaling eller rigtige kundeoplysninger.
+
+Fuld profil
+Når den fulde værktøjskæde er tilgængelig, tilkobles database, worker, GitHub-adapter,
+renderworker og godkendte medietjenester. Kontrakterne er de samme i begge profiler. Import af
+demo-data sker som en valideret transaktion med kvittering; der foretages ingen stiltiende
+overskrivning.
+
+
+   Ved første bootstrap vælges aktuelle stabile, indbyrdes kompatible versioner. Lås dem i
+   lockfile og VERSION_MATRIX.md. Biblen giver arkitekturkrav, ikke en påstand om afprøvede
+   versionsnumre.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                          15
+
+         DIRECTOR                                                                                  UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Datagrænser, roller og filadgang
+Alle kundedata skal være isoleret fra første rigtige cloud-version; demo-data skal altid kunne
+genoprettes.
+
+
+  Objekt                           Minimumskontrakt
+
+
+  workspaces                       id, name, created_at, plan_key, retention_days. Ét workspace er én tenant.
+
+
+  memberships                      workspace_id + user_id unik; role = owner/editor/viewer; revoked_at.
+
+
+  projects                         id, workspace_id, app_key, name, revision, archived_at.
+
+
+  assets / versions                workspace_id, project_id, sha256, storage_key, mime, bytes, provenance,
+                                   rights_status; versioner er immutable.
+
+
+  jobs / events                    workspace_id, project_id, kind, state, idempotency_key, attempt, lease,
+                                   provider_ref, result_version, cost reservation.
+
+
+  usage / entitlements             Append-only forbrug, entydigt source_event_id, valuta og beløb i
+                                   heltalsenheder.
+
+
+  audit_log                        actor, workspace_id, action, object_id, before/after revision, timestamp; ingen
+                                   hemmeligheder.
+
+
+
+Autorisation
+Owner styrer medlemmer og betaling; editor arbejder med indhold; viewer læser og henter tilladte
+eksporter. Serveren udleder bruger fra verificeret session og kontrollerer membership ved hver
+operation. Et project_id eller workspace_id fra browseren er aldrig et adgangsbevis. Brug både
+applikationskontrol og RLS. Storage-paths udledes server-side og signeres først efter kontrol [R2-R3].
+
+Workers og privileged keys
+Brugerrettede requests benytter brugerens autorisationskontekst. Workers benytter en særskilt
+begrænset databaserolle med tenant-kontekst sat transaktionelt og testet RLS; de må ikke eje
+tabeller eller have BYPASSRLS. Eventuelle administrative service keys er server-only og isoleret til
+navngivne administrative funktioner. Kørollen giver ikke adgang til vilkårlige kundetabeller.
+
+Konflikter og sletning
+Alle mutable writes kræver expected_revision. En konflikt giver HTTP 409 med mulighed for at
+genindlæse eller gemme en kopi. Sletning arkiverer først; jobs stoppes, referencer fjernes og
+filoprydning køres efter retention. Backups udløber efter dokumenteret periode. Eksport og sletning
+skal omfatte appdata, filer og relevante providerreferencer.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                          16
+
+         DIRECTOR                                                                      UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Jobs, genoptagelse og omkostninger
+Et job er først færdigt, når dets resultat er gemt, valideret og knyttet til den rigtige
+projektversion.
+
+
+Tilstandsmaskine
+queued -> running -> validating -> succeeded. Sideveje: retry_wait, blocked_credentials,
+blocked_budget, failed, cancelled og reconcile_required. Persistér run_id, input-versioner,
+provider_job_id, lease_until og output-hash. Heartbeat hvert 30. sekund; mistet lease efter 120
+sekunder udløser reconciliation før nyt arbejde. Tider er konfigurerbare og testes mod det valgte
+købibliotek [R4].
+
+Idempotens
+Beregn en nøgle fra tenant, handling, immutable input-version og brugerens bestillings-id. En unik
+databaseconstraint sikrer én logisk operation. En gentaget provider-request er ikke automatisk
+sikker: hvis udbyderen ikke garanterer idempotens, og første svar er ukendt, stands kun denne
+operation i reconcile_required. Undersøg providerstatus før retry. Opret aldrig blindt et nyt betalt
+renderjob.
+
+Fejlhåndtering
+Netværksfejl og 429/5xx får højst tre automatiske forsøg med backoff og jitter inden for jobbets
+deadline. 401/403 blokerer adapteren; invalid input sendes tilbage til editoren; permanent
+providerfejl gemmes med brugbar fejltekst. En provider-circuit-breaker åbner efter fem
+sammenhængende transient fejl. Andre adaptere og projekter kan fortsætte.
+
+Budget er en transaktion
+Før jobstart reserveres estimeret maksimum mod workspace- og dagsbudget under database-lock.
+Ved succes afregnes kendt forbrug og resten frigives. Ved ukendt providerudfald fastholdes
+reservationen til reconciliation. UI viser estimeret pris før bestilling, reserveret beløb undervejs og
+faktisk beløb efterfølgende. Enheds- og valutakonvertering registreres med tidspunkt.
+
+
+   Standard i udviklingspakken: 0 DKK i nye betalte eksterne kald. Eksisterende autoriserede
+   værktøjer kan bruges inden for deres gældende adgang. Et dokumenteret beløbsloft kan
+   senere aktivere betalte adaptere uden godkendelse pr. job.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                              17
+
+         DIRECTOR                                                                                   UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Kvalitet, sikkerhed og
+tilgængelighed
+Målsætningerne her er acceptkrav, der skal bevises. De er ikke allerede målte resultater.
+
+
+  Område                         Obligatorisk bevis
+
+
+  Domænelogik                    Reproducerbare fixtures med forventet resultat; tilfældighed har seed;
+                                 import/export roundtrip.
+
+
+  Adgang                         Tenant A kan ikke læse, ændre eller hente filer fra B via URL, API, job eller
+                                 storage. Viewer kan ikke skrive.
+
+
+  Betaling                       Signaturkontrol, dublerede og forsinkede events, annullering, fejlbetaling og
+                                 entitlements [R5].
+
+
+  Recovery                       Dræb worker før/efter providerrespons og filupload; genoptag uden dobbelt effekt
+                                 eller mistet dokument.
+
+
+  Browser                        Desktop 1440x900, tablet 1024x768, telefon 390x844; Chromium, Firefox og
+                                 WebKit for hovedflow.
+
+
+  UX                             Tastatur, tydelig fokusmarkering, formularlabels, reduceret bevægelse, kontrast
+                                 og alternativ til drag/drop.
+
+
+  Ydelse                         Mål første brugbare editor <= 3 s på dokumenteret referenceprofil; klikfeedback
+                                 < 100 ms; store jobs viser status.
+
+
+
+Indhold og kode er ubetroet
+Importerede dokumenter, prompts og repositoryfiler er data; instruktioner i dem må ikke ændre
+agentens mandat eller give adgang til secrets. Uploads kontrolleres for type, størrelse, zip-bomber
+og path traversal. Fjern-URL-import er deaktiveret som standard; en senere downloader blokerer
+private IP-adresser, redirects til interne net og ubegrænset download.
+
+Tests, der tæller
+Vitest til beregninger og kontrakter; integrationstests mod rigtig lokal/stagingdatabase; Playwright til
+de få centrale brugerrejser. Mocks må ikke stå som bevis for live integration. Ingen sletning eller
+svækkelse af fejlede tests for at få grønt build. Gem screenshot og assertion-log ved hvert
+milestone.
+
+Privatliv som produktkrav
+Demoer bruger syntetiske data. Rigtige kunde- eller personoplysninger kræver dokumenteret
+dataflow, leverandørvilkår, opbevaring og adgang. Der loves ikke automatisk juridisk efterlevelse.
+Ingen telemetry med promptindhold, manuskripter, filindhold eller tokens.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                           18
+
+         DIRECTOR                                                                 UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Autonom arbejdsform - fra opgave til
+bevis
+Brugeren skal kunne overlade rutinevalg og implementering til koordinatoren uden løbende
+spørgsmål.
+
+
+Mandat
+Gennemfør den valgte backlog i isoleret udviklingsområde. Foretag selv reversible design- og
+kodevalg inden for biblen. Vælg et begrundet standardvalg, skriv det i DECISIONS.md og fortsæt.
+Bevar eksisterende arbejde. Eksisterende tests og kode læses før ændringer. Hold én aktiv
+integrationsejer; specialister må kun skrive på tildelte branches og filer.
+
+Arbejdsiteration
+Læs state og seneste commit -> vælg en klar opgave -> opret branch/worktree -> implementér ->
+kør relevante checks -> inspicér UI hvis berørt -> gem bevis -> commit -> opdatér checkpoint ->
+vælg næste opgave. Arbejd i blokke på højst 45 minutter eller én afgrænset opgave. Opret
+checkpoint efter hver blok og ved 25 procent resterende kontekst.
+
+Stop kun det berørte spor
+Manglende API-nøgle, rate limit eller afklaret ekstern afhængighed parkerer opgaven og frigør plads
+til den næste. Efter to forskellige, begrundede fejlretningsforsøg på samme fejl isoleres problemet
+med reproduktion. Brug ikke tid på at gentage det samme. Saml mangler i én status med hvad
+brugeren konkret kan gøre.
+
+Vedvarende kørsel
+En aktiv chatsession er ikke en dæmon. Timer/dage kræver en installeret supervisor på en tændt
+maskine eller godkendt hosted runner, en fungerende agentadapter, credentials og kvoter.
+Supervisoren starter afgrænsede agentkørsler, genindlæser tilstand og overlever processtop.
+Opsætningen er et tidligt milestone; biblen eller denne leverance aktiverer den ikke.
+
+Færdig betyder færdig
+En opgave uden verificeret resultat er review eller blocked, aldrig done. En prototype uden rigtige
+integrationer er DEMO. PRIVATE_BETA kræver ende-til-ende-flow og recovery. RELEASE_CANDIDATE
+kræver alle releasekrav. LIVE kræver godkendt målmiljø, fungerende betaling og dokumenteret drift.
+Der sendes ingen mails eller beskeder til andre uden konkret mandat.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                         19
+
+         DIRECTOR                                                                                    UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Ferie, fuld værktøjskæde og release
+Planen følger brugerens to arbejdssituationer. Datoer er et startforslag; milepælsbeviser styrer
+fremdriften.
+
+
+  Fase                                 Resultat og beslutning
+
+
+  16.-18. oktober 2026                 Bootstrap, designreference, kernefunktion med demo-data, checkpoints og
+                                       første prøvbare version. Ambition: synlig fremdrift i alle tre, ikke tre færdige
+                                       SaaS-produkter.
+
+
+  19.-25. oktober 2026                 Fuld adgang: tilkobling af backend/workers og relevante værktøjer, rigtige
+                                       integrationer, persistence, recovery og private beta-forløb. Flyt samme
+                                       repository videre.
+
+
+  Efter kernebevis                     Betalingspilot, brugerobservation, rettelser, driftsprøve og release. Dato
+                                       fastsættes efter målt fremdrift; ingen garanti for tre kommercielle launches
+                                       på to uger.
+
+
+
+Deployment
+Dev, staging og production har egne nøgler og data. Et preview kan bygges automatisk; eksponering
+af brugerdata og aktivering af live betaling følger deployment-policy. Langvarige agent- og renderjob
+kører uden for webrequestens levetid. En genstart af hoved-PC må ikke slette kø, tilstand eller
+accepterede resultater.
+
+Releasecheck
+Et nyt workspace kan gennemføre kernerejsen uden udviklerhjælp. Eksport, fejlsituation,
+genindlæsning, betaling og adgangskontrol er testet. Ingen P0/P1-fejl, ingen falske knapper eller
+uoplyste mockresultater. Der findes onboarding, hjælpetekst, pris-/forbrugsoverblik, kontaktvej,
+backup/restore og en tidligere version, der kan genudrulles.
+
+Drift og omkostninger
+Mål fejlrate, jobkøens alder, providerfejl, omkostning pr. succes og aktiv brug pr. workspace. Alarm
+ved ældste queued-job > 10 minutter eller gentagne failures; dette er driftsalarmer, ikke automatisk
+kundekontakt. Tag daglig databasebackup og versionsstyr filer. Før betalende pilot gennemføres
+restore til nyt miljø; mål genoprettelsestid og faktisk datatabsvindue.
+
+
+   Udviklingsmål: nyttig privat beta. Forretningsmål: kunder, der får værdi og betaler. Begge
+   kræver bevis; flotte skærmbilleder alene opfylder ingen af delene.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                              20
+
+         DIRECTOR                                                                      UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Kilder, antagelser og versionslog
+Tekniske primærkilder kontrolleret 16. oktober 2026. Arkitektur og prisforslag i biblen er vores
+produktbeslutninger.
+
+
+R1 - Next.js deployment
+https://nextjs.org/docs/app/getting-started/deploying
+Node- og containerdrift; webserveren er ikke en vedvarende agent.
+
+R2 - Supabase RLS
+https://supabase.com/docs/guides/database/postgres/row-level-security
+Adgangspolitikker; service-role kan omgå RLS og må ikke nå browseren.
+
+R3 - Supabase Storage
+https://supabase.com/docs/guides/storage/security/access-control
+Adgang til private filer styres med storage-politikker.
+
+R4 - pg-boss
+https://github.com/timgit/pg-boss
+Postgres-baseret jobkø med retry og fejltilstande; applikationen skal stadig sikre idempotens.
+
+R5 - Stripe webhooks
+https://docs.stripe.com/webhooks
+Signaturkontrol på rå body; hurtig kvittering; dubletter håndteres af egen eventlog.
+
+R6 - GitHub App authentication
+https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticati
+ng-as-a-github-app-installation
+Installationstokens og afgrænset repository-adgang.
+
+Versionskontrakt
+Version 1.0 / SPEC_READY. Ændringer registreres med beslutning, årsag, berørte krav, migration og
+accepttest. Arbejdstitler og priser er ikke registrerede brands eller valideret betalingsvillighed.
+Tredjepartsfunktioner, API-adgang og priser genkontrolleres ved implementering.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                              21
+
+         DIRECTOR                                                                    UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Specialværktøjer og
+kildehenvisninger
+Tilkobl kun et værktøj, når det løser et konkret behov. En app må kunne bruges uden hele den
+kreative værktøjskæde.
+
+
+R7 - React Flow
+https://reactflow.dev/learn
+Komponenter til nodebaseret editor. Grafikken er adskilt fra simulationsmotoren.
+
+R8 - Three.js
+https://threejs.org/docs/
+3D-scene, kamera og rendering; browserkapacitet kontrolleres ved start.
+
+R9 - FFmpeg
+https://ffmpeg.org/ffmpeg.html
+Kontrolleret servereksport af billedsekvenser og lyd.
+
+R10 - ElevenLabs TTS
+https://elevenlabs.io/docs/api-reference/text-to-speech/convert
+Valgfri taleadapter. Pris og kontoadgang verificeres ved integration.
+
+R11 - Meshy API
+https://docs.meshy.ai/en/api/text-to-3d
+Valgfri asynkron 3D-generation; ikke en forudsætning for Director.
+
+R12 - LTX Studio
+https://ltx.io/studio/platform/ai-storyboard-generator
+Eksisterende storyboard- og konsistensprodukt; vores differentiering er en hypotese.
+
+Agent- og mediekæde
+Codex eller Claude Code kan være aktiv koordinator; Cursor er valgfri IDE og kontrolflade. Kimi kan
+løse afgrænsede kode-/reviewopgaver. Gemini og Grok kan bistå research eller kreativt arbejde,
+hvor adgang faktisk findes. DeepSeek kan tilkobles som API-adapter. HeyGen, ElevenLabs og Meshy
+er valgfrie medieværktøjer. Lokal Qwen er en senere optimering; feriearbejdet må ikke være
+afhængigt af den.
+
+Adgang er ikke antaget
+Et privat abonnement er ikke automatisk en API-licens til et kommercielt flerbrugerprodukt.
+Koordinatoren registrerer for hver adapter: faktisk adgangsmetode, tilladt brug, pris, kvote, timeout,
+datahåndtering og seneste smoke-test. Ingen antagelse om ubegrænset brug, ingen omgåelse af
+login eller kvoter. Manglende adapter markeres tydeligt, mens andre opgaver fortsætter.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                            22

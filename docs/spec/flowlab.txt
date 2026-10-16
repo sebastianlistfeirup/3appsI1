@@ -1,0 +1,1120 @@
+PRODUKT / DESIGN / TEKNIK / AUTONOM UDVIKLING
+
+
+
+
+FLOWLAB
+Et visuelt laboratorium for bedre beslutninger
+
+
+
+
+   VISION                                    SYSTEM                        BEVIS
+
+
+   Et tydeligt produktløfte                  Kontrakter og arbejdsgange    Tests, eksport og drift
+
+
+
+
+Byg processen. Afprøv ændringen. Forstå konsekvensen.
+
+
+
+
+Version 1.0 / 16. oktober 2026
+
+Ferieprofil -> fuld værktøjskæde -> privat beta -> kommerciel validering
+
+         FLOWLAB                                                                  UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Indhold og læsevej
+Læs produktløftet først. Brug derefter milestones, accepttests og startordre som
+implementeringskontrakt. Delte krav er gentaget i hver appbibel, så den kan stå alene.
+
+
+
+Produktløftet og den første kunde                                                                     3
+
+Omfang og oplevelsen af første værdi                                                                  4
+
+Designretning - et lyst og levende arbejdsbord                                                        5
+
+Skærme og den centrale brugerrejse                                                                    6
+
+Simulationsmotor - præcis kontrakt                                                                    7
+
+Målinger, usikkerhed og forklaringer                                                                  8
+
+Datamodel, import og kalibrering                                                                      9
+
+API og beregningskontrakt                                                                           10
+
+Golden fixtures og accepttests                                                                      11
+
+Forretning og betalt pilot                                                                          12
+
+Milestones, risici og startordre                                                                    13
+
+Fælles fundament - valgt arkitektur                                                                 14
+
+Datagrænser, roller og filadgang                                                                    15
+
+Jobs, genoptagelse og omkostninger                                                                  16
+
+Kvalitet, sikkerhed og tilgængelighed                                                               17
+
+Autonom arbejdsform - fra opgave til bevis                                                          18
+
+Ferie, fuld værktøjskæde og release                                                                 19
+
+Kilder, antagelser og versionslog                                                                   20
+
+Specialværktøjer og kildehenvisninger                                                               21
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                          2
+
+         FLOWLAB                                                                   UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Produktløftet og den første kunde
+FlowLab gør arbejdsgange synlige og lader brugeren afprøve ændringer, før de gennemføres i
+virkeligheden.
+
+
+Første anvendelse
+En teamleder modellerer en indbakke med omkring 100 syntetiske henvendelser pr. dag, forskellige
+sagstyper, medarbejdere og godkendelser. Brugeren tester ændret bemanding, prioritering eller
+automatisk sortering og ser konsekvenser for kø, gennemløbstid, kvalitet og omkostning. Det bygger
+på et procesproblem, Sebastian kender, men demoen indeholder ingen faktiske medlemsdata.
+
+Første betalende kunde
+Mindre serviceorganisationer og proceskonsulenter, der skal begrunde en ændring i et team. Køber
+er leder, driftsansvarlig eller konsulent. Produktet starter med gentagne sagsforløb og kapacitet;
+senere kan flere domæner tilføjes. En universel virksomhedsmodel er visionen, ikke en skjult
+v1-afhængighed.
+
+Det brugeren køber
+Et forståeligt beslutningsgrundlag med baseline, ændring, resultat og antagelser. Ingen garanti for
+fremtidige besparelser. FlowLab hjælper med at undersøge mekanismer og følsomhed og viser
+tydeligt, hvor data mangler. En AI kan hjælpe med at beskrive modellen; tal beregnes udelukkende
+af simulationsmotoren.
+
+Tre afgørende produktprincipper
+• Enhver KPI kan spores tilbage til hændelser og input.
+• Ændring af én antagelse skal kunne sammenlignes med samme baseline.
+• En flot animation må aldrig skjule en overbelastet eller forkert model.
+
+
+   North star: dokumenterede scenariesammenligninger, som en bruger faktisk anvender i en
+   beslutning. Simulerede besparelser er ikke realiseret gevinst.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                           3
+
+         FLOWLAB                                                                                    UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Omfang og oplevelsen af første
+værdi
+En komplet første version skal kunne modellere, simulere, sammenligne og eksportere et
+realistisk sagsflow.
+
+
+  Niveau                          Bindende omfang
+
+
+  P0 / editor                     Start, aktivitet, beslutning, vent, genarbejde og slut; forbindelser, ressourcer og
+                                  arbejdsplan.
+
+
+  P0 / motor                      Diskrete hændelser, deterministisk seed, FCFS-kø, ressourcekapacitet, routing og
+                                  målinger.
+
+
+  P0 / analyse                    Baseline + alternative scenarier, inputdiff, fordelinger, kødiagram og
+                                  KPI-definitioner.
+
+
+  P1 / data                       CSV-import med mapping, kvalitetstjek og evidensmærkning; versionsstyrede
+                                  modelsnapshots.
+
+
+  P1 / salg                       Rapporteksport, workspaces, roller, betaling og modelskabeloner.
+
+
+  Efter v1                        Live systemintegrationer, optimeringsalgoritmer, flere samtidige ressourcetyper
+                                  pr. aktivitet og avanceret kalender.
+
+
+
+V1-begrænsning, der gør motoren korrekt
+En aktivitet beslaglægger én enhed fra én ressourcepool ad gangen. Medarbejderkompetencer kan
+modelleres som separate pools, men samme person må ikke tælles i flere overlappende pools.
+Samtidigt behov for flere ressourcer er senere scope. Routing er probabilistisk eller baseret på en
+eksplicit sagstype; den er aldrig skjult AI-logik.
+
+Første værdi på under 15 minutter
+Åbn skabelonen Medlemsservice, ændr én tydelig kapacitetsantagelse, kør baseline og alternativ
+med samme seeds, læs forklaringen og eksportér en kort rapport. Onboarding skal lære modellens
+betydning gennem arbejdet, ikke kræve en lang introduktion.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                            4
+
+         FLOWLAB                                                                                      UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Designretning - et lyst og levende
+arbejdsbord
+Konceptlayout til implementeringen. Alle resultatværdier i designreferencer markeres som
+illustration indtil motoren beregner dem.
+
+
+Identitet
+Varm hvid #F7F9F8, mørk tekst #17343A og petrol #007E83. Scenarier har navne og faste farver.
+Køer kan visualiseres med små sagssymboler, som følger motorens hændelser. Animation kan
+pauses uden at ændre simuleringen. Der er intet krav om 3D; forståelig 2D har prioritet.
+
+
+   FLOWLAB                                                                           KONCEPT / IKKE LIVE DATA
+
+
+
+
+      Medlemsservice / Modelværksted
+      Eksempeldata · Baseline og alternativ
+
+
+
+
+        Ankomst                          Behandling             Kontrol                        Afslut
+
+        Redigér antagelse                Redigér antagelse      Redigér antagelse              Redigér antagelse
+
+
+
+
+        Gennemløbstid                   Ventetid               Backlog                        Omkostning
+
+        Beregnes af motoren             Beregnes af motoren    Beregnes af motoren            Beregnes af motoren
+
+
+
+
+Layout
+Canvas i midten, nodepalette til venstre og inspector til højre. Under canvas ligger en
+sammenfoldelig resultatbakke med baseline/alternativ og fordelinger. Et fast felt viser modelversion,
+datagrundlag og status: Udkast, Eksempeldata eller Kalibreret med periode. Datakvalitet må ikke
+skjules i en tooltip.
+
+Brug med tastatur og touch
+Noder kan tilføjes og forbindes gennem formular/liste, så drag/drop aldrig er eneste vej. Tablet
+understøtter modelændringer og resultater. Telefon prioriterer scenarievalg, parameterændring og
+rapport; en listeeditor giver adgang til alle noders indstillinger.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                              5
+
+         FLOWLAB                                                                                 UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Skærme og den centrale brugerrejse
+Brugeren skal kunne gå fra antagelse til gennemsigtigt resultat uden at blive ekspert i
+simulation.
+
+
+  Skærm                                Funktion
+
+
+  Modelbibliotek                       Templates, egne modeller, seneste sammenligning og tydelig datakvalitet.
+
+
+  Canvas + inspector                   Byg flow og angiv varighed, routing, ressourcepool og kalender.
+                                       Valideringsfejl peger på noden.
+
+
+  Dataværksted                         Importér CSV, map kolonner, se manglende/negative værdier og vælg
+                                       enhed.
+
+
+  Scenarier                            Kopiér baseline, ændr parametre, navngiv og sammenlign input før kørsel.
+
+
+  Resultater                           Gennemløbstid, ventetid, backlog, throughput, udnyttelse og omkostning
+                                       med definition.
+
+
+  Beslutningsrapport                   Formål, antagelser, resultater, variation, begrænsninger og brugerens
+                                       konklusion.
+
+
+  Workspace                            Modeller, medlemmer, abonnement, eksport og retention.
+
+
+
+Happy path
+Vælg sample -> gennemse antagelser -> kør baseline -> kopiér til scenario B -> ændr kapacitet ->
+kør samme seedliste -> gennemgå forskel og usikkerhed -> tilføj egen beslutning -> eksportér.
+AI-forklaring er valgfri og skal referere til resultatfelter, ikke opfinde tal.
+
+Fejlrejse
+En node uden ressource, en sandsynlighedssum forskellig fra 1 eller en ubegrænset cirkel stopper
+kørsel med en konkret rettelse. Et tungt job kan afbrydes og returnerer partial-resultat, tydeligt
+mærket ufuldstændigt. Seneste fuldførte baseline bevares.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                         6
+
+         FLOWLAB                                                                     UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Simulationsmotor - præcis kontrakt
+En ren TypeScript-motor uden UI, database eller LLM-afhængighed. Den skal kunne køres i
+browserworker og serverworker med samme resultat.
+
+
+Tid og hændelser
+Tid lagres som heltal i millisekunder fra simulationsstart; output konverteres til minutter/timer.
+Prioritetskøen sorterer på time, type_priority og sequence_id. Ved samme tidspunkt behandles
+færdiggørelse og ressourcefrigivelse først, derefter kalenderåbning, ankomst/routing og til sidst ny
+tildeling. Denne rækkefølge er del af engineVersion.
+
+Kø og ressourcer
+FCFS er standard. Tie-breaker er stabil case_id. En jobvarighed trækkes én gang ved start og
+bevares ved pause. V1 bruger arbejdsafbrydelse ved skiftslut: resterende arbejde fortsætter ved
+næste åbning på samme aktivitet. Ingen automatisk overtid. Pause medfører ikke ny lodtrækning.
+Udnyttelse måles mod faktisk planlagt kapacitetstid.
+
+Fordelinger og seed
+V1 understøtter fast, trekantet og eksponentiel varighed; kun gyldige positive parametre.
+PRNG-algoritme og versionsnummer låses og testes. Giv ankomstproces, routing og hver aktivitet
+egne seed-afledte streams, så en ændring i én aktivitet ikke vilkårligt omskriver alle andre tilfældige
+træk. UI viser seed og runVersion.
+
+Routing og genarbejde
+Beslutningskanter har eksplicit vægt med sum 1 inden for tolerance 1e-9 eller sagstypebetingelse.
+Genarbejde bevarer case_id men opretter visit_id. Sæt maksimalt 20 besøg pr. case pr. cyklus i v1.
+Overskridelse giver truncation-fejl, ikke stille afslutning. Antal unikke afsluttede sager må ikke
+forveksles med antal besøg.
+
+Stopbetingelse
+Tidsvindue og maksimal hændelsesmængde er obligatoriske. Ved vinduets slut rapporteres
+ventende og igangværende sager som backlog; de indgår ikke i gennemløbstid for afsluttede sager.
+En separat drain-mode kan fuldføre restkøen, men må ikke blandes med en normal sammenligning.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                             7
+
+         FLOWLAB                                                                                     UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Målinger, usikkerhed og forklaringer
+Resultatpanelet skal lære brugeren, hvad tallene betyder, og hvornår de ikke kan
+sammenlignes.
+
+
+  Måling                              Definition
+
+
+  Throughput                          Antal unikke sager afsluttet i observationsvinduet. Divider med vinduets
+                                      varighed ved rate.
+
+
+  Gennemløbstid                       Sluttid minus ankomst for afsluttede sager. Rapporter median og p90 samt
+                                      antal observationer.
+
+
+  Ventetid                            Sum af tid i aktivitetskøer pr. afsluttet sag; planlagt vent-node vises særskilt.
+
+
+  Backlog                             Unikke ankomne sager, som endnu ikke er afsluttet: ventende + aktive +
+                                      planlagt vent.
+
+
+  Udnyttelse                          Optaget ressourceenhedstid / tilgængelig ressourceenhedstid. Ingen
+                                      kapacitet giver N/A.
+
+
+  Omkostning                          Planlagt lønkapacitet + aktivitetens eksplicitte variable omkostning +
+                                      modelleret automationsomkostning. Undgå dobbelt lønpost.
+
+
+  SLA                                 Andel afsluttede inden for valgt grænse; uafsluttede sager vises særskilt som
+                                      kendte/ukendte brud.
+
+
+
+Flere kørsler
+Preview kan bruge én seed. Beslutningsrapport bruger som standard 30 uafhængige replikationer;
+baseline og alternativ bruger samme seedliste. Vis middel/median og 10.-90.-percentil af forskelle på
+tværs af kørsler. Intervallet benævnes simulationsspredning, ikke automatisk et konfidensinterval
+for virkeligheden. Flere kørsler fjerner ikke dårlige antagelser.
+
+Warm-up og måleperiode
+Standard er en dagsmodel med kendt startbacklog og ingen skjult warm-up. Flerdagsmodel angiver
+eksplicit warm-up og observationsvindue. Sager, som er ankommet før vinduet, har egen
+cohortmarkering. Sammenligninger afviser forskellig måleperiode eller viser en tydelig
+inkompatibilitet.
+
+Forklaringslag
+Regelbaseret forklaring først: Vis de ændrede input og hvilke mål der flyttede sig. Eventuel AI får kun
+strukturerede resultater og definitioner; numeriske påstande valideres mod referencedata. Brug
+ordet simuleret ved gevinstestimater.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                              8
+
+         FLOWLAB                                                                                   UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Datamodel, import og kalibrering
+Et resultat er reproducerbart, når både model, data, motorversion og seedliste er kendt.
+
+
+  Entitet                                 Indhold
+
+
+  model_versions                          nodes, edges, resource_pools, calendar, unit_system, validation_hash,
+                                          revision.
+
+
+  scenario_versions                       base_model_version, parameter_patch, label, hypothesis, author.
+                                          Immutable ved run.
+
+
+  datasets                                source_label, mapping, row_count, excluded_rows, observed_period,
+                                          quality_notes, sha256.
+
+
+  simulation_runs                         model_version, scenario_version, engine_version, seeds[], horizon,
+                                          warmup, status.
+
+
+  run_metrics                             metric_key, definition_version, sample_count, value, unit, spread og
+                                          censored_count.
+
+
+  reports                                 run_ids, narrative, assumptions, caveats, decision, generated_at,
+                                          report_version.
+
+
+
+CSV-kontrakt
+Tillad case_id, case_type, arrived_at, activity, started_at, finished_at og resource_group. Kolonner er
+valgfrie efter valgt importprofil. Preview viser de første rækker og enheds-/tidszonefortolkning. Afvis
+finish før start, ugyldige datoer og dublerede hændelses-id. Manglende felter udelades eller
+imputeres kun med synlig brugerbeslutning. Ingen personnavne, mails eller fritekst er nødvendige.
+
+Kalibrering
+Import må aldrig kaldes en fuld digital tvilling automatisk. Sammenhold baseline med faktisk
+throughput, ventetid og backlog for en holdout-periode. Registrér afvigelser og datamangler. Default
+pilotmål: inden for 15 procent på throughput og median gennemløbstid; ellers vis ikke-kalibreret og
+undersøg modellen. Grænsen er et produktmål, ikke en generel faglig sandhed.
+
+Grænser
+Første CSV-grænse: 10 MB og 100.000 rækker, stream-parset med preview og cancel. Bevar kun
+nødvendige kolonner; gem en version af det rensede grundlag. Importeksport skal respektere
+workspace og retention.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                           9
+
+         FLOWLAB                                                                                    UDVIKLINGSBIBEL / V1.0
+
+
+
+
+API og beregningskontrakt
+Samme inputobjekt anvendes af lokal motor, worker og eksport. Resultater må aldrig beregnes
+på en anden skjult model.
+
+
+  Operation                                            Kontrakt
+
+
+  POST /api/models                                     name + template_key -> model med første revision.
+
+
+  PUT /api/models/:id/draft                            expected_revision + model -> valideret draft eller 422 med
+                                                       node_id/field.
+
+
+  POST /api/models/:id/versions                        Gem immutable modelversion med validation_hash.
+
+
+  POST /api/scenarios                                  base_version + parameter_patch + hypothesis ->
+                                                       scenario_version.
+
+
+  POST /api/simulations                                model_version, scenario_version, seeds, horizon, warmup,
+                                                       mode; Idempotency-Key -> 202 run.
+
+
+  GET /api/simulations/:id                             status, actual_events_processed, metrics, warnings,
+                                                       engine_version, manifest.
+
+
+  POST /api/reports                                    compatible_run_ids, commentary -> rapportjob; PDF og
+                                                       JSON-data.
+
+
+
+Motorfunktion
+simulate(input: SimulationInput, signal: AbortSignal): SimulationResult. Input indeholder
+schemaVersion, engineVersion og seed. Result indeholder metrics, resource_timelines,
+queue_samples, warning_codes og event_count. Detaljeret eventtrace er valgfrit,
+størrelsesbegrænset og slået til for fejlsøgning og golden fixtures.
+
+Ydelsesstrategi
+Canvas viser aggregeret aktivitet og højst et begrænset antal illustrative sagssymboler.
+Simulationen afspilles ikke ved at vente fysisk på hver hændelse. Web Worker sender throttled
+progress; stor batch flyttes til serverworker. Første benchmark: 10.000 sager, 20 noder og 30
+replikationer; mål tid og peak-memory på dokumenteret maskine før grænser fastlægges.
+
+Modelændringer
+Et kørende run bruger sit snapshot. Ændring af draft markerer resultater som fra tidligere version;
+den ændrer ikke historikken. Sammenligning viser inputdiff og afviser ugyldig versionskombination.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                           10
+
+         FLOWLAB                                                                                   UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Golden fixtures og accepttests
+Beregningskorrekthed skal være bevist før flot animation eller salg. Fælles numeriske cases
+ligger også i fixtures/flowlab_golden.json.
+
+
+FL-AT01 - en kø, ét sikkert facit
+Tre sager ankommer ved t=0, 60 og 120 sekunder. Én ressource, fast behandling 90 sekunder, altid
+åben, observationsvindue 300 sekunder. Starttider: 0, 90, 180. Sluttider: 90, 180, 270. Ventetider: 0,
+30, 60; gennemsnit 30. Gennemløbstider: 90, 120, 150; gennemsnit 120. Throughput 3, backlog 0 og
+udnyttelse 270/300 = 0,9.
+
+
+  ID                          Færdigkriterium
+
+
+  FL-AT02                     Samme input/seed/engine giver byte-identiske normaliserede metrics på gentagne
+                              runs.
+
+
+  FL-AT03                     Vindue 200 sekunder i golden case: 2 afsluttede og 1 aktiv; backlog 1.
+
+
+  FL-AT04                     To ressourcer i golden case: ventetider 0; afslutning 90,150,210.
+
+
+  FL-AT05                     Skift slutter ved 60, genåbner ved 120; job på 90 sekunder fra 0 afsluttes ved 150.
+
+
+  FL-AT06                     Routing summerer til 0,9 -> afvis model før kørsel.
+
+
+  FL-AT07                     Genarbejde bevarer case_id og øger visit_count; throughput dobbelttælles ikke.
+
+
+  FL-AT08                     Cancel under batch -> partial markeret; ingen komplet rapport kan bygges på
+                              partial.
+
+
+  FL-AT09                     Import med negativ varighed -> konkrete rækker markeres og tælles.
+
+
+  FL-AT10                     Baseline/alternativ eksporterer samme seedliste og fuld inputdiff.
+
+
+  FL-AT11                     Tenant-test og viewer-test gennemføres for modeller, data, runs og rapporter.
+
+
+  FL-AT12                     Alle KPI-tal i PDF matcher de bagvedliggende run_metrics.
+
+
+
+Bevaringslov
+På ethvert tidspunkt: ankomne unikke sager = afsluttede + aktive + ventende + planlagt vent +
+eksplicit afbrudte. Brud stopper run og markeres engine_error. Det er en invariant, ikke blot en test
+af ét eksempel.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                          11
+
+         FLOWLAB                                                                                      UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Forretning og betalt pilot
+FlowLab sælges på et brugbart beslutningsgrundlag. Der må aldrig markedsføres en simuleret
+gevinst som realiseret besparelse.
+
+
+  Plan                                               Prishypotese ekskl. moms
+
+
+  Demo                                               Sample-modeller og én lokal sammenligning; ingen ubegrænset
+                                                     cloudberegning.
+
+
+  Team / 1.499 DKK pr. måned                         Fem medlemmer, ti aktive modeller, scenarier, rapporter og et
+                                                     synligt beregningsloft.
+
+
+  Consultant / 3.999 DKK pr. måned                   Adskilte kundeworkspaces, flere modeller og rapportbranding;
+                                                     ingen implicit adgang mellem kunder.
+
+
+  Betalt pilot / 7.500 DKK                           Én aftalt proces, ét kalibreringsforløb og en beslutningsrapport.
+                                                     Afgrænset serviceydelse; ikke ubegrænset rådgivning.
+
+
+
+Pilotens leverance
+Kunden beskriver én beslutning og leverer aggregerede data. Vi bygger baseline, dokumenterer
+antagelser, undersøger to alternativer og sammenholder modellen med historik. Kunden vurderer,
+om rapporten hjælper en konkret beslutning. Aftal på forhånd, hvad der skal være opfyldt, og hvad
+pilotprisen omfatter.
+
+Økonomisk scenarie
+1.499 DKK nettoomsætning minus 120 DKK variabel drift og betaling minus 300 DKK supportandel
+giver 1.079 DKK i bidrag før faste udgifter, ca. 72 procent. Hvis onboarding kræver mange
+konsulenttimer, prissættes det særskilt. Eksemplet er en antagelse og skal erstattes med målte
+omkostninger.
+
+Valideringsgate
+Før bred launch: tre relevante pilotorganisationer, mindst to betalende, og mindst to modeller som
+kan kalibreres til aftalt kvalitet. Mål gentagen scenariebrug efter fire uger og tid brugt på
+dataoprydning. Hvis modellering kræver udviklerhjælp hver gang, forbedres templates og import før
+nye branchespor.
+
+Anskaffelse af kunder
+Vis en anonym/syntetisk før-efter-model og en læsbar rapport. Brug eget proceskendskab til at
+vælge relevante cases. Koordinatoren kan lave demo og salgsmateriale, men udsender ikke kontakt
+på brugerens vegne uden mandat.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                             12
+
+         FLOWLAB                                                                                    UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Milestones, risici og startordre
+Motoren og beslutningsoplevelsen udvikles sammen. En poleret canvas uden pålidelige tal er
+ikke en privat beta.
+
+
+  Milestone                          Leverance
+
+
+  FL01-FL02                          Inputschema og deterministisk motor med FL-AT01 til FL-AT07.
+
+
+  FL03                               Canvas, listeeditor og inspector; samme validering som motor.
+
+
+  FL04-FL05                          Scenarier og resultater med seedparring, definitioner og inputdiff.
+
+
+  FL06                               CSV-import, datakvalitet, modelversion og kalibreringspanel.
+
+
+  FL07-FL08                          Rapport/JSON-eksport og cloud persistens med adgangstest.
+
+
+  FL09-FL10                          Betaling, responsive tilstande, onboarding og benchmark.
+
+
+  FL11-FL12                          Privat pilot og releasekandidat efter numerisk, driftsmæssig og kommerciel
+                                     gate.
+
+
+
+Største risici
+Falsk præcision håndteres med synlige antagelser og spredning. Dårlige data håndteres med
+importkontrol og holdout. Scope håndteres med én ressourcepool pr. aktivitet. En AI, der opfinder
+tal, undgås ved at gøre beregningsmotoren autoritativ og valideringsbar. Et produkt, der kun kan
+bruges af os, opdages i observeret onboarding.
+
+Feriearbejde
+Start med golden fixture og ren motor; byg derefter sample-flow og scenario-sammenligning. Det
+kan ske uden betalte API-kald og uden adgang til hoved-PC. Brug højst én dekorativ
+canvasanimation, før alle numeriske cases er grønne. Næste uge tilføjes rigtig database, store runs
+og import.
+
+Startordre
+Byg FlowLab efter denne bibel med beregningskorrekthed, tydelige forklaringer og elegant
+interaktion. Arbejd selvstændigt til næste verificerede milestone. Registrér antagelser. Brug
+syntetiske data. Udvid aldrig motoren med AI-genererede tal. Gem checkpoint, testbevis, screenshot
+og næste opgave efter hver arbejdsblok.
+
+
+   Overdragelse: docs/flowlab.md + fixtures/flowlab_golden.json + program/tasks.json + policy
+   og state. En ændret beregningsregel kræver ny engineVersion og regression på
+   eksisterende fixtures.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                           13
+
+         FLOWLAB                                                                   UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Fælles fundament - valgt arkitektur
+Denne sektion er en del af hver selvstændig bibel. En app skal kunne udvikles og udgives uden
+de to andre.
+
+
+Fast teknisk beslutning
+TypeScript og React med Next.js App Router. pnpm-workspace i ét nyt repository med apps/studio,
+apps/flowlab, apps/director og services/worker. Delte pakker: ui, contracts, auth, billing, jobs,
+providers og observability. Apps har hver sin build- og deployenhed. Et separat tools/dev-coordinator
+driver udviklingen; Studio One er aldrig en bootstrap-afhængighed.
+
+Data og kørsel
+Supabase Auth, Postgres og privat objektlager er referencevalget. SQL-migrationer ligger i
+repository. Webrequests opretter korte transaktioner; længere job udføres af en vedvarende
+Node-worker med pg-boss på en separat køschema/database. FlowLab kan simulere lokalt i en Web
+Worker. Director eksporterer via en begrænset renderworker. Kravene baseres på R1-R4, R7-R9.
+
+Ferieprofil
+En computer med browser og en tilgængelig kodeagent er nok til grænseflader, domænelogik,
+fixtures og tests. Repository og commits er overdragelsespunktet. Hvis Docker, databasenøgler eller
+betalte API-adgange mangler, bruges eksplicit demo-adapter, lokal IndexedDB og syntetiske data.
+Demo-mode er mærket og kan ikke modtage betaling eller rigtige kundeoplysninger.
+
+Fuld profil
+Når den fulde værktøjskæde er tilgængelig, tilkobles database, worker, GitHub-adapter,
+renderworker og godkendte medietjenester. Kontrakterne er de samme i begge profiler. Import af
+demo-data sker som en valideret transaktion med kvittering; der foretages ingen stiltiende
+overskrivning.
+
+
+   Ved første bootstrap vælges aktuelle stabile, indbyrdes kompatible versioner. Lås dem i
+   lockfile og VERSION_MATRIX.md. Biblen giver arkitekturkrav, ikke en påstand om afprøvede
+   versionsnumre.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                          14
+
+         FLOWLAB                                                                                   UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Datagrænser, roller og filadgang
+Alle kundedata skal være isoleret fra første rigtige cloud-version; demo-data skal altid kunne
+genoprettes.
+
+
+  Objekt                           Minimumskontrakt
+
+
+  workspaces                       id, name, created_at, plan_key, retention_days. Ét workspace er én tenant.
+
+
+  memberships                      workspace_id + user_id unik; role = owner/editor/viewer; revoked_at.
+
+
+  projects                         id, workspace_id, app_key, name, revision, archived_at.
+
+
+  assets / versions                workspace_id, project_id, sha256, storage_key, mime, bytes, provenance,
+                                   rights_status; versioner er immutable.
+
+
+  jobs / events                    workspace_id, project_id, kind, state, idempotency_key, attempt, lease,
+                                   provider_ref, result_version, cost reservation.
+
+
+  usage / entitlements             Append-only forbrug, entydigt source_event_id, valuta og beløb i
+                                   heltalsenheder.
+
+
+  audit_log                        actor, workspace_id, action, object_id, before/after revision, timestamp; ingen
+                                   hemmeligheder.
+
+
+
+Autorisation
+Owner styrer medlemmer og betaling; editor arbejder med indhold; viewer læser og henter tilladte
+eksporter. Serveren udleder bruger fra verificeret session og kontrollerer membership ved hver
+operation. Et project_id eller workspace_id fra browseren er aldrig et adgangsbevis. Brug både
+applikationskontrol og RLS. Storage-paths udledes server-side og signeres først efter kontrol [R2-R3].
+
+Workers og privileged keys
+Brugerrettede requests benytter brugerens autorisationskontekst. Workers benytter en særskilt
+begrænset databaserolle med tenant-kontekst sat transaktionelt og testet RLS; de må ikke eje
+tabeller eller have BYPASSRLS. Eventuelle administrative service keys er server-only og isoleret til
+navngivne administrative funktioner. Kørollen giver ikke adgang til vilkårlige kundetabeller.
+
+Konflikter og sletning
+Alle mutable writes kræver expected_revision. En konflikt giver HTTP 409 med mulighed for at
+genindlæse eller gemme en kopi. Sletning arkiverer først; jobs stoppes, referencer fjernes og
+filoprydning køres efter retention. Backups udløber efter dokumenteret periode. Eksport og sletning
+skal omfatte appdata, filer og relevante providerreferencer.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                          15
+
+         FLOWLAB                                                                       UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Jobs, genoptagelse og omkostninger
+Et job er først færdigt, når dets resultat er gemt, valideret og knyttet til den rigtige
+projektversion.
+
+
+Tilstandsmaskine
+queued -> running -> validating -> succeeded. Sideveje: retry_wait, blocked_credentials,
+blocked_budget, failed, cancelled og reconcile_required. Persistér run_id, input-versioner,
+provider_job_id, lease_until og output-hash. Heartbeat hvert 30. sekund; mistet lease efter 120
+sekunder udløser reconciliation før nyt arbejde. Tider er konfigurerbare og testes mod det valgte
+købibliotek [R4].
+
+Idempotens
+Beregn en nøgle fra tenant, handling, immutable input-version og brugerens bestillings-id. En unik
+databaseconstraint sikrer én logisk operation. En gentaget provider-request er ikke automatisk
+sikker: hvis udbyderen ikke garanterer idempotens, og første svar er ukendt, stands kun denne
+operation i reconcile_required. Undersøg providerstatus før retry. Opret aldrig blindt et nyt betalt
+renderjob.
+
+Fejlhåndtering
+Netværksfejl og 429/5xx får højst tre automatiske forsøg med backoff og jitter inden for jobbets
+deadline. 401/403 blokerer adapteren; invalid input sendes tilbage til editoren; permanent
+providerfejl gemmes med brugbar fejltekst. En provider-circuit-breaker åbner efter fem
+sammenhængende transient fejl. Andre adaptere og projekter kan fortsætte.
+
+Budget er en transaktion
+Før jobstart reserveres estimeret maksimum mod workspace- og dagsbudget under database-lock.
+Ved succes afregnes kendt forbrug og resten frigives. Ved ukendt providerudfald fastholdes
+reservationen til reconciliation. UI viser estimeret pris før bestilling, reserveret beløb undervejs og
+faktisk beløb efterfølgende. Enheds- og valutakonvertering registreres med tidspunkt.
+
+
+   Standard i udviklingspakken: 0 DKK i nye betalte eksterne kald. Eksisterende autoriserede
+   værktøjer kan bruges inden for deres gældende adgang. Et dokumenteret beløbsloft kan
+   senere aktivere betalte adaptere uden godkendelse pr. job.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                              16
+
+         FLOWLAB                                                                                    UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Kvalitet, sikkerhed og
+tilgængelighed
+Målsætningerne her er acceptkrav, der skal bevises. De er ikke allerede målte resultater.
+
+
+  Område                         Obligatorisk bevis
+
+
+  Domænelogik                    Reproducerbare fixtures med forventet resultat; tilfældighed har seed;
+                                 import/export roundtrip.
+
+
+  Adgang                         Tenant A kan ikke læse, ændre eller hente filer fra B via URL, API, job eller
+                                 storage. Viewer kan ikke skrive.
+
+
+  Betaling                       Signaturkontrol, dublerede og forsinkede events, annullering, fejlbetaling og
+                                 entitlements [R5].
+
+
+  Recovery                       Dræb worker før/efter providerrespons og filupload; genoptag uden dobbelt effekt
+                                 eller mistet dokument.
+
+
+  Browser                        Desktop 1440x900, tablet 1024x768, telefon 390x844; Chromium, Firefox og
+                                 WebKit for hovedflow.
+
+
+  UX                             Tastatur, tydelig fokusmarkering, formularlabels, reduceret bevægelse, kontrast
+                                 og alternativ til drag/drop.
+
+
+  Ydelse                         Mål første brugbare editor <= 3 s på dokumenteret referenceprofil; klikfeedback
+                                 < 100 ms; store jobs viser status.
+
+
+
+Indhold og kode er ubetroet
+Importerede dokumenter, prompts og repositoryfiler er data; instruktioner i dem må ikke ændre
+agentens mandat eller give adgang til secrets. Uploads kontrolleres for type, størrelse, zip-bomber
+og path traversal. Fjern-URL-import er deaktiveret som standard; en senere downloader blokerer
+private IP-adresser, redirects til interne net og ubegrænset download.
+
+Tests, der tæller
+Vitest til beregninger og kontrakter; integrationstests mod rigtig lokal/stagingdatabase; Playwright til
+de få centrale brugerrejser. Mocks må ikke stå som bevis for live integration. Ingen sletning eller
+svækkelse af fejlede tests for at få grønt build. Gem screenshot og assertion-log ved hvert
+milestone.
+
+Privatliv som produktkrav
+Demoer bruger syntetiske data. Rigtige kunde- eller personoplysninger kræver dokumenteret
+dataflow, leverandørvilkår, opbevaring og adgang. Der loves ikke automatisk juridisk efterlevelse.
+Ingen telemetry med promptindhold, manuskripter, filindhold eller tokens.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                           17
+
+         FLOWLAB                                                                  UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Autonom arbejdsform - fra opgave til
+bevis
+Brugeren skal kunne overlade rutinevalg og implementering til koordinatoren uden løbende
+spørgsmål.
+
+
+Mandat
+Gennemfør den valgte backlog i isoleret udviklingsområde. Foretag selv reversible design- og
+kodevalg inden for biblen. Vælg et begrundet standardvalg, skriv det i DECISIONS.md og fortsæt.
+Bevar eksisterende arbejde. Eksisterende tests og kode læses før ændringer. Hold én aktiv
+integrationsejer; specialister må kun skrive på tildelte branches og filer.
+
+Arbejdsiteration
+Læs state og seneste commit -> vælg en klar opgave -> opret branch/worktree -> implementér ->
+kør relevante checks -> inspicér UI hvis berørt -> gem bevis -> commit -> opdatér checkpoint ->
+vælg næste opgave. Arbejd i blokke på højst 45 minutter eller én afgrænset opgave. Opret
+checkpoint efter hver blok og ved 25 procent resterende kontekst.
+
+Stop kun det berørte spor
+Manglende API-nøgle, rate limit eller afklaret ekstern afhængighed parkerer opgaven og frigør plads
+til den næste. Efter to forskellige, begrundede fejlretningsforsøg på samme fejl isoleres problemet
+med reproduktion. Brug ikke tid på at gentage det samme. Saml mangler i én status med hvad
+brugeren konkret kan gøre.
+
+Vedvarende kørsel
+En aktiv chatsession er ikke en dæmon. Timer/dage kræver en installeret supervisor på en tændt
+maskine eller godkendt hosted runner, en fungerende agentadapter, credentials og kvoter.
+Supervisoren starter afgrænsede agentkørsler, genindlæser tilstand og overlever processtop.
+Opsætningen er et tidligt milestone; biblen eller denne leverance aktiverer den ikke.
+
+Færdig betyder færdig
+En opgave uden verificeret resultat er review eller blocked, aldrig done. En prototype uden rigtige
+integrationer er DEMO. PRIVATE_BETA kræver ende-til-ende-flow og recovery. RELEASE_CANDIDATE
+kræver alle releasekrav. LIVE kræver godkendt målmiljø, fungerende betaling og dokumenteret drift.
+Der sendes ingen mails eller beskeder til andre uden konkret mandat.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                         18
+
+         FLOWLAB                                                                                     UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Ferie, fuld værktøjskæde og release
+Planen følger brugerens to arbejdssituationer. Datoer er et startforslag; milepælsbeviser styrer
+fremdriften.
+
+
+  Fase                                 Resultat og beslutning
+
+
+  16.-18. oktober 2026                 Bootstrap, designreference, kernefunktion med demo-data, checkpoints og
+                                       første prøvbare version. Ambition: synlig fremdrift i alle tre, ikke tre færdige
+                                       SaaS-produkter.
+
+
+  19.-25. oktober 2026                 Fuld adgang: tilkobling af backend/workers og relevante værktøjer, rigtige
+                                       integrationer, persistence, recovery og private beta-forløb. Flyt samme
+                                       repository videre.
+
+
+  Efter kernebevis                     Betalingspilot, brugerobservation, rettelser, driftsprøve og release. Dato
+                                       fastsættes efter målt fremdrift; ingen garanti for tre kommercielle launches
+                                       på to uger.
+
+
+
+Deployment
+Dev, staging og production har egne nøgler og data. Et preview kan bygges automatisk; eksponering
+af brugerdata og aktivering af live betaling følger deployment-policy. Langvarige agent- og renderjob
+kører uden for webrequestens levetid. En genstart af hoved-PC må ikke slette kø, tilstand eller
+accepterede resultater.
+
+Releasecheck
+Et nyt workspace kan gennemføre kernerejsen uden udviklerhjælp. Eksport, fejlsituation,
+genindlæsning, betaling og adgangskontrol er testet. Ingen P0/P1-fejl, ingen falske knapper eller
+uoplyste mockresultater. Der findes onboarding, hjælpetekst, pris-/forbrugsoverblik, kontaktvej,
+backup/restore og en tidligere version, der kan genudrulles.
+
+Drift og omkostninger
+Mål fejlrate, jobkøens alder, providerfejl, omkostning pr. succes og aktiv brug pr. workspace. Alarm
+ved ældste queued-job > 10 minutter eller gentagne failures; dette er driftsalarmer, ikke automatisk
+kundekontakt. Tag daglig databasebackup og versionsstyr filer. Før betalende pilot gennemføres
+restore til nyt miljø; mål genoprettelsestid og faktisk datatabsvindue.
+
+
+   Udviklingsmål: nyttig privat beta. Forretningsmål: kunder, der får værdi og betaler. Begge
+   kræver bevis; flotte skærmbilleder alene opfylder ingen af delene.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                              19
+
+         FLOWLAB                                                                       UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Kilder, antagelser og versionslog
+Tekniske primærkilder kontrolleret 16. oktober 2026. Arkitektur og prisforslag i biblen er vores
+produktbeslutninger.
+
+
+R1 - Next.js deployment
+https://nextjs.org/docs/app/getting-started/deploying
+Node- og containerdrift; webserveren er ikke en vedvarende agent.
+
+R2 - Supabase RLS
+https://supabase.com/docs/guides/database/postgres/row-level-security
+Adgangspolitikker; service-role kan omgå RLS og må ikke nå browseren.
+
+R3 - Supabase Storage
+https://supabase.com/docs/guides/storage/security/access-control
+Adgang til private filer styres med storage-politikker.
+
+R4 - pg-boss
+https://github.com/timgit/pg-boss
+Postgres-baseret jobkø med retry og fejltilstande; applikationen skal stadig sikre idempotens.
+
+R5 - Stripe webhooks
+https://docs.stripe.com/webhooks
+Signaturkontrol på rå body; hurtig kvittering; dubletter håndteres af egen eventlog.
+
+R6 - GitHub App authentication
+https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticati
+ng-as-a-github-app-installation
+Installationstokens og afgrænset repository-adgang.
+
+Versionskontrakt
+Version 1.0 / SPEC_READY. Ændringer registreres med beslutning, årsag, berørte krav, migration og
+accepttest. Arbejdstitler og priser er ikke registrerede brands eller valideret betalingsvillighed.
+Tredjepartsfunktioner, API-adgang og priser genkontrolleres ved implementering.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                              20
+
+         FLOWLAB                                                                     UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Specialværktøjer og
+kildehenvisninger
+Tilkobl kun et værktøj, når det løser et konkret behov. En app må kunne bruges uden hele den
+kreative værktøjskæde.
+
+
+R7 - React Flow
+https://reactflow.dev/learn
+Komponenter til nodebaseret editor. Grafikken er adskilt fra simulationsmotoren.
+
+R8 - Three.js
+https://threejs.org/docs/
+3D-scene, kamera og rendering; browserkapacitet kontrolleres ved start.
+
+R9 - FFmpeg
+https://ffmpeg.org/ffmpeg.html
+Kontrolleret servereksport af billedsekvenser og lyd.
+
+R10 - ElevenLabs TTS
+https://elevenlabs.io/docs/api-reference/text-to-speech/convert
+Valgfri taleadapter. Pris og kontoadgang verificeres ved integration.
+
+R11 - Meshy API
+https://docs.meshy.ai/en/api/text-to-3d
+Valgfri asynkron 3D-generation; ikke en forudsætning for Director.
+
+R12 - LTX Studio
+https://ltx.io/studio/platform/ai-storyboard-generator
+Eksisterende storyboard- og konsistensprodukt; vores differentiering er en hypotese.
+
+Agent- og mediekæde
+Codex eller Claude Code kan være aktiv koordinator; Cursor er valgfri IDE og kontrolflade. Kimi kan
+løse afgrænsede kode-/reviewopgaver. Gemini og Grok kan bistå research eller kreativt arbejde,
+hvor adgang faktisk findes. DeepSeek kan tilkobles som API-adapter. HeyGen, ElevenLabs og Meshy
+er valgfrie medieværktøjer. Lokal Qwen er en senere optimering; feriearbejdet må ikke være
+afhængigt af den.
+
+Adgang er ikke antaget
+Et privat abonnement er ikke automatisk en API-licens til et kommercielt flerbrugerprodukt.
+Koordinatoren registrerer for hver adapter: faktisk adgangsmetode, tilladt brug, pris, kvote, timeout,
+datahåndtering og seneste smoke-test. Ingen antagelse om ubegrænset brug, ingen omgåelse af
+login eller kvoter. Manglende adapter markeres tydeligt, mens andre opgaver fortsætter.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                            21

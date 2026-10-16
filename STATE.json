@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-16T19:40:00Z",
+  "status": "building",
+  "activeTasks": [
+    "F00"
+  ],
+  "profile": "demo",
+  "connectedIntegrations": []
+}

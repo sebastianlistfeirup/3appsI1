@@ -1,0 +1,1156 @@
+PRODUKT / DESIGN / TEKNIK / AUTONOM UDVIKLING
+
+
+
+
+STUDIO ONE
+Et produktionsstudie, der gør kreative projekter
+færdige
+
+
+
+
+   VISION                                    SYSTEM                        BEVIS
+
+
+   Et tydeligt produktløfte                  Kontrakter og arbejdsgange    Tests, eksport og drift
+
+
+
+
+Fra bestilling til et resultat, du kan åbne, prøve og stole på.
+
+
+
+
+Version 1.0 / 16. oktober 2026
+
+Ferieprofil -> fuld værktøjskæde -> privat beta -> kommerciel validering
+
+         STUDIO ONE                                                               UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Indhold og læsevej
+Læs produktløftet først. Brug derefter milestones, accepttests og startordre som
+implementeringskontrakt. Delte krav er gentaget i hver appbibel, så den kan stå alene.
+
+
+
+Produktløftet og den første kunde                                                                     3
+
+Omfang - et komplet første produkt                                                                    4
+
+Designretning - et roligt kreativt kontrolrum                                                         5
+
+Skærme, navigation og tilstande                                                                       6
+
+Kernerejse - ændr noget, og bevar overblikket                                                         7
+
+Domænemodel og invariants                                                                             8
+
+API- og hændelseskontrakter                                                                           9
+
+Kodeagent, GitHub og isoleret eksekvering                                                           10
+
+Accepttests - de kritiske produktbeviser                                                            11
+
+Forretning - betal for et pålideligt produktionsflow                                                12
+
+Udviklingsrækkefølge og konkrete leverancer                                                         13
+
+Risici, produktbeslutninger og startordre                                                           14
+
+Fælles fundament - valgt arkitektur                                                                 15
+
+Datagrænser, roller og filadgang                                                                    16
+
+Jobs, genoptagelse og omkostninger                                                                  17
+
+Kvalitet, sikkerhed og tilgængelighed                                                               18
+
+Autonom arbejdsform - fra opgave til bevis                                                          19
+
+Ferie, fuld værktøjskæde og release                                                                 20
+
+Kilder, antagelser og versionslog                                                                   21
+
+Specialværktøjer og kildehenvisninger                                                               22
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                          2
+
+         STUDIO ONE                                                                 UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Produktløftet og den første kunde
+Et kreativt kontrolrum for solo-udviklere og små studier, som arbejder med kode, billeder, lyd
+og versioner på tværs af værktøjer.
+
+
+Den konkrete første opgave
+Sebastian bestiller en afgrænset ændring til et Godot- eller webprojekt. Studio One samler krav og
+inputversioner, viser arbejdet, afleverer et sammenligneligt resultat og dokumenterer, om det virker.
+Produktets værdi er sporbar fremdrift og færre tabte overleveringer. Det må aldrig nøjes med et
+overbevisende statusresumé uden de tilhørende filer og tests.
+
+Kunden, der kommer først
+Solo-udvikleren eller et lille spil-/webstudio med flere ugentlige ændringsopgaver og allerede
+etablerede værktøjer. Køber er projektejeren. Et bredt alt-i-ét medieproduktionsselskab er langsigtet
+vision; v1 sælges på kontrol over afgrænsede softwareproduktioner og tilhørende assets.
+
+Værdien skal kunne observeres
+• En bestilling har én synlig ejer, en definition af færdig og konkrete input.
+• En fil har en version og en kendt relation til projektet.
+• Et godkendt resultat kan genåbnes uden at lede i samtaler.
+• En genstart fortsætter arbejdet uden at købe eller udføre samme opgave igen.
+
+
+Personlig nytte
+Brug Realmread-lignende produktioner som syntetisk eksempel: en questtekst, et UI-element og en
+buildrapport. Tilslut et rigtigt eksisterende repository først efter afgrænset adgang og baseline.
+Eksisterende spil må ikke omorganiseres eller overskrives for at demonstrere appen.
+
+
+   North star: antal accepterede, verificerbare leverancer pr. aktivt workspace pr. uge. Antal
+   prompts og antal genererede filer er ikke succesmål.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                            3
+
+         STUDIO ONE                                                                              UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Omfang - et komplet første produkt
+Release 1 skal være nyttig som dagligt værktøj, også før alle AI- og medietjenester er tilkoblet.
+
+
+  Niveau                               Bindende omfang
+
+
+  P0 - kerne                           Workspace, projekter, brief, opgaver, immutable filversioner,
+                                       leverancevisning, review, versionssammenligning, aktivitet og eksport.
+
+
+  P0 - drift                           Vedvarende jobstatus, idempotens, fejl/retry, budgetvisning, checkpoint og
+                                       audit.
+
+
+  P1 - privat beta                     GitHub App, én fungerende kodeagentadapter, isoleret test/build og én
+                                       understøttet projektprofil.
+
+
+  P1 - kommerciel                      Betaling, medlemsroller, onboarding, forbrugsgrænser, datakontrol og
+                                       driftsovervågning.
+
+
+  Efter v1                             Avanceret medieorkestrering, flere engines, bred marketplace og
+                                       automatisk afhængighedsanalyse på vilkårlig kode.
+
+
+
+Bevidst produktgrænse
+Studio One er et produktionslag oven på eksisterende værktøjer. Brugeren kan altid hente
+projektpakken og arbejde uden Studio One. V1 har én aktiv redaktør pr. opgave med
+versionskontrol; samtidig realtidsredigering af dokumenter er ikke et krav.
+
+Tre progressive driftsformer
+MANUAL: upload resultater og organisér review. CONNECTED: hent repositorymetadata og kør
+godkendte værktøjer. AUTONOMOUS: eksekvér et afgrænset task graph inden for budget og policy.
+UI angiver altid den faktiske form. MANUAL er brugbar og må ikke fremstå som automatisk arbejde.
+
+Definition af første værdi
+En ny bruger opretter et projekt fra skabelonen Webændring, indtaster en bestilling, tilføjer et input,
+modtager eller uploader en leverance, sammenligner versioner og accepterer den. Projektet kan
+eksporteres med versionsmanifest og bevis. Målet er under 10 minutter i en observeret test.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                         4
+
+          STUDIO ONE                                                                             UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Designretning - et roligt kreativt
+kontrolrum
+Visuel reference for implementeringen. Skærmen på denne side er et konceptlayout, ikke en
+færdig app.
+
+
+Identitet
+Varmt lyst arbejdsområde, dyb blæksort navigation og violet som accent. Indhold og preview fylder
+mest; status og metadata er sekundære. Overflader: #F6F5FA, tekst #182033, accent #7357E8.
+Statusfarver ledsages af ord og ikoner. Geometrisk sans-serif, generøs linjeafstand og monospaced
+version-/job-id i detaljepanelet.
+
+
+   STUDIO                                                                       KONCEPT / IKKE LIVE DATA
+
+
+
+
+      Produktioner              Quest menu / Leverance 04                                 Leverance
+
+                                Sammenlign, afprøv og acceptér
+      Overblik                                                                            Brief v3
+
+                                   FORRIGE               NY VERSION     BUILD
+      Bestilling                                                                          Assets v8
+
+
+      Opgaver                                                                             Status: review
+
+
+      Assets                                                                              Forbrug
+
+
+      Leverancer                Input låst | Versionsdiff | Testbevis                     3 acceptkrav
+
+
+                                   Se resultat
+
+
+
+
+Layoutregler
+Desktop: venstre navigation 216 px, centralt leveranceområde, højre inspector 320 px ved valg.
+Tablet: inspector åbner som drawer. Telefon: projektoversigt, brief, aktivitet og review er fuldt
+brugbare; kompleks grafredigering har listealternativ. Den vigtigste handling hedder Se resultat eller
+Fortsæt arbejde afhængigt af tilstand.
+
+Interaktion
+Autosave viser Gemmer/Gemt med seneste tid. En action, der starter et betalt job, viser prisloft og
+inputversion. Under arbejde vises den seneste faktiske hændelse; ingen opdigtet procentindikator.
+Motion er korte overgange på 120-180 ms og respekterer reduceret bevægelse.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                         5
+
+         STUDIO ONE                                                                                    UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Skærme, navigation og tilstande
+Hver primær skærm har tom, indlæser, fejl, offline og færdig tilstand. Ingen navigationspunkter
+må ende i døde mockskærme.
+
+
+  Route / skærm                                    Indhold og handling
+
+
+  /projects                                        Projektkort med seneste leverance, aktivitet og blokeringsårsag.
+                                                   Opret, arkivér og søg.
+
+
+  /projects/:id/overview                           Mål, aktiv milestone, klar til review, jobs og næste konkrete
+                                                   handling.
+
+
+  /projects/:id/brief                              Målgruppe, resultat, input, acceptkrav, budget og begrænsninger.
+                                                   Versionshistorik.
+
+
+  /projects/:id/tasks                              Liste eller afhængighedsgraf; status, ejer og definition af færdig
+                                                   pr. opgave.
+
+
+  /projects/:id/assets                             Filer og versioner, rettighedsstatus, anvendelser og preview.
+
+
+  /projects/:id/runs/:run                          Tidslinje, input, providerstatus, udgifter, logs og output.
+                                                   Cancel/retry efter policy.
+
+
+  /projects/:id/review/:delivery                   Side-om-side diff, tests, screenshot/build og Acceptér/Bed om
+                                                   ændring.
+
+
+  /settings                                        Medlemmer, integrationer, budget, abonnement, eksport og
+                                                   sletning.
+
+
+
+Tomme og fejlramte projekter
+Et tomt projekt viser tre korte skridt og en sample-bestilling. Ved manglende GitHub-adgang kan
+man importere en pakke eller fortsætte manuelt. En fejlet leverance bevarer sidste gode version og
+viser fejl, påvirkning og næste handling. Intet resultat må automatisk overskrive det accepterede.
+
+Mobil review
+Én leverance pr. skærm med preview, tre vigtigste ændringer og testresultat. Detaljer er udfoldelige.
+Brugeren kan kommentere på versionen, acceptere eller anmode om en konkret rettelse uden at
+åbne en kodeeditor.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                               6
+
+         STUDIO ONE                                                                     UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Kernerejse - ændr noget, og bevar
+overblikket
+Happy path: en lille spilmenu får en ny questindikator, og produktionen kan efterprøves.
+
+
+Trin og observerbar tilstand
+• 1. Vælg projektprofil og repository eller lokal demo. Gem baseline-commit og screenshot.
+• 2. Skriv bestilling: vis aktiv quest i menuen; vedhæft designreference og tre acceptkrav.
+• 3. Koordinator foreslår en lille opgavegraf; brugerens forudvalgte autonomipolicy kan acceptere
+  rutineplanen.
+• 4. Job låser inputversioner og kører i isoleret miljø. Aktivitet viser konkrete handlinger.
+• 5. Test/build producerer rapport, screenshot og artifact. Manglende test betyder review required.
+• 6. Review viser før/efter og hvad der stadig er usikkert. Accept skaber en delivery-version.
+• 7. Et senere brief refererer til denne delivery; den gamle kan stadig åbnes eller eksporteres.
+
+
+Ændret input under kørsel
+Hvis et input får en ny version, fortsætter det eksisterende run på sit snapshot. Output markeres
+stale og får valget behold eller genkør med nye input. Accepteret output til et gammelt brief må ikke
+uden videre opfylde den nye bestilling.
+
+Afvisning og rettelse
+Kommentarer knyttes til delivery_id og version. En rettelse skaber en ny opgave med de uopfyldte
+krav og kendte input; den eksisterende leverance bevares. Maksimalt to automatiske
+forbedringsrunder før fejltypen isoleres og andre opgaver fortsætter.
+
+Eksport
+ZIP indeholder brief.md, tasks.json, manifest.json, licens-/proveniensfelter, filversioner og evidens.
+Tokens, cookies, logs med secrets og providercredentials er altid udeladt. Import validerer
+schemaVersion og hashes før projektoprettelse.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                7
+
+          STUDIO ONE                                                                                 UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Domænemodel og invariants
+Et klart forhold mellem bestilling, input, arbejde og accepteret resultat er appens vigtigste
+tekniske aktiv.
+
+
+  Entitet                                  Felter og regel
+
+
+  brief_versions                           project_id, version, goal, constraints, acceptance[], budget_policy_id;
+                                           immutable.
+
+
+  tasks                                    id, project_id, brief_version, kind, state, acceptance[], assigned_lane,
+                                           revision.
+
+
+  task_edges                               from_task, to_task; samme projekt; grafen skal være acyklisk.
+
+
+  artifact_versions                        artifact_id, version, hash, source_run, content_type, storage_key, rights;
+                                           immutable.
+
+
+  artifact_dependencies                    output_version -> input_version; peger altid på præcis version.
+
+
+  runs                                     task_id, input_snapshot, adapter_id, policy_snapshot, provider_ref,
+                                           status, cost.
+
+
+  deliveries / reviews                     run_id, output_versions[], verification_report, decision, reviewer,
+                                           comment.
+
+
+  repo_connections                         installation_id, repository_id, allowed_paths, branch_policy; token
+                                           gemmes ikke i UI-data.
+
+
+
+Ufravigelige regler
+Et accepteret resultat har mindst én output-version og et reviewbevis. En run må ikke acceptere sig
+selv. Daglige budgetter kan ikke blive negative ved samtidige jobs. Grafen må ikke indeholde en
+cirkel eller en kant på tværs af tenants. Assets slettes ikke fysisk, mens en accepteret delivery stadig
+refererer til dem.
+
+Afhængigheder i v1
+Eksplicitte referencer og manifest er autoritative. AI kan foreslå mulige afhængigheder med
+confidence og begrundelse, men skal markere dem som forslag. Systemet må ikke love at kende alle
+konsekvenser af en vilkårlig kodeændring.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                             8
+
+         STUDIO ONE                                                                                    UDVIKLINGSBIBEL / V1.0
+
+
+
+
+API- og hændelseskontrakter
+Alle routes nedenfor er vores planlagte interne kontrakter; de er ikke eksisterende
+leverandørendpoints.
+
+
+  Operation                                           Request og forventet resultat
+
+
+  POST /api/projects                                  name, profile, workspace. 201 project + revision; medlemskab
+                                                      kontrolleres.
+
+
+  POST /api/projects/:id/briefs                       expected_revision, goal, acceptance[]. 201 immutable
+                                                      brief_version.
+
+
+  POST /api/tasks/:id/runs                            brief_version, input_versions[], budget_policy_id,
+                                                      Idempotency-Key. 202 run.
+
+
+  GET /api/runs/:id                                   state, actual_step, cost_reserved, outputs[], last_heartbeat,
+                                                      actionable_error.
+
+
+  POST /api/runs/:id/cancel                           expected_revision. Best effort stop; vis already_completed hvis
+                                                      udført.
+
+
+  POST /api/deliveries/:id/reviews                    decision, comment, expected_revision. 201 review; stale-input
+                                                      kræver eksplicit accept.
+
+
+  POST /api/projects/:id/exports                      version_selector. 202 export-job; download efter valideret fil.
+
+
+
+Event envelope
+event_id, workspace_id, project_id, aggregate_id, aggregate_revision, type, occurred_at, actor,
+payload_version og payload. Events: task.ready, run.started, run.blocked, artifact.created,
+delivery.ready og review.accepted. Modtager deduplikerer event_id; UI sorterer på revision, ikke
+modtagelsestid.
+
+Fejlkoder
+400 schemafejl; 401 manglende login; 403 manglende rolle; 404 ukendt eller utilgængeligt objekt;
+409 revision/stale; 422 ugyldig graf; 429 rate/budget policy med maskinlæsbar årsag. Serverlogs
+indeholder trace_id, aldrig provider-token.
+
+Opdateringer
+Polling er første robuste løsning; server events kan tilføjes efter behov. Refresh af browseren læser
+persistente data. Processen må ikke være afhængig af, at fanen står åben.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                               9
+
+         STUDIO ONE                                                                   UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Kodeagent, GitHub og isoleret
+eksekvering
+V1 understøtter én kodeagentadapter. Tilføj flere efter en fungerende ende-til-ende-leverance.
+
+
+Adapterkontrakt
+capabilities(), validateAccess(), estimate(), submit(input, policy), status(provider_ref), cancel() og
+collect(). Capabilities beskriver understøttede typer, cancel, idempotens og maksimal inputstørrelse.
+Adapteren skal skelne mellem konto-login, CLI-adgang og API-adgang. Kommandosyntaks verificeres
+i den installerede version før adapteren aktiveres.
+
+GitHub
+Brug installation med adgang til udvalgte repositories. Læs metadata og indhold; skriv kun på tildelt
+branch. Kortlivede installationstokens genereres server-side [R6]. Ingen token i remote-URL, logs
+eller artefakter. En delivery kan knyttes til et draft-PR. Merge til beskyttet branch følger den
+eksisterende repository-policy.
+
+Sandbox er et produktkrav
+Kundekode kører i et isoleret, kortlivet miljø med CPU-, RAM-, disk- og tidsgrænser. Ingen host
+Docker-socket, ingen produktionsnøgler, ingen skriveadgang til andre projekter. Netværksadgang
+begrænses til dokumenterede behov. Et almindeligt lokalt build på ejerens egen kode kan bruges i
+privat beta, men må ikke markedsføres som sikker eksekvering af vilkårlig kundekode.
+
+Første projektprofil
+Webprofil: install fra låst manifest, typecheck, test, build og screenshot af kendt route. Godotprofil
+tilføjes med verificeret engineversion, headless-check og konkret scene; grafiktest markeres
+særskilt, hvis environment mangler rendering. Krav må ikke afkrydses ud fra en tekstlig
+agentpåstand.
+
+
+   Udviklingskoordinatoren, som bygger de tre apps, ligger uden for dette produkts runtime.
+   Det bryder den cirkulære afhængighed: Studio One behøver ikke være færdig for at kunne
+   bygges.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                             10
+
+         STUDIO ONE                                                                                 UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Accepttests - de kritiske
+produktbeviser
+Test-id følger kravet i backlog og releasebevis. Disse cases skal virke i den reelle backendprofil.
+
+
+  ID                         Given / When / Then
+
+
+  S-AT01                     Tomt workspace -> opret projekt og brief -> genindlæs -> data og revision er
+                             bevaret.
+
+
+  S-AT02                     Samme run-bestilling sendes to gange -> én logisk run og én budgetreservation.
+
+
+  S-AT03                     A afhænger af B -> forsøg B afhænger af A -> afvis grafen uden delvis write.
+
+
+  S-AT04                     Input v1 kører; v2 gemmes -> resultat refererer til v1 og er tydeligt stale.
+
+
+  S-AT05                     Worker dør efter remote submit -> genstart -> eksisterende providerjob findes eller
+                             reconcile_required; ingen blind genbestilling.
+
+
+  S-AT06                     Viewer åbner delivery -> kan se tilladt preview, men Acceptér og write API afvises.
+
+
+  S-AT07                     Tenant B gætter asset-id fra A -> ingen metadata, bytes eller signed URL udleveres.
+
+
+  S-AT08                     Delivery afvises -> ny opgave oprettes; oprindelige input, output og kommentar
+                             bevares.
+
+
+  S-AT09                     ZIP eksport/import -> hashes og versionsrelationer bevares; secrets findes ikke i
+                             pakken.
+
+
+  S-AT10                     To jobs overskrider samlet resterende budget -> højst ét accepteres; ledger
+                             balancerer.
+
+
+  S-AT11                     Agent melder done, men build fejler -> delivery vises failed/review, aldrig verified.
+
+
+  S-AT12                     Installation tilbagekaldes -> nye repositoryjobs blokeres; lokalt review og eksport
+                             virker.
+
+
+
+Brugbarhedstest
+En testperson uden introduktion skal finde seneste fungerende resultat, forklare en blokering og
+bede om en ændring. Observer tid, fejl og spørgsmål. Målet er at kunne identificere næste handling
+på under 30 sekunder. Gem observationer uden at påstå statistisk sikkerhed fra få deltagere.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                           11
+
+          STUDIO ONE                                                                              UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Forretning - betal for et pålideligt
+produktionsflow
+Priser er start-hypoteser i DKK pr. måned, ekskl. moms. De er ikke markedsvaliderede eller
+udtryk for forventet indtjening.
+
+
+  Plan                                 Forslag og logik
+
+
+  Prøve                                Ét sample-projekt, manuel review og begrænset lager. Ingen fri betalt
+                                       generation.
+
+
+  Solo / 299 DKK                       Fem aktive projekter, versionsstyring, review, egen værktøjsadgang og fast
+                                       lagergrænse.
+
+
+  Studio / 799 DKK                     Fem medlemmer, flere projekter, roller og fælles produktionsoverblik.
+
+
+  Forbrug                              Compute og mediegeneration prissættes separat med synlig reservation og
+                                       loft. Ingen unlimited-plan.
+
+
+
+Økonomisk eksempel - antagelser
+Ved 299 DKK i nettoomsætning, 45 DKK i variable drifts-/betalingsomkostninger og 30 DKK i fordelt
+support bliver dækningsbidraget 224 DKK før udvikling, marketing og øvrige faste udgifter. Det er
+ca. 75 procent. Hvis support eller compute stiger, ændres prisen eller produktets grænser. Tal er
+scenarieinput, ikke leverandørpriser.
+
+Første salgsbevis
+Brug eget projekt til at demonstrere en rigtig leverance med versionsdiff og verificeret build. Find
+derefter fem relevante udviklere til afprøvning og mindst to betalte pilotforløb før større
+platformudvidelse. Materialer kan udarbejdes autonomt; kontakt til personer kræver konkret
+udsendelsesmandat.
+
+Mål og stopkriterium
+Mål aktivering, accepterede leverancer pr. uge, 4-ugers genbrug, supportminutter og faktisk
+dækningsbidrag. Hvis brugere kun logger ind for status og fortsat organiserer alle resultater
+andetsteds, mangler produktet kerneværdi. Ret overdragelse og review før flere integrationer.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                         12
+
+         STUDIO ONE                                                                                   UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Udviklingsrækkefølge og konkrete
+leverancer
+Opgaverne findes også med dependencies og status i den maskinlæsbare backlog. Delopgaver
+må vælges autonomt inden for denne rækkefølge.
+
+
+  Milestone                               Leverance og færdigkriterium
+
+
+  S01-S02 / fundament                     Projekt, brief, assets og immutable versioner. S-AT01 og roundtrip grøn.
+
+
+  S03-S04 / overblik                      Opgavegraf med cykelkontrol; review og diff. S-AT03/04/08 grøn.
+
+
+  S05 / jobs                              Én run gennem fælles jobmotor, med budget og synlig fejl. S-AT02/10
+                                          grøn.
+
+
+  S06-S07 / integration                   GitHub og én isoleret kode/buildadapter. Rigtig outputpakke; S-AT11/12
+                                          grøn.
+
+
+  S08 / recovery                          Genstart og cancel; ukendt providerudfald håndteres. S-AT05 grøn.
+
+
+  S09-S10 / betaling og UX                Testbetaling, roller, responsive hovedflow, eksport og onboarding.
+
+
+  S11 / privat beta                       Eget faktisk projektflow gennemført; ekstern testperson kan finde, forstå
+                                          og reviewe resultatet.
+
+
+  S12 / releasekandidat                   Fuld gatepakke, drift, rollback, rettigheder og tydelig prisside.
+
+
+
+Ferieprioritet
+Opret projektskal, filversioner, task graph og review med et lokalt sample. Byg adaptergrænserne
+tidligt. Manglende credential er ikke en undskyldning for at springe vedvarende data, fejlsituationer
+eller UI-tilstande over i demoen.
+
+Næste uge
+Aktivér den verificerede kodeadapter og backend, gennemfør worker-kill-test, forbind ét afgrænset
+repository og kør den samme bestilling igen. Review-resultatet må ikke afhænge af den oprindelige
+chats hukommelse.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                             13
+
+         STUDIO ONE                                                                                     UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Risici, produktbeslutninger og
+startordre
+Koordinatoren har mandat til at færdiggøre denne v1 og dokumentere almindelige valg. Større
+udvidelser kræver et nyt produktbevis.
+
+
+  Risiko                                       Beslutning
+
+
+  Alt-i-ét bliver uendeligt                    Én projektprofil og én kodeadapter før flere engines eller medieflows.
+
+
+  Agent lover mere end den leverer             Kun faktiske artifacts og tests afgør leverancestatus.
+
+
+  Kundekode bliver farlig                      Public SaaS eksekvering blokeres indtil isolationsmiljø er verificeret.
+
+
+  Versionskaos                                 Immutable output, explicit input snapshots og revision ved mutable
+                                               writes.
+
+
+  API-omkostning æder margin                   Reservation, budgetloft, meter og ingen unlimited compute.
+
+
+  Eget behov forveksles med                    Betalte pilotforløb og målt gentagen brug før større investering.
+  marked
+
+
+
+Første 90 minutters arbejde
+Læs denne bibel og fælles masterpolicy. Registrér faktisk miljø. Opret repositorystruktur uden at
+ændre andre projekter. Gem en sample-produktion med tre assets og et brief. Implementér den
+første åbne-lukke-genindlæse-rejse. Gem screenshot, tests, commit og næste task i checkpoint. Hvis
+agentmiljøet ikke kan bygge, leveres fejlen og en genoptagelig opgave; status må ikke være done.
+
+Startordre til kodeagent
+Byg Studio One efter denne bibel. Arbejd selvstændigt gennem klare opgaver, bevar eksisterende
+arbejde, og vælg selv reversible løsninger inden for scope. Start i demo/ferieprofil og opgrader til
+fuld profil uden rewrite. Stop ikke ved en plan eller en pæn forside. Fortsæt til næste
+færdigkriterium, gem beviser og checkpoint efter hver blok, og parkér kun den opgave, som er reelt
+blokeret.
+
+
+   Overdragelse: docs/studio.md + program/tasks.json + program/policy.json + seneste
+   STATE.json og checkpoint. PDF er læseversion; de versionsstyrede kildefiler er
+   implementeringsgrundlaget.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                               14
+
+         STUDIO ONE                                                                UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Fælles fundament - valgt arkitektur
+Denne sektion er en del af hver selvstændig bibel. En app skal kunne udvikles og udgives uden
+de to andre.
+
+
+Fast teknisk beslutning
+TypeScript og React med Next.js App Router. pnpm-workspace i ét nyt repository med apps/studio,
+apps/flowlab, apps/director og services/worker. Delte pakker: ui, contracts, auth, billing, jobs,
+providers og observability. Apps har hver sin build- og deployenhed. Et separat tools/dev-coordinator
+driver udviklingen; Studio One er aldrig en bootstrap-afhængighed.
+
+Data og kørsel
+Supabase Auth, Postgres og privat objektlager er referencevalget. SQL-migrationer ligger i
+repository. Webrequests opretter korte transaktioner; længere job udføres af en vedvarende
+Node-worker med pg-boss på en separat køschema/database. FlowLab kan simulere lokalt i en Web
+Worker. Director eksporterer via en begrænset renderworker. Kravene baseres på R1-R4, R7-R9.
+
+Ferieprofil
+En computer med browser og en tilgængelig kodeagent er nok til grænseflader, domænelogik,
+fixtures og tests. Repository og commits er overdragelsespunktet. Hvis Docker, databasenøgler eller
+betalte API-adgange mangler, bruges eksplicit demo-adapter, lokal IndexedDB og syntetiske data.
+Demo-mode er mærket og kan ikke modtage betaling eller rigtige kundeoplysninger.
+
+Fuld profil
+Når den fulde værktøjskæde er tilgængelig, tilkobles database, worker, GitHub-adapter,
+renderworker og godkendte medietjenester. Kontrakterne er de samme i begge profiler. Import af
+demo-data sker som en valideret transaktion med kvittering; der foretages ingen stiltiende
+overskrivning.
+
+
+   Ved første bootstrap vælges aktuelle stabile, indbyrdes kompatible versioner. Lås dem i
+   lockfile og VERSION_MATRIX.md. Biblen giver arkitekturkrav, ikke en påstand om afprøvede
+   versionsnumre.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                          15
+
+         STUDIO ONE                                                                                UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Datagrænser, roller og filadgang
+Alle kundedata skal være isoleret fra første rigtige cloud-version; demo-data skal altid kunne
+genoprettes.
+
+
+  Objekt                           Minimumskontrakt
+
+
+  workspaces                       id, name, created_at, plan_key, retention_days. Ét workspace er én tenant.
+
+
+  memberships                      workspace_id + user_id unik; role = owner/editor/viewer; revoked_at.
+
+
+  projects                         id, workspace_id, app_key, name, revision, archived_at.
+
+
+  assets / versions                workspace_id, project_id, sha256, storage_key, mime, bytes, provenance,
+                                   rights_status; versioner er immutable.
+
+
+  jobs / events                    workspace_id, project_id, kind, state, idempotency_key, attempt, lease,
+                                   provider_ref, result_version, cost reservation.
+
+
+  usage / entitlements             Append-only forbrug, entydigt source_event_id, valuta og beløb i
+                                   heltalsenheder.
+
+
+  audit_log                        actor, workspace_id, action, object_id, before/after revision, timestamp; ingen
+                                   hemmeligheder.
+
+
+
+Autorisation
+Owner styrer medlemmer og betaling; editor arbejder med indhold; viewer læser og henter tilladte
+eksporter. Serveren udleder bruger fra verificeret session og kontrollerer membership ved hver
+operation. Et project_id eller workspace_id fra browseren er aldrig et adgangsbevis. Brug både
+applikationskontrol og RLS. Storage-paths udledes server-side og signeres først efter kontrol [R2-R3].
+
+Workers og privileged keys
+Brugerrettede requests benytter brugerens autorisationskontekst. Workers benytter en særskilt
+begrænset databaserolle med tenant-kontekst sat transaktionelt og testet RLS; de må ikke eje
+tabeller eller have BYPASSRLS. Eventuelle administrative service keys er server-only og isoleret til
+navngivne administrative funktioner. Kørollen giver ikke adgang til vilkårlige kundetabeller.
+
+Konflikter og sletning
+Alle mutable writes kræver expected_revision. En konflikt giver HTTP 409 med mulighed for at
+genindlæse eller gemme en kopi. Sletning arkiverer først; jobs stoppes, referencer fjernes og
+filoprydning køres efter retention. Backups udløber efter dokumenteret periode. Eksport og sletning
+skal omfatte appdata, filer og relevante providerreferencer.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                          16
+
+         STUDIO ONE                                                                    UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Jobs, genoptagelse og omkostninger
+Et job er først færdigt, når dets resultat er gemt, valideret og knyttet til den rigtige
+projektversion.
+
+
+Tilstandsmaskine
+queued -> running -> validating -> succeeded. Sideveje: retry_wait, blocked_credentials,
+blocked_budget, failed, cancelled og reconcile_required. Persistér run_id, input-versioner,
+provider_job_id, lease_until og output-hash. Heartbeat hvert 30. sekund; mistet lease efter 120
+sekunder udløser reconciliation før nyt arbejde. Tider er konfigurerbare og testes mod det valgte
+købibliotek [R4].
+
+Idempotens
+Beregn en nøgle fra tenant, handling, immutable input-version og brugerens bestillings-id. En unik
+databaseconstraint sikrer én logisk operation. En gentaget provider-request er ikke automatisk
+sikker: hvis udbyderen ikke garanterer idempotens, og første svar er ukendt, stands kun denne
+operation i reconcile_required. Undersøg providerstatus før retry. Opret aldrig blindt et nyt betalt
+renderjob.
+
+Fejlhåndtering
+Netværksfejl og 429/5xx får højst tre automatiske forsøg med backoff og jitter inden for jobbets
+deadline. 401/403 blokerer adapteren; invalid input sendes tilbage til editoren; permanent
+providerfejl gemmes med brugbar fejltekst. En provider-circuit-breaker åbner efter fem
+sammenhængende transient fejl. Andre adaptere og projekter kan fortsætte.
+
+Budget er en transaktion
+Før jobstart reserveres estimeret maksimum mod workspace- og dagsbudget under database-lock.
+Ved succes afregnes kendt forbrug og resten frigives. Ved ukendt providerudfald fastholdes
+reservationen til reconciliation. UI viser estimeret pris før bestilling, reserveret beløb undervejs og
+faktisk beløb efterfølgende. Enheds- og valutakonvertering registreres med tidspunkt.
+
+
+   Standard i udviklingspakken: 0 DKK i nye betalte eksterne kald. Eksisterende autoriserede
+   værktøjer kan bruges inden for deres gældende adgang. Et dokumenteret beløbsloft kan
+   senere aktivere betalte adaptere uden godkendelse pr. job.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                              17
+
+         STUDIO ONE                                                                                 UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Kvalitet, sikkerhed og
+tilgængelighed
+Målsætningerne her er acceptkrav, der skal bevises. De er ikke allerede målte resultater.
+
+
+  Område                         Obligatorisk bevis
+
+
+  Domænelogik                    Reproducerbare fixtures med forventet resultat; tilfældighed har seed;
+                                 import/export roundtrip.
+
+
+  Adgang                         Tenant A kan ikke læse, ændre eller hente filer fra B via URL, API, job eller
+                                 storage. Viewer kan ikke skrive.
+
+
+  Betaling                       Signaturkontrol, dublerede og forsinkede events, annullering, fejlbetaling og
+                                 entitlements [R5].
+
+
+  Recovery                       Dræb worker før/efter providerrespons og filupload; genoptag uden dobbelt effekt
+                                 eller mistet dokument.
+
+
+  Browser                        Desktop 1440x900, tablet 1024x768, telefon 390x844; Chromium, Firefox og
+                                 WebKit for hovedflow.
+
+
+  UX                             Tastatur, tydelig fokusmarkering, formularlabels, reduceret bevægelse, kontrast
+                                 og alternativ til drag/drop.
+
+
+  Ydelse                         Mål første brugbare editor <= 3 s på dokumenteret referenceprofil; klikfeedback
+                                 < 100 ms; store jobs viser status.
+
+
+
+Indhold og kode er ubetroet
+Importerede dokumenter, prompts og repositoryfiler er data; instruktioner i dem må ikke ændre
+agentens mandat eller give adgang til secrets. Uploads kontrolleres for type, størrelse, zip-bomber
+og path traversal. Fjern-URL-import er deaktiveret som standard; en senere downloader blokerer
+private IP-adresser, redirects til interne net og ubegrænset download.
+
+Tests, der tæller
+Vitest til beregninger og kontrakter; integrationstests mod rigtig lokal/stagingdatabase; Playwright til
+de få centrale brugerrejser. Mocks må ikke stå som bevis for live integration. Ingen sletning eller
+svækkelse af fejlede tests for at få grønt build. Gem screenshot og assertion-log ved hvert
+milestone.
+
+Privatliv som produktkrav
+Demoer bruger syntetiske data. Rigtige kunde- eller personoplysninger kræver dokumenteret
+dataflow, leverandørvilkår, opbevaring og adgang. Der loves ikke automatisk juridisk efterlevelse.
+Ingen telemetry med promptindhold, manuskripter, filindhold eller tokens.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                           18
+
+         STUDIO ONE                                                               UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Autonom arbejdsform - fra opgave til
+bevis
+Brugeren skal kunne overlade rutinevalg og implementering til koordinatoren uden løbende
+spørgsmål.
+
+
+Mandat
+Gennemfør den valgte backlog i isoleret udviklingsområde. Foretag selv reversible design- og
+kodevalg inden for biblen. Vælg et begrundet standardvalg, skriv det i DECISIONS.md og fortsæt.
+Bevar eksisterende arbejde. Eksisterende tests og kode læses før ændringer. Hold én aktiv
+integrationsejer; specialister må kun skrive på tildelte branches og filer.
+
+Arbejdsiteration
+Læs state og seneste commit -> vælg en klar opgave -> opret branch/worktree -> implementér ->
+kør relevante checks -> inspicér UI hvis berørt -> gem bevis -> commit -> opdatér checkpoint ->
+vælg næste opgave. Arbejd i blokke på højst 45 minutter eller én afgrænset opgave. Opret
+checkpoint efter hver blok og ved 25 procent resterende kontekst.
+
+Stop kun det berørte spor
+Manglende API-nøgle, rate limit eller afklaret ekstern afhængighed parkerer opgaven og frigør plads
+til den næste. Efter to forskellige, begrundede fejlretningsforsøg på samme fejl isoleres problemet
+med reproduktion. Brug ikke tid på at gentage det samme. Saml mangler i én status med hvad
+brugeren konkret kan gøre.
+
+Vedvarende kørsel
+En aktiv chatsession er ikke en dæmon. Timer/dage kræver en installeret supervisor på en tændt
+maskine eller godkendt hosted runner, en fungerende agentadapter, credentials og kvoter.
+Supervisoren starter afgrænsede agentkørsler, genindlæser tilstand og overlever processtop.
+Opsætningen er et tidligt milestone; biblen eller denne leverance aktiverer den ikke.
+
+Færdig betyder færdig
+En opgave uden verificeret resultat er review eller blocked, aldrig done. En prototype uden rigtige
+integrationer er DEMO. PRIVATE_BETA kræver ende-til-ende-flow og recovery. RELEASE_CANDIDATE
+kræver alle releasekrav. LIVE kræver godkendt målmiljø, fungerende betaling og dokumenteret drift.
+Der sendes ingen mails eller beskeder til andre uden konkret mandat.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                         19
+
+         STUDIO ONE                                                                                  UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Ferie, fuld værktøjskæde og release
+Planen følger brugerens to arbejdssituationer. Datoer er et startforslag; milepælsbeviser styrer
+fremdriften.
+
+
+  Fase                                 Resultat og beslutning
+
+
+  16.-18. oktober 2026                 Bootstrap, designreference, kernefunktion med demo-data, checkpoints og
+                                       første prøvbare version. Ambition: synlig fremdrift i alle tre, ikke tre færdige
+                                       SaaS-produkter.
+
+
+  19.-25. oktober 2026                 Fuld adgang: tilkobling af backend/workers og relevante værktøjer, rigtige
+                                       integrationer, persistence, recovery og private beta-forløb. Flyt samme
+                                       repository videre.
+
+
+  Efter kernebevis                     Betalingspilot, brugerobservation, rettelser, driftsprøve og release. Dato
+                                       fastsættes efter målt fremdrift; ingen garanti for tre kommercielle launches
+                                       på to uger.
+
+
+
+Deployment
+Dev, staging og production har egne nøgler og data. Et preview kan bygges automatisk; eksponering
+af brugerdata og aktivering af live betaling følger deployment-policy. Langvarige agent- og renderjob
+kører uden for webrequestens levetid. En genstart af hoved-PC må ikke slette kø, tilstand eller
+accepterede resultater.
+
+Releasecheck
+Et nyt workspace kan gennemføre kernerejsen uden udviklerhjælp. Eksport, fejlsituation,
+genindlæsning, betaling og adgangskontrol er testet. Ingen P0/P1-fejl, ingen falske knapper eller
+uoplyste mockresultater. Der findes onboarding, hjælpetekst, pris-/forbrugsoverblik, kontaktvej,
+backup/restore og en tidligere version, der kan genudrulles.
+
+Drift og omkostninger
+Mål fejlrate, jobkøens alder, providerfejl, omkostning pr. succes og aktiv brug pr. workspace. Alarm
+ved ældste queued-job > 10 minutter eller gentagne failures; dette er driftsalarmer, ikke automatisk
+kundekontakt. Tag daglig databasebackup og versionsstyr filer. Før betalende pilot gennemføres
+restore til nyt miljø; mål genoprettelsestid og faktisk datatabsvindue.
+
+
+   Udviklingsmål: nyttig privat beta. Forretningsmål: kunder, der får værdi og betaler. Begge
+   kræver bevis; flotte skærmbilleder alene opfylder ingen af delene.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                                              20
+
+         STUDIO ONE                                                                    UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Kilder, antagelser og versionslog
+Tekniske primærkilder kontrolleret 16. oktober 2026. Arkitektur og prisforslag i biblen er vores
+produktbeslutninger.
+
+
+R1 - Next.js deployment
+https://nextjs.org/docs/app/getting-started/deploying
+Node- og containerdrift; webserveren er ikke en vedvarende agent.
+
+R2 - Supabase RLS
+https://supabase.com/docs/guides/database/postgres/row-level-security
+Adgangspolitikker; service-role kan omgå RLS og må ikke nå browseren.
+
+R3 - Supabase Storage
+https://supabase.com/docs/guides/storage/security/access-control
+Adgang til private filer styres med storage-politikker.
+
+R4 - pg-boss
+https://github.com/timgit/pg-boss
+Postgres-baseret jobkø med retry og fejltilstande; applikationen skal stadig sikre idempotens.
+
+R5 - Stripe webhooks
+https://docs.stripe.com/webhooks
+Signaturkontrol på rå body; hurtig kvittering; dubletter håndteres af egen eventlog.
+
+R6 - GitHub App authentication
+https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticati
+ng-as-a-github-app-installation
+Installationstokens og afgrænset repository-adgang.
+
+Versionskontrakt
+Version 1.0 / SPEC_READY. Ændringer registreres med beslutning, årsag, berørte krav, migration og
+accepttest. Arbejdstitler og priser er ikke registrerede brands eller valideret betalingsvillighed.
+Tredjepartsfunktioner, API-adgang og priser genkontrolleres ved implementering.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                              21
+
+         STUDIO ONE                                                                  UDVIKLINGSBIBEL / V1.0
+
+
+
+
+Specialværktøjer og
+kildehenvisninger
+Tilkobl kun et værktøj, når det løser et konkret behov. En app må kunne bruges uden hele den
+kreative værktøjskæde.
+
+
+R7 - React Flow
+https://reactflow.dev/learn
+Komponenter til nodebaseret editor. Grafikken er adskilt fra simulationsmotoren.
+
+R8 - Three.js
+https://threejs.org/docs/
+3D-scene, kamera og rendering; browserkapacitet kontrolleres ved start.
+
+R9 - FFmpeg
+https://ffmpeg.org/ffmpeg.html
+Kontrolleret servereksport af billedsekvenser og lyd.
+
+R10 - ElevenLabs TTS
+https://elevenlabs.io/docs/api-reference/text-to-speech/convert
+Valgfri taleadapter. Pris og kontoadgang verificeres ved integration.
+
+R11 - Meshy API
+https://docs.meshy.ai/en/api/text-to-3d
+Valgfri asynkron 3D-generation; ikke en forudsætning for Director.
+
+R12 - LTX Studio
+https://ltx.io/studio/platform/ai-storyboard-generator
+Eksisterende storyboard- og konsistensprodukt; vores differentiering er en hypotese.
+
+Agent- og mediekæde
+Codex eller Claude Code kan være aktiv koordinator; Cursor er valgfri IDE og kontrolflade. Kimi kan
+løse afgrænsede kode-/reviewopgaver. Gemini og Grok kan bistå research eller kreativt arbejde,
+hvor adgang faktisk findes. DeepSeek kan tilkobles som API-adapter. HeyGen, ElevenLabs og Meshy
+er valgfrie medieværktøjer. Lokal Qwen er en senere optimering; feriearbejdet må ikke være
+afhængigt af den.
+
+Adgang er ikke antaget
+Et privat abonnement er ikke automatisk en API-licens til et kommercielt flerbrugerprodukt.
+Koordinatoren registrerer for hver adapter: faktisk adgangsmetode, tilladt brug, pris, kvote, timeout,
+datahåndtering og seneste smoke-test. Ingen antagelse om ubegrænset brug, ingen omgåelse af
+login eller kvoter. Manglende adapter markeres tydeligt, mens andre opgaver fortsætter.
+
+
+
+
+SPEC_READY | 16.10.2026 | Produktkrav og implementeringsplan                                            22
