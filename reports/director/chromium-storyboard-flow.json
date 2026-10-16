@@ -1,6 +1,6 @@
 {
   "engine": "chromium",
-  "browser": "154.0.8037.57",
+  "browser": "156.0.8078.4",
   "checks": [
     "actual H264 clip decoded at sourceIn=96 into blue PDF image, not red first frame or stale camera frame",
     "full long Danish/Greek/Cyrillic dialogue and notes retained across pages",
@@ -14,7 +14,7 @@
     0,
     253
   ],
-  "pdfMetadata": "Title:           Blå efter kliptrim · Æøå Ω Привет · storyboard\nAuthor:          Director\nCreator:         Director · lokalt filmværksted\nProducer:        Director / pdf-lib\nCreationDate:    Fri Oct 16 22:01:18 2026 UTC\nModDate:         Fri Oct 16 22:01:18 2026 UTC\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           5\nEncrypted:       no\nPage size:       842 x 595 pts (A4)\nPage rot:        0\nFile size:       113290 bytes\nOptimized:       no\nPDF version:     1.7\n",
+  "pdfMetadata": "Title:           Blå efter kliptrim · Æøå Ω Привет · storyboard\nAuthor:          Director\nCreator:         Director · lokalt filmværksted\nProducer:        Director / pdf-lib\nCreationDate:    Fri Oct 16 22:13:47 2026 UTC\nModDate:         Fri Oct 16 22:13:47 2026 UTC\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           5\nEncrypted:       no\nPage size:       842 x 595 pts (A4)\nPage rot:        0\nFile size:       113290 bytes\nOptimized:       no\nPDF version:     1.7\n",
   "pageErrors": [],
-  "verifiedAt": "2026-10-16T22:01:21.635Z"
+  "verifiedAt": "2026-10-16T22:13:59.866Z"
 }

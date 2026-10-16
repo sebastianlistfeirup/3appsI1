@@ -1,6 +1,5 @@
-import { existsSync } from "node:fs";
+// Use the package-pinned browser by default. An OS browser requires an explicit override.
 export const chromiumExecutable =
-  process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ||
-  (existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined);
+  process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || undefined;
 export const directorUrl =
   process.env.DIRECTOR_TEST_URL || "http://localhost:3002";
