@@ -30,6 +30,7 @@ export const artifactSchema = z.object({
   kind: z.enum(["code", "design", "document", "evidence", "image", "other"]),
   provenance: z.string().max(1000),
   rights: z.enum(["owned", "licensed", "unknown"]),
+  derivedFrom: idSchema.optional(),
   createdAt: timestamp,
 });
 export const taskSchema = z.object({
@@ -191,6 +192,18 @@ export function assertProject(project: Project): Project {
       throw new Error("Kladdens valgte filversion findes ikke.");
   }
   const artifacts = new Set(project.artifacts.map((x) => x.id));
+  for (const artifact of project.artifacts) {
+    if (!artifact.derivedFrom) continue;
+    const source = project.artifacts.find(
+      (candidate) => candidate.id === artifact.derivedFrom,
+    );
+    if (
+      !source ||
+      source.artifactId !== artifact.artifactId ||
+      source.version >= artifact.version
+    )
+      throw new Error("En filversion har en ugyldig oprindelsesversion.");
+  }
   const tasks = new Set(project.tasks.map((x) => x.id));
   const briefs = new Set(project.briefVersions.map((x) => x.version));
   for (const task of project.tasks)
@@ -1039,10 +1052,24 @@ export async function textArtifact(
   content: string,
   kind: Artifact["kind"] = "code",
   artifactId?: string,
+  sourceVersionId?: string,
 ): Promise<Artifact> {
   const bytes = new TextEncoder().encode(content);
   content = decodeUtf8(bytes);
   const versions = p.artifacts.filter((x) => x.artifactId === artifactId);
+  const source = sourceVersionId
+    ? versions.find((x) => x.id === sourceVersionId)
+    : versions.reduce<Artifact | undefined>(
+        (latest, next) =>
+          !latest || next.version > latest.version ? next : latest,
+        undefined,
+      );
+  if ((artifactId || sourceVersionId) && !source)
+    throw new Error("Den valgte oprindelsesversion findes ikke.");
+  if (source && source.encoding !== "utf8")
+    throw new Error(
+      "Denne fil kan ikke redigeres som tekst. Upload en ny filversion i stedet.",
+    );
   return artifactSchema.parse({
     id: uid("version"),
     artifactId: artifactId ?? uid("artifact"),
@@ -1052,10 +1079,53 @@ export async function textArtifact(
     encoding: "utf8",
     sha256: await sha256(bytes),
     bytes: bytes.length,
-    mime: name.endsWith(".html") ? "text/html" : "text/plain",
+    mime:
+      source?.mime ??
+      (name.toLowerCase().endsWith(".html") ? "text/html" : "text/plain"),
     kind,
-    provenance: "Oprettet manuelt i Studio One",
-    rights: "owned",
+    provenance: source?.provenance ?? "Oprettet manuelt i Studio One",
+    rights: source?.rights ?? "owned",
+    ...(source ? { derivedFrom: source.id } : {}),
     createdAt: now(),
   });
+}
+/** Rights/provenance corrections create a new immutable version with the same
+ * bytes. Existing run inputs, deliveries and reviews keep their original facts. */
+export function reviseArtifactMetadata(
+  p: Project,
+  sourceVersionId: string,
+  input: Pick<Artifact, "provenance" | "rights">,
+): Project {
+  assertMutable(p);
+  const source = p.artifacts.find((a) => a.id === sourceVersionId);
+  if (!source) throw new Error("Den valgte filversion findes ikke.");
+  const fields = z
+    .object({
+      provenance: z.string().trim().min(1, "Beskriv filens ophav.").max(1000),
+      rights: artifactSchema.shape.rights,
+    })
+    .strict()
+    .parse(input);
+  if (
+    source.provenance === fields.provenance &&
+    source.rights === fields.rights
+  )
+    throw new Error("Ophav og rettigheder er uændrede.");
+  const version =
+    Math.max(
+      ...p.artifacts
+        .filter((a) => a.artifactId === source.artifactId)
+        .map((a) => a.version),
+    ) + 1;
+  return addArtifact(
+    p,
+    artifactSchema.parse({
+      ...source,
+      ...fields,
+      id: uid("version"),
+      version,
+      derivedFrom: source.id,
+      createdAt: now(),
+    }),
+  );
 }

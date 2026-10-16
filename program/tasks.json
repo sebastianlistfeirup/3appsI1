@@ -219,6 +219,39 @@
       "verification": ["node apps/director/tests/large-library-flow.mjs"],
       "status": "verified-local",
       "allowed_paths": ["apps/director"]
+    },
+    {
+      "id": "S11",
+      "app": "studio",
+      "goal": "Preserve artifact source rights and show exact version uses",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm exec playwright test tests/e2e/studio-artifacts.spec.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/studio", "tests/e2e"]
+    },
+    {
+      "id": "L15",
+      "app": "flowlab",
+      "goal": "Shared experiment bounds and finite monetary inputs",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/experiment-settings-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/flowlab"]
+    },
+    {
+      "id": "L16",
+      "app": "flowlab",
+      "goal": "Bounded complete model differences with full export",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/input-differences-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/flowlab"]
     }
   ]
 }

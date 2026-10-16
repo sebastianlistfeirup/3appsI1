@@ -43,6 +43,8 @@ Tryk **Eksportér → MP4**. Den lokale worker samler ægte 1280×720, 24 fps H.
 
 Bestilling, opgaver med afhængigheder, immutable filversioner, manuelle leveringer, før/efter-preview, review og ZIP med SHA-256-manifest. Uploadet HTML vises isoleret, uden scripts eller eksterne netværkskald. Et manuelt resultat bliver aldrig kaldt en verificeret ekstern build.
 
+Filinspektøren viser hver versions ophav, historik og konkrete anvendelser. Redigering bevarer licensoplysninger; afklaring af rettigheder bliver en ny version med samme indhold. Se [filversioner og ophav](docs/studio-artifacts.md).
+
 Ufærdige manuelle leverancer gemmes som kladder og kan genoptages efter genåbning. Projektpakker bevarer hele historikken og kan åbnes som selvstændige kopier. Pakning kører i en browser-worker, og ugemte ændringer kan eksporteres ved lagerfejl. Se [pakkeformat, grænser og gendannelse](docs/studio-project-packages.md).
 
 ### FlowLab

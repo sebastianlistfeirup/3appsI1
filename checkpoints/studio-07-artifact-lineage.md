@@ -1,0 +1,9 @@
+# S11 — file provenance and exact version usage
+
+Fixed a concrete loss of provenance: text edits previously assigned `owned` and a default MIME type even when the source was licensed or its rights were unknown. New text versions now inherit the exact selected source's rights, provenance and MIME, including an explicitly selected older version. The optional `derivedFrom` reference is validated within the same artifact family and must point to a lower version; old project packages remain readable.
+
+The file inspector now switches between historical versions and shows actual locked input runs and delivered outputs with working navigation. Rights/provenance corrections create a new immutable version with identical bytes and checksum. Existing run snapshots, deliveries, reviews and earlier metadata stay intact. The UI explicitly says a recorded license claim is not independent license verification. Archived projects expose historical reads without edit actions.
+
+Executed: four deterministic domain fixtures, all workspace typechecks, full 223-unit suite at that integration point, Studio production build, six new browser flows across Chromium/Firefox/WebKit, and the complete 69-flow Studio production suite (all passed, 3.1 minutes). The new flows include real IndexedDB persistence and ZIP export/import, twelve axe inspections with zero violations, and screenshots at 1440×900, 1024×768 and 390×844. All three sizes were visually inspected. The new accessibility gate found an existing low-contrast hash summary, which was darkened and enlarged before rerunning.
+
+Evidence: `reports/studio/*-artifact-lineage-*.png`, `reports/studio/a11y/*artifact*`, `reports/studio/a11y/*asset-metadata*`, `reports/e2e-results.json`, and `tests/e2e/studio-artifacts.spec.ts`. This remains the local demo/manual editor; no external source license or cloud connection was verified.

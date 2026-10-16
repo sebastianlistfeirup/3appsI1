@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T22:42:50.555156+00:00",
+  "updatedAt": "2026-10-16T22:55:55.032044+00:00",
   "status": "building",
   "activeTasks": [
     "F06-remote-ci",
-    "S11-asset-lineage",
-    "L15-experiment-limits",
-    "D13-webkit-decoded-frame"
+    "F10-production-http-proof",
+    "L17-arrival-editor",
+    "D14-background-packages"
   ],
   "profile": "demo",
   "connectedIntegrations": [],

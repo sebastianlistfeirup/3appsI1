@@ -1,5 +1,4 @@
 "use client";
-import { sandboxDocument } from "../lib/preview";
 import { useRef, useState } from "react";
 import Link from "./local-link";
 import {
@@ -54,6 +53,7 @@ import {
 } from "./primitives";
 import type { ProjectActions } from "./studio-app";
 import { TaskDetails } from "./task-details";
+import { AssetInspector, AssetMetadataDialog } from "./asset-inspector";
 import { DeliveryDialog, type DraftStorage } from "./delivery-dialog";
 
 export function BriefPanel({ project, update, notify }: ProjectActions) {
@@ -644,6 +644,7 @@ export function AssetsPanel({ project, update, notify }: ProjectActions) {
   const [all, setAll] = useState(false);
   const [selected, setSelected] = useState<Artifact | null>(null);
   const [editing, setEditing] = useState<Artifact | null>(null);
+  const [metadataSource, setMetadataSource] = useState<Artifact | null>(null);
   const [content, setContent] = useState("");
   const [busy, setBusy] = useState(false);
   const upload = useRef<HTMLInputElement>(null);
@@ -821,66 +822,37 @@ export function AssetsPanel({ project, update, notify }: ProjectActions) {
         </span>
       </div>
       {selected && (
-        <Modal
-          title={selected.name}
-          description={`Version ${selected.version} · ${bytesLabel(selected.bytes)} · ${selected.rights === "unknown" ? "Rettigheder uafklaret" : selected.provenance}`}
+        <AssetInspector
+          project={project}
+          selected={selected}
+          onSelect={setSelected}
           onClose={() => setSelected(null)}
-        >
-          {selected.mime === "text/html" ||
-          selected.mime === "image/svg+xml" ? (
-            <iframe
-              className="asset-preview"
-              title={`Preview af ${selected.name}`}
-              srcDoc={sandboxDocument(selected.content)}
-              sandbox=""
-            />
-          ) : selected.mime.startsWith("image/") &&
-            selected.encoding === "base64" ? (
-            <img
-              className="asset-image"
-              src={`data:${selected.mime};base64,${selected.content}`}
-              alt={selected.name}
-            />
-          ) : selected.encoding === "utf8" ? (
-            <pre className="source-view">{selected.content}</pre>
-          ) : (
-            <Notice>
-              Denne filtype kan hentes og versionsstyres, men har ikke et
-              indbygget preview.
-            </Notice>
-          )}
-          <details className="hash-details">
-            <summary>Filintegritet og ophav</summary>
-            <p>{selected.provenance}</p>
-            <code>{selected.sha256}</code>
-          </details>
-          <div className="modal-actions">
-            {selected.encoding === "utf8" && (
-              <button
-                className="button secondary"
-                onClick={() => {
-                  setContent(selected.content);
-                  setEditing(selected);
-                  setSelected(null);
-                }}
-              >
-                Opret ny version
-              </button>
-            )}
-            <button
-              className="button primary"
-              onClick={() =>
-                downloadFile(
-                  selected.name,
-                  artifactBytes(selected) as Uint8Array<ArrayBuffer>,
-                  selected.mime,
-                )
-              }
-            >
-              Hent fil <ArrowDownToLine size={16} />
-            </button>
-          </div>
-        </Modal>
+          onEdit={() => {
+            setContent(selected.content);
+            setEditing(selected);
+            setSelected(null);
+          }}
+          onMetadata={() => {
+            setMetadataSource(selected);
+            setSelected(null);
+          }}
+        />
+      )}
+      {metadataSource && (
+        <AssetMetadataDialog
+          project={project}
+          source={metadataSource}
+          update={update}
+          notify={notify}
+          onClose={() => {
+            setSelected(metadataSource);
+            setMetadataSource(null);
+          }}
+          onSaved={(artifact) => {
+            setMetadataSource(null);
+            setSelected(artifact);
+          }}
+        />
       )}
       {editing && (
         <Modal
@@ -898,6 +870,7 @@ export function AssetsPanel({ project, update, notify }: ProjectActions) {
                 content,
                 editing.kind,
                 editing.artifactId,
+                editing.id,
               )
                 .then((a) => {
                   if (!update((p) => addArtifact(p, a))) return;
@@ -996,7 +969,7 @@ export function RunsPanel({
               .slice()
               .reverse()
               .map((run) => (
-                <article className="run-card" key={run.id}>
+                <article className="run-card" id={`run-${run.id}`} key={run.id}>
                   <div className="run-card-heading">
                     <span className="file-icon">
                       <FileCode2 size={20} />

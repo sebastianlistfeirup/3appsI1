@@ -1,0 +1,16 @@
+{
+  "verifiedAt": "2026-10-16T22:52:42.595Z",
+  "label": "firefox-artifact-lineage-mobile",
+  "engine": {
+    "name": "axe-core",
+    "version": "4.11.4"
+  },
+  "environment": {
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+    "windowWidth": 390,
+    "windowHeight": 844,
+    "orientationAngle": 0,
+    "orientationType": "landscape-primary"
+  },
+  "violations": []
+}
