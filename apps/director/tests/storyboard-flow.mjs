@@ -8,12 +8,21 @@ import {
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
+import { writeFileSync } from "node:fs";
 import assert from "node:assert/strict";
 const expect = baseExpect.configure({ timeout: 20000 });
 const dir = await fs.mkdtemp("/tmp/director-storyboard-");
 const run = (cmd, args, bytes = false) =>
   new Promise((resolve, reject) => {
-    const child = spawn(cmd, args),
+    const child = spawn(
+        cmd === "ffmpeg"
+          ? process.env.DIRECTOR_FFMPEG_PATH || cmd
+          : cmd === "ffprobe"
+            ? process.env.DIRECTOR_FFPROBE_PATH || cmd
+            : cmd,
+        args,
+        { timeout: 30000, killSignal: "SIGKILL" },
+      ),
       out = [],
       err = [];
     child.stdout.on("data", (x) => out.push(x));
@@ -25,27 +34,33 @@ const run = (cmd, args, bytes = false) =>
         : reject(Error(Buffer.concat(err).toString())),
     );
   });
-await run("ffmpeg", [
-  "-v",
-  "error",
-  "-f",
-  "lavfi",
-  "-i",
-  "color=red:size=640x360:rate=24:duration=3",
-  "-f",
-  "lavfi",
-  "-i",
-  "color=blue:size=640x360:rate=24:duration=3",
-  "-filter_complex",
-  "[0:v][1:v]concat=n=2:v=1:a=0[v]",
-  "-map",
-  "[v]",
-  "-c:v",
-  "libx264",
-  "-pix_fmt",
-  "yuv420p",
-  `${dir}/red-then-blue.mp4`,
-]);
+if (process.env.DIRECTOR_STORYBOARD_INPUT)
+  await fs.copyFile(
+    process.env.DIRECTOR_STORYBOARD_INPUT,
+    `${dir}/red-then-blue.mp4`,
+  );
+else
+  await run("ffmpeg", [
+    "-v",
+    "error",
+    "-f",
+    "lavfi",
+    "-i",
+    "color=red:size=640x360:rate=24:duration=3",
+    "-f",
+    "lavfi",
+    "-i",
+    "color=blue:size=640x360:rate=24:duration=3",
+    "-filter_complex",
+    "[0:v][1:v]concat=n=2:v=1:a=0[v]",
+    "-map",
+    "[v]",
+    "-c:v",
+    "libx264",
+    "-pix_fmt",
+    "yuv420p",
+    `${dir}/red-then-blue.mp4`,
+  ]);
 const video = await fs.readFile(`${dir}/red-then-blue.mp4`),
   p = JSON.parse(
     await fs.readFile("fixtures/director-sample-render.json", "utf8"),
@@ -86,6 +101,14 @@ p.media = [
 ];
 p.voice = p.music = null;
 const engine = process.env.STORYBOARD_ENGINE ?? "chromium";
+await fs.copyFile(
+  `${dir}/red-then-blue.mp4`,
+  `reports/director/${engine}-storyboard-input.mp4`,
+);
+const watchdog = setTimeout(() => {
+  console.error(`[storyboard:${engine}] hard 180-second deadline exceeded`);
+  process.exit(1);
+}, 180000);
 const browser = await { chromium, firefox, webkit }[engine].launch(
   engine === "chromium"
     ? {
@@ -101,7 +124,113 @@ const browser = await { chromium, firefox, webkit }[engine].launch(
 );
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } }),
   errors = [];
-page.on("pageerror", (e) => errors.push(e.message));
+const diagnostic = {
+  engine,
+  browserVersion: browser.version(),
+  executablePath: chromiumExecutable ?? "Playwright default headless shell",
+  ffmpegVersion: (await run("ffmpeg", ["-version"])).split("\n")[0],
+  inputSha256: createHash("sha256").update(video).digest("hex"),
+  inputMetadata: JSON.parse(
+    await run("ffprobe", [
+      "-v",
+      "error",
+      "-show_streams",
+      "-show_format",
+      "-of",
+      "json",
+      `${dir}/red-then-blue.mp4`,
+    ]),
+  ),
+  events: [],
+  console: [],
+  pageErrors: errors,
+  startedAt: new Date().toISOString(),
+  phase: "initializing",
+  failure: null,
+};
+const persist = () =>
+  writeFileSync(
+    `reports/director/${engine}-storyboard-diagnostic.json`,
+    JSON.stringify(diagnostic, null, 2),
+  );
+const mark = (phase) => {
+  diagnostic.phase = phase;
+  persist();
+  console.log(`[storyboard:${engine}] ${phase}`);
+};
+page.on("pageerror", (e) => {
+  errors.push(e.message);
+  persist();
+});
+page.on("console", (message) => {
+  if (
+    diagnostic.console.length < 50 &&
+    ["warning", "error"].includes(message.type())
+  ) {
+    diagnostic.console.push(message.text().slice(0, 1000));
+    persist();
+  }
+});
+await page.exposeFunction("__directorReportMedia", (event) => {
+  if (diagnostic.events.length < 100) {
+    diagnostic.events.push(event);
+    persist();
+  }
+});
+await page.addInitScript(() => {
+  for (const event of [
+    "loadedmetadata",
+    "loadeddata",
+    "seeking",
+    "seeked",
+    "error",
+    "emptied",
+    "stalled",
+    "abort",
+  ])
+    document.addEventListener(
+      event,
+      (ev) => {
+        const media = ev.target;
+        if (!(media instanceof HTMLMediaElement)) return;
+        void window.__directorReportMedia({
+          event,
+          at: performance.now(),
+          tag: media.tagName,
+          time: media.currentTime,
+          duration: media.duration,
+          seeking: media.seeking,
+          readyState: media.readyState,
+          networkState: media.networkState,
+          error: media.error
+            ? { code: media.error.code, message: media.error.message }
+            : null,
+        });
+      },
+      true,
+    );
+});
+const thumbnailState = () =>
+  page.evaluate(() => {
+    const video = document.querySelector(".shot-thumbnail video");
+    return video
+      ? {
+          currentTime: video.currentTime,
+          duration: video.duration,
+          readyState: video.readyState,
+          seeking: video.seeking,
+          networkState: video.networkState,
+          error: video.error
+            ? { code: video.error.code, message: video.error.message }
+            : null,
+        }
+      : {
+          missing: true,
+          placeholders: [
+            ...document.querySelectorAll(".shot-thumbnail .frame-placeholder"),
+          ].map((el) => el.textContent),
+        };
+  });
 page.setDefaultTimeout(25000);
 const read = () =>
   page.evaluate(
@@ -125,11 +254,21 @@ const read = () =>
 const saved = () =>
   expect(page.getByText("Gemt lokalt", { exact: true })).toBeVisible();
 try {
+  mark("open application");
   await page.goto(directorUrl);
+  diagnostic.capabilities = await page.evaluate(() => {
+    const video = document.createElement("video");
+    return {
+      h264: video.canPlayType('video/mp4; codecs="avc1.64001f"'),
+      userAgent: navigator.userAgent,
+    };
+  });
+  persist();
   await expect(page.locator(".shot-thumbnail img")).toHaveCount(5, {
     timeout: 30000,
   });
   await saved();
+  mark("import exact source clip");
   await page
     .locator("input[type=file]")
     .first()
@@ -141,11 +280,15 @@ try {
   await expect(page.getByRole("heading", { level: 1 })).toContainText(p.title);
   await saved();
   const beforeExport = await read();
+  mark("seek thumbnail to four seconds");
   await expect
-    .poll(() =>
-      page.locator(".shot-thumbnail video").evaluate((v) => v.currentTime),
-    )
+    .poll(async () => {
+      diagnostic.thumbnail = await thumbnailState();
+      persist();
+      return diagnostic.thumbnail.currentTime;
+    })
     .toBe(4);
+  mark("export PDF and verify actual decoded pixels");
   await page.getByRole("button", { name: "Eksportér", exact: true }).click();
   const download = page.waitForEvent("download");
   await page.locator(".export-options button").first().click();
@@ -260,7 +403,42 @@ try {
       2,
     ),
   );
+  mark("completed");
   console.log("Director storyboard flow passed", engine);
+} catch (error) {
+  diagnostic.failure = String(error);
+  diagnostic.thumbnail = await thumbnailState().catch(() => ({
+    unavailable: true,
+  }));
+  persist();
+  await page
+    .screenshot({
+      path: `reports/director/${engine}-storyboard-failure.png`,
+      timeout: 4000,
+    })
+    .catch(() => {});
+  console.error(JSON.stringify(diagnostic.thumbnail));
+  throw error;
 } finally {
-  await browser.close();
+  persist();
+  let cleanupTimer;
+  try {
+    await Promise.race([
+      browser.close(),
+      new Promise((_, reject) => {
+        cleanupTimer = setTimeout(
+          () => reject(Error("Browser cleanup exceeded five seconds")),
+          5000,
+        );
+      }),
+    ]);
+  } catch (error) {
+    diagnostic.cleanupError = String(error);
+    persist();
+    console.error(error);
+    process.exit(1);
+  } finally {
+    clearTimeout(cleanupTimer);
+    clearTimeout(watchdog);
+  }
 }
