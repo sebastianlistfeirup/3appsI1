@@ -1,0 +1,21 @@
+# Backup and restore verification
+
+`pnpm test:restore` performs an actual `pg_dump` / `pg_restore` roundtrip between two newly provisioned PostgreSQL 17 clusters and copies real immutable object bytes into a separate directory. It never reads `APP_DATABASE_URL`, worker credentials or any production connection variable. Both databases bind only to loopback and all fixture data is synthetic. The temporary clusters, archives, passwords and objects are deleted at the end.
+
+Install PostgreSQL 17 or later client tools first. If they are outside `PATH`, set `PG_BIN_DIR` to the directory containing `pg_dump` and `pg_restore`. The client must support the server version. GitHub's Ubuntu 24.04 image ships a version 16 client, so CI installs the version 17 client from PostgreSQL's official repository, checking its signing-key fingerprint and retaining APT signature verification.
+
+```sh
+PG_BIN_DIR=/usr/lib/postgresql/17/bin pnpm test:restore
+```
+
+The drill creates a revised project with an audit entry, two immutable file versions, budget reservations and three durable jobs. One free validation is completed, one remains queued, and one carries a synthetic unresolved provider reference. No provider is contacted. The original queue is stopped before the consistency checkpoint. A checksum manifest records the database archive and object versions. The original cluster is then stopped and its object directory removed before a fresh target cluster is created.
+
+Restore preserves table ownership, grants, row-level policies, sequences and function definitions. The four runtime group roles are created as restricted `NOLOGIN` roles before restoration. **Do not use `--no-owner` without a reviewed ownership mapping**: the queue schema and queue tables must retain their restricted queue owner. Runtime roles must never own the application tables or have `BYPASSRLS`. The fixture's migration owner exists independently in both clusters; its password is not included in the backup.
+
+Verification compares every application and queue row before any restored worker resumes. It checks each restored file's length and SHA-256, every application table's FORCE RLS setting, and access through four newly provisioned restricted logins. A foreign identity cannot read the project or file metadata. The actual pg-boss queue resumes only the pending free validation. The completed operation is not repeated, and the unresolved operation retains its reference and budget hold in `reconcile_required`. Reusing the pending operation's idempotency key returns the same job.
+
+The report is `reports/database/restore-drill.json`. It contains tool versions, migration names, archive checksum, row counts, observed losses, dump time and recovery time. Success is written only after cleanup, with `exitCode: 0`, `cleanupVerified: true` and no unexpected pool errors. PostgreSQL connections are tracked through their actual close callbacks: `pg-pool.end()` alone resolves before all sockets have closed, which can race a database shutdown. The harness retains a nonzero status on a failure.
+
+This proves a quiesced local snapshot. Recovery time excludes provisioning the fresh cluster. It does not establish production RPO, RTO, continuous backup coverage, hosted identity restoration or durability of a cloud object store. There is no scheduled production backup enabled by this command.
+
+For a future hosted deployment, the operator must first establish the actual database owner mapping, external identity backup scope, private object version retention, encrypted backup destination and retention policy. Pause writers and dispatchers or use a documented consistent database/object checkpoint, verify manifest hashes, restore into a separate environment, run the access and job-resumption checks, and only then review any traffic switch. Restoring a backup must never blindly resubmit an unresolved paid operation.

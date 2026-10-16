@@ -28,6 +28,19 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm test:db
+      - name: Install PostgreSQL 17 backup client from its signed repository
+        run: |
+          pg_key="$RUNNER_TEMP/tre-pgdg.asc"
+          curl -fsSL --retry 3 https://www.postgresql.org/media/keys/ACCC4CF8.asc --output "$pg_key"
+          test "$(gpg --batch --show-keys --with-colons "$pg_key" | awk -F: '$1 == "fpr" { print $10; exit }')" = "B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8"
+          sudo install -m 0644 "$pg_key" /usr/share/keyrings/tre-pgdg.asc
+          echo 'deb [signed-by=/usr/share/keyrings/tre-pgdg.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main' | sudo tee /etc/apt/sources.list.d/tre-pgdg.list
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-17
+      - name: Restore real database and immutable files into a fresh isolated environment
+        run: pnpm test:restore
+        env:
+          PG_BIN_DIR: /usr/lib/postgresql/17/bin
       - name: Retain database verification evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

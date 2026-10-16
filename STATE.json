@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T21:58:37.220122+00:00",
+  "updatedAt": "2026-10-16T22:09:16.158725+00:00",
   "status": "building",
   "activeTasks": [
-    "F06-ci-diagnostics",
-    "F07-restore-drill",
-    "L11-paired-outcomes",
-    "D10-version-continuity"
+    "F06-ci-reliability",
+    "S09-delivery-drafts",
+    "L12-scenario-library",
+    "D11-locations"
   ],
   "profile": "demo",
   "connectedIntegrations": [],
@@ -15,6 +15,7 @@
     "pg-boss 12.38.0",
     "Asymmetric JWT → API → RLS",
     "Separate worker process restart",
-    "Local FFmpeg H.264/AAC"
+    "Local FFmpeg H.264/AAC",
+    "Two-cluster PostgreSQL and immutable-file restore"
   ]
 }

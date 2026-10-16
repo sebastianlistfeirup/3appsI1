@@ -18,6 +18,7 @@
     "test:e2e": "playwright test",
     "check": "pnpm typecheck && pnpm test && pnpm build",
     "test:db": "tsx tools/database/run-tests.ts",
+    "test:restore": "tsx tools/database/restore-drill.ts",
     "test:browser": "tsx tools/ci/browser-suite.ts",
     "test:a11y:studio": "node tools/browser/studio-a11y.cjs"
   },
