@@ -5,6 +5,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import type { Camera, SceneVersion, Vector } from "@tre/scene-format";
 import {
   buildScene,
+  loadSceneModels,
   createRenderer,
   disposeScene,
   makeCamera,
@@ -33,7 +34,10 @@ export function SceneViewport({
   const callbacks = useRef({ onCamera, onSelect, onMode });
   callbacks.current = { onCamera, onSelect, onMode };
   const [failed, setFailed] = useState(false);
-  const sceneKey = JSON.stringify(scene),
+  const sceneKey = JSON.stringify({
+      ...scene,
+      assets: scene.assets.map(({ dataUrl, ...metadata }) => metadata),
+    }),
     cameraKey = JSON.stringify(camera);
   useEffect(() => {
     if (mode === "2d" || !ref.current) return;
@@ -62,6 +66,21 @@ export function SceneViewport({
       const observer = new ResizeObserver(resize);
       observer.observe(renderer.domElement);
       resize();
+      let disposed = false;
+      void loadSceneModels(world, scene, selectedId ?? undefined)
+        .then(() => {
+          if (disposed) {
+            disposeScene(world);
+            return;
+          }
+          draw();
+        })
+        .catch(() => {
+          if (!disposed) {
+            setFailed(true);
+            callbacks.current.onMode("2d");
+          }
+        });
       controls.addEventListener("change", draw);
       controls.addEventListener("end", () => {
         const position = cam.position.toArray() as Vector,
@@ -100,6 +119,7 @@ export function SceneViewport({
       };
       renderer.domElement.addEventListener("webglcontextlost", contextLost);
       cleanup = () => {
+        disposed = true;
         observer.disconnect();
         controls.dispose();
         renderer.domElement.removeEventListener("dblclick", select);
@@ -141,19 +161,19 @@ export function SceneViewport({
           </defs>
           <rect width="800" height="450" fill="#1c252d" />
           <rect
-            x="80"
-            y="35"
-            width="640"
-            height="365"
+            x="166"
+            y="80"
+            width="468"
+            height="260"
             rx="6"
             fill="url(#plan-grid)"
             stroke="#64706e"
             strokeWidth="2"
           />
-          <path d="M 150 40 H 650" stroke="#c5a476" strokeWidth="5" />
+          <path d="M 210 80 H 590" stroke="#c5a476" strokeWidth="5" />
           <text
             x="400"
-            y="24"
+            y="63"
             fill="#aeb8b9"
             textAnchor="middle"
             fontSize="11"
@@ -162,8 +182,8 @@ export function SceneViewport({
             OBSERVATIONSVINDUE
           </text>
           {scene.objects.map((object) => {
-            const x = 400 + object.transform.position[0] * 35;
-            const y = 230 + object.transform.position[2] * 28;
+            const x = 400 + object.transform.position[0] * 26;
+            const y = 220 + object.transform.position[2] * 20;
             return (
               <g
                 key={object.id}
@@ -197,14 +217,14 @@ export function SceneViewport({
             );
           })}
           <path
-            d={`M ${400 + camera.position[0] * 35} ${230 + camera.position[2] * 28} L ${400 + camera.target[0] * 35} ${230 + camera.target[2] * 28}`}
+            d={`M ${400 + camera.position[0] * 26} ${220 + camera.position[2] * 20} L ${400 + camera.target[0] * 26} ${220 + camera.target[2] * 20}`}
             stroke="#e5a476"
             strokeWidth="2"
             strokeDasharray="6 5"
           />
           <circle
-            cx={400 + camera.position[0] * 35}
-            cy={230 + camera.position[2] * 28}
+            cx={400 + camera.position[0] * 26}
+            cy={220 + camera.position[2] * 20}
             r="10"
             fill="#e5a476"
           />

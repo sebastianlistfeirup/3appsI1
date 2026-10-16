@@ -8,7 +8,7 @@
     "layout": [
       {
         "class": "editor-workspace",
-        "height": 670.09375,
+        "height": 756.75,
         "width": 1374
       },
       {
@@ -18,17 +18,17 @@
       },
       {
         "class": "inspector-panel",
-        "height": 669.09375,
+        "height": 755.75,
         "width": 238
       },
       {
         "class": "shots-section",
-        "height": 254.953125,
+        "height": 259.953125,
         "width": 1374
       },
       {
         "class": "timeline-section",
-        "height": 218,
+        "height": 224.59375,
         "width": 1374
       }
     ]
@@ -42,27 +42,27 @@
     "layout": [
       {
         "class": "editor-workspace",
-        "height": 631.59375,
+        "height": 752.75,
         "width": 958
       },
       {
         "class": "viewport-wrap",
-        "height": 307.6875,
-        "width": 547
+        "height": 290.8125,
+        "width": 517
       },
       {
         "class": "inspector-panel",
-        "height": 630.59375,
-        "width": 210
+        "height": 751.75,
+        "width": 230
       },
       {
         "class": "shots-section",
-        "height": 212.4375,
+        "height": 214.4375,
         "width": 958
       },
       {
         "class": "timeline-section",
-        "height": 218,
+        "height": 224.59375,
         "width": 958
       }
     ]
@@ -76,7 +76,7 @@
     "layout": [
       {
         "class": "editor-workspace",
-        "height": 1021.15625,
+        "height": 1341.921875,
         "width": 390
       },
       {
@@ -86,17 +86,17 @@
       },
       {
         "class": "inspector-panel",
-        "height": 474.6875,
+        "height": 610.484375,
         "width": 390
       },
       {
         "class": "shots-section",
-        "height": 215,
+        "height": 221,
         "width": 390
       },
       {
         "class": "timeline-section",
-        "height": 239.375,
+        "height": 252.1875,
         "width": 390
       }
     ]

@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --bg: #161a22;
   --surface: #1c212b;
   --panel: #1a1f28;
@@ -7,7 +8,7 @@
   --line-subtle: #282e38;
   --text: #f1f1ee;
   --muted: #939ba7;
-  --copper: #c36536;
+  --copper: #a74c24;
   --copper-light: #e4a57d;
   --green: #99b7a0;
   --serif: Georgia, "Times New Roman", serif;
@@ -240,7 +241,7 @@ input[type="checkbox"] {
   gap: 3px;
 }
 .wordmark span {
-  font-size: 7px;
+  font-size: 11px;
   letter-spacing: 2.1px;
   font-weight: 400;
   color: #8c94a0;
@@ -271,7 +272,7 @@ input[type="checkbox"] {
   display: flex;
   gap: 7px;
   align-items: center;
-  font-size: 10px;
+  font-size: 11px;
   color: #a3b4a7;
   white-space: nowrap;
 }
@@ -310,7 +311,7 @@ input[type="checkbox"] {
   box-shadow: 0 2px 6px #0002;
 }
 .button.primary:hover {
-  background: #d07143;
+  background: #ad522b;
 }
 .button.subtle {
   background: #282f3a;
@@ -323,7 +324,7 @@ input[type="checkbox"] {
 .button.danger-outline {
   border-color: #4b3534;
   color: #c68f83;
-  font-size: 10px;
+  font-size: 11px;
 }
 .full-width {
   width: 100%;
@@ -340,7 +341,7 @@ input[type="checkbox"] {
   align-items: center;
   gap: 8px;
   color: #a5a8ab;
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 1.65px;
   font-weight: 600;
 }
@@ -359,7 +360,7 @@ h1 {
   margin-top: 9px;
 }
 .project-badge {
-  font: 600 7px/1 sans-serif;
+  font: 600 11px/1 sans-serif;
   letter-spacing: 1.2px;
   padding: 5px 6px;
   border: 1px solid #44403a;
@@ -370,7 +371,7 @@ h1 {
   display: flex;
   align-items: center;
   gap: 21px;
-  font-size: 10px;
+  font-size: 11px;
   color: #a1aab6;
 }
 .production-meta > span {
@@ -413,8 +414,8 @@ h1 {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 9px;
-  color: #78828f;
+  font-size: 11px;
+  color: #7f8895;
   padding-bottom: 9px;
 }
 .editor-workspace {
@@ -439,7 +440,7 @@ h1 {
   align-items: center;
   justify-content: space-between;
   color: #8d97a5;
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 1.4px;
   font-weight: 600;
 }
@@ -473,14 +474,14 @@ h1 {
 .location-card strong {
   display: block;
   font-weight: 500;
-  font-size: 10px;
+  font-size: 11px;
   white-space: nowrap;
 }
 .location-card small {
   display: block;
   margin-top: 5px;
-  color: #8793a1;
-  font-size: 8px;
+  color: #8e99a7;
+  font-size: 11px;
 }
 .location-card > svg {
   margin-left: auto;
@@ -504,7 +505,7 @@ h1 {
   text-align: left;
   border-radius: 4px;
   border: 1px solid transparent;
-  font-size: 10px;
+  font-size: 11px;
   color: #c2c9d1;
   min-height: 44px;
 }
@@ -518,8 +519,8 @@ h1 {
 }
 .object-row small {
   display: block;
-  color: #768190;
-  font-size: 8px;
+  color: #8d96a3;
+  font-size: 11px;
   margin-top: 5px;
 }
 .object-symbol {
@@ -541,8 +542,8 @@ h1 {
   display: flex;
   align-items: center;
   gap: 3px;
-  color: #83909f;
-  font-size: 9px;
+  color: #8f9ba9;
+  font-size: 11px;
   padding: 5px;
 }
 .object-add button:hover {
@@ -557,13 +558,13 @@ h1 {
   justify-content: space-between;
   align-items: center;
   color: #929dac;
-  font-size: 9px;
+  font-size: 11px;
   margin-top: 15px;
   gap: 8px;
 }
 .compact-select select {
   max-width: 115px;
-  font-size: 9px;
+  font-size: 11px;
   padding: 6px 5px;
 }
 .range-field {
@@ -574,7 +575,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 10px;
+  font-size: 11px;
   color: #9da7b4;
   margin-bottom: 15px;
 }
@@ -589,19 +590,19 @@ h1 {
 .range-field small {
   display: flex;
   justify-content: space-between;
-  font-size: 8px;
-  color: #687382;
+  font-size: 11px;
+  color: #838c98;
   margin-top: 10px;
 }
 .save-scene {
   margin-top: 3px;
   width: 100%;
-  font-size: 9px;
+  font-size: 11px;
   padding: 9px 6px;
 }
 .panel-note {
-  color: #6e7987;
-  font-size: 8px;
+  color: #828c98;
+  font-size: 11px;
   line-height: 1.6;
   margin-top: 12px;
   display: flex;
@@ -623,7 +624,7 @@ h1 {
   display: flex;
   align-items: center;
   gap: 13px;
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 1px;
   color: #8994a2;
 }
@@ -645,11 +646,11 @@ h1 {
   background: none;
   padding: 5px 0;
   color: #aeb6c0;
-  font-size: 9px;
+  font-size: 11px;
   max-width: 55%;
 }
 .stage-resolution {
-  color: #6d7784;
+  color: #7f8793;
 }
 .viewport-wrap {
   width: 100%;
@@ -680,7 +681,7 @@ h1 {
   position: absolute;
   bottom: 7px;
   left: 10px;
-  font-size: 8px;
+  font-size: 11px;
   background: #18212ad9;
   padding: 5px 8px;
   border-radius: 3px;
@@ -730,11 +731,11 @@ h1 {
 }
 .viewport-shot > span {
   font-family: monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 1px;
 }
 .viewport-shot small {
-  font-size: 9px;
+  font-size: 11px;
   opacity: 0.85;
 }
 .stage-toolbar {
@@ -754,7 +755,7 @@ h1 {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 9px;
+  font-size: 11px;
   padding: 6px 8px;
   color: #8591a1;
   border-radius: 3px;
@@ -766,8 +767,8 @@ h1 {
   box-shadow: 0 2px 5px #0002;
 }
 .viewport-help {
-  color: #667282;
-  font-size: 8px;
+  color: #7d8795;
+  font-size: 11px;
   margin-left: 0;
   white-space: nowrap;
 }
@@ -777,7 +778,7 @@ h1 {
   color: #e9c8ad;
   margin-left: auto;
   padding: 8px 11px;
-  font-size: 9px;
+  font-size: 11px;
   white-space: nowrap;
 }
 .capture-button:hover {
@@ -789,7 +790,7 @@ h1 {
   max-width: 95%;
 }
 .tip-marker {
-  font-size: 7px;
+  font-size: 11px;
   letter-spacing: 1.4px;
   color: #7a8795;
 }
@@ -802,7 +803,7 @@ h1 {
   line-height: 1.6;
 }
 .continuity-note {
-  font-size: 8px;
+  font-size: 11px;
   color: #c5a277;
   display: flex;
   align-items: center;
@@ -824,7 +825,7 @@ h1 {
 }
 .inspector-tabs button {
   color: #7e8a9b;
-  font-size: 10px;
+  font-size: 11px;
   border-bottom: 1px solid transparent;
   padding: 0 0 1px;
 }
@@ -847,8 +848,8 @@ h1 {
   font-weight: 500;
 }
 .inspector-title span {
-  font-size: 8px;
-  color: #748191;
+  font-size: 11px;
+  color: #818c9b;
   margin-left: auto;
 }
 .field {
@@ -859,16 +860,16 @@ h1 {
 }
 .field > span {
   color: #929eac;
-  font-size: 9px;
+  font-size: 11px;
 }
 .field input,
 .field select,
 .field textarea {
   width: 100%;
-  font-size: 10px;
+  font-size: 11px;
 }
 .field small {
-  font-size: 8px;
+  font-size: 11px;
   color: #7a8592;
   line-height: 1.5;
 }
@@ -881,7 +882,7 @@ h1 {
   margin-bottom: 22px;
 }
 .field-label {
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 1px;
   color: #8693a3;
@@ -890,7 +891,7 @@ h1 {
   margin: 17px 0 8px;
 }
 .field-label > span {
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 0;
   color: #5d697a;
 }
@@ -908,7 +909,7 @@ h1 {
   top: 9px;
   left: 8px;
   color: #a7715a;
-  font-size: 8px;
+  font-size: 11px;
 }
 .vector-fields .field:nth-child(2) > span {
   color: #84a18f;
@@ -918,7 +919,7 @@ h1 {
 }
 .vector-fields input {
   padding: 8px 4px 8px 21px;
-  font-size: 9px;
+  font-size: 11px;
   text-align: center;
 }
 .camera-presets {
@@ -930,7 +931,7 @@ h1 {
 }
 .camera-presets button {
   flex: 1;
-  font-size: 9px;
+  font-size: 11px;
   padding: 7px 5px;
   color: #a0acba;
   border: 1px solid #353f4e;
@@ -942,14 +943,14 @@ h1 {
 }
 .inspector-panel > .button.full-width {
   margin-top: 17px;
-  font-size: 8px;
+  font-size: 11px;
 }
 .color-field {
   display: flex;
   align-items: center;
   gap: 8px;
   color: #9ca8b8;
-  font-size: 9px;
+  font-size: 11px;
   margin: 18px 0;
 }
 .color-field input {
@@ -960,7 +961,7 @@ h1 {
   border: 0;
 }
 .color-field code {
-  font-size: 9px;
+  font-size: 11px;
   color: #728091;
 }
 .color-field span {
@@ -970,13 +971,13 @@ h1 {
   display: flex;
   gap: 8px;
   color: #8fac9e;
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.6;
   margin-top: 19px;
 }
 .asset-provenance small {
   display: block;
-  font-size: 8px;
+  font-size: 11px;
   color: #687789;
 }
 .empty-inspector {
@@ -994,7 +995,7 @@ h1 {
   font-weight: 500;
 }
 .empty-inspector p {
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.8;
 }
 .reorder-buttons {
@@ -1008,7 +1009,7 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 5px;
-  font-size: 8px;
+  font-size: 11px;
   padding: 7px 4px;
   background: #252e39;
   border: 1px solid #35404e;
@@ -1036,15 +1037,15 @@ h1 {
   letter-spacing: 0.1px;
 }
 .shots-heading > div > span {
-  font-size: 9px;
-  color: #788596;
+  font-size: 11px;
+  color: #808c9c;
 }
 .text-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 9px;
+  font-size: 11px;
   color: #9ba7b6;
   padding: 4px 0;
 }
@@ -1095,7 +1096,7 @@ h1 {
   left: 7px;
   top: 6px;
   font-family: monospace;
-  font-size: 9px;
+  font-size: 11px;
   background: #121920be;
   color: #e9e4da;
   padding: 3px 5px;
@@ -1105,7 +1106,7 @@ h1 {
   position: absolute;
   right: 6px;
   bottom: 6px;
-  font-size: 8px;
+  font-size: 11px;
   background: #131b22d9;
   padding: 3px 4px;
   border-radius: 3px;
@@ -1116,7 +1117,7 @@ h1 {
   right: 7px;
   top: 4px;
   color: #e1ac71;
-  font-size: 10px;
+  font-size: 11px;
   text-shadow: 0 1px 3px #000;
 }
 .shot-card-label {
@@ -1127,7 +1128,7 @@ h1 {
   min-height: 42px;
 }
 .shot-card-label strong {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -1135,8 +1136,8 @@ h1 {
   color: #d1d6db;
 }
 .shot-card-label > span {
-  font-size: 7px;
-  color: #8190a0;
+  font-size: 11px;
+  color: #8997a6;
 }
 .add-shot-card {
   width: 76px;
@@ -1147,10 +1148,10 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: #66788d;
+  color: #7d8c9e;
   border-radius: 5px;
   align-self: stretch;
-  font-size: 9px;
+  font-size: 11px;
 }
 .add-shot-card:hover {
   color: #bba389;
@@ -1166,7 +1167,7 @@ h1 {
   width: 100%;
   background: linear-gradient(140deg, #2e3d44, #1e2732);
   color: #6e8592;
-  font-size: 8px;
+  font-size: 11px;
 }
 .timeline-section {
   padding: 0 29px 13px;
@@ -1206,17 +1207,17 @@ h1 {
   letter-spacing: 0.5px;
 }
 .transport em {
-  font-size: 9px;
-  color: #647084;
+  font-size: 11px;
+  color: #7d8798;
   font-style: normal;
   margin-left: 4px;
 }
 .timeline-label {
   display: flex;
   gap: 20px;
-  font-size: 7px;
+  font-size: 11px;
   letter-spacing: 1.5px;
-  color: #68788d;
+  color: #7a889b;
 }
 .timeline-label span:first-child {
   color: #afb4b9;
@@ -1238,7 +1239,7 @@ h1 {
   align-items: center;
   gap: 8px;
   height: 24px;
-  font-size: 8px;
+  font-size: 11px;
   color: #77869a;
 }
 .track-labels > span:first-child {
@@ -1259,7 +1260,7 @@ h1 {
   height: 25px;
   color: #6b7789;
   font-family: monospace;
-  font-size: 8px;
+  font-size: 11px;
   background: repeating-linear-gradient(
       90deg,
       transparent,
@@ -1278,7 +1279,7 @@ h1 {
   position: relative;
   min-width: 0;
   background: #5d5548;
-  color: #d4cabb;
+  color: #f9f8f6;
   border: 1px solid #746b58;
   border-radius: 3px;
   text-align: left;
@@ -1293,11 +1294,11 @@ h1 {
   border-color: #d59e6d;
 }
 .video-track span {
-  font: 9px monospace;
-  opacity: 0.8;
+  font: 11px monospace;
+  opacity: 1;
 }
 .video-track strong {
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 400;
   overflow: hidden;
   white-space: nowrap;
@@ -1327,8 +1328,8 @@ h1 {
   overflow: hidden;
 }
 .audio-track > button {
-  font-size: 8px;
-  color: #62798a;
+  font-size: 11px;
+  color: #7e919f;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -1350,7 +1351,7 @@ h1 {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 8px;
+  font-size: 11px;
   color: #87a79c;
 }
 .audio-track input[type="range"] {
@@ -1373,8 +1374,8 @@ h1 {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  color: #59687b;
-  font-size: 7px;
+  color: #7c8897;
+  font-size: 11px;
   margin-top: 15px;
 }
 .timeline-footer > span:first-child {
@@ -1408,7 +1409,7 @@ h1 {
   position: absolute;
   top: 20px;
   left: 26px;
-  font-size: 7px;
+  font-size: 11px;
   letter-spacing: 1px;
   color: #d2c8b5;
   background: #142027a8;
@@ -1427,8 +1428,8 @@ h1 {
   margin-bottom: 30px;
 }
 .storyboard-heading .eyebrow {
-  font-size: 8px;
-  color: #94775b;
+  font-size: 11px;
+  color: #755e48;
 }
 .storyboard-heading h2 {
   font: 34px var(--serif);
@@ -1437,13 +1438,13 @@ h1 {
 }
 .storyboard-heading p {
   font-size: 11px;
-  color: #868881;
+  color: #62635e;
   margin-top: 10px;
 }
 .button.dark-button {
   background: #2c393b;
   color: #f0e9dc;
-  font-size: 10px;
+  font-size: 11px;
 }
 .storyboard-grid {
   display: grid;
@@ -1488,8 +1489,8 @@ h1 {
 .storyboard-card-meta {
   display: flex;
   justify-content: space-between;
-  font-size: 8px;
-  color: #9b7759;
+  font-size: 11px;
+  color: #84654c;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -1509,9 +1510,9 @@ h1 {
   font-style: italic;
 }
 .director-note {
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.7;
-  color: #96968a;
+  color: #6c6c63;
   min-height: 35px;
   margin-top: 10px;
 }
@@ -1523,8 +1524,8 @@ h1 {
   margin-top: 18px;
   padding-top: 9px;
   gap: 6px;
-  color: #8b9287;
-  font-size: 8px;
+  color: #686e65;
+  font-size: 11px;
 }
 .storyboard-card-footer > div {
   display: flex;
@@ -1545,7 +1546,7 @@ h1 {
   min-height: 250px;
   border: 1px dashed #b7b9aa;
   border-radius: 5px;
-  color: #849082;
+  color: #5c655b;
 }
 .storyboard-add strong {
   font-size: 15px;
@@ -1553,8 +1554,8 @@ h1 {
   font-family: var(--serif);
 }
 .storyboard-add > span {
-  font-size: 10px;
-  color: #989d8e;
+  font-size: 11px;
+  color: #606359;
 }
 .story-page {
   padding: 45px;
@@ -1584,11 +1585,11 @@ h1 {
   padding-top: 28px;
   margin-top: 28px;
   border-top: 1px solid #35414d;
-  font-size: 10px;
+  font-size: 11px;
   color: #b6987d;
 }
 .story-form > .field > span {
-  font-size: 10px;
+  font-size: 11px;
   color: #b5c0cb;
 }
 .story-form > .field > input {
@@ -1629,11 +1630,11 @@ h1 {
   margin-top: 10px;
 }
 .script-line .field > span {
-  font-size: 8px;
+  font-size: 11px;
 }
 .script-line small {
-  color: #708396;
-  font-size: 9px;
+  color: #7e8fa0;
+  font-size: 11px;
   white-space: nowrap;
 }
 .modal-backdrop {
@@ -1669,7 +1670,7 @@ h1 {
   margin-bottom: 25px;
 }
 .modal-heading .eyebrow {
-  font-size: 8px;
+  font-size: 11px;
   color: #b88f6f;
   letter-spacing: 1.4px;
 }
@@ -1714,7 +1715,7 @@ h1 {
   font-weight: 500;
 }
 .export-preview small {
-  font-size: 9px;
+  font-size: 11px;
   color: #8e9dad;
 }
 .export-options {
@@ -1753,7 +1754,7 @@ h1 {
 }
 .export-options small {
   display: block;
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.5;
   margin-top: 5px;
   color: #8e9dad;
@@ -1779,33 +1780,33 @@ h1 {
   font-weight: 500;
 }
 .movie-export small {
-  font-size: 9px;
+  font-size: 11px;
   color: #a79d91;
   display: block;
   margin-top: 5px;
 }
 .export-format {
   margin-left: auto;
-  font: 8px monospace;
+  font: 11px monospace;
   color: #bba48a;
 }
 .movie-export > p {
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.7;
   color: #a3978a;
   margin: 13px 0;
 }
 .movie-export .button {
-  font-size: 10px;
+  font-size: 11px;
   margin-top: 4px;
 }
 .movie-export p.capability-note {
-  font-size: 8px;
+  font-size: 11px;
   color: #90877e;
   margin-bottom: 0;
 }
 .modal-footnote {
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.7;
   color: #7f90a1;
   margin-top: 20px;
@@ -1832,7 +1833,7 @@ h1 {
   border: 1px solid #384656;
   border-radius: 6px;
   color: #9dacbe;
-  font-size: 10px;
+  font-size: 11px;
 }
 .import-types button.selected {
   border-color: #bb835c;
@@ -1858,8 +1859,8 @@ h1 {
   font-weight: 400;
 }
 .import-dropzone > span {
-  font-size: 9px;
-  color: #6f849a;
+  font-size: 11px;
+  color: #8093a6;
 }
 .adapter-status {
   display: flex;
@@ -1868,16 +1869,16 @@ h1 {
   background: #192430;
   border-radius: 6px;
   margin-top: 23px;
-  color: #71869b;
+  color: #7e91a4;
 }
 .adapter-status strong {
-  font-size: 10px;
+  font-size: 11px;
   color: #9cacbd;
   font-weight: 500;
 }
 .adapter-status p {
-  font-size: 9px;
-  color: #71869b;
+  font-size: 11px;
+  color: #7e91a4;
   margin-top: 7px;
   line-height: 1.7;
 }
@@ -1885,7 +1886,7 @@ h1 {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
+  font-size: 11px;
   color: #a8b5c2;
   margin-top: 20px;
 }
@@ -1903,7 +1904,7 @@ h1 {
   flex-direction: column;
   gap: 9px;
   color: #8ea1b4;
-  font-size: 9px;
+  font-size: 11px;
 }
 .version-summary strong {
   font: 23px var(--serif);
@@ -1930,19 +1931,19 @@ h1 {
 }
 .version-list small {
   display: block;
-  font-size: 8px;
+  font-size: 11px;
   color: #7e93a8;
   margin-top: 7px;
 }
 .version-list .button {
-  font-size: 9px;
+  font-size: 11px;
   margin-left: 6px;
   padding: 7px 10px;
   min-height: 30px;
 }
 .version-affected,
 .version-current {
-  font-size: 8px;
+  font-size: 11px;
   margin-left: auto;
   color: #c49e72;
   white-space: nowrap;
@@ -1967,7 +1968,7 @@ h1 {
   font-size: 13px;
 }
 .help-steps p {
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.8;
   color: #8e9fb2;
   margin-top: 7px;
@@ -1978,7 +1979,7 @@ h1 {
   margin-top: 27px;
   padding-top: 20px;
   border-top: 1px solid #354252;
-  font-size: 9px;
+  font-size: 11px;
   color: #94a4b5;
 }
 .help-shortcuts span {
@@ -1989,7 +1990,7 @@ kbd {
   border: 1px solid #4a5868;
   border-radius: 3px;
   padding: 5px;
-  font: 9px monospace;
+  font: 11px monospace;
   color: #c3cbd1;
   background: #2b3644;
 }
@@ -2004,7 +2005,7 @@ kbd {
   padding-top: 16px;
 }
 .render-status > span {
-  font-size: 10px;
+  font-size: 11px;
   color: #b2a594;
 }
 .render-status.succeeded strong {
@@ -2014,10 +2015,10 @@ kbd {
   color: #dca08f;
 }
 .render-status .text-button {
-  font-size: 9px;
+  font-size: 11px;
 }
 .rights-warning {
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.5;
   color: #d2a47e;
   display: flex;
@@ -2063,7 +2064,7 @@ kbd {
 }
 .error-banner button {
   padding: 5px;
-  font-size: 10px;
+  font-size: 11px;
   text-decoration: underline;
 }
 .loading-screen {
@@ -2164,14 +2165,14 @@ kbd {
     display: none;
   }
   .stage-topline > span:first-child {
-    font-size: 7px;
+    font-size: 11px;
     letter-spacing: 0.3px;
   }
   .stage-topline {
     gap: 6px;
   }
   .stage-topline select {
-    font-size: 8px;
+    font-size: 11px;
     max-width: 65%;
   }
   .stage-resolution {
@@ -2189,10 +2190,10 @@ kbd {
     gap: 6px;
   }
   .location-card strong {
-    font-size: 9px;
+    font-size: 11px;
   }
   .location-card small {
-    font-size: 7px;
+    font-size: 11px;
   }
   .location-card > svg {
     display: none;
@@ -2201,15 +2202,15 @@ kbd {
     width: 15px;
   }
   .object-row {
-    font-size: 9px;
+    font-size: 11px;
     gap: 8px;
     padding: 7px 3px;
   }
   .compact-select {
-    font-size: 8px;
+    font-size: 11px;
   }
   .compact-select select {
-    font-size: 8px;
+    font-size: 11px;
     max-width: 98px;
   }
   .scene-panel-bottom {
@@ -2224,7 +2225,7 @@ kbd {
     min-width: 125px;
   }
   .shot-card-label strong {
-    font-size: 8px;
+    font-size: 11px;
   }
   .shot-card-label {
     padding: 8px 6px;
@@ -2247,16 +2248,16 @@ kbd {
     font-size: 31px;
   }
   .project-badge {
-    font-size: 6px;
+    font-size: 11px;
   }
   .production-meta {
     gap: 15px;
   }
   .inspector-title strong {
-    font-size: 10px;
+    font-size: 11px;
   }
   .inspector-title span {
-    font-size: 7px;
+    font-size: 11px;
   }
 }
 @media (max-width: 900px) {
@@ -2359,13 +2360,13 @@ kbd {
     max-width: 700px;
   }
   .view-tabs-right {
-    font-size: 8px;
+    font-size: 11px;
   }
   .header-actions {
     gap: 12px;
   }
   .save-status {
-    font-size: 9px;
+    font-size: 11px;
   }
   .production-heading h1 {
     font-size: 24px;
@@ -2391,7 +2392,7 @@ kbd {
     letter-spacing: 2px;
   }
   .wordmark span {
-    font-size: 6px;
+    font-size: 11px;
     letter-spacing: 1.6px;
   }
   .header-divider {
@@ -2404,11 +2405,11 @@ kbd {
     display: none;
   }
   .save-status {
-    font-size: 8px;
+    font-size: 11px;
     gap: 5px;
   }
   .button.primary {
-    font-size: 10px;
+    font-size: 11px;
     padding: 9px 10px;
     gap: 6px;
   }
@@ -2420,7 +2421,7 @@ kbd {
     align-items: flex-start;
   }
   .eyebrow {
-    font-size: 6px;
+    font-size: 11px;
     letter-spacing: 1.15px;
     gap: 6px;
   }
@@ -2432,7 +2433,7 @@ kbd {
     letter-spacing: -0.6px;
   }
   .project-badge {
-    font-size: 5px;
+    font-size: 11px;
     letter-spacing: 0.6px;
     padding: 4px;
   }
@@ -2445,7 +2446,7 @@ kbd {
     height: 42px;
   }
   .view-tabs > button {
-    font-size: 10px;
+    font-size: 11px;
     gap: 6px;
   }
   .view-tabs-right {
@@ -2482,10 +2483,10 @@ kbd {
     gap: 10px;
   }
   .location-card strong {
-    font-size: 10px;
+    font-size: 11px;
   }
   .location-card small {
-    font-size: 9px;
+    font-size: 11px;
     margin: 0;
   }
   .location-card > svg {
@@ -2505,10 +2506,10 @@ kbd {
     padding: 8px 9px;
     background: #222b36;
     border: 1px solid #323d49;
-    font-size: 10px;
+    font-size: 11px;
   }
   .object-row small {
-    font-size: 7px;
+    font-size: 11px;
   }
   .object-add {
     grid-column: 1/-1;
@@ -2516,7 +2517,7 @@ kbd {
     gap: 12px;
   }
   .object-add button {
-    font-size: 10px;
+    font-size: 11px;
     min-height: 32px;
     padding: 5px 10px;
     background: #252f3b;
@@ -2535,11 +2536,11 @@ kbd {
     padding: 0 5px;
   }
   .stage-topline > span:first-child {
-    font-size: 7px;
+    font-size: 11px;
     letter-spacing: 0.8px;
   }
   .stage-topline select {
-    font-size: 9px;
+    font-size: 11px;
     max-width: 65%;
   }
   .viewport-wrap {
@@ -2551,10 +2552,10 @@ kbd {
     gap: 8px;
   }
   .viewport-shot > span {
-    font-size: 8px;
+    font-size: 11px;
   }
   .viewport-shot small {
-    font-size: 7px;
+    font-size: 11px;
   }
   .frame-corner {
     width: 10px;
@@ -2582,14 +2583,14 @@ kbd {
   }
   .segmented button {
     padding: 7px 9px;
-    font-size: 9px;
+    font-size: 11px;
     min-height: 29px;
   }
   .stage-toolbar > .icon-button {
     width: 27px;
   }
   .capture-button {
-    font-size: 9px;
+    font-size: 11px;
     gap: 5px;
     padding: 10px;
   }
@@ -2602,14 +2603,14 @@ kbd {
     max-width: none;
   }
   .tip-marker {
-    font-size: 6px;
+    font-size: 11px;
   }
   .scene-tip p {
     font-size: 11px;
     margin-top: 6px;
   }
   .continuity-note {
-    font-size: 8px;
+    font-size: 11px;
     padding-left: 6px;
   }
   .inspector-panel {
@@ -2634,7 +2635,7 @@ kbd {
     font-size: 12px;
   }
   .inspector-title span {
-    font-size: 9px;
+    font-size: 11px;
   }
   .inspector-panel > .field {
     grid-column: 1/-1;
@@ -2646,7 +2647,7 @@ kbd {
     padding: 11px;
   }
   .field > span {
-    font-size: 10px;
+    font-size: 11px;
   }
   .inspector-panel > .lens-field {
     grid-column: 1/-1;
@@ -2657,7 +2658,7 @@ kbd {
     font-size: 11px;
   }
   .range-field small {
-    font-size: 9px;
+    font-size: 11px;
   }
   .vector-fields .field input {
     font-size: 11px;
@@ -2671,7 +2672,7 @@ kbd {
     margin: 2px 0 17px;
   }
   .camera-presets .field-label {
-    font-size: 8px;
+    font-size: 11px;
     margin-bottom: 10px;
   }
   .camera-presets button {
@@ -2679,7 +2680,7 @@ kbd {
     padding: 11px;
   }
   .inspector-panel > .panel-note {
-    font-size: 9px;
+    font-size: 11px;
     grid-column: 1/-1;
     margin: 3px 0 14px;
   }
@@ -2693,7 +2694,7 @@ kbd {
     margin: 15px 0;
   }
   .reorder-buttons button {
-    font-size: 10px;
+    font-size: 11px;
     padding: 11px;
   }
   .color-field {
@@ -2711,7 +2712,7 @@ kbd {
     font-size: 11px;
   }
   .asset-provenance small {
-    font-size: 9px;
+    font-size: 11px;
   }
   .shots-section {
     padding: 19px 17px;
@@ -2724,7 +2725,7 @@ kbd {
     gap: 8px;
   }
   .shots-heading > div > span {
-    font-size: 8px;
+    font-size: 11px;
   }
   .shots-heading > div:last-child {
     gap: 13px;
@@ -2739,7 +2740,7 @@ kbd {
     height: 15px;
   }
   .shots-heading .text-button {
-    font-size: 9px;
+    font-size: 11px;
   }
   .shot-card {
     flex: 0 0 146px;
@@ -2750,13 +2751,13 @@ kbd {
     padding: 10px;
   }
   .shot-card-label strong {
-    font-size: 10px;
+    font-size: 11px;
   }
   .shot-card-label > span {
-    font-size: 8px;
+    font-size: 11px;
   }
   .shot-duration {
-    font-size: 8px;
+    font-size: 11px;
   }
   .add-shot-card {
     width: 60px;
@@ -2774,10 +2775,10 @@ kbd {
     gap: 8px;
   }
   .transport > span {
-    font-size: 10px;
+    font-size: 11px;
   }
   .transport em {
-    font-size: 8px;
+    font-size: 11px;
   }
   .timeline-body {
     gap: 9px;
@@ -2801,19 +2802,19 @@ kbd {
     display: none;
   }
   .video-track span {
-    font-size: 9px;
+    font-size: 11px;
   }
   .time-ruler {
-    font-size: 7px;
+    font-size: 11px;
   }
   .audio-track > button {
-    font-size: 8px;
+    font-size: 11px;
   }
   .timeline-footer {
     margin-top: 17px;
     line-height: 1.6;
     display: block;
-    font-size: 7px;
+    font-size: 11px;
   }
   .timeline-footer > span:last-child {
     display: block;
@@ -2832,15 +2833,15 @@ kbd {
     max-width: 200px;
   }
   .storyboard-heading .eyebrow {
-    font-size: 6px;
+    font-size: 11px;
   }
   .storyboard-heading p {
-    font-size: 9px;
+    font-size: 11px;
     line-height: 1.7;
     max-width: 180px;
   }
   .storyboard-heading .button {
-    font-size: 8px;
+    font-size: 11px;
     padding: 9px;
     gap: 5px;
     margin-top: 25px;
@@ -2866,7 +2867,7 @@ kbd {
     font-size: 11px;
   }
   .storyboard-card-footer {
-    font-size: 9px;
+    font-size: 11px;
   }
   .storyboard-card-footer .icon-button {
     width: 33px;
@@ -2890,13 +2891,13 @@ kbd {
   }
   .story-facts {
     gap: 20px;
-    font-size: 10px;
+    font-size: 11px;
   }
   .script-line {
     gap: 12px;
   }
   .script-line small {
-    font-size: 8px;
+    font-size: 11px;
   }
   .modal-backdrop {
     padding: 12px;
@@ -2915,7 +2916,7 @@ kbd {
     max-width: 270px;
   }
   .modal-heading .eyebrow {
-    font-size: 7px;
+    font-size: 11px;
   }
   .export-preview {
     gap: 12px;
@@ -2928,7 +2929,7 @@ kbd {
     font-size: 12px;
   }
   .export-preview small {
-    font-size: 8px;
+    font-size: 11px;
   }
   .export-options button {
     padding: 14px 11px;
@@ -2941,7 +2942,7 @@ kbd {
     font-size: 11px;
   }
   .export-options small {
-    font-size: 8px;
+    font-size: 11px;
   }
   .movie-export {
     padding: 14px;
@@ -2962,14 +2963,14 @@ kbd {
     gap: 7px;
   }
   .import-types button {
-    font-size: 9px;
+    font-size: 11px;
     padding: 17px 5px;
   }
   .import-dropzone {
     padding: 30px 10px;
   }
   .modal .field select {
-    font-size: 10px;
+    font-size: 11px;
     padding: 10px 7px;
   }
   .version-summary {
@@ -2977,7 +2978,7 @@ kbd {
     padding: 15px;
   }
   .version-summary span {
-    font-size: 8px;
+    font-size: 11px;
   }
   .version-summary strong {
     font-size: 22px;
@@ -2987,21 +2988,21 @@ kbd {
     flex-wrap: wrap;
   }
   .version-list strong {
-    font-size: 10px;
+    font-size: 11px;
   }
   .version-list .button {
     margin-left: auto;
-    font-size: 8px;
+    font-size: 11px;
   }
   .version-list small {
-    font-size: 7px;
+    font-size: 11px;
   }
   .version-affected,
   .version-current {
-    font-size: 7px;
+    font-size: 11px;
   }
   .version-index {
-    font-size: 10px;
+    font-size: 11px;
   }
   .help-steps {
     gap: 23px;
@@ -3013,23 +3014,23 @@ kbd {
     bottom: 14px;
     padding: 12px 15px;
     min-width: 250px;
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1.5;
   }
   .error-banner {
     padding: 12px 17px;
     flex-wrap: wrap;
-    font-size: 10px;
+    font-size: 11px;
   }
   .error-banner > span {
     min-width: 200px;
   }
   .playback-caption {
-    font-size: 10px;
+    font-size: 11px;
     bottom: 39px;
   }
   .preview-label {
-    font-size: 5px;
+    font-size: 11px;
     left: 20px;
     top: 15px;
   }
@@ -3039,5 +3040,298 @@ kbd {
     scroll-behavior: auto !important;
     transition: none !important;
     animation: none !important;
+  }
+}
+.modal-error {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px;
+  border: 1px solid #765047;
+  background: #422f2d;
+  border-radius: 5px;
+  color: #efc0ac;
+  font-size: 11px;
+  line-height: 1.65;
+  margin-bottom: 18px;
+}
+.modal-error > span {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.view-tabs > .mobile-help {
+  display: none;
+}
+.empty-shots {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 28px 20px;
+  color: #ab997e;
+  flex: 1;
+  min-width: 220px;
+  background: #212a34;
+  border: 1px dashed #414c58;
+  border-radius: 6px;
+}
+.empty-shots strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+.empty-shots p {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #7c8b9c;
+  margin-top: 8px;
+}
+.object-add {
+  flex-wrap: wrap;
+}
+@media (max-width: 600px) {
+  .view-tabs > .mobile-help {
+    display: flex;
+    margin-left: auto;
+    padding: 0 0 10px;
+  }
+  .import-types {
+    flex-wrap: wrap;
+  }
+  .import-types > button {
+    flex-basis: 40%;
+  }
+  .empty-shots {
+    padding: 20px 15px;
+  }
+  .empty-shots strong {
+    font-size: 12px;
+  }
+}
+
+/* Comfortable control text while keeping cinematic framing compact. */
+.button,
+.field input,
+.field select,
+.field textarea,
+.object-row,
+.view-tabs > button,
+.inspector-tabs button,
+.text-button,
+.camera-presets button,
+.location-card strong {
+  font-size: 12px;
+}
+.panel-note,
+.field small,
+.range-field small,
+.viewport-help,
+.asset-provenance small,
+.timeline-footer,
+.object-row small,
+.scene-tip .tip-marker {
+  line-height: 1.6;
+}
+.object-row {
+  min-height: 52px;
+}
+.location-card {
+  min-width: 0;
+}
+.location-card strong {
+  white-space: normal;
+}
+.stage-topline {
+  letter-spacing: 0.6px;
+}
+.stage-topline > span:first-child {
+  white-space: normal;
+}
+.stage-topline select {
+  min-width: 0;
+}
+.vector-fields input {
+  padding-left: 19px;
+  padding-right: 3px;
+}
+.vector-fields .field > span {
+  left: 6px;
+  top: 9px;
+}
+.viewport-shot {
+  background: #111820c9;
+  padding: 6px 9px;
+  border-radius: 3px;
+}
+.viewport-shot small {
+  opacity: 1;
+}
+@media (max-width: 1200px) and (min-width: 901px) {
+  .editor-workspace {
+    grid-template-columns: 185px minmax(0, 1fr) 230px;
+  }
+  .stage-topline > span:first-child {
+    display: none;
+  }
+  .stage-topline select {
+    max-width: 100%;
+    width: 100%;
+  }
+  .stage-toolbar {
+    flex-wrap: wrap;
+  }
+  .capture-button {
+    margin-left: 0;
+  }
+  .compact-select {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .compact-select select {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+@media (max-width: 600px) {
+  .wordmark span {
+    font-size: 9px;
+  }
+  .view-tabs {
+    gap: 19px;
+  }
+  .production-heading .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.6px;
+  }
+  .project-badge {
+    font-size: 10px;
+  }
+  .app-header {
+    padding: 0 13px;
+  }
+  .header-actions {
+    gap: 8px;
+  }
+  .stage-toolbar {
+    flex-wrap: wrap;
+  }
+  .capture-button {
+    margin-left: auto;
+  }
+  .inspector-panel input,
+  .inspector-panel textarea,
+  .inspector-panel select,
+  .modal input,
+  .modal textarea,
+  .modal select {
+    font-size: 16px !important;
+  }
+  .vector-fields input {
+    padding-left: 16px !important;
+  }
+  .vector-fields .field > span {
+    font-size: 10px;
+    left: 5px;
+    top: 13px;
+  }
+  .location-card span {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .view-tabs > .mobile-help {
+    font-size: 0;
+  }
+  .timeline-footer {
+    font-size: 11px;
+  }
+  .storyboard-heading {
+    flex-wrap: wrap;
+  }
+  .storyboard-heading .button {
+    margin-top: 0;
+  }
+  .storyboard-heading h2 {
+    max-width: none;
+  }
+  .storyboard-heading p {
+    max-width: 280px;
+  }
+  .shots-heading > div {
+    flex-wrap: wrap;
+  }
+  .shot-card-label strong {
+    font-size: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .app-header {
+    height: auto;
+    min-height: 64px;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .header-actions {
+    gap: 6px;
+  }
+  .history-actions {
+    display: flex;
+    border: 0;
+    padding: 0;
+    gap: 0;
+  }
+  .history-actions .icon-button {
+    width: 26px;
+    height: 30px;
+  }
+  .save-status {
+    font-size: 10px;
+  }
+  .header-actions .button {
+    font-size: 11px;
+    padding: 9px;
+  }
+  .app-header .wordmark {
+    margin-right: auto;
+  }
+  .app-header .header-actions {
+    margin-left: 0;
+  }
+}
+@media (max-width: 600px) {
+  .inspector-panel > .vector-fields {
+    grid-column: 1/-1;
+    margin-bottom: 18px;
+  }
+  .inspector-panel > .field-label {
+    display: flex;
+    grid-column: 1/-1;
+    margin: 5px 0 8px;
+  }
+  .scene-panel-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column: 1/-1;
+    gap: 14px;
+    padding-top: 12px;
+  }
+  .scene-panel-bottom > .section-heading,
+  .scene-panel-bottom > .panel-note {
+    grid-column: 1/-1;
+  }
+  .scene-panel-bottom .compact-select,
+  .scene-panel-bottom .range-field {
+    margin: 0;
+  }
+  .scene-panel-bottom .save-scene {
+    grid-column: 1/-1;
+  }
+  .scene-panel-bottom .panel-note {
+    margin: 0;
+  }
+  .scene-panel-bottom .range-field > span {
+    margin-bottom: 18px;
+  }
+  .vector-fields .field input {
+    padding: 11px 20px !important;
+    text-align: left;
   }
 }

@@ -10,7 +10,7 @@ Install the pinned workspace dependencies, FFmpeg/ffprobe with libx264, AAC, xfa
 DIRECTOR_LOCAL_RENDER=1 pnpm --filter @tre/director exec next dev --hostname 127.0.0.1 --port 3002
 ```
 
-Open `http://127.0.0.1:3002`. Keep this profile bound to loopback. Never expose the opted-in renderer through a public proxy. The route checks explicit opt-in, loopback Host/URL, same Origin and non-cross-site fetch metadata; these checks are not an authentication system. A public/multitenant worker needs verified sessions, memberships, quotas and private artifact storage before activation.
+Open `http://localhost:3002`. Keep this profile bound to loopback. Never expose the opted-in renderer through a public proxy. The route checks explicit opt-in, loopback Host/URL, same Origin and non-cross-site fetch metadata; these checks are not an authentication system. A public/multitenant worker needs verified sessions, memberships, quotas and private artifact storage before activation.
 
 The local output root defaults to `apps/director/.director-render` when started via the app command. `DIRECTOR_RENDER_DIR` can select an absolute persistent directory. Jobs create a private directory, immutable input manifest, checkpoint, validated segment files, assembled MP4, final MP4 and validation JSON. Files remain local. Completed artifacts are not auto-deleted.
 
@@ -19,9 +19,10 @@ The local output root defaults to `apps/director/.director-render` when started 
 - `GET /api/exports`: actual local capability only.
 - `POST /api/exports`: JSON `{ project }`, capped at 64 MiB, returns 202 with job ID. At most one admitted input/job per server process.
 - `GET /api/exports/:id`: private local status. After restart, unfinished jobs resume from validated segments under the same manifest; no provider calls occur.
+- `DELETE /api/exports/:id`: cancel and terminate active FFmpeg; cancelled jobs cannot publish a download.
 - `GET /api/exports/:id?download=1`: available only after codec/resolution/fps/duration/audio/hash validation. UUID paths are validated and filenames are generated.
 
-The renderer supports 24 fps, 1280×720, H.264/AAC 48 kHz, 1–30 shots and at most 120 seconds. Each file is at most 50 MiB, with a stricter aggregate render-request limit. It caps process threads, each transcoding step at 120 seconds, assembly at 240 seconds, and 100 retained job directories. The current profile bounds work but is not a cgroup/container resource sandbox.
+The renderer supports 24 fps, 1280×720, H.264/AAC 48 kHz, 1–30 shots and at most 120 seconds. Each file is at most 50 MiB, with a stricter aggregate render-request limit. It caps process threads, each transcoding step at 120 seconds, assembly at 240 seconds, and 100 retained job directories. A ten-minute total deadline bounds the complete job. The current profile bounds work but is not a cgroup/container resource sandbox.
 
 FFmpeg is spawned with an argument array and `shell:false`. User filenames, filter expressions and executable names are never executed. Input media demuxers are selected from known MIME types, protocols are constrained, local paths are generated, and captions use a generated textfile with expansion disabled. Local project data stays local.
 

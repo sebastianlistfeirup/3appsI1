@@ -71,6 +71,7 @@ import {
   exportPackage,
   importPackage,
   importMedia,
+  importGlb,
   verifyMedia,
 } from "../lib/project-files";
 import { storyboardPdf } from "../lib/storyboard-pdf";
@@ -201,9 +202,9 @@ export default function DirectorEditor() {
     [playing, setPlaying] = useState(false),
     [playhead, setPlayhead] = useState(0),
     [rights, setRights] = useState<"owned" | "licensed" | "unknown">("owned"),
-    [mediaTarget, setMediaTarget] = useState<"shot" | "voice" | "music">(
-      "shot",
-    ),
+    [mediaTarget, setMediaTarget] = useState<
+      "shot" | "voice" | "music" | "model"
+    >("shot"),
     [renderJob, setRenderJob] = useState<{
       id: string;
       state: string;
@@ -425,27 +426,29 @@ export default function DirectorEditor() {
   };
   const capture = async (all = false) =>
     act(all ? "Tager kameraframes …" : "Tager kameraframe …", async () => {
-      const snapshot = clone(current.current);
+      const base = current.current;
+      const snapshot = clone(base);
       let next = publishScene(snapshot);
       const target = all ? orderedShots(next) : shot ? [shot] : [];
       for (const s of target) {
         const camera = all
           ? (next.draft.cameras.find((c) => c.id === s.cameraId) ?? cam)
           : cam;
-        const frame = await renderFrame(next.draft, camera);
+        const captured = await renderFrame(next.draft, camera, mode);
         const oldIndex = next.sequence.indexOf(s.id);
         next = reviseShot(next, s.id, {
           sceneVersionId: next.draft.id,
           cameraId: camera.id,
-          frame,
+          frame: captured.frame,
+          frameMode: captured.mode,
           frameRenderer: RENDERER_VERSION,
           mediaId: null,
         });
         if (!all) setSelectedShot(next.sequence[oldIndex]);
       }
       if (
-        current.current !== snapshot &&
-        current.current.revision !== snapshot.revision
+        current.current !== base &&
+        JSON.stringify(current.current) !== JSON.stringify(base)
       )
         throw Error("Scenen ændrede sig under frame-optagelsen. Prøv igen.");
       commit(
@@ -474,6 +477,7 @@ export default function DirectorEditor() {
         notes: "",
         frame: null,
         frameRenderer: null,
+        frameMode: "3d",
         mediaId: null,
         sourceIn: 0,
         transitionFrames: 0,
@@ -504,6 +508,7 @@ export default function DirectorEditor() {
           scale: [1, 1, 1],
         },
         assetVersion: 1,
+        assetId: null,
         source: "Director · egen procedurel primitive",
         rights: "owned",
       });
@@ -531,10 +536,42 @@ export default function DirectorEditor() {
     });
   const mediaImport = async (file: File) =>
     act("Kontrollerer mediefil …", async () => {
+      if (mediaTarget === "model") {
+        const asset = await importGlb(file, rights);
+        commit(
+          (next) => {
+            next.draft.assets.push(asset);
+            const id = newId("object");
+            next.draft.objects.push({
+              id,
+              name: file.name.slice(0, 100),
+              kind: "glb",
+              color: "#ffffff",
+              assetId: asset.id,
+              assetVersion: 1,
+              transform: {
+                position: [0, 0, 1],
+                quaternion: [0, 0, 0, 1],
+                scale: [1, 1, 1],
+              },
+              source: "Egen lokal GLB-fil",
+              rights,
+            });
+            next.revision++;
+            setSelectedObject(id);
+            setInspector("object");
+            return next;
+          },
+          `${asset.name} er importeret · ${asset.triangles.toLocaleString("da-DK")} trekanter`,
+        );
+        setModal(null);
+        return;
+      }
+      const target = mediaTarget;
       const media = await importMedia(file, rights);
       commit((next) => {
         next.media.push(media);
-        if (mediaTarget === "shot") {
+        if (target === "shot") {
           if (!shot || media.kind === "audio")
             throw Error("Vælg et billede eller videoklip til et shot");
           const updated = reviseShot(next, shot.id, {
@@ -550,7 +587,7 @@ export default function DirectorEditor() {
         }
         if (media.kind !== "audio")
           throw Error("Vælg en lydfil til dette spor");
-        next[mediaTarget] = {
+        next[target] = {
           mediaId: media.id,
           volume: mediaTarget === "music" ? 0.3 : 1,
           startFrame: 0,
@@ -630,7 +667,7 @@ export default function DirectorEditor() {
     );
   return (
     <div className="director-app" data-history={historyTick}>
-      <aside className="app-rail" aria-label="Værktøjer">
+      <aside className="app-rail" aria-label="Værktøjer" inert={Boolean(modal)}>
         <a href="/" className="brand-mark" aria-label="Director start">
           <Clapperboard size={24} />
         </a>
@@ -672,7 +709,7 @@ export default function DirectorEditor() {
           </div>
         </div>
       </aside>
-      <div className="main-shell">
+      <div className="main-shell" inert={Boolean(modal)}>
         <header className="app-header">
           <div className="wordmark">
             DIRECTOR<span>FILMVÆRKSTED</span>
@@ -718,7 +755,7 @@ export default function DirectorEditor() {
             </button>
           </div>
         </header>
-        {(storage.error || error) && (
+        {(storage.error || (!modal && error)) && (
           <div role="alert" className="error-banner">
             <AlertTriangle size={16} />
             <span>{error || storage.error}</span>
@@ -775,6 +812,14 @@ export default function DirectorEditor() {
             onClick={() => setTab("story")}
           >
             <BookOpen size={15} /> Historie
+          </button>
+          <button
+            className="mobile-help"
+            title="Hjælp og genveje"
+            aria-label="Hjælp og genveje"
+            onClick={() => setModal("help")}
+          >
+            <CircleHelp size={16} />
           </button>
           <div className="view-tabs-right">
             <CloudOff size={13} />
@@ -860,6 +905,14 @@ export default function DirectorEditor() {
                 ))}
               </div>
               <div className="object-add">
+                <button
+                  onClick={() => {
+                    setMediaTarget("model");
+                    setModal("import");
+                  }}
+                >
+                  <Upload size={13} /> GLB
+                </button>
                 <button onClick={() => addObject("crate")}>
                   <Plus size={13} /> Kasse
                 </button>
@@ -983,10 +1036,9 @@ export default function DirectorEditor() {
                 <div className="frame-corner br" />
                 <div className="viewport-shot">
                   <span>
-                    {String(Math.max(0, shots.indexOf(shot)) + 1).padStart(
-                      2,
-                      "0",
-                    )}{" "}
+                    {String(
+                      shots.length ? Math.max(0, shots.indexOf(shot)) + 1 : 0,
+                    ).padStart(2, "0")}{" "}
                     / {String(shots.length).padStart(2, "0")}
                   </span>
                   <small>{playing ? activeShot?.name : cam.name}</small>
@@ -1262,11 +1314,20 @@ export default function DirectorEditor() {
                       }
                     />
                     <div className="asset-provenance">
-                      <Check size={14} />
+                      {object.rights === "unknown" ? (
+                        <AlertTriangle size={14} />
+                      ) : (
+                        <Check size={14} />
+                      )}
                       <span>
-                        Egen primitive
+                        {object.kind === "glb"
+                          ? "Importeret GLB-model"
+                          : "Egen primitive"}
                         <small>
-                          Tilladt til din produktion · v{object.assetVersion}
+                          {object.rights === "unknown"
+                            ? "Rettigheder mangler · privat kladde"
+                            : "Rettigheder registreret"}{" "}
+                          · v{object.assetVersion}
                         </small>
                       </span>
                     </div>
@@ -1594,6 +1655,17 @@ export default function DirectorEditor() {
               </div>
             </div>
             <div className="shot-strip">
+              {shots.length === 0 && (
+                <div className="empty-shots">
+                  <Film size={24} />
+                  <div>
+                    <strong>Dit første shot begynder her.</strong>
+                    <p>
+                      Find en kameravinkel, tilføj et shot og gem indstillingen.
+                    </p>
+                  </div>
+                </div>
+              )}
               {shots.map((s, i) => (
                 <button
                   key={s.id}
@@ -1819,9 +1891,11 @@ export default function DirectorEditor() {
         hidden
         type="file"
         accept={
-          mediaTarget === "shot"
-            ? "image/png,image/jpeg,video/mp4,video/webm"
-            : "audio/wav,audio/mpeg,audio/mp4,audio/ogg,audio/webm"
+          mediaTarget === "model"
+            ? ".glb"
+            : mediaTarget === "shot"
+              ? "image/png,image/jpeg,video/mp4,video/webm"
+              : "audio/wav,audio/mpeg,audio/mp4,audio/ogg,audio/webm"
         }
         onChange={(e) => {
           const f = e.target.files?.[0];
@@ -1879,6 +1953,15 @@ export default function DirectorEditor() {
                 <X size={20} />
               </IconButton>
             </div>
+            {error && (
+              <div className="modal-error" role="alert">
+                <AlertTriangle size={16} />
+                <span>{error}</span>
+                <IconButton title="Luk importfejl" onClick={() => setError("")}>
+                  <X size={14} />
+                </IconButton>
+              </div>
+            )}
             {modal === "export" ? (
               <>
                 <div className="export-preview">
@@ -2050,11 +2133,13 @@ export default function DirectorEditor() {
               <>
                 <p className="modal-intro">
                   Importér{" "}
-                  {mediaTarget === "shot"
-                    ? "et billede eller et videoklip til dit valgte shot"
-                    : mediaTarget === "voice"
-                      ? "en optagelse af din egen voiceover"
-                      : "musik til fortællingen"}
+                  {mediaTarget === "model"
+                    ? "en statisk GLB-model til scenen"
+                    : mediaTarget === "shot"
+                      ? "et billede eller et videoklip til dit valgte shot"
+                      : mediaTarget === "voice"
+                        ? "en optagelse af din egen voiceover"
+                        : "musik til fortællingen"}
                   . Filen gemmes i denne browser og følger med din projektpakke.
                 </p>
                 <div className="import-types">
@@ -2075,6 +2160,12 @@ export default function DirectorEditor() {
                     onClick={() => setMediaTarget("music")}
                   >
                     <Music2 size={19} /> Musik
+                  </button>
+                  <button
+                    className={mediaTarget === "model" ? "selected" : ""}
+                    onClick={() => setMediaTarget("model")}
+                  >
+                    <Box size={19} /> 3D-model
                   </button>
                 </div>
                 <label className="field">
@@ -2100,12 +2191,22 @@ export default function DirectorEditor() {
                   <Upload size={28} />
                   <strong>Vælg en fil fra din computer</strong>
                   <span>
-                    {mediaTarget === "shot"
-                      ? "PNG, JPEG, MP4 eller WebM"
-                      : "WAV, MP3, M4A, OGG eller WebM"}{" "}
+                    {mediaTarget === "model"
+                      ? "GLB · maks. 100.000 trekanter"
+                      : mediaTarget === "shot"
+                        ? "PNG, JPEG, MP4 eller WebM"
+                        : "WAV, MP3, M4A, OGG eller WebM"}{" "}
                     · maks. 50 MB
                   </span>
                 </button>
+                {mediaTarget === "model" && (
+                  <p className="modal-footnote">
+                    Statiske modeller med indlejret geometri og materialefarver.
+                    Teksturer, eksterne filer, animation og rigs afvises i denne
+                    profil. Importen ændrer først scenen, når valideringen er
+                    bestået.
+                  </p>
+                )}
                 {mediaTarget === "music" && p.music && (
                   <label className="check-field">
                     <input

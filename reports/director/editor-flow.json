@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "object transform immutable scene",
+    "keyboard undo",
+    "real GLB import and actual rendered frame",
+    "malformed GLB preserves state with visible error",
+    "duration/crossfade arithmetic",
+    "reorder without invalid first overlap",
+    "reload persistence",
+    "ZIP including GLB roundtrip",
+    "empty and failed import states at three sizes"
+  ],
+  "pageErrors": [],
+  "verifiedAt": "2026-10-16T20:24:03.790Z"
+}

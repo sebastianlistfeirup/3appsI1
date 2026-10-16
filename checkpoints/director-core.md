@@ -32,7 +32,7 @@ Local browser IndexedDB only. WebGL renderer and local file exports are real. No
 
 ## Known limits
 
-- GLB validator rejects external URLs, large triangle counts and textured files, but GLB placement/import UI is not implemented. This is not claimed complete.
+- Static embedded GLB import/render is implemented. Textured/animated/rigged/compressed models remain explicitly unsupported in this profile.
 - Animatic export uses held frames or imported clips. It is not continuous 3D animation.
 - Render service must be explicitly enabled and bound to localhost. Host/Origin checks are defense in depth and do not authenticate a public deployment.
 - No tenant/viewer claims; D-AT11 awaits a real authenticated backend.
@@ -48,3 +48,14 @@ Local browser IndexedDB only. WebGL renderer and local file exports are real. No
 - Fixed real FFmpeg xfade failure: in this installed build, setpts clears frame-rate metadata. An isolated reproduction established that pixel-format conversion and setpts must precede fps. Fixed pipeline is verified by the actual 59.5-second movie, not just timeline arithmetic.
 - Cancellation and a ten-minute total job deadline added; cancellation smoke-test is being recorded.
 - Coordinator requested next block: complete textureless GLB import/render safely, preserve work on malformed imports, complete interactive browser and cross-engine gates. These remain active work.
+
+## Third milestone — static GLB, accessibility and browser resilience
+
+- Actual embedded GLB import, Three.js rendering, placement/recoloring, immutable asset snapshots and ZIP roundtrip added. Validates byte bounds/alignment, finite vertices, index ranges, cyclic/repeated-parent graphs, decoded allocation and instanced triangle budgets before loading. Original `fixtures/director-relay.glb` verifies the real loader path.
+- Full Chromium editor flow passed: scene immutability, keyboard undo, actual GLB frame, malformed model preserving all data, duration/crossfade/reorder, reload, ZIP with GLB roundtrip, empty and failed import states at three sizes.
+- All ten axe WCAG2A/2AA/2.1AA scans passed: scene/storyboard/story/export/import on desktop and mobile. This is an automated result, not a claim of complete accessibility conformance. Small helper text increased to 11px, core controls to 12px and mobile form inputs to 16px. Native dark controls, readable contrast, modal inert/focus trapping, mobile undo and lighting controls added.
+- WebGL absence now creates explicitly labeled 720p 2D floor-plan frames, so first-run storyboard/export works rather than remaining frame-less. The actual browser tests disable WebGL before application startup.
+- 22 deterministic tests and Director typecheck passed; optimized production build passed. Cross-engine browser flow evidence is being finalized in `reports/director/cross-browser.json`.
+- Import profile and truthful limits documented in `docs/director-imports.md`.
+
+Cross-engine gate found a real shared-persistence race before completion: React StrictMode started two concurrent initial reloads; fast 2D auto-capture saved revision 2 and five valid frames, then the later reload applied the original frame-less document to the UI. Chromium native and forced no-WebGL flows, plus Firefox native, passed. Firefox forced no-WebGL and WebKit exposed the race. Coordinator confirmed the cause and is implementing a shared single-flight/mutation guard with deterministic regression. Remaining flows will rerun after that fix; no six-engine-path pass is claimed at this checkpoint.

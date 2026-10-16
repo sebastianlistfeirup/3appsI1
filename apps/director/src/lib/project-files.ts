@@ -1,6 +1,8 @@
 import { unzipSync, zipSync, strFromU8, strToU8 } from "fflate";
 import {
   inspectRaster,
+  inspectGlb,
+  type GlbAsset,
   parseProject,
   type Project,
   type Media,
@@ -69,6 +71,37 @@ export async function importPackage(buffer: ArrayBuffer): Promise<Project> {
   return project;
 }
 export async function verifyMedia(project: Project) {
+  const checked = new Map<
+    string,
+    { url: string; bytes: number; triangles: number }
+  >();
+  for (const scene of [...project.scenes, project.draft])
+    for (const asset of scene.assets) {
+      const prior = checked.get(asset.sha256);
+      if (
+        prior &&
+        prior.url === asset.dataUrl &&
+        prior.bytes === asset.bytes &&
+        prior.triangles === asset.triangles
+      )
+        continue;
+      const bytes = dataUrlBytes(asset.dataUrl);
+      if (
+        bytes.length !== asset.bytes ||
+        (await sha256(bytes)) !== asset.sha256
+      )
+        throw Error(`GLB-filen ${asset.name} matcher ikke dens checksum`);
+      const info = inspectGlb(new Uint8Array(bytes).buffer);
+      if (info.triangles !== asset.triangles)
+        throw Error("GLB-geometri matcher ikke manifestet");
+      checked.set(asset.sha256, {
+        url: asset.dataUrl,
+        bytes: asset.bytes,
+        triangles: asset.triangles,
+      });
+    }
+  for (const shot of project.shots)
+    if (shot.frame) inspectRaster(dataUrlBytes(shot.frame));
   for (const media of project.media) {
     const bytes = dataUrlBytes(media.dataUrl);
     if (
@@ -122,7 +155,27 @@ export async function importMedia(
     )
   )
     throw Error("Billedets indhold matcher ikke filtypen");
-  if (kind === "image") inspectRaster(bytes);
+  if (kind === "image") {
+    const info = inspectRaster(bytes);
+    if (file.type !== `image/${info.format}`)
+      throw Error("Billedets format matcher ikke filtypen");
+  }
+  const signature = (at: number, text: string) =>
+    text.split("").every((c, i) => bytes[at + i] === c.charCodeAt(0));
+  const mime = file.type.replace("audio/x-wav", "audio/wav");
+  if (
+    (mime === "audio/wav" && !(signature(0, "RIFF") && signature(8, "WAVE"))) ||
+    (mime === "audio/mpeg" &&
+      !(
+        signature(0, "ID3") ||
+        (bytes[0] === 255 && (bytes[1] & 224) === 224)
+      )) ||
+    (["video/mp4", "audio/mp4"].includes(mime) && !signature(4, "ftyp")) ||
+    (["video/webm", "audio/webm"].includes(mime) &&
+      ![26, 69, 223, 163].every((v, i) => bytes[i] === v)) ||
+    (mime === "audio/ogg" && !signature(0, "OggS"))
+  )
+    throw Error("Mediets indhold matcher ikke filtypen");
   const dataUrl = (await fileDataUrl(file)).replace("audio/x-wav", "audio/wav");
   let durationFrames: number | undefined;
   if (kind !== "image")
@@ -173,6 +226,48 @@ export async function importMedia(
     bytes: bytes.byteLength,
     durationFrames,
     source: "Egen lokal fil",
+    rights,
+  };
+}
+
+export async function importGlb(
+  file: File,
+  rights: GlbAsset["rights"],
+): Promise<GlbAsset> {
+  if (!file.name.toLowerCase().endsWith(".glb"))
+    throw Error("Vælg en .glb-fil");
+  if (file.size > 50 * 1024 * 1024) throw Error("GLB må højst være 50 MB");
+  const buffer = await file.arrayBuffer();
+  const inspected = inspectGlb(buffer);
+  const bytes = new Uint8Array(buffer);
+  const dataUrl = await fileDataUrl(
+    new File([buffer], file.name, { type: "model/gltf-binary" }),
+  );
+  const { GLTFLoader } =
+    await import("three/examples/jsm/loaders/GLTFLoader.js");
+  const { LoadingManager, Mesh } = await import("three");
+  const manager = new LoadingManager();
+  manager.setURLModifier(() => {
+    throw Error("Eksterne GLB-ressourcer er ikke tilladt");
+  });
+  const parsed = await new GLTFLoader(manager).parseAsync(buffer, "");
+  parsed.scene.traverse((object) => {
+    if (object instanceof Mesh) {
+      object.geometry.dispose();
+      for (const material of Array.isArray(object.material)
+        ? object.material
+        : [object.material])
+        material.dispose();
+    }
+  });
+  return {
+    id: `glb_${crypto.randomUUID().replaceAll("-", "")}`,
+    name: file.name,
+    dataUrl,
+    sha256: await sha256(bytes),
+    bytes: bytes.length,
+    triangles: inspected.triangles,
+    source: "Egen lokal GLB-fil",
     rights,
   };
 }

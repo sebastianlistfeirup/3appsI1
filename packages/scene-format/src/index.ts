@@ -36,10 +36,11 @@ const transform = z.object({
 export const objectSchema = z.object({
   id,
   name: z.string().min(1).max(100),
-  kind: z.enum(["person", "console", "crate", "lamp", "wall"]),
+  kind: z.enum(["person", "console", "crate", "lamp", "wall", "glb"]),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   transform,
   assetVersion: z.number().int().positive(),
+  assetId: id.nullable().default(null),
   source: z.string().max(200),
   rights: z.enum(["owned", "licensed", "unknown"]),
 });
@@ -54,6 +55,24 @@ export const cameraSchema = z.object({
   far: z.number().min(10).max(1000),
   aspect: z.literal("16:9"),
 });
+export const glbAssetSchema = z.object({
+  id,
+  name: z.string().min(1).max(150),
+  dataUrl: z
+    .string()
+    .max(70_000_000)
+    .regex(/^data:model\/gltf-binary;base64,[a-zA-Z0-9+/=]+$/),
+  sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  bytes: z
+    .number()
+    .int()
+    .positive()
+    .max(50 * 1024 * 1024),
+  triangles: z.number().int().min(1).max(100000),
+  source: z.string().min(1).max(200),
+  rights: z.enum(["owned", "licensed", "unknown"]),
+});
+export type GlbAsset = z.infer<typeof glbAssetSchema>;
 export const sceneSchema = z
   .object({
     id,
@@ -63,12 +82,38 @@ export const sceneSchema = z
     name: z.string().min(1).max(100),
     objects: z.array(objectSchema).max(40),
     cameras: z.array(cameraSchema).min(1).max(20),
+    assets: z.array(glbAssetSchema).max(10).default([]),
     light: z.object({
       intensity: z.number().min(0.2).max(3),
       warmth: z.enum(["amber", "blue"]),
     }),
   })
   .superRefine((scene, ctx) => {
+    for (const object of scene.objects)
+      if (
+        object.kind === "glb" &&
+        !scene.assets.some((a) => a.id === object.assetId)
+      )
+        ctx.addIssue({
+          code: "custom",
+          message: "GLB-objektets modelversion mangler",
+        });
+    if (new Set(scene.assets.map((a) => a.id)).size !== scene.assets.length)
+      ctx.addIssue({ code: "custom", message: "Dubleret GLB-asset" });
+    if (
+      scene.objects.reduce(
+        (n, o) =>
+          n +
+          (o.kind === "glb"
+            ? (scene.assets.find((a) => a.id === o.assetId)?.triangles ?? 0)
+            : 0),
+        0,
+      ) > 500000
+    )
+      ctx.addIssue({
+        code: "custom",
+        message: "Scenen må højst bruge 500.000 importerede trekanter",
+      });
     for (const list of [scene.objects, scene.cameras])
       if (new Set(list.map((x) => x.id)).size !== list.length)
         ctx.addIssue({
@@ -143,6 +188,7 @@ export const shotSchema = z.object({
   notes: text,
   frame: frameSchema.nullable(),
   frameRenderer: z.string().max(100).nullable(),
+  frameMode: z.enum(["3d", "plan"]).default("3d"),
   mediaId: id.nullable(),
   sourceIn: z.number().int().nonnegative(),
   transitionFrames: z.number().int().min(0).max(48),
@@ -300,9 +346,15 @@ export function changedObjectIds(old: SceneVersion, current: SceneVersion) {
   );
 }
 export function affectedShots(p: Project) {
-  return orderedShots(p).filter(
-    (s) => changedObjectIds(sceneForShot(p, s), p.draft).length > 0,
-  );
+  return orderedShots(p).filter((s) => {
+    const old = sceneForShot(p, s);
+    return (
+      changedObjectIds(old, p.draft).length > 0 ||
+      JSON.stringify(old.light) !== JSON.stringify(p.draft.light) ||
+      JSON.stringify(old.cameras.find((c) => c.id === s.cameraId)) !==
+        JSON.stringify(p.draft.cameras.find((c) => c.id === s.cameraId))
+    );
+  });
 }
 export function clone<T>(value: T): T {
   return structuredClone(value);
@@ -358,8 +410,18 @@ export function moveShot(p: Project, shotId: string, delta: number): Project {
 }
 export function rightsWarnings(p: Project) {
   return [
-    ...p.draft.objects.filter((o) => o.rights === "unknown").map((o) => o.name),
-    ...p.media.filter((m) => m.rights === "unknown").map((m) => m.name),
+    ...new Set([
+      ...p.scenes.flatMap((scene) =>
+        scene.objects.filter((o) => o.rights === "unknown").map((o) => o.name),
+      ),
+      ...p.draft.assets
+        .filter((a) => a.rights === "unknown")
+        .map((a) => a.name),
+      ...p.draft.objects
+        .filter((o) => o.rights === "unknown")
+        .map((o) => o.name),
+      ...p.media.filter((m) => m.rights === "unknown").map((m) => m.name),
+    ]),
   ];
 }
 export function assertPublishable(p: Project) {
@@ -450,6 +512,7 @@ export function createSampleProject(): Project {
     kind,
     color,
     assetVersion: 1,
+    assetId: null,
     transform: { position, quaternion: [0, 0, 0, 1], scale },
     source: "Director · egen procedurel primitive",
     rights: "owned",
@@ -480,6 +543,7 @@ export function createSampleProject(): Project {
       camera("Vi er ikke alene", "cam_04", [0, 2.7, 3.5], [0, 1, -2], 45),
       camera("Sæt kursen", "cam_05", [-5, 2.6, 6.5], [0, 1, -1], 48),
     ],
+    assets: [],
     light: { intensity: 1, warmth: "amber" },
   };
   const names = [
@@ -513,6 +577,7 @@ export function createSampleProject(): Project {
     ][i],
     frame: null,
     frameRenderer: null,
+    frameMode: "3d",
     mediaId: null,
     sourceIn: 0,
     transitionFrames: 0,
@@ -536,62 +601,7 @@ export function createSampleProject(): Project {
     revision: 0,
   });
 }
-export interface GlbInspection {
-  triangles: number;
-  textureCount: number;
-  warnings: string[];
-}
-export function inspectGlb(buffer: ArrayBuffer): GlbInspection {
-  if (buffer.byteLength > 50 * 1024 * 1024)
-    throw Error("GLB må højst være 50 MB");
-  if (buffer.byteLength < 20) throw Error("GLB-header mangler");
-  const view = new DataView(buffer);
-  if (
-    view.getUint32(0, true) !== 0x46546c67 ||
-    view.getUint32(4, true) !== 2 ||
-    view.getUint32(8, true) !== buffer.byteLength
-  )
-    throw Error("Ugyldig GLB 2.0-fil");
-  const length = view.getUint32(12, true);
-  if (
-    view.getUint32(16, true) !== 0x4e4f534a ||
-    length > buffer.byteLength - 20
-  )
-    throw Error("GLB JSON-chunk mangler");
-  let data: any;
-  try {
-    data = JSON.parse(
-      new TextDecoder().decode(new Uint8Array(buffer, 20, length)),
-    );
-  } catch {
-    throw Error("Ugyldige GLB-metadata");
-  }
-  if (data.extensionsRequired?.length)
-    throw Error("GLB-udvidelser understøttes ikke endnu");
-  if (
-    data.buffers?.some((b: any) => b.uri) ||
-    data.images?.some((i: any) => i.uri)
-  )
-    throw Error("Eksterne teksturer og buffer-URLer er ikke tilladt");
-  let triangles = 0;
-  for (const mesh of data.meshes ?? [])
-    for (const p of mesh.primitives ?? []) {
-      if (p.mode !== undefined && p.mode !== 4)
-        throw Error("Kun GLB-trekanter understøttes");
-      const a = data.accessors?.[p.indices ?? p.attributes?.POSITION];
-      if (!a || !Number.isInteger(a.count) || a.count < 0)
-        throw Error("Ugyldig GLB-geometri");
-      triangles += Math.floor(a.count / 3);
-    }
-  if (triangles > 100000)
-    throw Error("Modellen må højst have 100.000 trekanter");
-  // Image dimensions require a decoded image. Reject textured assets until that sandbox exists.
-  if (data.images?.length)
-    throw Error(
-      "Teksturerede GLB-filer kræver en billedvalidator og kan endnu ikke importeres",
-    );
-  return { triangles, textureCount: 0, warnings: [] };
-}
+export { inspectGlb, type GlbInspection } from "./glb";
 
 /** Inspect dimensions before asking a browser/codec to allocate a decoded image. */
 export function inspectRaster(bytes: Uint8Array): {

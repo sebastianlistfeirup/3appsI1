@@ -1,0 +1,52 @@
+[
+  {
+    "device": "desktop",
+    "name": "scene",
+    "violations": []
+  },
+  {
+    "device": "desktop",
+    "name": "storyboard",
+    "violations": []
+  },
+  {
+    "device": "desktop",
+    "name": "story",
+    "violations": []
+  },
+  {
+    "device": "desktop",
+    "name": "export",
+    "violations": []
+  },
+  {
+    "device": "desktop",
+    "name": "import",
+    "violations": []
+  },
+  {
+    "device": "mobile",
+    "name": "scene",
+    "violations": []
+  },
+  {
+    "device": "mobile",
+    "name": "storyboard",
+    "violations": []
+  },
+  {
+    "device": "mobile",
+    "name": "story",
+    "violations": []
+  },
+  {
+    "device": "mobile",
+    "name": "export",
+    "violations": []
+  },
+  {
+    "device": "mobile",
+    "name": "import",
+    "violations": []
+  }
+]

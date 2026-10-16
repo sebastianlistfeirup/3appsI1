@@ -272,6 +272,7 @@ export function buildScene(
     ),
   );
   for (const object of version.objects) {
+    if (object.kind === "glb") continue;
     const group = primitive(object);
     scene.add(group);
     if (object.id === selectedId) {
@@ -326,21 +327,166 @@ export function disposeScene(scene: THREE.Scene) {
     }
   });
 }
+/** A real 720p floor-plan frame keeps the editor usable without WebGL. */
+export function renderPlanFrame(version: SceneVersion, camera: Camera) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1280;
+  canvas.height = 720;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw Error("Browseren kan ikke tegne et 2D-frame");
+  ctx.scale(1.6, 1.6);
+  ctx.fillStyle = "#18232c";
+  ctx.fillRect(0, 0, 800, 450);
+  ctx.strokeStyle = "#35434e";
+  ctx.lineWidth = 0.7;
+  for (let x = 36; x < 800; x += 26) {
+    ctx.beginPath();
+    ctx.moveTo(x, 38);
+    ctx.lineTo(x, 412);
+    ctx.stroke();
+  }
+  for (let y = 40; y < 420; y += 20) {
+    ctx.beginPath();
+    ctx.moveTo(30, y);
+    ctx.lineTo(770, y);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = "#738380";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(166, 80, 468, 260);
+  ctx.strokeStyle = "#d7b48b";
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(210, 80);
+  ctx.lineTo(590, 80);
+  ctx.stroke();
+  ctx.fillStyle = "#d9d9cc";
+  ctx.font = "12px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("OBSERVATIONSVINDUE", 400, 63);
+  const x = (v: number) => 400 + v * 26,
+    y = (v: number) => 220 + v * 20;
+  for (const object of version.objects) {
+    const p = object.transform.position;
+    ctx.beginPath();
+    ctx.arc(
+      x(p[0]),
+      y(p[2]),
+      object.kind === "person" ? 10 : 15,
+      0,
+      Math.PI * 2,
+    );
+    ctx.fillStyle = object.color;
+    ctx.fill();
+    ctx.strokeStyle = "#e2e4d7";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = "#f0eee4";
+    ctx.font = "12px sans-serif";
+    ctx.fillText(object.name.slice(0, 30), x(p[0]), y(p[2]) + 30);
+  }
+  ctx.strokeStyle = "#e9ad79";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([5, 4]);
+  ctx.beginPath();
+  ctx.moveTo(x(camera.position[0]), y(camera.position[2]));
+  ctx.lineTo(x(camera.target[0]), y(camera.target[2]));
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = "#e9ad79";
+  ctx.beginPath();
+  ctx.arc(x(camera.position[0]), y(camera.position[2]), 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#ede1cf";
+  ctx.font = "600 14px sans-serif";
+  ctx.fillText("2D-PLAN · " + camera.name, 28, 28);
+  ctx.font = "11px sans-serif";
+  ctx.fillStyle = "#b1c0c9";
+  ctx.fillText(
+    version.name + " · scene v" + version.version + " · topvisning i meter",
+    28,
+    436,
+  );
+  return canvas.toDataURL("image/jpeg", 0.9);
+}
 export async function renderFrame(
   version: SceneVersion,
   camera: Camera,
-  width = 1280,
-  height = 720,
-) {
-  const renderer = createRenderer();
-  renderer.setSize(width, height);
+  mode: "3d" | "2d" = "3d",
+): Promise<{ frame: string; mode: "3d" | "plan" }> {
+  if (mode === "2d")
+    return { frame: renderPlanFrame(version, camera), mode: "plan" };
+  let renderer: THREE.WebGLRenderer;
+  try {
+    renderer = createRenderer();
+  } catch {
+    return { frame: renderPlanFrame(version, camera), mode: "plan" };
+  }
+  renderer.setSize(1280, 720);
   const scene = buildScene(version);
   try {
+    await loadSceneModels(scene, version);
     renderer.render(scene, makeCamera(camera));
-    return renderer.domElement.toDataURL("image/jpeg", 0.88);
+    return {
+      frame: renderer.domElement.toDataURL("image/jpeg", 0.88),
+      mode: "3d",
+    };
   } finally {
     disposeScene(scene);
     renderer.dispose();
     renderer.forceContextLoss();
+  }
+}
+
+/** Validated, embedded-only static GLB assets. Loading never fetches a network URL. */
+export async function loadSceneModels(
+  scene: THREE.Scene,
+  version: SceneVersion,
+  selectedId?: string,
+) {
+  if (!version.objects.some((o) => o.kind === "glb")) return;
+  const { GLTFLoader } =
+    await import("three/examples/jsm/loaders/GLTFLoader.js");
+  const manager = new THREE.LoadingManager();
+  manager.setURLModifier(() => {
+    throw Error("Eksterne GLB-ressourcer er ikke tilladt");
+  });
+  const loader = new GLTFLoader(manager);
+  for (const object of version.objects.filter((o) => o.kind === "glb")) {
+    const asset = version.assets.find((a) => a.id === object.assetId);
+    if (!asset) throw Error("GLB-modelversion mangler");
+    const raw = atob(asset.dataUrl.slice(asset.dataUrl.indexOf(",") + 1));
+    const bytes = Uint8Array.from(raw, (c) => c.charCodeAt(0));
+    const { inspectGlb } = await import("@tre/scene-format");
+    inspectGlb(bytes.buffer);
+    const gltf = await loader.parseAsync(bytes.buffer, "");
+    const group = new THREE.Group();
+    group.name = object.id;
+    group.userData.objectId = object.id;
+    group.add(gltf.scene);
+    group.position.fromArray(object.transform.position);
+    group.quaternion.fromArray(object.transform.quaternion);
+    group.scale.fromArray(object.transform.scale);
+    group.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        for (const material of Array.isArray(child.material)
+          ? child.material
+          : [child.material]) {
+          if (material instanceof THREE.MeshStandardMaterial)
+            material.color.multiply(new THREE.Color(object.color));
+        }
+      }
+    });
+    scene.add(group);
+    if (selectedId === object.id)
+      scene.add(
+        new THREE.Box3Helper(
+          new THREE.Box3().setFromObject(group),
+          new THREE.Color("#e0a174"),
+        ),
+      );
   }
 }
