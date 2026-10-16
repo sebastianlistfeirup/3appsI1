@@ -1,0 +1,9 @@
+# Foundation F06 — independent browser gates with bounded execution
+
+GitHub run 38968873690 at commit 2a66c21 passed frozen installation, typechecks, units, 41 actual PostgreSQL tests, three production builds, 36 Studio browser cases, FlowLab import/workspace/holdout/PDF gates, Director's six core browser cases and textured GLB in Chromium and Firefox. It then hung in the WebKit textured GLB script until the 25-minute job timeout. This run did not reach the media-import diagnostic or video-render gates. The earlier run 38966324705 reached and passed the actual render/recovery gates but failed Chromium MP4 import.
+
+The new workflow has one domain/database job followed by separate Studio, FlowLab and Director browser jobs with fail-fast disabled. Each builds its own production app. All previously required browser assertions remain, and the new case evidence, dataset/version, production library and faithful storyboard flows are added. A subprocess has a five-minute deadline, process-group cleanup, timestamped output and a persisted result record.
+
+Director's GLB diagnostic writes an incremental trace before and after launch, real image decoding/import, save, archive download, reload, undo and cleanup. Previously unbounded IndexedDB reads, download paths and browser close have local limits, with an overall 180-second watchdog. The instrumented test passes all three engines locally. This is diagnostic evidence, not a claim that GitHub's WebKit hang or its earlier codec discrepancy has been resolved.
+
+The remote artifact exists at the GitHub run, but downloading its Azure-backed URL from this execution environment returned HTTP 403. The full GitHub log was available and identified the exact last completed test. New CI results must be assessed before marking the remote gate green.

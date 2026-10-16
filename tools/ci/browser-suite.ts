@@ -1,29 +1,82 @@
 import { spawn, type ChildProcess } from "node:child_process";
-import { mkdir, open } from "node:fs/promises";
+import { mkdir, open, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
 const servers: ChildProcess[] = [];
+const selected = process.env.CI_BROWSER_APP ?? "all";
+if (!["all", "studio", "flowlab", "director"].includes(selected))
+  throw new Error("CI_BROWSER_APP must be studio, flowlab, director or all.");
+const enabled = (app: string) => selected === "all" || selected === app;
+const evidence: Array<{
+  command: string;
+  environment: Record<string, string>;
+  started: string;
+  elapsedMs: number;
+  outcome: string;
+}> = [];
 const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function run(
   command: string,
   args: string[],
   env: Record<string, string> = {},
 ) {
-  await new Promise<void>((resolve, reject) => {
-    const child = spawn(command, args, {
-      stdio: "inherit",
-      env: { ...process.env, ...env },
-    });
-    child.on("error", reject);
-    child.on("exit", (code, signal) =>
-      code === 0
-        ? resolve()
-        : reject(
+  const label = `${command} ${args.join(" ")}`;
+  const started = new Date().toISOString(),
+    at = performance.now();
+  let outcome = "failed";
+  console.log(`[gate] Starting ${label} ${JSON.stringify(env)}`);
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const child = spawn(command, args, {
+        detached: true,
+        stdio: "inherit",
+        env: { ...process.env, ...env },
+      });
+      let timedOut = false;
+      let forceStop: NodeJS.Timeout | undefined;
+      const timeout = setTimeout(() => {
+        timedOut = true;
+        outcome = "timed_out";
+        console.error(`[gate] Five-minute deadline exceeded: ${label}`);
+        stop(child, "SIGTERM");
+        forceStop = setTimeout(() => stop(child, "SIGKILL"), 3000);
+      }, 300000);
+      const cleanup = () => {
+        clearTimeout(timeout);
+        clearTimeout(forceStop);
+      };
+      child.on("error", (error) => {
+        cleanup();
+        reject(error);
+      });
+      child.on("exit", (code, signal) => {
+        cleanup();
+        if (code === 0 && !timedOut) resolve();
+        else
+          reject(
             new Error(
-              `${command} ${args.join(" ")} failed (${code ?? signal}).`,
+              `${label} ${timedOut ? "timed out" : `failed (${code ?? signal})`}.`,
             ),
-          ),
+          );
+      });
+    });
+    outcome = "passed";
+  } finally {
+    const elapsedMs = Math.round(performance.now() - at);
+    evidence.push({
+      command: label,
+      environment: env,
+      started,
+      elapsedMs,
+      outcome,
+    });
+    await writeFile(
+      "reports/ci/browser-steps.json",
+      JSON.stringify({ app: selected, evidence }, null, 2),
     );
-  });
+    console.log(
+      `[gate] ${outcome} in ${(elapsedMs / 1000).toFixed(1)}s: ${label}`,
+    );
+  }
 }
 async function start(app: string, port: number) {
   await new Promise<void>((resolve, reject) => {
@@ -78,61 +131,82 @@ function stop(child: ChildProcess, signal: NodeJS.Signals) {
 }
 await mkdir("reports/ci", { recursive: true });
 try {
-  await start("studio", 3000);
-  await start("flowlab", 3001);
-  await start("director", 3002);
-  await run("pnpm", ["exec", "playwright", "test", "tests/e2e"]);
-  await run("node", ["tools/browser/studio-a11y.cjs"]);
-  for (const browser of ["chromium", "firefox", "webkit"]) {
-    await run("node", ["apps/flowlab/tests/browser-check.mjs"], {
-      FLOWLAB_BROWSER: browser,
-    });
-    await run("node", ["apps/flowlab/tests/import-state-check.mjs"], {
-      FLOWLAB_BROWSER: browser,
-    });
-    await run("node", ["apps/flowlab/tests/workspace-check.mjs"], {
-      FLOWLAB_BROWSER: browser,
-    });
-    await run(
-      "pnpm",
-      ["exec", "tsx", "apps/flowlab/tests/data-history-check.ts"],
-      {
+  if (enabled("studio")) {
+    await start("studio", 3000);
+    await run("pnpm", ["exec", "playwright", "test", "tests/e2e"]);
+    await run("node", ["tools/browser/studio-a11y.cjs"]);
+  }
+  if (enabled("flowlab")) {
+    await start("flowlab", 3001);
+    for (const browser of ["chromium", "firefox", "webkit"]) {
+      await run("node", ["apps/flowlab/tests/browser-check.mjs"], {
         FLOWLAB_BROWSER: browser,
-      },
-    );
+      });
+      await run("node", ["apps/flowlab/tests/import-state-check.mjs"], {
+        FLOWLAB_BROWSER: browser,
+      });
+      await run("node", ["apps/flowlab/tests/workspace-check.mjs"], {
+        FLOWLAB_BROWSER: browser,
+      });
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/data-history-check.ts"],
+        {
+          FLOWLAB_BROWSER: browser,
+        },
+      );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/experiment-check.ts"],
+        {
+          FLOWLAB_BROWSER: browser,
+        },
+      );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/case-evidence-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
+    }
+    await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
+    await run("node", ["apps/flowlab/tests/canvas-check.mjs"]);
+    await run("node", ["apps/flowlab/tests/accessibility-check.mjs"]);
+    await run("pnpm", ["exec", "tsx", "apps/flowlab/tests/holdout-check.ts"]);
+    await run("pnpm", [
+      "exec",
+      "tsx",
+      "apps/flowlab/tests/report-layout-check.ts",
+    ]);
+    await run("node", ["apps/flowlab/tests/edge-results-check.mjs"]);
   }
-  await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
-  await run("node", ["apps/flowlab/tests/canvas-check.mjs"]);
-  await run("node", ["apps/flowlab/tests/accessibility-check.mjs"]);
-  await run("pnpm", ["exec", "tsx", "apps/flowlab/tests/holdout-check.ts"]);
-  await run("pnpm", [
-    "exec",
-    "tsx",
-    "apps/flowlab/tests/report-layout-check.ts",
-  ]);
-  await run("node", ["apps/flowlab/tests/edge-results-check.mjs"]);
-  await run("node", ["apps/director/tests/cross-browser.mjs"]);
-  for (const browser of ["chromium", "firefox", "webkit"]) {
-    await run("node", ["apps/director/tests/textured-glb-flow.mjs"], {
-      GLB_ENGINE: browser,
-    });
-    await run("node", ["apps/director/tests/library-flow.mjs"], {
-      LIBRARY_ENGINE: browser,
-    });
+  if (enabled("director")) {
+    await start("director", 3002);
+    await run("node", ["apps/director/tests/cross-browser.mjs"]);
+    for (const browser of ["chromium", "firefox", "webkit"]) {
+      await run("node", ["apps/director/tests/textured-glb-flow.mjs"], {
+        GLB_ENGINE: browser,
+      });
+      await run("node", ["apps/director/tests/library-flow.mjs"], {
+        LIBRARY_ENGINE: browser,
+      });
+      await run("node", ["apps/director/tests/storyboard-flow.mjs"], {
+        STORYBOARD_ENGINE: browser,
+      });
+    }
+    await run("node", ["apps/director/tests/editor-flow.mjs"]);
+    await run("node", ["apps/director/tests/storage-recovery.mjs"]);
+    await run("node", ["apps/director/tests/a11y-smoke.mjs"]);
+    await run("node", ["apps/director/tests/render-smoke.mjs"]);
+    await run("node", ["apps/director/tests/recovery-smoke.mjs"]);
+    await run("node", ["apps/director/tests/media-ui-flow.mjs"]);
+    for (const browser of ["firefox", "webkit"])
+      await run("node", ["apps/director/tests/media-ui-flow.mjs"], {
+        MEDIA_ENGINE: browser,
+        DIRECTOR_SKIP_RENDER: "1",
+      });
+    await run("node", ["apps/director/tests/clip-audio-smoke.mjs"]);
+    await run("node", ["apps/director/tests/cancellation-smoke.mjs"]);
   }
-  await run("node", ["apps/director/tests/editor-flow.mjs"]);
-  await run("node", ["apps/director/tests/storage-recovery.mjs"]);
-  await run("node", ["apps/director/tests/a11y-smoke.mjs"]);
-  await run("node", ["apps/director/tests/render-smoke.mjs"]);
-  await run("node", ["apps/director/tests/recovery-smoke.mjs"]);
-  await run("node", ["apps/director/tests/media-ui-flow.mjs"]);
-  for (const browser of ["firefox", "webkit"])
-    await run("node", ["apps/director/tests/media-ui-flow.mjs"], {
-      MEDIA_ENGINE: browser,
-      DIRECTOR_SKIP_RENDER: "1",
-    });
-  await run("node", ["apps/director/tests/clip-audio-smoke.mjs"]);
-  await run("node", ["apps/director/tests/cancellation-smoke.mjs"]);
 } finally {
   for (const server of servers) stop(server, "SIGTERM");
   await pause(500);
