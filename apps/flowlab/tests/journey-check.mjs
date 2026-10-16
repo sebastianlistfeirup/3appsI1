@@ -26,7 +26,7 @@ await expect(
 log.push("Initial comparison completed from engine with 30 paired seeds.");
 await page.getByLabel("Antal medarbejdere", { exact: true }).fill("5");
 await expect(
-  page.getByText("Modellen eller motoren er opdateret.", { exact: false }),
+  page.getByText("Modellen, det fælles seed eller motoren er opdateret.", { exact: false }),
 ).toBeVisible();
 await page
   .getByRole("heading", { name: "Medlemsservice.", exact: true })
@@ -44,7 +44,7 @@ await expect(
   page.getByRole("button", { name: "Kør sammenligning", exact: true }),
 ).toBeVisible();
 await expect(
-  page.getByText("Modellen eller motoren er opdateret.", { exact: false }),
+  page.getByText("Modellen, det fælles seed eller motoren er opdateret.", { exact: false }),
 ).toHaveCount(0);
 await page.getByRole("button", { name: "Gem version", exact: true }).click();
 await page.getByRole("button", { name: "Modelbibliotek", exact: true }).click();
@@ -88,7 +88,7 @@ await page
   .getByRole("button", { name: "Brug median som fast varighed", exact: true })
   .click();
 await expect(
-  page.getByText("Modellen eller motoren er opdateret.", { exact: false }),
+  page.getByText("Modellen, det fælles seed eller motoren er opdateret.", { exact: false }),
 ).toBeVisible();
 await page.getByRole("tab", { name: "Model", exact: true }).click();
 await expect(
