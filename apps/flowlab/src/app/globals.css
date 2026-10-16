@@ -1665,6 +1665,205 @@ td strong {
   font-size: 12px;
   margin: 10px 0;
 }
+.canvas-resource-link {
+  display: inline;
+  color: var(--teal-dark);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-decoration: underline;
+  text-decoration-color: #9cbdb5;
+  text-underline-offset: 3px;
+  font-size: inherit;
+}
+.arrival-dialog.resource-dialog {
+  width: min(900px, calc(100vw - 32px));
+}
+.resource-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 20px 0 14px;
+}
+.resource-overview > div {
+  padding: 18px;
+  background: #edf6f3;
+  border: 1px solid #d6e8e2;
+  border-radius: 10px;
+  min-width: 0;
+}
+.resource-overview span,
+.resource-overview small {
+  display: block;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.resource-overview strong {
+  display: block;
+  font-family: Manrope, sans-serif;
+  font-size: 24px;
+  margin: 7px 0;
+  color: var(--teal-dark);
+  overflow-wrap: anywhere;
+}
+.resource-selector {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin: 25px 0 15px;
+}
+.resource-selector > label {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.resource-selector > button {
+  flex-shrink: 0;
+  margin-bottom: 10px;
+}
+.resource-fields {
+  display: grid;
+  grid-template-columns: 1.25fr 0.8fr 1.2fr;
+  gap: 15px;
+}
+.resource-reference-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.resource-reference-note svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.resource-reference-note p {
+  font-size: 13px;
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+.resource-plan {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+  margin: 19px 0 27px;
+}
+.resource-plan > div {
+  min-width: 0;
+}
+.resource-plan span {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 7px;
+  line-height: 1.5;
+}
+.resource-plan b {
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+.resource-calendar-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  border-top: 1px solid var(--line);
+  padding-top: 21px;
+}
+.resource-calendar-heading h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  margin: 0;
+}
+.resource-calendar-heading > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.resource-calendar-list {
+  margin: 20px 0;
+}
+.resource-calendar-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1fr) 30px;
+  align-items: center;
+  gap: 12px;
+}
+.resource-calendar-row > span {
+  font-size: 12px;
+  color: var(--muted);
+  padding-top: 12px;
+}
+.resource-calendar-row button {
+  margin-top: 12px;
+}
+.resource-calendar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0 26px;
+}
+.resource-remove {
+  font-size: 13px;
+}
+@media (max-width: 760px) {
+  .resource-dialog {
+    width: calc(100vw - 24px);
+  }
+  .resource-overview {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .resource-overview > div {
+    padding: 14px;
+  }
+  .resource-overview strong {
+    font-size: 22px;
+  }
+  .resource-fields {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .resource-plan {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .resource-plan > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    align-items: center;
+  }
+  .resource-plan span {
+    margin: 0;
+  }
+  .resource-plan b {
+    font-size: 15px;
+  }
+  .resource-selector {
+    gap: 9px;
+  }
+  .resource-selector > button {
+    padding: 10px;
+    font-size: 12px;
+  }
+  .resource-calendar-row {
+    grid-template-columns: 17px minmax(0, 1fr) minmax(0, 1fr) 25px;
+    gap: 6px;
+  }
+  .resource-calendar-row input {
+    padding: 8px 6px;
+  }
+  .resource-calendar-heading {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
 .arrival-dialog {
   box-sizing: border-box;
   width: min(840px, calc(100vw - 32px));

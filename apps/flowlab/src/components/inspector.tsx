@@ -17,12 +17,14 @@ export default function Inspector({
   selected,
   variant,
   onChange,
+  onManageResources,
   onClose,
 }: {
   model: FlowModel;
   selected: string;
   variant: string;
   onChange: (next: FlowModel) => void;
+  onManageResources: (id?: string) => void;
   onClose: () => void;
 }) {
   const [arrivalEditorOpen, setArrivalEditorOpen] = useState(false);
@@ -333,6 +335,7 @@ export default function Inspector({
           </label>
           <button
             className="text-button"
+            disabled={model.resources.length >= 50}
             onClick={() => {
               const id = crypto.randomUUID();
               onChange({
@@ -355,6 +358,12 @@ export default function Inspector({
           >
             <Plus size={13} />
             Opret ressourcepool
+          </button>
+          <button
+            className="text-button"
+            onClick={() => onManageResources(resource?.id)}
+          >
+            Administrér alle puljer
           </button>
           {resource && (
             <>

@@ -83,6 +83,7 @@ import DataWorkshop from "./data-workshop";
 import ScenarioLibrary from "./scenario-library";
 import ExperimentSettings from "./experiment-settings";
 import InputDifferences from "./input-differences";
+import ResourceEditor from "./resource-editor";
 import { modelInputDifferences } from "../lib/input-differences";
 import { applyExperimentSettings } from "../lib/experiment-settings";
 import { formatCaseTime } from "../lib/time-profile";
@@ -141,6 +142,7 @@ export default function FlowLab() {
     [partial, setPartial] = useState<Comparison | null>(null),
     [showPalette, setShowPalette] = useState(false),
     [showHelp, setShowHelp] = useState(false),
+    [resourceEditor, setResourceEditor] = useState<string | null>(null),
     [historyCount, setHistoryCount] = useState(0);
   const pendingRun = useRef<{
     baseline: FlowModel;
@@ -1063,8 +1065,14 @@ export default function FlowLab() {
                       <div className="canvas-subheader">
                         <span>
                           {model.nodes.length} trin <b>·</b>{" "}
-                          {model.resources.length} ressourcepools <b>·</b>{" "}
-                          {formatCaseTime(model.horizon)} model
+                          <button
+                            className="canvas-resource-link"
+                            aria-label="Administrér ressourcepuljer"
+                            onClick={() => setResourceEditor("")}
+                          >
+                            {model.resources.length} ressourcepools
+                          </button>{" "}
+                          <b>·</b> {formatCaseTime(model.horizon)} model
                         </span>
                         <span>v{model.revision}</span>
                       </div>
@@ -1210,6 +1218,7 @@ export default function FlowLab() {
                           variant === "baseline" ? "Baseline" : "Alternativ"
                         }
                         onChange={changeModel}
+                        onManageResources={(id) => setResourceEditor(id ?? "")}
                         onClose={() => setInspectorOpen(false)}
                       />
                     )}
@@ -1836,6 +1845,18 @@ export default function FlowLab() {
             <X size={14} />
           </button>
         </div>
+      )}
+      {resourceEditor !== null && (
+        <ResourceEditor
+          model={model}
+          initialPoolId={resourceEditor}
+          variant={variant === "baseline" ? "Baseline" : "Alternativ"}
+          onClose={() => setResourceEditor(null)}
+          onApply={(resources) => {
+            changeModel({ ...model, resources });
+            setResourceEditor(null);
+          }}
+        />
       )}
       <dialog
         ref={modalRef}

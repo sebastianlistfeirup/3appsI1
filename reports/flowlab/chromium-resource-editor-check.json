@@ -1,0 +1,85 @@
+{
+  "executedAt": "2026-10-16T23:13:58.512Z",
+  "browser": "chromium",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "checks": [
+        "Reserved salary includes unreferenced pools and observation-window capacity",
+        "Referenced pool cannot be removed; invalid drafts cannot apply",
+        "Cancel, focus return, undo and redo preserve pool state",
+        "Removing unused pool changes salary 35 to 5 with identical actual cases",
+        "Creating and reassigning a pool preserves references and yields exact salary 60",
+        "Overlapping calendar rejected; sorted valid calendar pauses 90s job until 150s",
+        "Reload preserves calendar; empty schedule explicitly restores full opening",
+        "1000 intervals render 20 at a time and edit persists across pool switches/reload",
+        "50-pool budget can be recovered by removing an unused pool"
+      ],
+      "calendarMetrics": {
+        "id": "r",
+        "label": "Ressource",
+        "capacity": 1,
+        "availableTime": 140000,
+        "busyTime": 90000,
+        "utilization": 0.6428571428571429,
+        "salaryCost": 3.888888888888889
+      },
+      "axeViolations": 0
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "height": 768,
+      "checks": [
+        "Reserved salary includes unreferenced pools and observation-window capacity",
+        "Referenced pool cannot be removed; invalid drafts cannot apply",
+        "Cancel, focus return, undo and redo preserve pool state",
+        "Removing unused pool changes salary 35 to 5 with identical actual cases",
+        "Creating and reassigning a pool preserves references and yields exact salary 60",
+        "Overlapping calendar rejected; sorted valid calendar pauses 90s job until 150s",
+        "Reload preserves calendar; empty schedule explicitly restores full opening",
+        "1000 intervals render 20 at a time and edit persists across pool switches/reload",
+        "50-pool budget can be recovered by removing an unused pool"
+      ],
+      "calendarMetrics": {
+        "id": "r",
+        "label": "Ressource",
+        "capacity": 1,
+        "availableTime": 140000,
+        "busyTime": 90000,
+        "utilization": 0.6428571428571429,
+        "salaryCost": 3.888888888888889
+      },
+      "axeViolations": 0
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "checks": [
+        "Reserved salary includes unreferenced pools and observation-window capacity",
+        "Referenced pool cannot be removed; invalid drafts cannot apply",
+        "Cancel, focus return, undo and redo preserve pool state",
+        "Removing unused pool changes salary 35 to 5 with identical actual cases",
+        "Creating and reassigning a pool preserves references and yields exact salary 60",
+        "Overlapping calendar rejected; sorted valid calendar pauses 90s job until 150s",
+        "Reload preserves calendar; empty schedule explicitly restores full opening",
+        "1000 intervals render 20 at a time and edit persists across pool switches/reload",
+        "50-pool budget can be recovered by removing an unused pool"
+      ],
+      "calendarMetrics": {
+        "id": "r",
+        "label": "Ressource",
+        "capacity": 1,
+        "availableTime": 140000,
+        "busyTime": 90000,
+        "utilization": 0.6428571428571429,
+        "salaryCost": 3.888888888888889
+      },
+      "axeViolations": 0
+    }
+  ],
+  "errors": []
+}
