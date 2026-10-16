@@ -173,7 +173,7 @@ export async function renderReportPdf(
   text(
     42,
     146,
-    `${c.seeds.length} parrede replikationer · ${c.baseline.horizon / 3600000} timer · ${report.generatedAt.slice(0, 10)}`,
+    `${c.seeds.length} parrede replikationer · ${formatCaseTime(c.baseline.horizon)} · ${report.generatedAt.slice(0, 10)}`,
     10,
     colors.muted,
   );

@@ -1,0 +1,369 @@
+{
+  "baseline": {
+    "schemaVersion": 1,
+    "id": "golden",
+    "revision": 2,
+    "name": "FL-AT01",
+    "description": "Tre sager, ét sikkert facit.",
+    "evidence": "synthetic",
+    "horizon": 300000,
+    "observationStart": 120000,
+    "maxEvents": 10000,
+    "sla": 120000,
+    "fixedAutomationCost": 100,
+    "arrivals": {
+      "type": "explicit",
+      "cases": [
+        {
+          "id": "a",
+          "time": 0,
+          "caseType": "standard"
+        },
+        {
+          "id": "b",
+          "time": 60000,
+          "caseType": "standard"
+        },
+        {
+          "id": "c",
+          "time": 120000,
+          "caseType": "standard"
+        }
+      ]
+    },
+    "nodes": [
+      {
+        "id": "s",
+        "label": "Ankomst",
+        "kind": "source",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "variableCost": 0,
+        "maxVisits": 20
+      },
+      {
+        "id": "a",
+        "label": "Aktivitet",
+        "kind": "activity",
+        "position": {
+          "x": 200,
+          "y": 0
+        },
+        "duration": {
+          "type": "fixed",
+          "value": 90000
+        },
+        "resourceId": "r",
+        "variableCost": 0,
+        "maxVisits": 20
+      },
+      {
+        "id": "e",
+        "label": "Slut",
+        "kind": "sink",
+        "position": {
+          "x": 400,
+          "y": 0
+        },
+        "variableCost": 0,
+        "maxVisits": 20
+      }
+    ],
+    "edges": [
+      {
+        "id": "sa",
+        "source": "s",
+        "target": "a"
+      },
+      {
+        "id": "ae",
+        "source": "a",
+        "target": "e"
+      }
+    ],
+    "resources": [
+      {
+        "id": "r",
+        "label": "Ressource",
+        "capacity": 1,
+        "hourlyCost": 100,
+        "calendar": []
+      }
+    ]
+  },
+  "scenario": {
+    "schemaVersion": 1,
+    "id": "golden",
+    "revision": 2,
+    "name": "FL-AT01",
+    "description": "Tre sager, ét sikkert facit.",
+    "evidence": "synthetic",
+    "horizon": 300000,
+    "observationStart": 120000,
+    "maxEvents": 10000,
+    "sla": 120000,
+    "fixedAutomationCost": 250,
+    "arrivals": {
+      "type": "explicit",
+      "cases": [
+        {
+          "id": "a",
+          "time": 0,
+          "caseType": "standard"
+        },
+        {
+          "id": "b",
+          "time": 60000,
+          "caseType": "standard"
+        },
+        {
+          "id": "c",
+          "time": 120000,
+          "caseType": "standard"
+        }
+      ]
+    },
+    "nodes": [
+      {
+        "id": "s",
+        "label": "Ankomst",
+        "kind": "source",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "variableCost": 0,
+        "maxVisits": 20
+      },
+      {
+        "id": "a",
+        "label": "Aktivitet",
+        "kind": "activity",
+        "position": {
+          "x": 200,
+          "y": 0
+        },
+        "duration": {
+          "type": "fixed",
+          "value": 90000
+        },
+        "resourceId": "r",
+        "variableCost": 0,
+        "maxVisits": 20
+      },
+      {
+        "id": "e",
+        "label": "Slut",
+        "kind": "sink",
+        "position": {
+          "x": 400,
+          "y": 0
+        },
+        "variableCost": 0,
+        "maxVisits": 20
+      }
+    ],
+    "edges": [
+      {
+        "id": "sa",
+        "source": "s",
+        "target": "a"
+      },
+      {
+        "id": "ae",
+        "source": "a",
+        "target": "e"
+      }
+    ],
+    "resources": [
+      {
+        "id": "r",
+        "label": "Ressource",
+        "capacity": 2,
+        "hourlyCost": 100,
+        "calendar": []
+      }
+    ]
+  },
+  "seeds": [
+    1670256963,
+    1477666837,
+    1671784842,
+    3714445914,
+    2325941002,
+    1813369949,
+    3373746645,
+    3814432474,
+    1296732853,
+    500503850,
+    3994470940,
+    1287640573,
+    1654237366,
+    3166369257,
+    65902710,
+    2458038775,
+    3358878965,
+    2719995175,
+    806742138,
+    2751558103,
+    4152500234,
+    2697133492,
+    2199855493,
+    439716845,
+    1455616600,
+    965144649,
+    3265244039,
+    142003906,
+    1639947343,
+    692490573
+  ],
+  "status": "completed",
+  "metrics": [
+    {
+      "key": "throughput",
+      "baseline": 2,
+      "scenario": 2,
+      "deltaMean": 0,
+      "deltaMedian": 0,
+      "deltaP10": 0,
+      "deltaP90": 0,
+      "pairs": 30
+    },
+    {
+      "key": "leadTime",
+      "baseline": 135000,
+      "scenario": 90000,
+      "deltaMean": -45000,
+      "deltaMedian": -45000,
+      "deltaP10": -45000,
+      "deltaP90": -45000,
+      "pairs": 30
+    },
+    {
+      "key": "queueTime",
+      "baseline": 45000,
+      "scenario": 0,
+      "deltaMean": -45000,
+      "deltaMedian": -45000,
+      "deltaP10": -45000,
+      "deltaP90": -45000,
+      "pairs": 30
+    },
+    {
+      "key": "backlog",
+      "baseline": 0,
+      "scenario": 0,
+      "deltaMean": 0,
+      "deltaMedian": 0,
+      "deltaP10": 0,
+      "deltaP90": 0,
+      "pairs": 30
+    },
+    {
+      "key": "utilization",
+      "baseline": 0.8333333333333331,
+      "scenario": 0.3333333333333333,
+      "deltaMean": -0.5,
+      "deltaMedian": -0.5,
+      "deltaP10": -0.5,
+      "deltaP90": -0.5,
+      "pairs": 30
+    },
+    {
+      "key": "cost",
+      "baseline": 105,
+      "scenario": 260,
+      "deltaMean": 155,
+      "deltaMedian": 155,
+      "deltaP10": 155,
+      "deltaP90": 155,
+      "pairs": 30
+    },
+    {
+      "key": "slaCompleted",
+      "baseline": 0.5,
+      "scenario": 1,
+      "deltaMean": 0.5,
+      "deltaMedian": 0.5,
+      "deltaP10": 0.5,
+      "deltaP90": 0.5,
+      "pairs": 30
+    }
+  ],
+  "firstBaseline": {
+    "throughput": 2,
+    "completedBeforeWindow": 1,
+    "throughputPerHour": 40,
+    "backlog": 0,
+    "arrived": 3,
+    "active": 0,
+    "waiting": 0,
+    "plannedWait": 0,
+    "aborted": 0,
+    "leadTime": {
+      "mean": 135000,
+      "median": 135000,
+      "p90": 147000,
+      "count": 2
+    },
+    "queueTime": {
+      "mean": 45000,
+      "median": 45000,
+      "p90": 57000,
+      "count": 2
+    },
+    "plannedWaitTime": {
+      "mean": 0,
+      "median": 0,
+      "p90": 0,
+      "count": 2
+    },
+    "utilization": 0.8333333333333334,
+    "cost": 105,
+    "salaryCost": 5,
+    "variableCost": 0,
+    "slaMet": 1,
+    "slaCompleted": 0.5,
+    "slaKnownBacklogBreaches": 0,
+    "slaUnknownBacklog": 0
+  },
+  "firstScenario": {
+    "throughput": 2,
+    "completedBeforeWindow": 1,
+    "throughputPerHour": 40,
+    "backlog": 0,
+    "arrived": 3,
+    "active": 0,
+    "waiting": 0,
+    "plannedWait": 0,
+    "aborted": 0,
+    "leadTime": {
+      "mean": 90000,
+      "median": 90000,
+      "p90": 90000,
+      "count": 2
+    },
+    "queueTime": {
+      "mean": 0,
+      "median": 0,
+      "p90": 0,
+      "count": 2
+    },
+    "plannedWaitTime": {
+      "mean": 0,
+      "median": 0,
+      "p90": 0,
+      "count": 2
+    },
+    "utilization": 0.3333333333333333,
+    "cost": 260,
+    "salaryCost": 10,
+    "variableCost": 0,
+    "slaMet": 2,
+    "slaCompleted": 1,
+    "slaKnownBacklogBreaches": 0,
+    "slaUnknownBacklog": 0
+  }
+}

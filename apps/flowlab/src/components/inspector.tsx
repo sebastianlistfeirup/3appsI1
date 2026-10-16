@@ -85,11 +85,11 @@ export default function Inspector({
       {node.kind === "source" && (
         <>
           <label>
-            Observationsvindue (timer)
+            Simulationshorisont (timer)
             <input
               type="number"
               min={0.01}
-              max={168}
+              max={8760}
               step={0.5}
               value={model.horizon / 3600000}
               onChange={(e) =>
@@ -103,6 +103,11 @@ export default function Inspector({
               }
             />
           </label>
+          <p className="field-hint">
+            Målingen starter {formatNumber(model.observationStart / 3600000, 2)}{" "}
+            timer efter simulationsstart. Fælles periode og målestart for begge
+            modeller findes under Scenarier.
+          </p>
           <label>
             SLA (minutter)
             <input
@@ -120,7 +125,7 @@ export default function Inspector({
           {model.arrivals.type === "poisson" ? (
             <>
               <label>
-                Forventede ankomster pr. dag
+                Forventede nye ankomster i perioden
                 <input
                   type="number"
                   min={1}
@@ -140,6 +145,29 @@ export default function Inspector({
                               model.horizon /
                                 Math.max(1, Number(e.target.value)),
                             ),
+                          ),
+                        },
+                      });
+                  }}
+                />
+              </label>
+              <label>
+                Loft for nye sager
+                <input
+                  type="number"
+                  min={1}
+                  max={100000}
+                  step={1}
+                  value={model.arrivals.maxCases}
+                  onChange={(event) => {
+                    if (model.arrivals.type === "poisson")
+                      onChange({
+                        ...model,
+                        arrivals: {
+                          ...model.arrivals,
+                          maxCases: Math.max(
+                            1,
+                            Math.round(Number(event.target.value)),
                           ),
                         },
                       });
@@ -170,7 +198,9 @@ export default function Inspector({
               </label>
               <p className="field-hint">
                 Poisson-ankomster: tidsrummet mellem sager er eksponentielt
-                fordelt. Antallet varierer mellem seeds.
+                fordelt. Antallet varierer mellem seeds. Loftet er en øvre
+                grænse for nye sager, ikke et forventet antal. Nye sager og
+                startkø må tilsammen højst være 100.000.
               </p>
             </>
           ) : (

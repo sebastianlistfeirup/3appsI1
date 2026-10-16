@@ -4252,3 +4252,44 @@ textarea:focus {
     font-size: 26px;
   }
 }
+
+.experiment-settings-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+.experiment-cost-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 22px;
+}
+.experiment-settings label {
+  margin: 0;
+}
+.experiment-settings-actions {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-top: 24px;
+}
+.experiment-settings-actions > button {
+  flex-shrink: 0;
+}
+.experiment-settings-actions .field-hint {
+  margin: 0;
+  max-width: 630px;
+}
+@media (max-width: 760px) {
+  .experiment-settings-fields,
+  .experiment-cost-fields {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .experiment-settings-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+}

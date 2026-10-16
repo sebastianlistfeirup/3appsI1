@@ -133,7 +133,9 @@ export const formatMetric = (key: string, n: number | null) =>
       : key === "utilization" || key === "slaCompleted"
         ? `${formatNumber(n * 100, 1)} %`
         : key === "cost"
-          ? `${formatNumber(n)} kr.`
+          ? Math.abs(n) >= 1_000_000_000
+            ? `${formatNumber(n / 1_000_000_000, 1)} mia. kr.`
+            : `${formatNumber(n)} kr.`
           : formatNumber(n, n % 1 ? 1 : 0);
 export const sameModel = (left: FlowModel, right: FlowModel) =>
   inputDiff(left, right).length === 0;

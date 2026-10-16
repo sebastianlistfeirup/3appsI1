@@ -1,0 +1,58 @@
+{
+  "executedAt": "2026-10-16T22:44:04.474Z",
+  "browser": "webkit",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "checks": [
+        "Import before the first simulation completes starts a real fresh comparison",
+        "Draft validation rejects empty, invalid window and overflowing cost without mutation",
+        "Shared frame applies atomically with undo/redo and stale-report gate",
+        "Real warmup cohort gives 2 completions, one pre-window completion and exact costs 105/260",
+        "Reload preserves frames and the Poisson arrival cap",
+        "Event limit produces real partial JSON and blocks complete report",
+        "Recovering the budget enables a fresh complete report",
+        "Maximum fixed cost stays finite and PDF retains readable units",
+        "WCAG2AA/21AA violations 0; no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "height": 768,
+      "checks": [
+        "Import before the first simulation completes starts a real fresh comparison",
+        "Draft validation rejects empty, invalid window and overflowing cost without mutation",
+        "Shared frame applies atomically with undo/redo and stale-report gate",
+        "Real warmup cohort gives 2 completions, one pre-window completion and exact costs 105/260",
+        "Reload preserves frames and the Poisson arrival cap",
+        "Event limit produces real partial JSON and blocks complete report",
+        "Recovering the budget enables a fresh complete report",
+        "Maximum fixed cost stays finite and PDF retains readable units",
+        "WCAG2AA/21AA violations 0; no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "checks": [
+        "Import before the first simulation completes starts a real fresh comparison",
+        "Draft validation rejects empty, invalid window and overflowing cost without mutation",
+        "Shared frame applies atomically with undo/redo and stale-report gate",
+        "Real warmup cohort gives 2 completions, one pre-window completion and exact costs 105/260",
+        "Reload preserves frames and the Poisson arrival cap",
+        "Event limit produces real partial JSON and blocks complete report",
+        "Recovering the budget enables a fresh complete report",
+        "Maximum fixed cost stays finite and PDF retains readable units",
+        "WCAG2AA/21AA violations 0; no viewport overflow"
+      ],
+      "axeViolations": 0
+    }
+  ],
+  "errors": []
+}

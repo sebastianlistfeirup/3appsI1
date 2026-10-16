@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export const ENGINE_VERSION = "flow-des/1.3.0" as const;
 export const PRNG_VERSION = "mulberry32-fnv1a/2" as const;
+/** Explicit input budget also keeps all accepted 100-run monetary aggregates finite. */
+export const MAX_FIXED_AUTOMATION_COST = 1_000_000_000_000;
 const idSchema = z
   .string()
   .min(1)
@@ -78,7 +80,14 @@ export const modelSchema = z.object({
   observationStart: z.number().int().nonnegative().default(0),
   maxEvents: z.number().int().min(1).max(5_000_000),
   sla: positiveMs,
-  fixedAutomationCost: z.number().nonnegative().default(0),
+  fixedAutomationCost: z
+    .number()
+    .nonnegative()
+    .max(
+      MAX_FIXED_AUTOMATION_COST,
+      "Fast automationsomkostning må højst være 1.000.000.000.000 kr. pr. kørsel.",
+    )
+    .default(0),
   arrivals: z.discriminatedUnion("type", [
     z.object({
       type: z.literal("explicit"),

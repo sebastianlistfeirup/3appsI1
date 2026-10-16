@@ -82,6 +82,9 @@ import {
 } from "./results";
 import DataWorkshop from "./data-workshop";
 import ScenarioLibrary from "./scenario-library";
+import ExperimentSettings from "./experiment-settings";
+import { applyExperimentSettings } from "../lib/experiment-settings";
+import { formatCaseTime } from "../lib/time-profile";
 import {
   alternativeFromBaseline,
   openSavedScenario,
@@ -365,7 +368,7 @@ export default function FlowLab() {
       autoRan.current = true;
       run(30);
     }
-  }, [ready, doc.comparison, run]);
+  }, [ready, doc, run]);
   const go = (next: Tab) => {
     setTab(next);
     setMobileNav(false);
@@ -1056,7 +1059,7 @@ export default function FlowLab() {
                         <span>
                           {model.nodes.length} trin <b>·</b>{" "}
                           {model.resources.length} ressourcepools <b>·</b>{" "}
-                          {model.horizon / 3600000} timers model
+                          {formatCaseTime(model.horizon)} model
                         </span>
                         <span>v{model.revision}</span>
                       </div>
@@ -1288,7 +1291,7 @@ export default function FlowLab() {
                             .join(" · ")}
                         </p>
                         <span>
-                          {doc[v].horizon / 3600000} timer · Version{" "}
+                          {formatCaseTime(doc[v].horizon)} · Version{" "}
                           {doc[v].revision} ·{" "}
                           {i === 0
                             ? "Udgangspunkt"
@@ -1392,6 +1395,22 @@ export default function FlowLab() {
                       </button>
                     </section>
                   </div>
+                  <ExperimentSettings
+                    key={`${doc.baseline.id}:${doc.baseline.revision}:${doc.scenario.id}:${doc.scenario.revision}`}
+                    baseline={doc.baseline}
+                    scenario={doc.scenario}
+                    onApply={(settings) => {
+                      const next = applyExperimentSettings(
+                        currentDoc.current,
+                        settings,
+                      );
+                      stopSimulation();
+                      update(next);
+                      notify(
+                        "Forsøgets rammer er anvendt på begge scenarier. Kør igen for at se de nye resultater.",
+                      );
+                    }}
+                  />
                   <ScenarioLibrary
                     versions={doc.versions}
                     onSave={saveVersion}

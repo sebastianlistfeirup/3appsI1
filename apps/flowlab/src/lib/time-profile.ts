@@ -21,7 +21,9 @@ export function formatCaseTime(value: number | null): string {
       ? { scale: 1, label: "ms" }
       : value < 60000
         ? { scale: 1000, label: "sek." }
-        : { scale: 60000, label: "min" };
+        : value < 3600000
+          ? { scale: 60000, label: "min" }
+          : { scale: 3600000, label: "t" };
   return `${new Intl.NumberFormat("da-DK", { maximumFractionDigits: 1 }).format(value / unit.scale)} ${unit.label}`;
 }
 export function timeProfilePair(comparison: Comparison, seed: number) {
