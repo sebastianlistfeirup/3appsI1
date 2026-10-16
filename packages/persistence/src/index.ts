@@ -1,25 +1,20 @@
 "use client";
 
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
+import {
+  DocumentController,
+  RevisionConflict,
+  type LocalEnvelope,
+} from "./controller";
+export {
+  RevisionConflict,
+  type LocalEnvelope,
+  type SaveState,
+} from "./controller";
 
-export interface LocalEnvelope<T> {
-  schemaVersion: 1;
-  key: string;
-  revision: number;
-  updatedAt: string;
-  data: T;
-}
 interface LocalDatabase extends DBSchema {
   documents: { key: string; value: LocalEnvelope<unknown> };
-}
-export class RevisionConflict extends Error {
-  constructor() {
-    super(
-      "En nyere version er gemt i en anden fane. Hent den nye version, eller eksportér dine ændringer som en kopi.",
-    );
-    this.name = "RevisionConflict";
-  }
 }
 const databases = new Map<string, Promise<IDBPDatabase<LocalDatabase>>>();
 function database(app: string) {
@@ -32,6 +27,9 @@ function database(app: string) {
       },
     });
     databases.set(name, promise);
+    promise.catch(() => {
+      if (databases.get(name) === promise) databases.delete(name);
+    });
   }
   return promise;
 }
@@ -67,7 +65,6 @@ export async function saveDocument<T>(
   await tx.done;
   return next;
 }
-export type SaveState = "loading" | "saving" | "saved" | "error" | "conflict";
 /** Local/demo storage only. Initial and validate must be module-level functions. */
 export function usePersistentDocument<T>(
   app: string,
@@ -75,131 +72,62 @@ export function usePersistentDocument<T>(
   initial: () => T,
   validate?: (value: unknown) => T,
 ) {
-  const [data, rawSetData] = useState<T>(initial);
-  const [ready, setReady] = useState(false);
-  const [saveState, setSaveState] = useState<SaveState>("loading");
-  const [error, setError] = useState<string | null>(null);
-  const [savedAt, setSavedAt] = useState<string | null>(null);
-  const dataRef = useRef(data);
-  const revision = useRef(0);
-  const blocked = useRef(false);
-  const queue = useRef(Promise.resolve());
-  const channel = useRef<BroadcastChannel | null>(null);
-  const mounted = useRef(true);
-  const apply = useCallback((next: T) => {
-    dataRef.current = next;
-    rawSetData(next);
-  }, []);
-  const reload = useCallback(async () => {
-    await queue.current;
-    setSaveState("loading");
-    try {
-      let envelope = await loadDocument<T>(app, key);
-      if (!envelope) {
-        try {
-          envelope = await saveDocument(app, key, initial(), 0);
-        } catch (e) {
-          if (!(e instanceof RevisionConflict)) throw e;
-          envelope = await loadDocument<T>(app, key);
-        }
-      }
-      if (!envelope) throw new Error("Projektet kunne ikke åbnes.");
-      if (envelope.schemaVersion !== 1)
-        throw new Error("Denne filversion understøttes ikke.");
-      const next = validate ? validate(envelope.data) : envelope.data;
-      if (!mounted.current) return;
-      revision.current = envelope.revision;
-      apply(next);
-      setSavedAt(envelope.updatedAt);
-      setError(null);
-      blocked.current = false;
-      setSaveState("saved");
-      setReady(true);
-    } catch (e) {
-      if (!mounted.current) return;
-      blocked.current = true;
-      setError(
-        e instanceof Error ? e.message : "Lokal lagring er ikke tilgængelig.",
-      );
-      setSaveState("error");
-    }
-  }, [app, key, initial, validate, apply]);
+  const channel = useRef<{
+    app: string;
+    key: string;
+    bc: BroadcastChannel;
+  } | null>(null);
+  const controller = useMemo(
+    () =>
+      new DocumentController<T>(
+        {
+          load: () => loadDocument<T>(app, key),
+          save: (data, revision) => saveDocument(app, key, data, revision),
+        },
+        initial,
+        validate,
+        (revision) =>
+          channel.current?.app === app && channel.current.key === key
+            ? channel.current.bc.postMessage({ key, revision })
+            : undefined,
+      ),
+    [app, key, initial, validate],
+  );
+  const snapshot = useSyncExternalStore(
+    controller.subscribe,
+    controller.getSnapshot,
+    controller.getSnapshot,
+  );
   useEffect(() => {
-    mounted.current = true;
-    void reload();
     if (typeof BroadcastChannel !== "undefined") {
       const bc = new BroadcastChannel(`tre-apps-${app}`);
-      channel.current = bc;
+      channel.current = { app, key, bc };
       bc.onmessage = (event) => {
-        if (event.data?.key === key && event.data.revision > revision.current) {
-          blocked.current = true;
-          setSaveState("conflict");
-          setError(new RevisionConflict().message);
-        }
+        if (event.data?.key === key)
+          controller.notifyRevision(event.data.revision);
       };
     }
+    void controller.reload();
     return () => {
-      mounted.current = false;
-      channel.current?.close();
+      channel.current?.bc.close();
       channel.current = null;
     };
-  }, [app, key, reload]);
-  const setData = useCallback(
-    (update: T | ((previous: T) => T)) => {
-      const next =
-        typeof update === "function"
-          ? (update as (previous: T) => T)(dataRef.current)
-          : update;
-      const checked = validate ? validate(next) : next;
-      apply(checked);
-      if (blocked.current) return;
-      setSaveState("saving");
-      queue.current = queue.current.then(async () => {
-        if (blocked.current) return;
-        try {
-          const envelope = await saveDocument(
-            app,
-            key,
-            checked,
-            revision.current,
-          );
-          revision.current = envelope.revision;
-          if (mounted.current) {
-            setSavedAt(envelope.updatedAt);
-            setSaveState("saved");
-            setError(null);
-          }
-          channel.current?.postMessage({ key, revision: envelope.revision });
-        } catch (e) {
-          blocked.current = true;
-          if (mounted.current) {
-            setError(
-              e instanceof Error
-                ? e.message
-                : "Kunne ikke gemme. Eksportér en kopi af dit arbejde.",
-            );
-            setSaveState(e instanceof RevisionConflict ? "conflict" : "error");
-          }
-        }
-      });
-    },
-    [app, key, apply, validate],
-  );
-  const flush = useCallback(() => queue.current, []);
+  }, [app, key, controller]);
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
-      if (
-        saveState === "saving" ||
-        saveState === "error" ||
-        saveState === "conflict"
-      ) {
+      const state = controller.getSnapshot().saveState;
+      if (["saving", "error", "conflict"].includes(state))
         event.preventDefault();
-      }
     };
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
-  }, [saveState]);
-  return { data, setData, ready, saveState, savedAt, error, reload, flush };
+  }, [controller]);
+  return {
+    ...snapshot,
+    setData: controller.setData,
+    reload: controller.reload,
+    flush: controller.flush,
+  };
 }
 
 export function downloadFile(
