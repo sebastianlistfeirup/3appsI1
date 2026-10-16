@@ -174,8 +174,16 @@ export function assembleComparison(
     const deltas = values.map((v) => v.b - v.a);
     return {
       key,
-      baseline: summarize(values.map((v) => v.a)).mean,
-      scenario: summarize(values.map((v) => v.b)).mean,
+      baseline: summarize(
+        baselineRuns
+          .map((r) => metricValue(r, key))
+          .filter((value): value is number => value !== null),
+      ).mean,
+      scenario: summarize(
+        scenarioRuns
+          .map((r) => metricValue(r, key))
+          .filter((value): value is number => value !== null),
+      ).mean,
       deltaMean: summarize(deltas).mean,
       deltaMedian: percentile(deltas, 0.5),
       deltaP10: percentile(deltas, 0.1),

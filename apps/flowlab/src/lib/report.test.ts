@@ -117,6 +117,26 @@ describe("Decision report integrity", () => {
     delete old.trainingDataHashes;
     expect(validateDocument(old).trainingDataHashes).toEqual([]);
   });
+  it("exports unavailable scenario metrics as blank CSV values while preserving known baseline values", async () => {
+    const doc = initialDocument();
+    doc.baseline = goldenModel();
+    doc.scenario = goldenModel();
+    doc.scenario.resources[0].capacity = 0;
+    doc.comparison = await compareModels(doc.baseline, doc.scenario);
+    const files = unzipSync(await reportZip(createReport(doc), fonts));
+    const line = strFromU8(files["metrics.csv"])
+      .split("\n")
+      .find((row) => row.startsWith("leadTime,"));
+    expect(line?.split(",")).toEqual([
+      "leadTime",
+      "120000",
+      "",
+      "",
+      "",
+      "",
+      "0",
+    ]);
+  });
   it("validates persisted and imported structure before trusting metrics or datasets", () => {
     const doc = initialDocument();
     expect(validateDocument(doc)).toEqual(doc);

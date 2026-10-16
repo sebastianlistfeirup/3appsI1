@@ -1,0 +1,534 @@
+{
+  "recordedAt": "2026-10-16T20:45:33.985Z",
+  "engineVersion": "flow-des/1.2.0",
+  "referenceCommit": "8d21bf7",
+  "excludedFromDifferential": "Only queueTime on censored waiting cases: new version intentionally records elapsed waiting.",
+  "configurations": [
+    {
+      "configuration": 0,
+      "seed": 100,
+      "events": 442,
+      "throughput": 0,
+      "backlog": 182,
+      "status": "completed"
+    },
+    {
+      "configuration": 1,
+      "seed": 101,
+      "events": 311,
+      "throughput": 18,
+      "backlog": 56,
+      "status": "completed"
+    },
+    {
+      "configuration": 2,
+      "seed": 102,
+      "events": 521,
+      "throughput": 55,
+      "backlog": 23,
+      "status": "completed"
+    },
+    {
+      "configuration": 3,
+      "seed": 103,
+      "events": 607,
+      "throughput": 70,
+      "backlog": 7,
+      "status": "completed"
+    },
+    {
+      "configuration": 4,
+      "seed": 104,
+      "events": 552,
+      "throughput": 63,
+      "backlog": 1,
+      "status": "completed"
+    },
+    {
+      "configuration": 5,
+      "seed": 105,
+      "events": 670,
+      "throughput": 73,
+      "backlog": 3,
+      "status": "completed"
+    },
+    {
+      "configuration": 6,
+      "seed": 106,
+      "events": 198,
+      "throughput": 0,
+      "backlog": 60,
+      "status": "completed"
+    },
+    {
+      "configuration": 7,
+      "seed": 107,
+      "events": 3343,
+      "throughput": 86,
+      "backlog": 1329,
+      "status": "completed"
+    },
+    {
+      "configuration": 8,
+      "seed": 108,
+      "events": 277,
+      "throughput": 23,
+      "backlog": 22,
+      "status": "completed"
+    },
+    {
+      "configuration": 9,
+      "seed": 109,
+      "events": 455,
+      "throughput": 53,
+      "backlog": 1,
+      "status": "completed"
+    },
+    {
+      "configuration": 10,
+      "seed": 110,
+      "events": 633,
+      "throughput": 74,
+      "backlog": 1,
+      "status": "completed"
+    },
+    {
+      "configuration": 11,
+      "seed": 111,
+      "events": 710,
+      "throughput": 82,
+      "backlog": 0,
+      "status": "completed"
+    },
+    {
+      "configuration": 12,
+      "seed": 112,
+      "events": 230,
+      "throughput": 0,
+      "backlog": 76,
+      "status": "completed"
+    },
+    {
+      "configuration": 13,
+      "seed": 113,
+      "events": 518,
+      "throughput": 61,
+      "backlog": 9,
+      "status": "completed"
+    },
+    {
+      "configuration": 14,
+      "seed": 114,
+      "events": 3264,
+      "throughput": 142,
+      "backlog": 1117,
+      "status": "completed"
+    },
+    {
+      "configuration": 15,
+      "seed": 115,
+      "events": 2044,
+      "throughput": 241,
+      "backlog": 120,
+      "status": "completed"
+    },
+    {
+      "configuration": 16,
+      "seed": 116,
+      "events": 299,
+      "throughput": 30,
+      "backlog": 4,
+      "status": "completed"
+    },
+    {
+      "configuration": 17,
+      "seed": 117,
+      "events": 396,
+      "throughput": 41,
+      "backlog": 2,
+      "status": "completed"
+    },
+    {
+      "configuration": 18,
+      "seed": 118,
+      "events": 174,
+      "throughput": 0,
+      "backlog": 48,
+      "status": "completed"
+    },
+    {
+      "configuration": 19,
+      "seed": 119,
+      "events": 373,
+      "throughput": 39,
+      "backlog": 6,
+      "status": "completed"
+    },
+    {
+      "configuration": 20,
+      "seed": 120,
+      "events": 490,
+      "throughput": 54,
+      "backlog": 0,
+      "status": "completed"
+    },
+    {
+      "configuration": 21,
+      "seed": 121,
+      "events": 3204,
+      "throughput": 172,
+      "backlog": 963,
+      "status": "completed"
+    },
+    {
+      "configuration": 22,
+      "seed": 122,
+      "events": 2143,
+      "throughput": 274,
+      "backlog": 65,
+      "status": "completed"
+    },
+    {
+      "configuration": 23,
+      "seed": 123,
+      "events": 1707,
+      "throughput": 208,
+      "backlog": 2,
+      "status": "completed"
+    },
+    {
+      "configuration": 24,
+      "seed": 124,
+      "events": 130,
+      "throughput": 0,
+      "backlog": 26,
+      "status": "completed"
+    },
+    {
+      "configuration": 25,
+      "seed": 125,
+      "events": 234,
+      "throughput": 18,
+      "backlog": 16,
+      "status": "completed"
+    },
+    {
+      "configuration": 26,
+      "seed": 126,
+      "events": 407,
+      "throughput": 45,
+      "backlog": 2,
+      "status": "completed"
+    },
+    {
+      "configuration": 27,
+      "seed": 127,
+      "events": 479,
+      "throughput": 55,
+      "backlog": 1,
+      "status": "completed"
+    },
+    {
+      "configuration": 28,
+      "seed": 128,
+      "events": 2832,
+      "throughput": 211,
+      "backlog": 671,
+      "status": "completed"
+    },
+    {
+      "configuration": 29,
+      "seed": 129,
+      "events": 2207,
+      "throughput": 297,
+      "backlog": 14,
+      "status": "completed"
+    },
+    {
+      "configuration": 30,
+      "seed": 130,
+      "events": 438,
+      "throughput": 0,
+      "backlog": 180,
+      "status": "completed"
+    },
+    {
+      "configuration": 31,
+      "seed": 131,
+      "events": 749,
+      "throughput": 75,
+      "backlog": 75,
+      "status": "completed"
+    },
+    {
+      "configuration": 32,
+      "seed": 132,
+      "events": 194,
+      "throughput": 16,
+      "backlog": 1,
+      "status": "completed"
+    },
+    {
+      "configuration": 33,
+      "seed": 133,
+      "events": 262,
+      "throughput": 23,
+      "backlog": 1,
+      "status": "completed"
+    },
+    {
+      "configuration": 34,
+      "seed": 134,
+      "events": 404,
+      "throughput": 40,
+      "backlog": 3,
+      "status": "completed"
+    },
+    {
+      "configuration": 35,
+      "seed": 135,
+      "events": 2428,
+      "throughput": 204,
+      "backlog": 479,
+      "status": "completed"
+    },
+    {
+      "configuration": 36,
+      "seed": 136,
+      "events": 536,
+      "throughput": 0,
+      "backlog": 229,
+      "status": "completed"
+    },
+    {
+      "configuration": 37,
+      "seed": 137,
+      "events": 667,
+      "throughput": 57,
+      "backlog": 99,
+      "status": "completed"
+    },
+    {
+      "configuration": 38,
+      "seed": 138,
+      "events": 903,
+      "throughput": 115,
+      "backlog": 5,
+      "status": "completed"
+    },
+    {
+      "configuration": 39,
+      "seed": 139,
+      "events": 931,
+      "throughput": 113,
+      "backlog": 3,
+      "status": "completed"
+    },
+    {
+      "configuration": 40,
+      "seed": 140,
+      "events": 229,
+      "throughput": 21,
+      "backlog": 0,
+      "status": "completed"
+    },
+    {
+      "configuration": 41,
+      "seed": 141,
+      "events": 329,
+      "throughput": 33,
+      "backlog": 2,
+      "status": "completed"
+    },
+    {
+      "configuration": 42,
+      "seed": 142,
+      "events": 1246,
+      "throughput": 0,
+      "backlog": 584,
+      "status": "completed"
+    },
+    {
+      "configuration": 43,
+      "seed": 143,
+      "events": 642,
+      "throughput": 38,
+      "backlog": 148,
+      "status": "completed"
+    },
+    {
+      "configuration": 44,
+      "seed": 144,
+      "events": 816,
+      "throughput": 88,
+      "backlog": 64,
+      "status": "completed"
+    },
+    {
+      "configuration": 45,
+      "seed": 145,
+      "events": 973,
+      "throughput": 116,
+      "backlog": 3,
+      "status": "completed"
+    },
+    {
+      "configuration": 46,
+      "seed": 146,
+      "events": 789,
+      "throughput": 88,
+      "backlog": 2,
+      "status": "completed"
+    },
+    {
+      "configuration": 47,
+      "seed": 147,
+      "events": 852,
+      "throughput": 99,
+      "backlog": 1,
+      "status": "completed"
+    },
+    {
+      "configuration": 48,
+      "seed": 148,
+      "events": 108,
+      "throughput": 0,
+      "backlog": 15,
+      "status": "completed"
+    },
+    {
+      "configuration": 49,
+      "seed": 149,
+      "events": 880,
+      "throughput": 19,
+      "backlog": 342,
+      "status": "completed"
+    },
+    {
+      "configuration": 50,
+      "seed": 150,
+      "events": 602,
+      "throughput": 50,
+      "backlog": 98,
+      "status": "completed"
+    },
+    {
+      "configuration": 51,
+      "seed": 151,
+      "events": 850,
+      "throughput": 106,
+      "backlog": 4,
+      "status": "completed"
+    },
+    {
+      "configuration": 52,
+      "seed": 152,
+      "events": 755,
+      "throughput": 87,
+      "backlog": 4,
+      "status": "completed"
+    },
+    {
+      "configuration": 53,
+      "seed": 153,
+      "events": 803,
+      "throughput": 94,
+      "backlog": 2,
+      "status": "completed"
+    },
+    {
+      "configuration": 54,
+      "seed": 154,
+      "events": 262,
+      "throughput": 0,
+      "backlog": 92,
+      "status": "completed"
+    },
+    {
+      "configuration": 55,
+      "seed": 155,
+      "events": 630,
+      "throughput": 79,
+      "backlog": 4,
+      "status": "completed"
+    },
+    {
+      "configuration": 56,
+      "seed": 156,
+      "events": 563,
+      "throughput": 17,
+      "backlog": 180,
+      "status": "completed"
+    },
+    {
+      "configuration": 57,
+      "seed": 157,
+      "events": 501,
+      "throughput": 52,
+      "backlog": 31,
+      "status": "completed"
+    },
+    {
+      "configuration": 58,
+      "seed": 158,
+      "events": 747,
+      "throughput": 87,
+      "backlog": 10,
+      "status": "completed"
+    },
+    {
+      "configuration": 59,
+      "seed": 159,
+      "events": 661,
+      "throughput": 75,
+      "backlog": 6,
+      "status": "completed"
+    }
+  ],
+  "burst": {
+    "cases": 100000,
+    "nodes": 3,
+    "capacity": 1,
+    "serviceMs": 1,
+    "durationMs": 1997.583141,
+    "events": 500075,
+    "metrics": {
+      "throughput": 100000,
+      "completedBeforeWindow": 0,
+      "throughputPerHour": 3600000,
+      "backlog": 0,
+      "arrived": 100000,
+      "active": 0,
+      "waiting": 0,
+      "plannedWait": 0,
+      "aborted": 0,
+      "leadTime": {
+        "count": 100000,
+        "mean": 50000.5,
+        "median": 50000.5,
+        "p90": 90000.1
+      },
+      "queueTime": {
+        "count": 100000,
+        "mean": 49999.5,
+        "median": 49999.5,
+        "p90": 89999.1
+      },
+      "plannedWaitTime": {
+        "count": 100000,
+        "mean": 0,
+        "median": 0,
+        "p90": 0
+      },
+      "utilization": 1,
+      "cost": 2.7777777777777777,
+      "salaryCost": 2.7777777777777777,
+      "variableCost": 0,
+      "slaMet": 100000,
+      "slaCompleted": 1,
+      "slaKnownBacklogBreaches": 0,
+      "slaUnknownBacklog": 0
+    },
+    "peakRssKiB": 488916
+  }
+}

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ENGINE_VERSION = "flow-des/1.1.0" as const;
+export const ENGINE_VERSION = "flow-des/1.2.0" as const;
 export const PRNG_VERSION = "mulberry32-fnv1a/1" as const;
 const idSchema = z
   .string()
@@ -40,7 +40,10 @@ export const poolSchema = z.object({
   calendar: z.array(intervalSchema).max(1000),
 });
 export const nodeSchema = z.object({
-  id: idSchema,
+  id: idSchema.refine(
+    (id) => id !== "__proto__",
+    "Vælg et andet node-id end __proto__.",
+  ),
   label: z.string().min(1).max(100),
   kind: z.enum(["source", "activity", "decision", "wait", "rework", "sink"]),
   position: z.object({
@@ -111,6 +114,14 @@ export function validateModel(value: unknown): ValidationIssue[] {
     issues: ValidationIssue[] = [];
   const add = (field: string, message: string, nodeId?: string) =>
     issues.push({ field, message, nodeId });
+  if (
+    m.arrivals.type === "poisson" &&
+    m.arrivals.maxCases + m.arrivals.initialBacklog > 100000
+  )
+    add(
+      "arrivals",
+      "Ankomster og start-restkø må højst indeholde 100.000 sager tilsammen.",
+    );
   if (m.observationStart >= m.horizon)
     add("observationStart", "Måleperioden skal begynde før vinduets slutning.");
   for (const [field, items] of [

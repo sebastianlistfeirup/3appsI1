@@ -184,6 +184,14 @@ export async function renderReportPdf(
       112,
     );
   });
+  if (report.diagnostics.length)
+    text(
+      42,
+      596,
+      "Motoren har bemærkninger til resultatet. Læs det særskilte bilag.",
+      9,
+      colors.muted,
+    );
   text(42, 624, "Din beslutning", 16, colors.ink, bold);
   const decisionLines = wrap(
     report.decision ||
@@ -305,6 +313,30 @@ export async function renderReportPdf(
       }
       lineY += 23;
     }
+  }
+  if (report.diagnostics.length) {
+    addPage();
+    text(42, 99, "Bemærkninger fra motoren", 23, colors.ink, bold);
+    let diagnosticY = 138;
+    for (const diagnostic of report.diagnostics) {
+      for (const line of wrap(diagnostic.message, 511, 11)) {
+        if (diagnosticY > 744) {
+          addPage();
+          diagnosticY = 100;
+        }
+        text(42, diagnosticY, line, 11);
+        diagnosticY += 18;
+      }
+      diagnosticY += 22;
+    }
+    paragraph(
+      42,
+      diagnosticY + 10,
+      "En manglende måling vises som —. Baseline og alternativ kan have forskelligt antal tilgængelige kørsler; parrede forskelle bruger kun de kørsler, hvor begge værdier findes.",
+      511,
+      10,
+      6,
+    );
   }
   if (report.holdout) {
     const holdout = report.holdout;

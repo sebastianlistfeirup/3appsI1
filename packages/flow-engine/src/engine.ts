@@ -276,10 +276,24 @@ export function simulate(
   const activeJobs = new Map<string, { poolId: string; start: number }>(),
     plannedWaitStarts = new Map<string, number>(),
     completedBusyTime = new Map(model.resources.map((r) => [r.id, 0]));
+  type QueueEntry = {
+    caseId: string;
+    nodeId: string;
+    time: number;
+    order: number;
+  };
+  const precedes = (a: QueueEntry, b: QueueEntry) =>
+    a.time < b.time ||
+    (a.time === b.time &&
+      (a.caseId < b.caseId || (a.caseId === b.caseId && a.order < b.order)));
+  const queues = new Map(
+    model.resources.map((pool) => [
+      pool.id,
+      { entries: [] as QueueEntry[], head: 0 },
+    ]),
+  );
   const cases = new Map<string, CaseResult>(),
     visits = new Map<string, number>(),
-    queue: { caseId: string; nodeId: string; time: number; order: number }[] =
-      [],
     occupied = new Map(model.resources.map((r) => [r.id, 0]));
   const trace: TraceEvent[] = [],
     resourceTimelines: SimulationResult["resourceTimelines"] = [],
@@ -401,7 +415,8 @@ export function simulate(
   };
   const capture = () => {
     const list = [...cases.values()],
-      byNode: Record<string, number> = {};
+      byNode: Record<string, number> = Object.create(null);
+    const queue = [...queues.values()].flatMap((q) => q.entries.slice(q.head));
     for (const q of queue) byNode[q.nodeId] = (byNode[q.nodeId] ?? 0) + 1;
     const sample = {
       time,
@@ -463,28 +478,30 @@ export function simulate(
     }
     if (e.kind === "dispatch") {
       scheduledDispatches.delete(time);
-      const availablePools = new Set(
-        model.resources
-          .filter(
-            (pool) =>
-              (queuedByPool.get(pool.id) ?? 0) > 0 &&
-              occupied.get(pool.id)! < pool.capacity &&
-              isOpen(calendars.get(pool.id)!, time),
-          )
-          .map((pool) => pool.id),
+      const availablePools = model.resources.filter(
+        (pool) =>
+          (queuedByPool.get(pool.id) ?? 0) > 0 &&
+          occupied.get(pool.id)! < pool.capacity &&
+          isOpen(calendars.get(pool.id)!, time),
       );
-      for (let i = 0; i < queue.length && availablePools.size > 0;) {
-        const q = queue[i],
-          n = nodes.get(q.nodeId)!,
-          pool = pools.get(n.resourceId!)!;
-        if (
-          (occupied.get(pool.id) ?? 0) >= pool.capacity ||
-          !isOpen(calendars.get(pool.id)!, time)
-        ) {
-          i++;
-          continue;
+      while (availablePools.length) {
+        let index = 0;
+        for (let i = 1; i < availablePools.length; i++) {
+          const a = queues.get(availablePools[i].id)!,
+            b = queues.get(availablePools[index].id)!;
+          if (precedes(a.entries[a.head], b.entries[b.head])) index = i;
         }
-        queue.splice(i, 1);
+        const pool = availablePools[index],
+          localQueue = queues.get(pool.id)!,
+          q = localQueue.entries[localQueue.head++],
+          n = nodes.get(q.nodeId)!;
+        if (
+          localQueue.head > 4096 &&
+          localQueue.head * 2 > localQueue.entries.length
+        ) {
+          localQueue.entries = localQueue.entries.slice(localQueue.head);
+          localQueue.head = 0;
+        }
         queuedByPool.set(pool.id, queuedByPool.get(pool.id)! - 1);
         const c = cases.get(q.caseId)!;
         c.status = "active";
@@ -494,7 +511,7 @@ export function simulate(
           occupied.get(pool.id)! >= pool.capacity ||
           queuedByPool.get(pool.id) === 0
         )
-          availablePools.delete(pool.id);
+          availablePools.splice(index, 1);
         const duration = sampleDuration(
             n.duration!,
             stream(`activity:${n.id}`),
@@ -590,16 +607,16 @@ export function simulate(
         log("completed", c, n.id);
       } else if (n.kind === "activity") {
         c.status = "waiting";
-        const entry = { caseId: c.id, nodeId: n.id, time, order: sequence++ };
-        const precedes = (a: typeof entry, b: typeof entry) =>
-          a.time < b.time ||
-          (a.time === b.time &&
-            (a.caseId < b.caseId ||
-              (a.caseId === b.caseId && a.order < b.order)));
-        if (!queue.length || !precedes(entry, queue[queue.length - 1]))
+        const entry = { caseId: c.id, nodeId: n.id, time, order: sequence++ },
+          localQueue = queues.get(n.resourceId!)!,
+          queue = localQueue.entries;
+        if (
+          queue.length === localQueue.head ||
+          !precedes(entry, queue[queue.length - 1])
+        )
           queue.push(entry);
         else {
-          let lo = 0,
+          let lo = localQueue.head,
             hi = queue.length;
           while (lo < hi) {
             const mid = (lo + hi) >>> 1;
@@ -642,6 +659,11 @@ export function simulate(
   time = measuredUntil;
   for (const [caseId, start] of plannedWaitStarts)
     cases.get(caseId)!.plannedWait += measuredUntil - start;
+  for (const localQueue of queues.values())
+    for (let i = localQueue.head; i < localQueue.entries.length; i++) {
+      const entry = localQueue.entries[i];
+      cases.get(entry.caseId)!.queueTime += measuredUntil - entry.time;
+    }
   capture();
   const all = [...cases.values()],
     completed = all.filter(

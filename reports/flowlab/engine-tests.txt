@@ -3,7 +3,7 @@
 
 
  Test Files  5 passed (5)
-      Tests  55 passed (55)
-   Start at  20:38:34
-   Duration  2.22s (tests 83%, import 12%, transform 4%, worker 1%)
+      Tests  60 passed (60)
+   Start at  20:47:35
+   Duration  2.08s (tests 83%, import 11%, transform 5%, worker 1%)
 

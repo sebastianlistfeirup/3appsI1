@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import {
   metricDefinitions,
+  describeEngineCode,
   type Comparison,
   type MetricKey,
 } from "@tre/flow-engine";
@@ -54,7 +55,11 @@ export function MetricCards({ comparison }: { comparison: Comparison | null }) {
                     <span>vs. baseline</span>
                   </>
                 ) : (
-                  <span>Beregnes af simulationsmotoren</span>
+                  <span>
+                    {m
+                      ? "Ingen par med begge målinger"
+                      : "Beregnes af simulationsmotoren"}
+                  </span>
                 )}
               </div>
             </article>
@@ -174,7 +179,14 @@ export function ResourceChart({ comparison }: { comparison: Comparison }) {
         </div>
         <TrendingUp size={20} />
       </div>
-      {comparison.baseline.resources.map((resource) => {
+      {[
+        ...new Map(
+          [
+            ...comparison.baseline.resources,
+            ...comparison.scenario.resources,
+          ].map((pool) => [pool.id, pool]),
+        ).values(),
+      ].map((resource) => {
         const average = (runs: Comparison["baselineRuns"]) => {
           const values = runs
             .map(
@@ -215,7 +227,8 @@ export function ResourceChart({ comparison }: { comparison: Comparison }) {
       })}
       <p className="chart-note">
         Høj udnyttelse kan give lange køer ved variation i ankomst og
-        behandling.
+        behandling. — betyder, at puljen mangler eller ikke har planlagt
+        kapacitet.
       </p>
     </div>
   );
@@ -248,6 +261,26 @@ export function ResultsPanel({
           {comparison.status === "completed" ? "Fuldført" : "Ufuldstændig"}
         </span>
       </div>
+      {[
+        ...new Set(
+          [...comparison.baselineRuns, ...comparison.scenarioRuns].flatMap(
+            (run) => run.warningCodes,
+          ),
+        ),
+      ].map((code) => (
+        <p className="notice-text" key={code}>
+          {describeEngineCode(code)}
+        </p>
+      ))}
+      {comparison.metrics.some(
+        (metric) => metric.pairs < comparison.seeds.length,
+      ) && (
+        <p className="notice-text">
+          Nogle målinger mangler afsluttede sager eller kapacitet. Baseline og
+          alternativ viser hver deres tilgængelige kørsler; en parret forskel
+          beregnes kun, når begge værdier findes. Manglende værdier vises som —.
+        </p>
+      )}
       <MetricCards comparison={comparison} />
       <div className="charts-grid">
         <QueueChart comparison={comparison} />

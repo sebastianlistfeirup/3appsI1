@@ -1,6 +1,7 @@
 import {
   assertReportReady,
   cleanedCsv,
+  describeEngineCode,
   metricDefinitions,
   type Comparison,
   type MetricKey,
@@ -22,6 +23,7 @@ export interface DecisionReport {
   decision: string;
   dataBasis: string;
   limitations: string[];
+  diagnostics: { code: string; message: string }[];
   comparison: Comparison;
   holdout: HoldoutAssessment | null;
   holdoutMatchesBaseline: boolean;
@@ -44,6 +46,14 @@ export function createReport(doc: FlowDocument): DecisionReport {
       "Gennemløbs- og ventetider omfatter kun afsluttede sager. Restkøen vises særskilt.",
       "Modellen er ikke automatisk kalibreret mod faktisk drift. Ingen kundedata eller cloudintegration er tilkoblet.",
     ],
+    diagnostics: [
+      ...new Set(
+        [
+          ...doc.comparison.baselineRuns,
+          ...doc.comparison.scenarioRuns,
+        ].flatMap((run) => run.warningCodes),
+      ),
+    ].map((code) => ({ code, message: describeEngineCode(code) })),
     comparison: doc.comparison,
     holdout: doc.holdout,
     holdoutDataset:

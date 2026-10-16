@@ -53,9 +53,9 @@
     "Chromium only at this checkpoint",
     "Standard PDF fonts; embedding follows"
   ],
-  "checkpoint": "L04",
-  "engineVersion": "flow-des/1.1.0",
-  "tests": 55,
+  "checkpoint": "L05",
+  "engineVersion": "flow-des/1.2.0",
+  "tests": 60,
   "accessibility": {
     "screens": 6,
     "viewports": 3,
@@ -70,5 +70,7 @@
     "chromium",
     "firefox",
     "webkit"
-  ]
+  ],
+  "differentialConfigurations": 60,
+  "overloadCases": 100000
 }

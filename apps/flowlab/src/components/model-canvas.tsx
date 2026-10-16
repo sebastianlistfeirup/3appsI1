@@ -21,6 +21,7 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
+import { formatNumber } from "../lib/document";
 import type { FlowModel, FlowNode } from "@tre/flow-engine";
 import "@xyflow/react/dist/style.css";
 export const nodeIcons: Record<FlowNode["kind"], LucideIcon> = {
@@ -43,6 +44,19 @@ type ProcessNode = Node<
   { node: FlowNode; detail: string; index: number },
   "process"
 >;
+const nodeDuration = (n: FlowNode) => {
+  const ms =
+    n.duration?.type === "triangular"
+      ? n.duration.mode
+      : n.duration?.type === "fixed"
+        ? n.duration.value
+        : n.duration?.mean;
+  return ms === undefined
+    ? "—"
+    : ms < 60000
+      ? `${formatNumber(ms / 1000, 1)} sek`
+      : `${formatNumber(ms / 60000, 1)} min`;
+};
 function ProcessCard({ data, selected }: NodeProps<ProcessNode>) {
   const Icon = nodeIcons[data.node.kind];
   return (
@@ -95,7 +109,7 @@ export default function ModelCanvas({
                 ? `~${Math.round(model.horizon / model.arrivals.meanInterval)} sager / dag`
                 : `${model.arrivals.cases.length} kendte ankomster`
               : n.kind === "activity"
-                ? `${n.duration?.type === "triangular" ? Math.round(n.duration.mode / 60000) : n.duration?.type === "fixed" ? Math.round(n.duration.value / 60000) : n.duration ? Math.round(n.duration.mean / 60000) : "—"} min · ${model.resources.find((r) => r.id === n.resourceId)?.capacity ?? 0} medarbejdere`
+                ? `${nodeDuration(n)} · ${model.resources.find((r) => r.id === n.resourceId)?.capacity ?? 0} ${model.resources.find((r) => r.id === n.resourceId)?.capacity === 1 ? "medarbejder" : "medarbejdere"}`
                 : n.kind === "decision"
                   ? "Eksplicit routing"
                   : n.kind === "sink"
@@ -151,6 +165,14 @@ export default function ModelCanvas({
       onNodeClick={(_, n) => onSelect(n.id)}
       onNodeDragStop={(_, n) => onMove(n.id, n.position)}
       onConnect={onConnect}
+      ariaLabelConfig={{
+        "controls.ariaLabel": "Diagramvisning",
+        "controls.zoomIn.ariaLabel": "Zoom ind",
+        "controls.zoomOut.ariaLabel": "Zoom ud",
+        "controls.fitView.ariaLabel": "Vis hele modellen",
+        "node.a11yDescription.default":
+          "Tryk Enter eller mellemrum for at vælge en node. Brug piletasterne for at flytte den. Listeeditoren giver adgang til alle indstillinger.",
+      }}
       fitView
       fitViewOptions={{ padding: 0.14, maxZoom: 0.85 }}
       minZoom={0.25}

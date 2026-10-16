@@ -153,6 +153,48 @@ describe("FlowLab numerical contract", () => {
     comparison.metrics[0].baseline = 999;
     expect(() => assertReportReady(comparison)).toThrow();
   });
+  it("keeps the baseline KPI when the alternative has no completed cases, with no fabricated paired delta", async () => {
+    const a = goldenModel(),
+      b = goldenModel();
+    b.resources[0].capacity = 0;
+    const comparison = await compareModels(a, b);
+    expect(comparison.metrics.find((m) => m.key === "leadTime")).toMatchObject({
+      baseline: 120000,
+      scenario: null,
+      deltaMean: null,
+      deltaP10: null,
+      deltaP90: null,
+      pairs: 0,
+    });
+  });
+  it("accounts for elapsed queue time on censored cases without including them in completed-case means", () => {
+    const model = goldenModel();
+    model.horizon = 80000;
+    const r = run(model);
+    expect(r.cases.find((c) => c.id === "b")?.queueTime).toBe(20000);
+    expect(r.metrics.queueTime.mean).toBe(null);
+    expect(r.metrics.backlog).toBe(2);
+  });
+  it("counts valid object-like node identifiers and rejects a node key that cannot roundtrip safely", () => {
+    const model = goldenModel();
+    model.horizon = 80000;
+    model.nodes[1].id = "constructor";
+    model.edges[0].target = "constructor";
+    model.edges[1].source = "constructor";
+    expect(run(model).queueSamples.at(-1)?.byNode.constructor).toBe(1);
+    model.nodes[1].id = "__proto__";
+    expect(() => run(model)).toThrow("node-id");
+  });
+  it("enforces the total case bound including initial backlog", () => {
+    const model = membershipTemplate();
+    model.arrivals = {
+      type: "poisson",
+      meanInterval: 1,
+      maxCases: 100000,
+      initialBacklog: 1,
+    };
+    expect(() => run(model)).toThrow("tilsammen");
+  });
   it("FL-AT01: exact FCFS starts, completions, waiting, lead time and utilization", () => {
     const r = run();
     expect(r.status).toBe("completed");

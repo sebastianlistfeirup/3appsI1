@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-16T20:48:27.179Z",
+  "baselinePreserved": "70,9 min",
+  "scenario": null,
+  "pairedLeadMetrics": 0,
+  "checks": [
+    "Known baseline survives unavailable alternative.",
+    "No paired delta fabricated.",
+    "Zero capacity explained in UI and actual PDF."
+  ],
+  "errors": []
+}

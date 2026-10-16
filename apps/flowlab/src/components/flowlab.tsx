@@ -41,6 +41,7 @@ import {
 } from "lucide-react";
 import {
   ENGINE_VERSION,
+  describeEngineCode,
   assembleComparison,
   seedList,
   inputDiff,
@@ -272,7 +273,7 @@ export default function FlowLab() {
             } else {
               setPartial(result);
               setError(
-                `Kørslen blev ${result.status === "partial" ? "afbrudt" : "stoppet med fejl"}. ${result.seeds.length} af ${result.requestedSeeds.length} par er beregnet. Seneste fuldførte resultat er bevaret. ${[...new Set([...result.baselineRuns, ...result.scenarioRuns].flatMap((r) => r.warningCodes))].join(", ")}`,
+                `Kørslen blev ${result.status === "partial" ? "afbrudt" : "stoppet med fejl"}. ${result.seeds.length} af ${result.requestedSeeds.length} par er beregnet. Seneste fuldførte resultat er bevaret. ${[...new Set([...result.baselineRuns, ...result.scenarioRuns].flatMap((r) => r.warningCodes))].map(describeEngineCode).join(" ")}`,
               );
             }
           } else setError(message.message);
