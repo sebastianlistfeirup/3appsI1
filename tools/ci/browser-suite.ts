@@ -261,6 +261,12 @@ try {
           CAPTION_ENGINE: browser,
         },
       );
+      await run(
+        "node",
+        ["apps/director/tests/render-profile-ui-flow.mjs"],
+        { PROFILE_ENGINE: browser },
+        240000,
+      );
     }
     await run("node", ["apps/director/tests/editor-flow.mjs"]);
     await run("node", ["apps/director/tests/storage-recovery.mjs"]);
@@ -286,6 +292,12 @@ try {
       360000,
     );
     await run("node", ["apps/director/tests/cancellation-smoke.mjs"]);
+    await run(
+      "node",
+      ["--import", "tsx", "apps/director/tests/render-profile-smoke.mjs"],
+      {},
+      120000,
+    );
   }
 } finally {
   for (const server of servers) stop(server, "SIGTERM");
