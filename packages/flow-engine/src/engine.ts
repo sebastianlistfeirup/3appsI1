@@ -90,6 +90,7 @@ export interface SimulationResult {
     resourceId: string;
     caseId: string;
     nodeId: string;
+    visitId?: string;
     start: number;
     end: number;
   }[];
@@ -106,6 +107,8 @@ export interface SimulationInput {
   trace?: boolean;
   traceLimit?: number;
   timelineLimit?: number;
+  /** Collect evidence only for this case; simulation order and all metrics are unchanged. */
+  evidenceCaseId?: string;
 }
 type Event = {
   time: number;
@@ -252,7 +255,12 @@ export function simulate(
     (input.timelineLimit !== undefined &&
       (!Number.isInteger(input.timelineLimit) ||
         input.timelineLimit < 1 ||
-        input.timelineLimit > 200000))
+        input.timelineLimit > 200000)) ||
+    (input.evidenceCaseId !== undefined &&
+      (typeof input.evidenceCaseId !== "string" ||
+        !input.evidenceCaseId.length ||
+        input.evidenceCaseId.length > 100 ||
+        /[\u0000-\u001f\u007f]/.test(input.evidenceCaseId)))
   )
     throw new Error("Ukendt schema, motorversion eller ugyldigt seed.");
   const model = parseModel(input.model),
@@ -321,6 +329,8 @@ export function simulate(
     nodeId: string,
     duration?: number,
   ) => {
+    if (input.evidenceCaseId !== undefined && c.id !== input.evidenceCaseId)
+      return;
     if (
       input.trace &&
       trace.length < Math.min(input.traceLimit ?? 10000, 100000)
@@ -330,7 +340,11 @@ export function simulate(
         type,
         caseId: c.id,
         nodeId,
-        visitId: `${c.id}:${nodeId}:${visits.get(`${c.id}\0${nodeId}`) ?? 0}`,
+        visitId: JSON.stringify([
+          c.id,
+          nodeId,
+          visits.get(`${c.id}\0${nodeId}`) ?? 0,
+        ]),
         ...(duration === undefined ? {} : { duration }),
       });
     else if (input.trace) warnings.add("trace_limit");
@@ -521,6 +535,11 @@ export function simulate(
         log("activity_start", c, n.id, duration);
         if (time >= model.observationStart) variableCost += n.variableCost;
         for (const segment of plan.segments) {
+          if (
+            input.evidenceCaseId !== undefined &&
+            c.id !== input.evidenceCaseId
+          )
+            break;
           if (resourceTimelines.length >= (input.timelineLimit ?? 200000)) {
             warnings.add("timeline_limit");
             break;
@@ -529,6 +548,11 @@ export function simulate(
             resourceId: pool.id,
             caseId: c.id,
             nodeId: n.id,
+            visitId: JSON.stringify([
+              c.id,
+              n.id,
+              visits.get(`${c.id}\0${n.id}`) ?? 0,
+            ]),
             ...segment,
           });
         }

@@ -2,8 +2,11 @@ import type { Distribution } from "./model";
 /** FNV-1a stream derivation + Mulberry32. Versioned; never replace without an engineVersion bump. */
 export function randomStream(seed: number, stream: string): () => number {
   let hash = 2166136261;
-  for (const char of `${seed >>> 0}:${stream}`) {
-    hash ^= char.charCodeAt(0);
+  const key = `${seed >>> 0}:${stream}`;
+  // Hash every UTF-16 code unit. Iterating code points and then charCodeAt(0)
+  // drops the low surrogate, aliasing distinct astral node IDs to one stream.
+  for (let index = 0; index < key.length; index++) {
+    hash ^= key.charCodeAt(index);
     hash = Math.imul(hash, 16777619);
   }
   let state = hash >>> 0;

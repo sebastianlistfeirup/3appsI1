@@ -1,0 +1,374 @@
+{
+  "evidenceVersion": 1,
+  "generatedAt": "2026-10-16T21:48:20.958Z",
+  "baseline": {
+    "schemaVersion": 1,
+    "engineVersion": "flow-des/1.3.0",
+    "prngVersion": "mulberry32-fnv1a/2",
+    "seed": 1670256963,
+    "model": {
+      "schemaVersion": 1,
+      "id": "golden",
+      "revision": 1,
+      "name": "FL-AT01",
+      "description": "Tre sager, ét sikkert facit.",
+      "evidence": "synthetic",
+      "horizon": 300000,
+      "observationStart": 0,
+      "maxEvents": 10000,
+      "sla": 120000,
+      "fixedAutomationCost": 0,
+      "arrivals": {
+        "type": "explicit",
+        "cases": [
+          {
+            "id": "a",
+            "time": 0,
+            "caseType": "standard"
+          },
+          {
+            "id": "b",
+            "time": 60000,
+            "caseType": "standard"
+          },
+          {
+            "id": "c",
+            "time": 120000,
+            "caseType": "standard"
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "s",
+          "label": "Ankomst",
+          "kind": "source",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "variableCost": 0,
+          "maxVisits": 20
+        },
+        {
+          "id": "a",
+          "label": "Aktivitet",
+          "kind": "activity",
+          "position": {
+            "x": 200,
+            "y": 0
+          },
+          "duration": {
+            "type": "fixed",
+            "value": 90000
+          },
+          "resourceId": "r",
+          "variableCost": 0,
+          "maxVisits": 20
+        },
+        {
+          "id": "e",
+          "label": "Slut",
+          "kind": "sink",
+          "position": {
+            "x": 400,
+            "y": 0
+          },
+          "variableCost": 0,
+          "maxVisits": 20
+        }
+      ],
+      "edges": [
+        {
+          "id": "sa",
+          "source": "s",
+          "target": "a"
+        },
+        {
+          "id": "ae",
+          "source": "a",
+          "target": "e"
+        }
+      ],
+      "resources": [
+        {
+          "id": "r",
+          "label": "Ressource",
+          "capacity": 1,
+          "hourlyCost": 100,
+          "calendar": []
+        }
+      ]
+    },
+    "caseId": "b",
+    "case": {
+      "id": "b",
+      "caseType": "standard",
+      "arrival": 60000,
+      "completedAt": 180000,
+      "status": "completed",
+      "queueTime": 30000,
+      "plannedWait": 0,
+      "visitCount": 3,
+      "cohort": "observation"
+    },
+    "runStatus": "completed",
+    "measuredUntil": 300000,
+    "events": [
+      {
+        "time": 60000,
+        "type": "arrival",
+        "caseId": "b",
+        "nodeId": "s",
+        "visitId": "[\"b\",\"s\",0]"
+      },
+      {
+        "time": 60000,
+        "type": "enter",
+        "caseId": "b",
+        "nodeId": "s",
+        "visitId": "[\"b\",\"s\",1]"
+      },
+      {
+        "time": 60000,
+        "type": "enter",
+        "caseId": "b",
+        "nodeId": "a",
+        "visitId": "[\"b\",\"a\",1]"
+      },
+      {
+        "time": 90000,
+        "type": "activity_start",
+        "caseId": "b",
+        "nodeId": "a",
+        "visitId": "[\"b\",\"a\",1]",
+        "duration": 90000
+      },
+      {
+        "time": 180000,
+        "type": "activity_end",
+        "caseId": "b",
+        "nodeId": "a",
+        "visitId": "[\"b\",\"a\",1]"
+      },
+      {
+        "time": 180000,
+        "type": "enter",
+        "caseId": "b",
+        "nodeId": "e",
+        "visitId": "[\"b\",\"e\",1]"
+      },
+      {
+        "time": 180000,
+        "type": "completed",
+        "caseId": "b",
+        "nodeId": "e",
+        "visitId": "[\"b\",\"e\",1]"
+      }
+    ],
+    "workSegments": [
+      {
+        "resourceId": "r",
+        "caseId": "b",
+        "nodeId": "a",
+        "visitId": "[\"b\",\"a\",1]",
+        "start": 90000,
+        "end": 180000
+      }
+    ],
+    "warningCodes": [],
+    "timing": {
+      "elapsed": 120000,
+      "queue": 30000,
+      "plannedWait": 0,
+      "work": 90000,
+      "calendarPause": 0,
+      "completeWorkEvidence": true
+    }
+  },
+  "scenario": {
+    "schemaVersion": 1,
+    "engineVersion": "flow-des/1.3.0",
+    "prngVersion": "mulberry32-fnv1a/2",
+    "seed": 1670256963,
+    "model": {
+      "schemaVersion": 1,
+      "id": "golden",
+      "revision": 1,
+      "name": "FL-AT01",
+      "description": "Tre sager, ét sikkert facit.",
+      "evidence": "synthetic",
+      "horizon": 300000,
+      "observationStart": 0,
+      "maxEvents": 10000,
+      "sla": 120000,
+      "fixedAutomationCost": 0,
+      "arrivals": {
+        "type": "explicit",
+        "cases": [
+          {
+            "id": "a",
+            "time": 0,
+            "caseType": "standard"
+          },
+          {
+            "id": "b",
+            "time": 60000,
+            "caseType": "standard"
+          },
+          {
+            "id": "c",
+            "time": 120000,
+            "caseType": "standard"
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "s",
+          "label": "Ankomst",
+          "kind": "source",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "variableCost": 0,
+          "maxVisits": 20
+        },
+        {
+          "id": "a",
+          "label": "Aktivitet",
+          "kind": "activity",
+          "position": {
+            "x": 200,
+            "y": 0
+          },
+          "duration": {
+            "type": "fixed",
+            "value": 90000
+          },
+          "resourceId": "r",
+          "variableCost": 0,
+          "maxVisits": 20
+        },
+        {
+          "id": "e",
+          "label": "Slut",
+          "kind": "sink",
+          "position": {
+            "x": 400,
+            "y": 0
+          },
+          "variableCost": 0,
+          "maxVisits": 20
+        }
+      ],
+      "edges": [
+        {
+          "id": "sa",
+          "source": "s",
+          "target": "a"
+        },
+        {
+          "id": "ae",
+          "source": "a",
+          "target": "e"
+        }
+      ],
+      "resources": [
+        {
+          "id": "r",
+          "label": "Ressource",
+          "capacity": 2,
+          "hourlyCost": 100,
+          "calendar": []
+        }
+      ]
+    },
+    "caseId": "b",
+    "case": {
+      "id": "b",
+      "caseType": "standard",
+      "arrival": 60000,
+      "completedAt": 150000,
+      "status": "completed",
+      "queueTime": 0,
+      "plannedWait": 0,
+      "visitCount": 3,
+      "cohort": "observation"
+    },
+    "runStatus": "completed",
+    "measuredUntil": 300000,
+    "events": [
+      {
+        "time": 60000,
+        "type": "arrival",
+        "caseId": "b",
+        "nodeId": "s",
+        "visitId": "[\"b\",\"s\",0]"
+      },
+      {
+        "time": 60000,
+        "type": "enter",
+        "caseId": "b",
+        "nodeId": "s",
+        "visitId": "[\"b\",\"s\",1]"
+      },
+      {
+        "time": 60000,
+        "type": "enter",
+        "caseId": "b",
+        "nodeId": "a",
+        "visitId": "[\"b\",\"a\",1]"
+      },
+      {
+        "time": 60000,
+        "type": "activity_start",
+        "caseId": "b",
+        "nodeId": "a",
+        "visitId": "[\"b\",\"a\",1]",
+        "duration": 90000
+      },
+      {
+        "time": 150000,
+        "type": "activity_end",
+        "caseId": "b",
+        "nodeId": "a",
+        "visitId": "[\"b\",\"a\",1]"
+      },
+      {
+        "time": 150000,
+        "type": "enter",
+        "caseId": "b",
+        "nodeId": "e",
+        "visitId": "[\"b\",\"e\",1]"
+      },
+      {
+        "time": 150000,
+        "type": "completed",
+        "caseId": "b",
+        "nodeId": "e",
+        "visitId": "[\"b\",\"e\",1]"
+      }
+    ],
+    "workSegments": [
+      {
+        "resourceId": "r",
+        "caseId": "b",
+        "nodeId": "a",
+        "visitId": "[\"b\",\"a\",1]",
+        "start": 60000,
+        "end": 150000
+      }
+    ],
+    "warningCodes": [],
+    "timing": {
+      "elapsed": 90000,
+      "queue": 0,
+      "plannedWait": 0,
+      "work": 90000,
+      "calendarPause": 0,
+      "completeWorkEvidence": true
+    }
+  }
+}

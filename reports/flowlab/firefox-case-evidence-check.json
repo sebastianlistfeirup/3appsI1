@@ -1,0 +1,52 @@
+{
+  "executedAt": "2026-10-16T21:48:49.567Z",
+  "browser": "firefox",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "checks": [
+        "Actual golden case b reproduces exact baseline and alternative waits",
+        "Real JSON contains same first seed, engine, models and filtered events",
+        "Short horizon axis uses unique minute labels",
+        "Search and no-result state work",
+        "Cancel and replacement ignore late worker messages",
+        "Calendar pauses remain distinct from queueing; censored lead time is explicit",
+        "WCAG2AA/21AA violations 0; no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "height": 768,
+      "checks": [
+        "Actual golden case b reproduces exact baseline and alternative waits",
+        "Real JSON contains same first seed, engine, models and filtered events",
+        "Short horizon axis uses unique minute labels",
+        "Search and no-result state work",
+        "Cancel and replacement ignore late worker messages",
+        "Calendar pauses remain distinct from queueing; censored lead time is explicit",
+        "WCAG2AA/21AA violations 0; no viewport overflow"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "checks": [
+        "Actual golden case b reproduces exact baseline and alternative waits",
+        "Real JSON contains same first seed, engine, models and filtered events",
+        "Short horizon axis uses unique minute labels",
+        "Search and no-result state work",
+        "Cancel and replacement ignore late worker messages",
+        "Calendar pauses remain distinct from queueing; censored lead time is explicit",
+        "WCAG2AA/21AA violations 0; no viewport overflow"
+      ],
+      "axeViolations": 0
+    }
+  ],
+  "errors": []
+}

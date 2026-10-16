@@ -70,6 +70,7 @@ const result = z.object({
         resourceId: z.string(),
         caseId: z.string(),
         nodeId: z.string(),
+        visitId: z.string().optional(),
         start: count,
         end: count,
       }),

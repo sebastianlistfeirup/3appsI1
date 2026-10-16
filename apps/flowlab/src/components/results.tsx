@@ -14,6 +14,7 @@ import {
   type MetricKey,
 } from "@tre/flow-engine";
 import { formatMetric, formatDifference, formatNumber } from "../lib/document";
+import CaseExplorer from "./case-explorer";
 export function MetricCards({ comparison }: { comparison: Comparison | null }) {
   return (
     <div className="metric-grid">
@@ -84,12 +85,25 @@ export function QueueChart({ comparison }: { comparison: Comparison }) {
   const plotWidth = width - 68;
   const baseline = comparison.baselineRuns[0]?.queueSamples ?? [],
     scenario = comparison.scenarioRuns[0]?.queueSamples ?? [],
-    max = Math.max(
-      5,
-      ...baseline.map((s) => s.waiting),
-      ...scenario.map((s) => s.waiting),
-    ),
+    max =
+      Math.ceil(
+        Math.max(
+          4,
+          ...baseline.map((s) => s.waiting),
+          ...scenario.map((s) => s.waiting),
+        ) / 4,
+      ) * 4,
     horizon = comparison.baseline.horizon;
+  const unit =
+    horizon >= 3600000
+      ? { scale: 3600000, label: "t" }
+      : horizon >= 60000
+        ? { scale: 60000, label: "min" }
+        : horizon >= 1000
+          ? { scale: 1000, label: "sek." }
+          : { scale: 1, label: "ms" };
+  const tickLabel = (time: number) =>
+    `${new Intl.NumberFormat("da-DK", { maximumFractionDigits: 2 }).format(time / unit.scale)} ${unit.label}`;
   const path = (list: typeof baseline) =>
     list
       .map(
@@ -102,7 +116,7 @@ export function QueueChart({ comparison }: { comparison: Comparison }) {
       <div className="section-title">
         <div>
           <h3>Hvordan udvikler køen sig?</h3>
-          <p>Ventende sager gennem arbejdsdagen</p>
+          <p>Ventende sager gennem simulationsperioden</p>
         </div>
         <span className="small-badge">Seed {comparison.seeds[0]}</span>
       </div>
@@ -120,7 +134,7 @@ export function QueueChart({ comparison }: { comparison: Comparison }) {
         ref={container}
         viewBox={`0 0 ${width} 230`}
         role="img"
-        aria-label={`Ventende sager over ${horizon / 3600000} timer. Én af ${comparison.seeds.length} parrede kørsler.`}
+        aria-label={`Ventende sager over ${tickLabel(horizon)}. Én af ${comparison.seeds.length} parrede kørsler.`}
         className="queue-chart"
       >
         {[0, 0.25, 0.5, 0.75, 1].map((t) => (
@@ -140,7 +154,7 @@ export function QueueChart({ comparison }: { comparison: Comparison }) {
         ))}
         {[0, 0.25, 0.5, 0.75, 1].map((t) => (
           <text key={t} x={44 + t * plotWidth} y={218} textAnchor="middle">
-            {formatNumber((horizon * t) / 3600000, 0)} t
+            {tickLabel(horizon * t)}
           </text>
         ))}
         <path
@@ -367,6 +381,7 @@ export function ResultsPanel({
           })}
         </div>
       </div>
+      <CaseExplorer comparison={comparison} />
     </>
   );
 }

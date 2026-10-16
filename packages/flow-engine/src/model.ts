@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const ENGINE_VERSION = "flow-des/1.2.0" as const;
-export const PRNG_VERSION = "mulberry32-fnv1a/1" as const;
+export const ENGINE_VERSION = "flow-des/1.3.0" as const;
+export const PRNG_VERSION = "mulberry32-fnv1a/2" as const;
 const idSchema = z
   .string()
   .min(1)

@@ -1,6 +1,6 @@
 {
-  "recordedAt": "2026-10-16T20:45:33.985Z",
-  "engineVersion": "flow-des/1.2.0",
+  "recordedAt": "2026-10-16T21:43:11.829Z",
+  "engineVersion": "flow-des/1.3.0",
   "referenceCommit": "8d21bf7",
   "excludedFromDifferential": "Only queueTime on censored waiting cases: new version intentionally records elapsed waiting.",
   "configurations": [
@@ -490,7 +490,7 @@
     "nodes": 3,
     "capacity": 1,
     "serviceMs": 1,
-    "durationMs": 1997.583141,
+    "durationMs": 2439.25947,
     "events": 500075,
     "metrics": {
       "throughput": 100000,
@@ -529,6 +529,6 @@
       "slaKnownBacklogBreaches": 0,
       "slaUnknownBacklog": 0
     },
-    "peakRssKiB": 488916
+    "peakRssKiB": 482608
   }
 }

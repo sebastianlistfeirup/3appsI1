@@ -64,6 +64,20 @@ try {
     const normalize = (result: typeof current) =>
       JSON.stringify({
         ...result,
+        // v1.3 uses an unambiguous tuple ID; these fixture IDs have no colons.
+        trace: result.trace.map((event) => ({
+          ...event,
+          visitId: event.visitId.startsWith("[")
+            ? event.visitId
+            : JSON.stringify([
+                event.caseId,
+                event.nodeId,
+                Number(event.visitId.split(":").at(-1)),
+              ]),
+        })),
+        resourceTimelines: result.resourceTimelines.map(
+          ({ visitId: _visitId, ...segment }) => segment,
+        ),
         queueSamples: result.queueSamples.map((sample) => ({
           ...sample,
           byNode: Object.fromEntries(Object.entries(sample.byNode).sort()),
