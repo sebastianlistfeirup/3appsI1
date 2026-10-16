@@ -275,6 +275,9 @@ try {
       await run("node", ["apps/director/tests/locations-flow.mjs"], {
         LOCATION_ENGINE: browser,
       });
+      await run("node", ["apps/director/tests/media-lifecycle-flow.mjs"], {
+        LIFECYCLE_ENGINE: browser,
+      });
       await run(
         "node",
         ["--import", "tsx", "apps/director/tests/captions-ui-flow.mjs"],
