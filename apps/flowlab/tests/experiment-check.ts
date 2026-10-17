@@ -96,7 +96,9 @@ async function main() {
       await page
         .getByLabel("Din beslutning til rapporten")
         .fill("Afprøv modellen i en mindre pilot først.");
-      await page.waitForTimeout(400);
+      await expect(
+        page.getByText("Gemt lokalt", { exact: true }),
+      ).toBeVisible();
       await page.reload({ waitUntil: "networkidle" });
       await page.getByRole("tab", { name: "Scenarier", exact: false }).click();
       await expect(page.getByLabel("Fælles seed", { exact: true })).toHaveValue(

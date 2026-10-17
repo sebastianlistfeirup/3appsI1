@@ -1,4 +1,4 @@
-import { chromium, firefox, webkit } from "@playwright/test";
+import { chromium, firefox, webkit, expect } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 const browserName = process.env.FLOWLAB_BROWSER ?? "chromium";
 const browserType = { chromium, firefox, webkit }[browserName];
@@ -88,6 +88,7 @@ for (const [name, width, height] of [
       .click();
     const zip = await zipPromise;
     await zip.saveAs(`${evidence}/sample-report.zip`);
+    await expect(page.getByText("Gemt lokalt", { exact: true })).toBeVisible();
     await page.reload({ waitUntil: "networkidle" });
     await page.getByRole("tab", { name: "Rapport", exact: true }).click();
     const persisted = await page

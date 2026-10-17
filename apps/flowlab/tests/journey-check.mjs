@@ -183,6 +183,7 @@ expect(report.comparison.baselineRuns.map((r) => r.seed)).toEqual(
 log.push(
   "FL-AT12: every rendered PDF baseline/scenario KPI matches underlying JSON run_metrics; ZIP includes same 30 seeds.",
 );
+await expect(page.getByText("Gemt lokalt", { exact: true })).toBeVisible();
 await page.reload({ waitUntil: "networkidle" });
 await page.getByRole("tab", { name: "Rapport", exact: true }).click();
 await expect(page.getByLabel("Din beslutning til rapporten")).toHaveValue(

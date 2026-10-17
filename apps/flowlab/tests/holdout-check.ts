@@ -133,6 +133,7 @@ async function main() {
         () => document.documentElement.scrollWidth > innerWidth,
       ),
     ).toBe(false);
+    await expect(page.getByText("Gemt lokalt", { exact: true })).toBeVisible();
     await page.reload({ waitUntil: "networkidle" });
     await page.getByRole("tab", { name: "Dataværksted", exact: true }).click();
     await expect(

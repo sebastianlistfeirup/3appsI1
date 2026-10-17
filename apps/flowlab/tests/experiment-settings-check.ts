@@ -183,6 +183,9 @@ async function main() {
           2,
         ),
       );
+      await expect(
+        page.getByText("Gemt lokalt", { exact: true }),
+      ).toBeVisible();
       await page.reload({ waitUntil: "networkidle" });
       await scenarios();
       await expect(start).toHaveValue(String(120000 / 3600000));
@@ -283,6 +286,9 @@ async function main() {
         .getByRole("button", { name: "Kør sammenligning", exact: true })
         .click();
       await expect(page.locator(".stale-notice")).toHaveCount(0);
+      await expect(
+        page.getByText("Gemt lokalt", { exact: true }),
+      ).toBeVisible();
       await page.reload({ waitUntil: "networkidle" });
       if (
         await page

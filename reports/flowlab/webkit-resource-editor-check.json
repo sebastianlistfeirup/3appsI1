@@ -1,5 +1,5 @@
 {
-  "executedAt": "2026-10-16T23:15:05.612Z",
+  "executedAt": "2026-10-17T00:29:48.445Z",
   "browser": "webkit",
   "results": [
     {
@@ -15,6 +15,7 @@
         "Overlapping calendar rejected; sorted valid calendar pauses 90s job until 150s",
         "Reload preserves calendar; empty schedule explicitly restores full opening",
         "1000 intervals render 20 at a time and edit persists across pool switches/reload",
+        "Held real IndexedDB transaction distinguishes applied state from confirmed storage; 1999.001 minutes survives after commit",
         "50-pool budget can be recovered by removing an unused pool"
       ],
       "calendarMetrics": {
@@ -41,6 +42,7 @@
         "Overlapping calendar rejected; sorted valid calendar pauses 90s job until 150s",
         "Reload preserves calendar; empty schedule explicitly restores full opening",
         "1000 intervals render 20 at a time and edit persists across pool switches/reload",
+        "Held real IndexedDB transaction distinguishes applied state from confirmed storage; 1999.001 minutes survives after commit",
         "50-pool budget can be recovered by removing an unused pool"
       ],
       "calendarMetrics": {
@@ -67,6 +69,7 @@
         "Overlapping calendar rejected; sorted valid calendar pauses 90s job until 150s",
         "Reload preserves calendar; empty schedule explicitly restores full opening",
         "1000 intervals render 20 at a time and edit persists across pool switches/reload",
+        "Held real IndexedDB transaction distinguishes applied state from confirmed storage; 1999.001 minutes survives after commit",
         "50-pool budget can be recovered by removing an unused pool"
       ],
       "calendarMetrics": {

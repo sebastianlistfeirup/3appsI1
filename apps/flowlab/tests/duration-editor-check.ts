@@ -229,6 +229,9 @@ async function main() {
       expect(
         saved.scenario.nodes.find((node: any) => node.id === "a").duration,
       ).toEqual({ type: "triangular", min: 15, mode: 20, max: 30 });
+      await expect(
+        page.getByText("Gemt lokalt", { exact: true }),
+      ).toBeVisible();
       await page.reload({ waitUntil: "networkidle" });
       await selectActivity();
       await trigger.click();

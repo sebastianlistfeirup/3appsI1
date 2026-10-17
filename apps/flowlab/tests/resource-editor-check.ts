@@ -33,6 +33,27 @@ async function main() {
           reducedMotion: "reduce",
         }),
         page = await context.newPage();
+      // Keep a genuine write transaction pending. No document value or save event is mocked.
+      await page.addInitScript({
+        content: `
+        window.__flowlabResourceHoldWrites = false;
+        window.__flowlabResourceHeldWrites = 0;
+        const originalPut = IDBObjectStore.prototype.put;
+        IDBObjectStore.prototype.put = function (...args) {
+          const request = originalPut.apply(this, args);
+          if (this.name === "documents" && window.__flowlabResourceHoldWrites) {
+            window.__flowlabResourceHeldWrites++;
+            const until = performance.now() + 15000;
+            const keepOpen = () => {
+              if (window.__flowlabResourceHoldWrites && performance.now() < until)
+                this.get("__flowlab_resource_transaction_probe__").addEventListener("success", keepOpen);
+            };
+            keepOpen();
+          }
+          return request;
+        };
+      `,
+      });
       page.on("pageerror", (error) => errors.push(error.message));
       await page.goto("http://localhost:3001", { waitUntil: "networkidle" });
       const load = async (doc: ReturnType<typeof initialDocument>) => {
@@ -280,6 +301,9 @@ async function main() {
       expect(calendar.comparison.scenarioRuns[0].metrics.salaryCost).toBe(
         (140000 / 3600000) * 100,
       );
+      await expect(
+        page.getByText("Gemt lokalt", { exact: true }),
+      ).toBeVisible();
       await page.reload({ waitUntil: "networkidle" });
       await open();
       await expect(dialog.locator(".resource-calendar-row")).toHaveCount(2);
@@ -312,6 +336,9 @@ async function main() {
       );
       large.scenario = structuredClone(large.baseline);
       await load(large);
+      await expect(
+        page.getByText("Gemt lokalt", { exact: true }),
+      ).toBeVisible();
       await open();
       await expect(
         dialog.getByRole("button", { name: "Ny pulje", exact: true }),
@@ -333,7 +360,41 @@ async function main() {
       await dialog
         .getByLabel("Puljens navn", { exact: true })
         .fill("Ny efter oprydning");
+      await page.evaluate(() => {
+        (window as any).__flowlabResourceHoldWrites = true;
+      });
       await apply.click();
+      await expect(page.getByText("Gemmer…", { exact: true })).toBeVisible();
+      await expect(page.getByText("Gemt lokalt", { exact: true })).toHaveCount(
+        0,
+      );
+      await expect
+        .poll(() =>
+          page.evaluate(() => (window as any).__flowlabResourceHeldWrites),
+        )
+        .toBeGreaterThan(0);
+      // Applied model state is correct even while the write is not yet durable.
+      await open();
+      await select.selectOption("r");
+      await dialog
+        .getByLabel("Side med arbejdsintervaller", { exact: true })
+        .fill("50");
+      await expect(
+        dialog.getByLabel("Arbejdstid 1000, til (minutter)", { exact: true }),
+      ).toHaveValue("1999.001");
+      expect(await select.locator("option").allTextContents()).toContain(
+        "Ny efter oprydning · uden trin",
+      );
+      await dialog
+        .getByRole("button", { name: "Luk uden at anvende", exact: true })
+        .click();
+      await expect(page.getByText("Gemmer…", { exact: true })).toBeVisible();
+      await page.evaluate(() => {
+        (window as any).__flowlabResourceHoldWrites = false;
+      });
+      await expect(
+        page.getByText("Gemt lokalt", { exact: true }),
+      ).toBeVisible();
       await page.reload({ waitUntil: "networkidle" });
       await open();
       await expect(select.locator("option")).toHaveCount(50);
@@ -360,6 +421,7 @@ async function main() {
           "Overlapping calendar rejected; sorted valid calendar pauses 90s job until 150s",
           "Reload preserves calendar; empty schedule explicitly restores full opening",
           "1000 intervals render 20 at a time and edit persists across pool switches/reload",
+          "Held real IndexedDB transaction distinguishes applied state from confirmed storage; 1999.001 minutes survives after commit",
           "50-pool budget can be recovered by removing an unused pool",
         ],
         calendarMetrics: calendar.comparison.scenarioRuns[0].resources[0],

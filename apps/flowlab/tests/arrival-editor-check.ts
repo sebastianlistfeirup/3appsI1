@@ -169,6 +169,9 @@ async function main() {
           (item: any) => item.id === "at-stop",
         ),
       ).toBe(false);
+      await expect(
+        page.getByText("Gemt lokalt", { exact: true }),
+      ).toBeVisible();
       await page.reload({ waitUntil: "networkidle" });
       await open();
       await expect(dialog.getByRole("listitem")).toHaveCount(4);
