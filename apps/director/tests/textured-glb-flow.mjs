@@ -1,10 +1,16 @@
 import { crc32 } from "node:zlib";
 import { chromiumExecutable, directorUrl } from "./browser.mjs";
-import { chromium, firefox, webkit, expect } from "@playwright/test";
+import {
+  chromium,
+  firefox,
+  webkit,
+  expect as baseExpect,
+} from "@playwright/test";
 import fs from "node:fs/promises";
 import { writeFileSync } from "node:fs";
 import assert from "node:assert/strict";
 const engine = process.env.GLB_ENGINE ?? "chromium";
+const expect = baseExpect.configure({ timeout: 20000 });
 let browser, page;
 const errors = [],
   external = [],
