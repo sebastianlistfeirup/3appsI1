@@ -8,10 +8,12 @@ import {
   ArrowRight,
   CalendarDays,
 } from "lucide-react";
-import type { FlowModel, FlowNode, Distribution } from "@tre/flow-engine";
+import type { FlowModel, FlowNode } from "@tre/flow-engine";
 import { nodeIcons, nodeLabels } from "./model-canvas";
 import { formatNumber } from "../lib/document";
 import ArrivalEditor from "./arrival-editor";
+import DurationEditor from "./duration-editor";
+import { diagramNodeDetail } from "../lib/diagram";
 export default function Inspector({
   model,
   selected,
@@ -28,6 +30,7 @@ export default function Inspector({
   onClose: () => void;
 }) {
   const [arrivalEditorOpen, setArrivalEditorOpen] = useState(false);
+  const [durationEditorOpen, setDurationEditorOpen] = useState(false);
   const node = model.nodes.find((n) => n.id === selected);
   if (!node)
     return (
@@ -46,15 +49,6 @@ export default function Inspector({
         n.id === node.id ? { ...n, ...patch } : n,
       ),
     });
-  const patchDuration = (key: string, value: number) => {
-    if (!node.duration) return;
-    patchNode({
-      duration: {
-        ...node.duration,
-        [key]: Math.max(1, Math.round(value * 60000)),
-      } as Distribution,
-    });
-  };
   return (
     <aside className="inspector">
       <div className="inspector-top">
@@ -236,84 +230,37 @@ export default function Inspector({
       {(node.kind === "activity" || node.kind === "wait") && (
         <>
           <div className="field-divider" />
-          <label>
-            Varighedsfordeling
-            <select
-              value={node.duration?.type ?? "fixed"}
-              onChange={(e) =>
-                patchNode({
-                  duration:
-                    e.target.value === "fixed"
-                      ? { type: "fixed", value: 10 * 60000 }
-                      : e.target.value === "triangular"
-                        ? {
-                            type: "triangular",
-                            min: 5 * 60000,
-                            mode: 10 * 60000,
-                            max: 20 * 60000,
-                          }
-                        : { type: "exponential", mean: 10 * 60000 },
-                })
-              }
+          <div className="inspector-duration-summary">
+            <span className="field-label">Varighed</span>
+            <strong>{diagramNodeDetail(node, model).primary}</strong>
+            <span>
+              {node.duration?.type === "triangular"
+                ? "Trekantet fordeling"
+                : node.duration?.type === "exponential"
+                  ? "Eksponentiel fordeling"
+                  : "Fast varighed"}
+            </span>
+            <button
+              className="button secondary"
+              onClick={() => setDurationEditorOpen(true)}
             >
-              <option value="fixed">Fast varighed</option>
-              <option value="triangular">Trekantet fordeling</option>
-              <option value="exponential">Eksponentiel fordeling</option>
-            </select>
-          </label>
-          {node.duration?.type === "triangular" ? (
-            <div className="triple-fields">
-              {(["min", "mode", "max"] as const).map((key, i) => (
-                <label key={key}>
-                  {["Min.", "Typisk", "Maks."][i]}
-                  <input
-                    type="number"
-                    min={0.001}
-                    step={1}
-                    value={
-                      node.duration?.type === "triangular"
-                        ? Number((node.duration[key] / 60000).toFixed(3))
-                        : 0
-                    }
-                    onChange={(e) => patchDuration(key, Number(e.target.value))}
-                  />
-                </label>
-              ))}
-            </div>
-          ) : (
-            <label>
-              {node.duration?.type === "exponential"
-                ? "Gennemsnit"
-                : "Varighed"}{" "}
-              (minutter)
-              <input
-                type="number"
-                min={0.001}
-                step={1}
-                value={
-                  node.duration
-                    ? Number(
-                        (
-                          (node.duration.type === "fixed"
-                            ? node.duration.value
-                            : node.duration.mean) / 60000
-                        ).toFixed(3),
-                      )
-                    : 1
-                }
-                onChange={(e) =>
-                  patchDuration(
-                    node.duration?.type === "fixed" ? "value" : "mean",
-                    Number(e.target.value),
-                  )
-                }
-              />
-            </label>
+              Rediger varighed
+            </button>
+          </div>
+          {durationEditorOpen && (
+            <DurationEditor
+              key={`${variant}:${node.id}`}
+              duration={node.duration ?? { type: "fixed", value: 600000 }}
+              label={node.label}
+              variant={variant}
+              kind={node.kind}
+              onClose={() => setDurationEditorOpen(false)}
+              onApply={(duration) => {
+                patchNode({ duration });
+                setDurationEditorOpen(false);
+              }}
+            />
           )}
-          <p className="field-hint">
-            Alle varigheder angives i minutter. Motoren beregner i hele
-            millisekunder.
-          </p>
         </>
       )}
       {node.kind === "activity" && (

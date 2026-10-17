@@ -1,0 +1,37 @@
+{
+  "executedAt": "2026-10-17T00:25:23.764Z",
+  "browser": "webkit",
+  "results": [
+    {
+      "viewport": "desktop",
+      "violations": [],
+      "checks": [
+        "1ms is exact through all four units; empty/oversized/invalid edits never change the model",
+        "Decimal comma and half-ms rounding are explicit; one apply equals one undo/redo",
+        "Triangle is validated atomically; actual 30-seed run, workspace export and confirmed persistence retain all fields",
+        "Exponential meaning, modal cancellation, Escape/focus, axe and responsive bounds verified"
+      ]
+    },
+    {
+      "viewport": "tablet",
+      "violations": [],
+      "checks": [
+        "1ms is exact through all four units; empty/oversized/invalid edits never change the model",
+        "Decimal comma and half-ms rounding are explicit; one apply equals one undo/redo",
+        "Triangle is validated atomically; actual 30-seed run, workspace export and confirmed persistence retain all fields",
+        "Exponential meaning, modal cancellation, Escape/focus, axe and responsive bounds verified"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "violations": [],
+      "checks": [
+        "1ms is exact through all four units; empty/oversized/invalid edits never change the model",
+        "Decimal comma and half-ms rounding are explicit; one apply equals one undo/redo",
+        "Triangle is validated atomically; actual 30-seed run, workspace export and confirmed persistence retain all fields",
+        "Exponential meaning, modal cancellation, Escape/focus, axe and responsive bounds verified"
+      ]
+    }
+  ],
+  "errors": []
+}

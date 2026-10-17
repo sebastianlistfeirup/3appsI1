@@ -1,0 +1,7 @@
+{
+  "executedAt": "2026-10-17T00:17:17.877Z",
+  "modelDurationMs": 1,
+  "displayedMinutes": "0",
+  "afterClearingField": "0",
+  "expected": "A 1ms duration must never appear as zero; clearing must leave the model unchanged."
+}

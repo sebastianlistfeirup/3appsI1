@@ -5172,3 +5172,106 @@ textarea:focus {
   padding-top: 13px;
   margin-top: 5px;
 }
+
+/* Duration changes are one validated model edit, with exact millisecond preview. */
+.inspector-duration-summary {
+  display: grid;
+  gap: 9px;
+}
+.inspector-duration-summary strong {
+  color: var(--text);
+  font-size: 16px;
+}
+.inspector-duration-summary > span:not(.field-label) {
+  color: var(--muted);
+  font-size: 13px;
+}
+.inspector-duration-summary .button {
+  width: 100%;
+  margin-top: 4px;
+}
+.arrival-dialog.duration-dialog {
+  width: min(720px, calc(100vw - 32px));
+}
+.duration-dialog .duration-editor-selects {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 18px;
+}
+.duration-dialog .duration-editor-fields {
+  margin: 20px 0 12px;
+}
+.duration-dialog .duration-editor-fields.three {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.duration-dialog .duration-editor-fields input {
+  font-size: 19px;
+  padding: 13px 12px;
+}
+.duration-meaning {
+  margin: 18px 0;
+}
+.duration-preview {
+  background: #f0f7f3;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+  display: flex;
+  gap: 17px;
+  align-items: center;
+  margin: 22px 0;
+}
+.duration-preview-icon {
+  color: #247463;
+  align-self: flex-start;
+  margin-top: 5px;
+}
+.duration-preview strong {
+  display: block;
+  margin-top: 8px;
+  font:
+    650 29px "Manrope",
+    sans-serif;
+  color: var(--text);
+}
+.duration-preview p {
+  margin: 7px 0 0;
+  font-size: 13px;
+  color: #526966;
+  line-height: 1.6;
+}
+.duration-preview dl {
+  min-width: 155px;
+  margin: 0 0 0 auto;
+  font-size: 13px;
+}
+.duration-preview dl div {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+.duration-preview dt {
+  color: #526966;
+}
+.duration-preview dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 600px) {
+  .duration-dialog .duration-editor-selects,
+  .duration-dialog .duration-editor-fields.three {
+    grid-template-columns: 1fr;
+  }
+  .duration-preview {
+    flex-wrap: wrap;
+    padding: 18px;
+  }
+  .duration-preview dl {
+    width: 100%;
+    margin: 0;
+  }
+}

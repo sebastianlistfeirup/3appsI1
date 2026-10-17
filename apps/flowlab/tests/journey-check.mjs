@@ -94,12 +94,18 @@ await expect(
   }),
 ).toBeVisible();
 await page.getByRole("tab", { name: "Model", exact: true }).click();
+await page
+  .getByRole("button", { name: "Rediger varighed", exact: true })
+  .click();
 await expect(
   page.getByRole("combobox", { name: "Varighedsfordeling", exact: true }),
 ).toHaveValue("fixed");
 await expect(
-  page.getByLabel("Varighed (minutter)", { exact: true }),
-).toHaveValue("0.25");
+  page.getByLabel("Varighed (sekunder)", { exact: true }),
+).toHaveValue("15");
+await page
+  .getByRole("button", { name: "Luk varighedsredigering", exact: true })
+  .click();
 log.push(
   "Explicit data-to-model transfer uses actual 15-second observed median, remains uncalibrated.",
 );
