@@ -1,0 +1,73 @@
+{
+  "url": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38994345942",
+  "headSha": "e2df9acadb56cf92f152371da02f55c87ffdebb8",
+  "createdAt": "2026-10-17T02:17:35Z",
+  "updatedAt": "2026-10-17T02:33:06Z",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T02:17:37Z",
+      "completedAt": "2026-10-17T02:21:31Z",
+      "url": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38994345942/job/117283441884"
+    },
+    {
+      "name": "browser (flowlab, webkit)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T02:21:33Z",
+      "completedAt": "2026-10-17T02:33:05Z",
+      "url": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38994345942/job/117284255267"
+    },
+    {
+      "name": "browser (flowlab, chromium)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T02:21:33Z",
+      "completedAt": "2026-10-17T02:31:44Z",
+      "url": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38994345942/job/117284255319"
+    },
+    {
+      "name": "browser (director, webkit)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T02:21:34Z",
+      "completedAt": "2026-10-17T02:27:04Z",
+      "url": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38994345942/job/117284255351"
+    },
+    {
+      "name": "browser (director, firefox)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T02:21:33Z",
+      "completedAt": "2026-10-17T02:26:42Z",
+      "url": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38994345942/job/117284255359"
+    },
+    {
+      "name": "browser (flowlab, firefox)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T02:21:33Z",
+      "completedAt": "2026-10-17T02:32:59Z",
+      "url": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38994345942/job/117284255362"
+    },
+    {
+      "name": "browser (director, chromium)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T02:21:33Z",
+      "completedAt": "2026-10-17T02:29:02Z",
+      "url": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38994345942/job/117284255386"
+    },
+    {
+      "name": "browser (studio, all)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T02:21:33Z",
+      "completedAt": "2026-10-17T02:31:26Z",
+      "url": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38994345942/job/117284255392"
+    }
+  ]
+}

@@ -10,7 +10,7 @@ Arbejdet følger den brugerleverede Masterbibel. Arbejdsperioden er 16. oktober 
 
 ## Udført kontrol
 
-- Seneste fuldt grønne GitHub-kørsel: [38991713945](https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38991713945) på `9bd35ec`: fælles kontrol, Studio, alle tre FlowLab-browsere og hele Director. Senere tilføjelser er lokalt verificeret; en ny samlet kørsel følger.
+- Seneste fuldt grønne GitHub-kørsel: [38994345942](https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38994345942) på `e2df9ac`: alle **otte job** bestået, inklusive fælles kontrol, Studio, alle tre FlowLab-browsere og alle tre Director-browsere. [Tidspunkter og jobbeviser](reports/ci/github-e2df9ac.json). Den nye prøvepakke indgår i næste kørsel på `main`.
 - Seneste samlede lokale domænekontrol: **338 unit-tests i 54 filer**, alle workspace-/værktøjstypechecks og faktiske produktionsbuilds.
 - Studio: **147 samlede browserforløb** bestået i Chromium, Firefox og WebKit (10,2 minutter, nul fejl, udeladelser eller flaky cases). Det omfatter sikker afbrydelse efter faktisk workerarbejde, forsinkede svar, retry og genåbning.
 - Den medfølgende [prøvepakke](examples/foerste-gennemgang/README.md) er importeret og gennemgået i yderligere tre browserforløb med faktisk download, hashkontrol, to eksplicitte reviews og ny eksport. Det bringer den næste samlede Studio-suite op på 150 forløb. En ren checkout har desuden installeret fra lockfilen og bygget alle tre apps.

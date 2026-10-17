@@ -815,7 +815,7 @@
         "pnpm test:browser",
         "GitHub Actions eight jobs"
       ],
-      "status": "in_progress",
+      "status": "verified-local-and-github",
       "allowed_paths": [
         "tools/ci",
         ".github",

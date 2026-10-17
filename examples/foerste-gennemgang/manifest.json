@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-10-17T02:23:48.385Z",
+  "generatedAt": "2026-10-17T02:36:54.440Z",
   "profile": "synthetic-local-manual-review",
   "generator": "tools/demo/create-review-package.ts",
   "archive": {
     "path": "tre-apps-review.zip",
-    "bytes": 1247028,
-    "sha256": "e55c90101f7f6f8a2519527b973bda4521abe5f7fa9a4cb48867e8be71010dac"
+    "bytes": 1247105,
+    "sha256": "c57de4d63373be85959ac9b74c36e9745fd1031e64a969f81ad91be5da7c8346"
   },
-  "projectId": "project-0a441c12-3694-4d23-8262-2e1a37b4ca37",
+  "projectId": "project-5058777d-20bb-44f6-8c71-4de5f0cb2387",
   "reviewDecisions": 0,
   "flow": {
     "engine": "flow-des/1.3.0",
@@ -65,26 +65,26 @@
     },
     {
       "name": "flowlab-rapport.pdf",
-      "bytes": 23655,
-      "sha256": "2753bc84dba4655d67d1b959f1f8ed4f33cd420073601d8abcdb27079d1b42a5",
+      "bytes": 23654,
+      "sha256": "35c7bcaf64fc9295ea97830a72af43e1f35311a50056dd2110802831405553cf",
       "provenance": "Faktisk lokal 30-par beregning; flow-des/1.3.0, mulberry32-fnv1a/2; syntetisk Medlemsservice. Ingen holdout."
     },
     {
       "name": "flowlab-grundlag.json",
       "bytes": 1349996,
-      "sha256": "e7608bf1f584f4f6139fc4c657d5ccbd908580a202e0c52c4b027560d713f750",
+      "sha256": "743755cecac4b42b184d07ee386cc3eb1326300751cb0eb601c2e973e35dc44f",
       "provenance": "Samme faktiske beregning som flowlab-rapport.pdf; låste modeller, seeds og resultater."
     },
     {
       "name": "det-sidste-signal.mp4",
       "bytes": 840149,
-      "sha256": "d238229bb0061d8aed7c343df3c8a26a4809a87499a76ff58540f013a82d3bd9",
+      "sha256": "091784cdce6031a326c2e252a863470719041da3b7758f6fb413cb38a31b8fea",
       "provenance": "Original verificeret lokal FFmpeg-eksport fra reports/director/det-sidste-signal-720p.mp4; syntetisk animatic med stillbilleder og stille AAC-spor."
     },
     {
       "name": "det-sidste-signal-storyboard.pdf",
-      "bytes": 452865,
-      "sha256": "efb1944273dd36e894d011eef717a2d19621d76eb6e2e94320091407e8b50782",
+      "bytes": 452948,
+      "sha256": "3065989b1f26da39831c4be6f088b9fecac15cd9a6b04a4cb83109485581a23a",
       "provenance": "Original reports/director/sample-storyboard.pdf; syntetisk storyboard fra Director."
     }
   ]

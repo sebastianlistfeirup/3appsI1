@@ -1,10 +1,9 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T02:17:10Z",
+  "updatedAt": "2026-10-17T02:38:03Z",
   "status": "building",
   "activeTasks": [
-    "D22-complete-regression",
-    "F13-eight-job-remote-integration",
+    "F14-final-main-ci",
     "handoff"
   ],
   "profile": "demo",
