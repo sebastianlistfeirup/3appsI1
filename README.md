@@ -29,13 +29,15 @@ Læs den korte [Studio-vejledning](docs/studio.md), [FlowLab-vejledning](docs/fl
 
 ### Faktisk MP4 fra Director
 
-Installér `ffmpeg` og `ffprobe` på din PATH. Start Director med den lokale renderprofil:
+Installér `ffmpeg` og `ffprobe` på din PATH. Stop en eventuel kørende `pnpm dev` med Ctrl+C, og start appsene igen med den lokale renderprofil:
 
 ```bash
-DIRECTOR_LOCAL_RENDER=1 pnpm dev:director
+DIRECTOR_LOCAL_RENDER=1 pnpm dev
 ```
 
-På PowerShell: `$env:DIRECTOR_LOCAL_RENDER="1"; pnpm dev:director`.
+På PowerShell: `$env:DIRECTOR_LOCAL_RENDER="1"; pnpm dev`. Vil du kun starte Director, kan du bruge `dev:director` i stedet for `dev`.
+
+Underteksternes skrifttype følger med projektet. Den native renderprofil er verificeret på Linux; Windows og macOS er ikke afprøvet i denne session. Appen kontrollerer den installerede FFmpeg-profil før eksport.
 
 Tryk **Eksportér → MP4**. Den lokale worker samler ægte 1280×720, 24 fps H.264/AAC med kameraframes, egne klip og lyd. Appen binder til loopback; denne profil er til din egen maskine. Se [renderopsætning og grænser](docs/director-local-render.md). Eksempelfil: [60 sekunders MP4](reports/director/det-sidste-signal-720p.mp4).
 
