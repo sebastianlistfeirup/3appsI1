@@ -48,6 +48,8 @@ Vælg et trin på diagrammet eller i **Vis listeeditor**. **Tilføj trin** åbne
 
 **Tastatur:** Tab flytter fokus. Enter/mellemrum vælger en node og dens indstillinger; piletaster flytter den. Shift+piletast flytter længere. Fortryd/gentag er tilgængeligt i værktøjslinjen. Slet trin og forbindelser i formularen. Fanerne understøtter piletaster, Home og End. Telefonen åbner som standard den læsbare listeeditor; diagrammet kan vælges og zoomes.
 
+Hurtigfelterne i inspectoren har en synlig kladde, mens du skriver. **Enter** eller at forlade feltet anvender en gyldig indtastning som én ændring. **Escape** annullerer. En tom eller ugyldig værdi bliver aldrig stiltiende til nul eller en minimumsværdi; forlader du et ugyldigt felt, bevares den tidligere modelværdi med en forklaring. Bekræftet lokal lagring gælder den anvendte model. Se [Sikker feltredigering](flowlab-inspector.md).
+
 **Rediger varighed** åbner en samlet kladde for fast, trekantet eller eksponentiel tid. Vælg millisekunder, sekunder, minutter eller timer. Tomme/ugyldige felter ændrer ikke modellen; **Anvend varighed** kræver gyldige tal og bliver én fortrydelig ændring. Se [Varigheder](flowlab-durations.md) for grænser, afrunding og fordelingernes betydning.
 
 En aktivitet tager én medarbejder fra én pulje ad gangen. Aktiviteter med samme pulje konkurrerer om den samme kapacitet. Samme person må ikke modelleres dobbelt i to overlappende puljer. Køen er FCFS med et stabilt sags-id som tie-breaker. Flere samtidige ressourcetyper, anden prioritering og bemandingsoptimering er ikke implementeret.

@@ -1,11 +1,11 @@
 {
-  "executedAt": "2026-10-16T21:10:44.158Z",
+  "executedAt": "2026-10-17T01:42:05.056Z",
   "results": [
     {
       "viewport": "desktop",
       "test": "Actual exported model package reimports, reruns 30 pairs, and preserves decision and immutable version; deleted version can be undone",
       "passed": true,
-      "bytes": 7082
+      "bytes": 7352
     },
     {
       "viewport": "desktop",
@@ -16,7 +16,7 @@
       "viewport": "tablet",
       "test": "Actual exported model package reimports, reruns 30 pairs, and preserves decision and immutable version; deleted version can be undone",
       "passed": true,
-      "bytes": 7082
+      "bytes": 7352
     },
     {
       "viewport": "tablet",
@@ -27,7 +27,7 @@
       "viewport": "mobile",
       "test": "Actual exported model package reimports, reruns 30 pairs, and preserves decision and immutable version; deleted version can be undone",
       "passed": true,
-      "bytes": 7082
+      "bytes": 7352
     },
     {
       "viewport": "mobile",

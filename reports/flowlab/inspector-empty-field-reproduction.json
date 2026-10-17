@@ -1,0 +1,8 @@
+{
+  "executedAt": "2026-10-17T00:35:34.996Z",
+  "capacityBefore": "4",
+  "capacityAfterClearing": "0",
+  "horizonBefore": "8",
+  "horizonAfterClearing": "2.7777777777777776e-7",
+  "expected": "Clearing an unfinished field must not turn capacity into0 or the period into1ms."
+}

@@ -22,6 +22,7 @@ await expect(
 ).toBeVisible();
 log.push("Initial comparison completed from engine with 30 paired seeds.");
 await page.getByLabel("Antal medarbejdere", { exact: true }).fill("5");
+await page.getByLabel("Antal medarbejdere", { exact: true }).press("Enter");
 await expect(
   page.getByText("Modellen, det fælles seed eller motoren er opdateret.", {
     exact: false,

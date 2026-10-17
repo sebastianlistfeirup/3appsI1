@@ -8,12 +8,24 @@ import {
   ArrowRight,
   CalendarDays,
 } from "lucide-react";
-import type { FlowModel, FlowNode } from "@tre/flow-engine";
+import type { FlowModel, FlowNode, ResourcePool } from "@tre/flow-engine";
 import { nodeIcons, nodeLabels } from "./model-canvas";
 import { formatNumber } from "../lib/document";
 import ArrivalEditor from "./arrival-editor";
 import DurationEditor from "./duration-editor";
 import { diagramNodeDetail } from "../lib/diagram";
+import InspectorField from "./inspector-field";
+import {
+  inputArrivalLimit,
+  inputDecimal,
+  inputExpectedArrivals,
+  inputHorizon,
+  inputLabel,
+  inputNumber,
+  inputTime,
+} from "../lib/inspector-input";
+import { parseDurationValue } from "../lib/duration-editor";
+import { formatCaseTime } from "../lib/time-profile";
 export default function Inspector({
   model,
   selected,
@@ -49,6 +61,15 @@ export default function Inspector({
         n.id === node.id ? { ...n, ...patch } : n,
       ),
     });
+  const patchResource = (patch: Partial<ResourcePool>) => {
+    if (resource)
+      onChange({
+        ...model,
+        resources: model.resources.map((pool) =>
+          pool.id === resource.id ? { ...pool, ...patch } : pool,
+        ),
+      });
+  };
   return (
     <aside className="inspector">
       <div className="inspector-top">
@@ -72,129 +93,85 @@ export default function Inspector({
       </span>
       <h3>{node.label}</h3>
       <p className="inspector-description">
-        En lille ændring her kan gøre en stor forskel længere nede i flowet.
+        Felter anvendes med Enter eller når du forlader dem. Escape annullerer
+        en igangværende indtastning.
       </p>
-      <label>
-        Navn
-        <input
-          value={node.label}
-          onChange={(e) => patchNode({ label: e.target.value || "Nyt trin" })}
-        />
-      </label>
+      <InspectorField
+        label="Navn"
+        wide
+        value={node.label}
+        parse={inputLabel}
+        onApply={(label) => patchNode({ label })}
+      />
       {node.kind === "source" && (
         <>
-          <label>
-            Simulationshorisont (timer)
-            <input
-              type="number"
-              min={0.01}
-              max={8760}
-              step={0.5}
-              value={model.horizon / 3600000}
-              onChange={(e) =>
-                onChange({
-                  ...model,
-                  horizon: Math.max(
-                    1,
-                    Math.round(Number(e.target.value) * 3600000),
-                  ),
-                })
-              }
-            />
-          </label>
+          <InspectorField
+            label="Simulationshorisont (timer)"
+            value={model.horizon}
+            inputMode="decimal"
+            format={(value) => inputTime(value, "hours")}
+            parse={(text) => inputHorizon(text, model.observationStart)}
+            onApply={(horizon) => onChange({ ...model, horizon })}
+          />
           <p className="field-hint">
             Målingen starter {formatNumber(model.observationStart / 3600000, 2)}{" "}
             timer efter simulationsstart. Fælles periode og målestart for begge
             modeller findes under Scenarier.
           </p>
-          <label>
-            SLA (minutter)
-            <input
-              type="number"
-              min={1}
-              value={model.sla / 60000}
-              onChange={(e) =>
-                onChange({
-                  ...model,
-                  sla: Math.max(1, Math.round(Number(e.target.value) * 60000)),
-                })
-              }
-            />
-          </label>
+          <InspectorField
+            label="SLA (minutter)"
+            value={model.sla}
+            inputMode="decimal"
+            format={(value) => inputTime(value, "minutes")}
+            parse={(text) =>
+              parseDurationValue(text, "minutes", "SLA").milliseconds
+            }
+            onApply={(sla) => onChange({ ...model, sla })}
+          />
           {model.arrivals.type === "poisson" ? (
             <>
-              <label>
-                Forventede nye ankomster i perioden
-                <input
-                  type="number"
-                  min={1}
-                  max={100000}
-                  value={Math.round(
-                    model.horizon / model.arrivals.meanInterval,
-                  )}
-                  onChange={(e) => {
-                    if (model.arrivals.type === "poisson")
-                      onChange({
-                        ...model,
-                        arrivals: {
-                          ...model.arrivals,
-                          meanInterval: Math.max(
-                            1,
-                            Math.round(
-                              model.horizon /
-                                Math.max(1, Number(e.target.value)),
-                            ),
-                          ),
-                        },
-                      });
-                  }}
-                />
-              </label>
-              <label>
-                Loft for nye sager
-                <input
-                  type="number"
-                  min={1}
-                  max={100000}
-                  step={1}
-                  value={model.arrivals.maxCases}
-                  onChange={(event) => {
-                    if (model.arrivals.type === "poisson")
-                      onChange({
-                        ...model,
-                        arrivals: {
-                          ...model.arrivals,
-                          maxCases: Math.max(
-                            1,
-                            Math.round(Number(event.target.value)),
-                          ),
-                        },
-                      });
-                  }}
-                />
-              </label>
-              <label>
-                Startkø (sager)
-                <input
-                  type="number"
-                  min={0}
-                  max={10000}
-                  value={model.arrivals.initialBacklog}
-                  onChange={(e) => {
-                    if (model.arrivals.type === "poisson")
-                      onChange({
-                        ...model,
-                        arrivals: {
-                          ...model.arrivals,
-                          initialBacklog: Math.max(
-                            0,
-                            Math.round(Number(e.target.value)),
-                          ),
-                        },
-                      });
-                  }}
-                />
-              </label>
+              <InspectorField
+                label="Forventede nye ankomster i perioden"
+                value={model.arrivals.meanInterval}
+                inputMode="decimal"
+                format={(value) => inputDecimal(model.horizon / value)}
+                parse={(text) => inputExpectedArrivals(text, model.horizon)}
+                onApply={(meanInterval) => {
+                  if (model.arrivals.type === "poisson")
+                    onChange({
+                      ...model,
+                      arrivals: { ...model.arrivals, meanInterval },
+                    });
+                }}
+              />
+              <InspectorField
+                label="Loft for nye sager"
+                value={model.arrivals.maxCases}
+                inputMode="numeric"
+                parse={(text) => inputArrivalLimit(text, model, "maxCases")}
+                onApply={(maxCases) => {
+                  if (model.arrivals.type === "poisson")
+                    onChange({
+                      ...model,
+                      arrivals: { ...model.arrivals, maxCases },
+                    });
+                }}
+              />
+              <InspectorField
+                label="Startkø (sager)"
+                value={model.arrivals.initialBacklog}
+                inputMode="numeric"
+                parse={(text) =>
+                  inputArrivalLimit(text, model, "initialBacklog")
+                }
+                onApply={(initialBacklog) => {
+                  if (model.arrivals.type === "poisson")
+                    onChange({
+                      ...model,
+                      arrivals: { ...model.arrivals, initialBacklog },
+                    });
+                }}
+              />
               <p className="field-hint">
                 Poisson-ankomster: tidsrummet mellem sager er eksponentielt
                 fordelt. Antallet varierer mellem seeds. Loftet er en øvre
@@ -314,107 +291,52 @@ export default function Inspector({
           </button>
           {resource && (
             <>
-              <label>
-                Poolens navn
-                <input
-                  value={resource.label}
-                  onChange={(e) =>
-                    onChange({
-                      ...model,
-                      resources: model.resources.map((r) =>
-                        r.id === resource.id
-                          ? { ...r, label: e.target.value || "Nyt team" }
-                          : r,
-                      ),
-                    })
-                  }
-                />
-              </label>
-              <label>
-                Medarbejdere i puljen
-                <div className="stepper">
+              <InspectorField
+                label="Poolens navn"
+                key={`label:${resource.id}`}
+                value={resource.label}
+                parse={inputLabel}
+                onApply={(label) => patchResource({ label })}
+              />
+              <InspectorField
+                label="Medarbejdere i puljen"
+                accessibleLabel="Antal medarbejdere"
+                key={`capacity:${resource.id}`}
+                value={resource.capacity}
+                inputMode="numeric"
+                parse={(text) => inputNumber(text, 0, 1000, true)}
+                onApply={(capacity) => patchResource({ capacity })}
+                before={
                   <button
                     aria-label="Fjern en medarbejder"
                     disabled={resource.capacity === 0}
                     onClick={() =>
-                      onChange({
-                        ...model,
-                        resources: model.resources.map((r) =>
-                          r.id === resource.id
-                            ? { ...r, capacity: r.capacity - 1 }
-                            : r,
-                        ),
-                      })
+                      patchResource({ capacity: resource.capacity - 1 })
                     }
                   >
                     −
                   </button>
-                  <input
-                    aria-label="Antal medarbejdere"
-                    type="number"
-                    min={0}
-                    max={1000}
-                    value={resource.capacity}
-                    onChange={(e) =>
-                      onChange({
-                        ...model,
-                        resources: model.resources.map((r) =>
-                          r.id === resource.id
-                            ? {
-                                ...r,
-                                capacity: Math.max(
-                                  0,
-                                  Math.min(
-                                    1000,
-                                    Math.round(Number(e.target.value)),
-                                  ),
-                                ),
-                              }
-                            : r,
-                        ),
-                      })
-                    }
-                  />
+                }
+                after={
                   <button
                     aria-label="Tilføj en medarbejder"
                     disabled={resource.capacity === 1000}
                     onClick={() =>
-                      onChange({
-                        ...model,
-                        resources: model.resources.map((r) =>
-                          r.id === resource.id
-                            ? { ...r, capacity: r.capacity + 1 }
-                            : r,
-                        ),
-                      })
+                      patchResource({ capacity: resource.capacity + 1 })
                     }
                   >
                     +
                   </button>
-                </div>
-              </label>
-              <label>
-                Lønkapacitet (kr. pr. time)
-                <input
-                  type="number"
-                  min={0}
-                  max={1000000}
-                  value={resource.hourlyCost}
-                  onChange={(e) =>
-                    onChange({
-                      ...model,
-                      resources: model.resources.map((r) =>
-                        r.id === resource.id
-                          ? {
-                              ...r,
-                              hourlyCost: Math.max(0, Number(e.target.value)),
-                            }
-                          : r,
-                      ),
-                    })
-                  }
-                />
-              </label>
+                }
+              />
+              <InspectorField
+                label="Lønkapacitet (kr. pr. time)"
+                key={`cost:${resource.id}`}
+                value={resource.hourlyCost}
+                inputMode="decimal"
+                parse={(text) => inputNumber(text, 0, 1000000)}
+                onApply={(hourlyCost) => patchResource({ hourlyCost })}
+              />
               <details className="calendar-details">
                 <summary>
                   <CalendarDays size={14} />
@@ -424,157 +346,58 @@ export default function Inspector({
                   Tom plan = åben i hele vinduet. Pauseret arbejde fortsætter
                   ved næste åbning.
                 </p>
-                {resource.calendar.map((slot, i) => (
-                  <div className="calendar-slot" key={i}>
-                    <label>
-                      Fra (min)
-                      <input
-                        type="number"
-                        min={0}
-                        value={slot.start / 60000}
-                        onChange={(e) =>
-                          onChange({
-                            ...model,
-                            resources: model.resources.map((r) =>
-                              r.id === resource.id
-                                ? {
-                                    ...r,
-                                    calendar: r.calendar.map((s, j) =>
-                                      i === j
-                                        ? {
-                                            ...s,
-                                            start: Math.max(
-                                              0,
-                                              Math.round(
-                                                Number(e.target.value) * 60000,
-                                              ),
-                                            ),
-                                          }
-                                        : s,
-                                    ),
-                                  }
-                                : r,
-                            ),
-                          })
-                        }
-                      />
-                    </label>
-                    <label>
-                      Til (min)
-                      <input
-                        type="number"
-                        min={1}
-                        value={slot.end / 60000}
-                        onChange={(e) =>
-                          onChange({
-                            ...model,
-                            resources: model.resources.map((r) =>
-                              r.id === resource.id
-                                ? {
-                                    ...r,
-                                    calendar: r.calendar.map((s, j) =>
-                                      i === j
-                                        ? {
-                                            ...s,
-                                            end: Math.max(
-                                              1,
-                                              Math.round(
-                                                Number(e.target.value) * 60000,
-                                              ),
-                                            ),
-                                          }
-                                        : s,
-                                    ),
-                                  }
-                                : r,
-                            ),
-                          })
-                        }
-                      />
-                    </label>
-                    <button
-                      className="icon-button"
-                      aria-label={`Fjern arbejdstid ${i + 1}`}
-                      onClick={() =>
-                        onChange({
-                          ...model,
-                          resources: model.resources.map((r) =>
-                            r.id === resource.id
-                              ? {
-                                  ...r,
-                                  calendar: r.calendar.filter(
-                                    (_, j) => j !== i,
-                                  ),
-                                }
-                              : r,
-                          ),
-                        })
-                      }
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
+                {resource.calendar.length > 0 && (
+                  <>
+                    <p className="field-hint">
+                      {formatNumber(resource.calendar.length)}{" "}
+                      {resource.calendar.length === 1
+                        ? "arbejdsinterval"
+                        : "arbejdsintervaller"}{" "}
+                      fra simulationsstart.
+                    </p>
+                    <ol className="inspector-calendar-preview">
+                      {resource.calendar.slice(0, 3).map((slot, index) => (
+                        <li key={index} title={`${slot.start}–${slot.end} ms`}>
+                          {formatCaseTime(slot.start)}–
+                          {formatCaseTime(slot.end)}
+                        </li>
+                      ))}
+                    </ol>
+                    {resource.calendar.length > 3 && (
+                      <p className="field-hint">
+                        De første 3 intervaller vises her. Hele planen findes i
+                        ressourceeditoren.
+                      </p>
+                    )}
+                  </>
+                )}
                 <button
                   className="text-button"
-                  onClick={() =>
-                    onChange({
-                      ...model,
-                      resources: model.resources.map((r) =>
-                        r.id === resource.id
-                          ? {
-                              ...r,
-                              calendar: [
-                                ...r.calendar,
-                                {
-                                  start: r.calendar.at(-1)?.end ?? 0,
-                                  end:
-                                    (r.calendar.at(-1)?.end ?? 0) + 4 * 3600000,
-                                },
-                              ],
-                            }
-                          : r,
-                      ),
-                    })
-                  }
+                  onClick={() => onManageResources(resource.id)}
                 >
-                  <Plus size={13} />
-                  Tilføj arbejdstid
+                  <CalendarDays size={14} />
+                  Rediger arbejdsplan
                 </button>
               </details>
             </>
           )}
-          <label>
-            Variabel pris pr. besøg (kr.)
-            <input
-              type="number"
-              min={0}
-              value={node.variableCost}
-              onChange={(e) =>
-                patchNode({ variableCost: Math.max(0, Number(e.target.value)) })
-              }
-            />
-          </label>
+          <InspectorField
+            label="Variabel pris pr. besøg (kr.)"
+            value={node.variableCost}
+            inputMode="decimal"
+            parse={(text) => inputNumber(text, 0, 1000000)}
+            onApply={(variableCost) => patchNode({ variableCost })}
+          />
         </>
       )}
       {node.kind === "rework" && (
-        <label>
-          Maksimale besøg pr. sag
-          <input
-            type="number"
-            min={1}
-            max={20}
-            value={node.maxVisits}
-            onChange={(e) =>
-              patchNode({
-                maxVisits: Math.max(
-                  1,
-                  Math.min(20, Math.round(Number(e.target.value))),
-                ),
-              })
-            }
-          />
-        </label>
+        <InspectorField
+          label="Maksimale besøg pr. sag"
+          value={node.maxVisits}
+          inputMode="numeric"
+          parse={(text) => inputNumber(text, 1, 20, true)}
+          onApply={(maxVisits) => patchNode({ maxVisits })}
+        />
       )}
       {node.kind === "decision" && (
         <label>
@@ -656,51 +479,38 @@ export default function Inspector({
                 </button>
               </div>
               {node.kind === "decision" && edge.caseType !== undefined && (
-                <label>
-                  Sagstype
-                  <input
-                    value={edge.caseType}
-                    onChange={(e) =>
-                      onChange({
-                        ...model,
-                        edges: model.edges.map((x) =>
-                          x.id === edge.id
-                            ? { ...x, caseType: e.target.value || "standard" }
-                            : x,
-                        ),
-                      })
-                    }
-                  />
-                </label>
+                <InspectorField
+                  label="Sagstype"
+                  value={edge.caseType}
+                  parse={inputLabel}
+                  onApply={(caseType) =>
+                    onChange({
+                      ...model,
+                      edges: model.edges.map((item) =>
+                        item.id === edge.id ? { ...item, caseType } : item,
+                      ),
+                    })
+                  }
+                />
               )}
               {node.kind === "decision" && edge.caseType === undefined && (
-                <label>
-                  Sandsynlighed (%)
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={(edge.weight ?? 0) * 100}
-                    onChange={(e) =>
-                      onChange({
-                        ...model,
-                        edges: model.edges.map((x) =>
-                          x.id === edge.id
-                            ? {
-                                ...x,
-                                caseType: undefined,
-                                weight: Math.max(
-                                  0,
-                                  Math.min(1, Number(e.target.value) / 100),
-                                ),
-                              }
-                            : x,
-                        ),
-                      })
-                    }
-                  />
-                </label>
+                <InspectorField
+                  label="Sandsynlighed (%)"
+                  value={edge.weight ?? 0}
+                  inputMode="decimal"
+                  format={(value) => inputDecimal(value * 100)}
+                  parse={(text) => inputNumber(text, 0, 100) / 100}
+                  onApply={(weight) =>
+                    onChange({
+                      ...model,
+                      edges: model.edges.map((item) =>
+                        item.id === edge.id
+                          ? { ...item, caseType: undefined, weight }
+                          : item,
+                      ),
+                    })
+                  }
+                />
               )}
             </div>
           ))}

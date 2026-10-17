@@ -155,6 +155,7 @@ export default function FlowLab() {
   } | null>(null);
   const worker = useRef<Worker | null>(null),
     workspaceWorker = useRef<Worker | null>(null),
+    draftRevision = useRef(0),
     currentDoc = useRef(doc),
     autoRan = useRef(false),
     undo = useRef<FlowDocument[]>([]),
@@ -531,6 +532,7 @@ export default function FlowLab() {
     if (workspaceWorker.current) return;
     if (operation === "import") stopSimulation();
     const startedFrom = currentDoc.current;
+    const startedDraftRevision = draftRevision.current;
     setWorkspaceOperation(operation);
     setError("");
     const w = new Worker(
@@ -546,7 +548,10 @@ export default function FlowLab() {
       if (workspaceWorker.current !== w) return;
       finish();
       if (event.data.type === "imported") {
-        if (currentDoc.current !== startedFrom) {
+        if (
+          currentDoc.current !== startedFrom ||
+          draftRevision.current !== startedDraftRevision
+        ) {
           setError(
             "Arbejdsrummet blev ændret, mens filen blev læst. Dit seneste arbejde er bevaret. Vælg filen igen for at importere den.",
           );
@@ -601,7 +606,12 @@ export default function FlowLab() {
     [tab, doc.baseline, doc.scenario],
   );
   return (
-    <div className="app-shell">
+    <div
+      className="app-shell"
+      onInputCapture={() => {
+        draftRevision.current++;
+      }}
+    >
       <a className="skip-link" href="#main">
         Gå til indhold
       </a>
@@ -1220,6 +1230,7 @@ export default function FlowLab() {
                     </div>
                     {inspectorOpen && (
                       <Inspector
+                        key={`${variant}:${selected}`}
                         model={model}
                         selected={selected}
                         variant={

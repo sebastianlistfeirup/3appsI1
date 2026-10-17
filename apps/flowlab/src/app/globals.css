@@ -1399,7 +1399,7 @@ input[readonly] {
   flex-shrink: 0;
 }
 .error-text {
-  color: #b56b52 !important;
+  color: #a43d32 !important;
 }
 .validation-list {
   border-top: 1px solid #f0dfcf;
@@ -5273,5 +5273,47 @@ textarea:focus {
   .duration-preview dl {
     width: 100%;
     margin: 0;
+  }
+}
+
+.inspector-field-control {
+  display: block;
+}
+.inspector-draft-field {
+  margin: 15px 0 7px;
+}
+.inspector-draft-field > label {
+  margin: 0 0 7px;
+}
+.inspector-draft-field .stepper {
+  margin-top: 0;
+}
+.inspector-field-feedback {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: #526966;
+}
+.inspector-field-feedback.error-text {
+  color: #a43d32;
+}
+.inspector .inspector-draft-field input[aria-invalid="true"] {
+  border-color: #a43d32;
+}
+.inspector-calendar-preview {
+  padding-left: 20px;
+  color: #526966;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.inspector-draft-field .stepper input {
+  min-width: 0;
+}
+@media (max-width: 760px) {
+  .inspector > .inspector-draft-field {
+    margin-top: 12px;
+    grid-column: 1 / -1;
   }
 }

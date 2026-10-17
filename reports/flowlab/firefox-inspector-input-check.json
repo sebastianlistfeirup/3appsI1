@@ -1,0 +1,40 @@
+{
+  "executedAt": "2026-10-17T01:40:19.850Z",
+  "browser": "firefox",
+  "results": [
+    {
+      "viewport": "desktop",
+      "violations": [],
+      "checks": [
+        "Empty/invalid capacity and horizon preserve model; valid multi-key entry is one undo; Escape cancels",
+        "Committed blur before plus uses new value; baseline/scenario edits remain isolated; Danish decimal money retained",
+        "Tiny arrival expectations remain nonzero; horizon change updates the derived field; warmup and combined case budget enforced",
+        "Exact 1ms SLA, real 30-pair run, workspace export and confirmed persistence agree",
+        "Large calendar inspector renders three summaries and opens the complete paged resource editor"
+      ]
+    },
+    {
+      "viewport": "tablet",
+      "violations": [],
+      "checks": [
+        "Empty/invalid capacity and horizon preserve model; valid multi-key entry is one undo; Escape cancels",
+        "Committed blur before plus uses new value; baseline/scenario edits remain isolated; Danish decimal money retained",
+        "Tiny arrival expectations remain nonzero; horizon change updates the derived field; warmup and combined case budget enforced",
+        "Exact 1ms SLA, real 30-pair run, workspace export and confirmed persistence agree",
+        "Large calendar inspector renders three summaries and opens the complete paged resource editor"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "violations": [],
+      "checks": [
+        "Empty/invalid capacity and horizon preserve model; valid multi-key entry is one undo; Escape cancels",
+        "Committed blur before plus uses new value; baseline/scenario edits remain isolated; Danish decimal money retained",
+        "Tiny arrival expectations remain nonzero; horizon change updates the derived field; warmup and combined case budget enforced",
+        "Exact 1ms SLA, real 30-pair run, workspace export and confirmed persistence agree",
+        "Large calendar inspector renders three summaries and opens the complete paged resource editor"
+      ]
+    }
+  ],
+  "errors": []
+}
