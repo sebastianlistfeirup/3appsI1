@@ -1,12 +1,24 @@
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { promises as fs } from "node:fs";
+import { promises as fs, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import fontkit from "@pdf-lib/fontkit";
 import type { RenderCapability } from "../render-capability";
 
-export const CAPTION_FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
+/** App scripts and the root worker CLI have different working directories. */
+export function resolveCaptionFont(cwd = process.cwd()) {
+  const candidates = [
+    resolve(cwd, "public/fonts/DejaVuSans.ttf"),
+    resolve(cwd, "apps/director/public/fonts/DejaVuSans.ttf"),
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+  ];
+  return (
+    candidates.find((path) => existsSync(/* turbopackIgnore: true */ path)) ??
+    candidates[0]
+  );
+}
+export const CAPTION_FONT = resolveCaptionFont();
 const requiredFilters = [
   "scale",
   "pad",
@@ -42,6 +54,7 @@ function command(
   args: string[],
   env: NodeJS.ProcessEnv,
   signal: AbortSignal,
+  cwd?: string,
 ) {
   return new Promise<string>((resolve, reject) => {
     if (signal.aborted)
@@ -49,6 +62,7 @@ function command(
     const child = spawn(name, args, {
       env: { ...env, OMP_NUM_THREADS: "2" },
       shell: false,
+      cwd,
       signal,
       killSignal: "SIGKILL",
       stdio: ["ignore", "pipe", "pipe"],
@@ -112,7 +126,7 @@ export async function inspectRenderProfile(
   };
   let directory: string | undefined;
   const run = (name: string, args: string[]) =>
-    command(name, args, env, controller.signal);
+    command(name, args, env, controller.signal, directory);
   try {
     result.ffmpeg = (await run("ffmpeg", ["-version"]))
       .split("\n")[0]
@@ -162,7 +176,7 @@ export async function inspectRenderProfile(
     const chain = [
       "[0:v]format=yuv444p,setsar=1,setpts=PTS-STARTPTS,fps=24[a]",
       "[1:v]format=yuv444p,setsar=1,setpts=PTS-STARTPTS,fps=24[b]",
-      `[a][b]xfade=transition=fade:duration=0.25:offset=0.5,drawtext=fontfile='${fontCopy}':text='Æ Ø Å · Director':expansion=none:fontsize=28:fontcolor=white:x=40:y=40,format=yuv420p[v]`,
+      `[a][b]xfade=transition=fade:duration=0.25:offset=0.5,drawtext=fontfile=font.ttf:text='Æ Ø Å · Director':expansion=none:fontsize=28:fontcolor=white:x=40:y=40,format=yuv420p[v]`,
       "[2:a]atrim=duration=1.25,aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,volume=0.5,afade=t=in:d=0.05,alimiter=limit=0.891:level=false[aout]",
     ].join(";");
     await run("ffmpeg", [

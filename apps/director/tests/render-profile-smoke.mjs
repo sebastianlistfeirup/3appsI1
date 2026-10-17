@@ -4,9 +4,10 @@ import path from "node:path";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 const module = await import("../src/lib/server/render-profile.ts");
-const { inspectRenderProfile, renderCapability } = module.default ?? module;
+const { inspectRenderProfile, renderCapability, resolveCaptionFont } =
+  module.default ?? module;
 const directory = await fs.mkdtemp(
-  path.join(os.tmpdir(), "director-profile-test-"),
+  path.join(os.tmpdir(), "director profile's test-"),
 );
 const originalTmpdir = process.env.TMPDIR;
 process.env.TMPDIR = directory;
@@ -17,6 +18,23 @@ const report = { checks: [], results: {} };
 const start = Date.now();
 const watchdog = setTimeout(() => process.exit(1), 90000);
 try {
+  const root = process.cwd();
+  assert.equal(
+    resolveCaptionFont(root),
+    path.join(root, "apps/director/public/fonts/DejaVuSans.ttf"),
+  );
+  assert.equal(
+    resolveCaptionFont(path.join(root, "apps/director")),
+    path.join(root, "apps/director/public/fonts/DejaVuSans.ttf"),
+  );
+  const copiedFont = path.join(directory, "DejaVu's bundled font.ttf");
+  await fs.copyFile(resolveCaptionFont(root), copiedFont);
+  const copiedProbe = await inspectRenderProfile({ fontPath: copiedFont });
+  assert.equal(copiedProbe.available, true, copiedProbe.reason);
+  report.results.pathWithSpacesAndQuote = copiedProbe;
+  report.checks.push(
+    "bundled font resolves from root and app working directories; real encode/decode succeeds with spaces and apostrophes in font/temp paths",
+  );
   const pending = renderCapability();
   const concurrent = Array.from({ length: 20 }, () => renderCapability(true));
   for (const promise of concurrent)

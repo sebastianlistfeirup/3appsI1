@@ -51,7 +51,7 @@ Skriv teksten i **Replik / voiceover**. **Vis replikker som undertekster** i eks
 - **SRT / VTT:** undertekster for den aktuelle klipning.
 - **720p animatic:** rigtig H.264/AAC MP4, når den lokale renderprofil er aktiveret og består sin værktøjskontrol.
 
-For MP4 installeres FFmpeg/ffprobe med H.264/AAC, de dokumenterede filtre og DejaVu Sans. Start derefter Director med eksplicit opt-in:
+For MP4 installeres FFmpeg/ffprobe med H.264/AAC og de dokumenterede filtre. DejaVu Sans følger allerede med projektet i Director-appens fonts-mappe. Den native render er afprøvet på Linux; Windows/macOS kræver fortsat egen værktøjsverifikation. Start derefter Director med eksplicit opt-in:
 
 ```sh
 DIRECTOR_LOCAL_RENDER=1 pnpm dev:director

@@ -1,5 +1,6 @@
 {
   "checks": [
+    "bundled font resolves from root and app working directories; real encode/decode succeeds with spaces and apostrophes in font/temp paths",
     "actual 30-frame H264/AAC encode, decode, FFprobe and EBU R128 passed",
     "21 concurrent callers share one probe; cached refresh is bounded",
     "missing executable, missing font and invalid font fail with actual dependencies",
@@ -8,11 +9,28 @@
     "all success/failure probe directories are removed"
   ],
   "results": {
+    "pathWithSpacesAndQuote": {
+      "available": true,
+      "profile": "local-only",
+      "cloudConnected": false,
+      "checkedAt": "2026-10-17T03:04:16.769Z",
+      "reason": "Lokal render er afprøvet og klar",
+      "checks": [
+        "FFmpeg og FFprobe starter",
+        "Billede-, overgangs-, tekst- og lydfiltre findes",
+        "30 faktiske H.264-frames, crossfade og dansk tekst kodet",
+        "AAC stereo / 48 kHz og varighed verificeret af FFprobe",
+        "Filmens billede og lyd er afkodet; lyden er målt med EBU R128"
+      ],
+      "ffmpeg": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "ffprobe": "ffprobe version 7.1.5-0+deb13u1 Copyright (c) 2007-2026 the FFmpeg developers",
+      "fontSha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+    },
     "healthy": {
       "available": true,
       "profile": "local-only",
       "cloudConnected": false,
-      "checkedAt": "2026-10-17T02:26:17.265Z",
+      "checkedAt": "2026-10-17T03:04:17.431Z",
       "reason": "Lokal render er afprøvet og klar",
       "checks": [
         "FFmpeg og FFprobe starter",
@@ -29,7 +47,7 @@
       "available": false,
       "profile": "local-only",
       "cloudConnected": false,
-      "checkedAt": "2026-10-17T02:26:17.856Z",
+      "checkedAt": "2026-10-17T03:04:18.072Z",
       "reason": "ffmpeg er ikke installeret eller findes ikke i serverens PATH",
       "checks": []
     },
@@ -37,7 +55,7 @@
       "available": false,
       "profile": "local-only",
       "cloudConnected": false,
-      "checkedAt": "2026-10-17T02:26:17.859Z",
+      "checkedAt": "2026-10-17T03:04:18.076Z",
       "reason": "Skrifttypen DejaVu Sans mangler på render-serveren",
       "checks": [
         "FFmpeg og FFprobe starter",
@@ -50,7 +68,7 @@
       "available": false,
       "profile": "local-only",
       "cloudConnected": false,
-      "checkedAt": "2026-10-17T02:26:18.078Z",
+      "checkedAt": "2026-10-17T03:04:18.272Z",
       "reason": "Skrifttypen kunne ikke afkodes med danske bogstaver",
       "checks": [
         "FFmpeg og FFprobe starter",
@@ -63,7 +81,7 @@
       "available": false,
       "profile": "local-only",
       "cloudConnected": false,
-      "checkedAt": "2026-10-17T02:26:18.353Z",
+      "checkedAt": "2026-10-17T03:04:18.551Z",
       "reason": "ffprobe kunne ikke gennemføre prøverenderingen",
       "checks": [
         "FFmpeg og FFprobe starter",
@@ -77,10 +95,10 @@
       "available": false,
       "profile": "local-only",
       "cloudConnected": false,
-      "checkedAt": "2026-10-17T02:26:18.611Z",
+      "checkedAt": "2026-10-17T03:04:18.862Z",
       "reason": "Kontrollen overskred sin tidsgrænse",
       "checks": []
     }
   },
-  "elapsedMs": 1952
+  "elapsedMs": 2704
 }

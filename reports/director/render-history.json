@@ -7,7 +7,7 @@
   "history": {
     "jobs": [
       {
-        "id": "0e9e4078-1c3d-4753-8a2a-6ac848ad711b",
+        "id": "7841d062-114f-4cb0-8d69-2bb7df949c95",
         "source": {
           "projectId": "archive_primary",
           "title": "Det sidste signal",
@@ -17,7 +17,7 @@
         "movieHash": "da01acadfdbfc18dcc729eadff80791938a10af66b594f958987ff3dc2ec1951"
       },
       {
-        "id": "de2f197c-91ef-41fa-8fa4-0d16f55b5f29",
+        "id": "8bb47d68-fe30-4781-b3c9-0594085aece0",
         "source": {
           "projectId": "archive_primary",
           "title": "Det sidste signal",
@@ -32,7 +32,7 @@
     "storage": {
       "occupiedEntries": 8,
       "maxJobs": 100,
-      "freeBytes": 9138569216,
+      "freeBytes": 9121480704,
       "minimumFreeBytes": 536870912,
       "automaticDeletion": false
     }

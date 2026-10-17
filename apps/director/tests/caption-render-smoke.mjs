@@ -7,8 +7,11 @@ import { parseProject, reviseShot, timeline } from "@tre/scene-format";
 const captionModule = await import("../src/lib/captions.ts");
 const { buildCaptionTrack, captionFile } =
   captionModule.default ?? captionModule;
-const directory = await fs.mkdtemp("/tmp/director-captions-");
+const directory = await fs.mkdtemp("/tmp/director captions' test-");
 process.env.DIRECTOR_RENDER_DIR = `${directory}/jobs`;
+const fontModule = await import("../src/lib/server/render-profile.ts");
+const { CAPTION_FONT } = fontModule.default ?? fontModule;
+await fs.copyFile(CAPTION_FONT, `${directory}/reference-font.ttf`);
 const renderModule = await import("../src/lib/server/local-render.ts");
 const {
   createRender,
@@ -159,7 +162,7 @@ try {
   );
   assert.equal(validation.sha256, sha(await fs.readFile(film)));
   assert.equal(validation.manifestHash, queued.manifestHash);
-  assert.equal(validation.rendererVersion, "director-animatic-3.0");
+  assert.equal(validation.rendererVersion, "director-animatic-3.1");
   const captions = JSON.parse(await renderArtifact(queued.id, "captions.json"));
   assert.equal(captions.sources[0].text, dialogue);
   assert.deepEqual(captions.cues, track.cues);
@@ -208,22 +211,25 @@ try {
       ]);
       const textFile = `${directory}/reference-${index}.txt`;
       await fs.writeFile(textFile, cue.text);
-      const filter = `drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf:textfile=${textFile}:expansion=none:fontsize=28:fontcolor=white@${opacity}:box=1:boxcolor=black@0.65:boxborderw=12:line_spacing=7:x=(w-text_w)/2:y=h-text_h-42,crop=1280:180:0:540`;
-      const expected = ffmpeg([
-        "-f",
-        "lavfi",
-        "-i",
-        "color=black:s=1280x720:r=24",
-        "-vf",
-        filter,
-        "-frames:v",
-        "1",
-        "-pix_fmt",
-        "gray",
-        "-f",
-        "rawvideo",
-        "-",
-      ]);
+      const filter = `drawtext=fontfile=reference-font.ttf:textfile=reference-${index}.txt:expansion=none:fontsize=28:fontcolor=white@${opacity}:box=1:boxcolor=black@0.65:boxborderw=12:line_spacing=7:x=(w-text_w)/2:y=h-text_h-42,crop=1280:180:0:540`;
+      const expected = ffmpeg(
+        [
+          "-f",
+          "lavfi",
+          "-i",
+          "color=black:s=1280x720:r=24",
+          "-vf",
+          filter,
+          "-frames:v",
+          "1",
+          "-pix_fmt",
+          "gray",
+          "-f",
+          "rawvideo",
+          "-",
+        ],
+        { cwd: directory },
+      );
       assert.equal(actual.length, expected.length);
       let intersection = 0,
         union = 0;

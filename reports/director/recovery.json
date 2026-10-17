@@ -1,6 +1,6 @@
 {
   "test": "D-AT06: kill process after transcode and resume validated intermediates",
-  "jobId": "c1a4666c-ed55-4b91-ae73-ce97d8f5c3ef",
+  "jobId": "d9c62c15-4571-40b1-bf5f-766f954c00d0",
   "killed": "SIGKILL",
   "persistedBeforeKill": 2,
   "reusedSegments": 2,
@@ -19,5 +19,5 @@
     "loudnessLufs": -70,
     "audioSilent": true
   },
-  "verifiedAt": "2026-10-17T02:23:09.547Z"
+  "verifiedAt": "2026-10-17T03:05:45.697Z"
 }

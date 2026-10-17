@@ -4,7 +4,7 @@ Director works in the browser with IndexedDB, an actual Three.js primitive scene
 
 ## Run locally
 
-Install the pinned workspace dependencies, FFmpeg/ffprobe with libx264, AAC, xfade, drawtext and ebur128 support, plus DejaVu Sans at `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf`.
+Install the pinned workspace dependencies and FFmpeg/ffprobe with libx264, AAC, xfade, drawtext and ebur128 support. DejaVu Sans is bundled under `apps/director/public/fonts` with its license. App scripts resolve `public/fonts/DejaVuSans.ttf`; the root worker resolves `apps/director/public/fonts/DejaVuSans.ttf`. The previous Linux system location is only a fallback when the bundled file is absent. Probe and caption rendering copy the font into their private working directory and use fixed relative font/text filenames inside FFmpeg filters, so absolute path separators, drive colons, spaces and quotes are not parsed as filter syntax. Pipeline `director-animatic-3.1` includes the actual caption font hash in segment fingerprints; previously completed 3.0 exports remain downloadable as historical outputs. Native verification was performed on Linux, including paths with spaces and apostrophes; Windows/macOS execution is not claimed.
 
 ```sh
 DIRECTOR_LOCAL_RENDER=1 pnpm --filter @tre/director exec next dev --hostname 127.0.0.1 --port 3002

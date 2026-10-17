@@ -3,15 +3,15 @@
   "phases": [
     {
       "name": "start isolated production server with missing FFmpeg",
-      "at": "2026-10-16T23:34:33.543Z"
+      "at": "2026-10-17T03:05:13.183Z"
     },
     {
       "name": "repair server environment and recheck from existing open editor",
-      "at": "2026-10-16T23:34:39.076Z"
+      "at": "2026-10-17T03:05:17.823Z"
     },
     {
       "name": "passed",
-      "at": "2026-10-16T23:34:41.828Z"
+      "at": "2026-10-17T03:05:20.609Z"
     }
   ],
   "checks": [
@@ -36,18 +36,20 @@
   "errors": [],
   "serverLogs": [
     "▲ Next.js 16.4.2\n",
+    "- Local:         http://127.0.0.1:3107\n- Network:       http://127.0.0.1:3107\n",
+    "✓ Ready in 127ms\n",
+    "✓ Running next.config.ts took 27ms\n",
+    "▲ Next.js 16.4.2\n",
     "- Local:         http://127.0.0.1:3107\n",
     "- Network:       http://127.0.0.1:3107\n",
-    "✓ Ready in 124ms\n",
-    "✓ Running next.config.ts took 33ms\n",
-    "▲ Next.js 16.4.2\n- Local:         http://127.0.0.1:3107\n- Network:       http://127.0.0.1:3107\n✓ Ready in 115ms\n",
-    "✓ Running next.config.ts took 29ms\n"
+    "✓ Ready in 121ms\n",
+    "✓ Running next.config.ts took 27ms\n"
   ],
   "profile": {
     "available": true,
     "profile": "local-only",
     "cloudConnected": false,
-    "checkedAt": "2026-10-16T23:34:39.714Z",
+    "checkedAt": "2026-10-17T03:05:18.466Z",
     "reason": "Lokal render er afprøvet og klar",
     "checks": [
       "FFmpeg og FFprobe starter",

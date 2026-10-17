@@ -23,7 +23,7 @@ import {
   type RenderHistory,
 } from "../render-state";
 export type { RenderState } from "../render-state";
-const PIPELINE_VERSION = "director-animatic-3.0";
+const PIPELINE_VERSION = "director-animatic-3.1";
 // Runtime data must not be traced into a deployment bundle.
 const ROOT = process.env.DIRECTOR_RENDER_DIR
   ? resolve(/* turbopackIgnore: true */ process.env.DIRECTOR_RENDER_DIR)
@@ -252,6 +252,7 @@ function run(
   command: string,
   args: string[],
   timeout = 120000,
+  cwd?: string,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const signal = renderContext.getStore();
@@ -263,6 +264,7 @@ function run(
       signal,
       stdio: ["ignore", "pipe", "pipe"],
       shell: false,
+      cwd,
       env: { ...process.env, OMP_NUM_THREADS: "2" },
     });
     let stdout = "",
@@ -409,6 +411,9 @@ async function segment(
           endFrame: cue.endFrame - start,
         }))
     : [];
+  const captionFont = captions.length
+    ? await fs.readFile(/* turbopackIgnore: true */ CAPTION_FONT)
+    : undefined;
   const fingerprint = sha(
     JSON.stringify({
       frame: shot.frame,
@@ -416,6 +421,7 @@ async function segment(
       in: shot.sourceIn,
       duration: shot.durationFrames,
       captions,
+      fontSha256: captionFont ? sha(captionFont) : undefined,
       renderer: PIPELINE_VERSION,
     }),
   );
@@ -471,37 +477,42 @@ async function segment(
   }
   let videoFilter =
     "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=24,format=yuv420p";
+  if (captionFont)
+    await fs.writeFile(join(jobDir, "caption-font.ttf"), captionFont, {
+      mode: 0o600,
+    });
   for (const [cueIndex, cue] of captions.entries()) {
     const captionPath = join(jobDir, `caption-${index}-${cueIndex}.txt`);
     await fs.writeFile(captionPath, cue.text, {
       mode: 0o600,
     });
-    const escaped = captionPath
-      .replaceAll("\\", "\\\\")
-      .replaceAll(":", "\\:")
-      .replaceAll("'", "\\'");
-    videoFilter += `,drawtext=fontfile=${CAPTION_FONT}:textfile='${escaped}':expansion=none:fontsize=28:fontcolor=white:box=1:boxcolor=black@0.65:boxborderw=12:line_spacing=7:x=(w-text_w)/2:y=h-text_h-42:enable='gte(n,${cue.startFrame})*lt(n,${cue.endFrame})'`;
+    videoFilter += `,drawtext=fontfile=caption-font.ttf:textfile=caption-${index}-${cueIndex}.txt:expansion=none:fontsize=28:fontcolor=white:box=1:boxcolor=black@0.65:boxborderw=12:line_spacing=7:x=(w-text_w)/2:y=h-text_h-42:enable='gte(n,${cue.startFrame})*lt(n,${cue.endFrame})'`;
   }
-  await run("ffmpeg", [
-    ...ffbase,
-    ...inputArgs,
-    "-an",
-    "-vf",
-    videoFilter,
-    "-frames:v",
-    String(shot.durationFrames),
-    "-c:v",
-    "libx264",
-    "-preset",
-    "veryfast",
-    "-crf",
-    "20",
-    "-r",
-    "24",
-    "-video_track_timescale",
-    "24000",
-    out,
-  ]);
+  await run(
+    "ffmpeg",
+    [
+      ...ffbase,
+      ...inputArgs,
+      "-an",
+      "-vf",
+      videoFilter,
+      "-frames:v",
+      String(shot.durationFrames),
+      "-c:v",
+      "libx264",
+      "-preset",
+      "veryfast",
+      "-crf",
+      "20",
+      "-r",
+      "24",
+      "-video_track_timescale",
+      "24000",
+      out,
+    ],
+    120000,
+    jobDir,
+  );
   const validated = await validateMovie(out, shot.durationFrames, false);
   await atomic(`${out}.json`, { fingerprint, ...validated });
   return { path: out, reused: false };
