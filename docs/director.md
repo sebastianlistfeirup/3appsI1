@@ -47,7 +47,7 @@ Skriv teksten i **Replik / voiceover**. **Vis replikker som undertekster** i eks
 
 - **Storyboard:** rigtig PDF med billeder, replikker, noter og versionsreferencer. Et eget videoklip får et billede fra det valgte starttidspunkt.
 - **Komplet projektpakke:** ZIP med projekt, historik og originale medier. Identiske filer gemmes én gang, og deres hashes kontrolleres ved import. Bedst som flytbar sikkerhedskopi.
-- **Projekt-JSON:** fuld projektkopi med indlejrede medier. Denne kopi kan også hentes fra hukommelsen ved lagringsfejl.
+- **Projekt-JSON:** fuld projektkopi med indlejrede medier. Denne kopi kan også hentes fra hukommelsen ved lagringsfejl. Import understøtter op til 150 MiB og kontrolleres i baggrunden; ZIP-filen må højst være 100 MiB.
 - **SRT / VTT:** undertekster for den aktuelle klipning.
 - **720p animatic:** rigtig H.264/AAC MP4, når den lokale renderprofil er aktiveret og består sin værktøjskontrol.
 

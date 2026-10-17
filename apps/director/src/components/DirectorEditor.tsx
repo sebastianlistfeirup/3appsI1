@@ -90,17 +90,13 @@ import { CaptionExport } from "./CaptionExport";
 import { RenderQuality } from "./RenderQuality";
 import { captionFile } from "../lib/captions";
 import type { RenderState } from "../lib/server/local-render";
-import {
-  exportProjectArchive,
-  importProjectArchive,
-} from "../lib/archive-client";
+import { exportProjectArchive, importProjectFile } from "../lib/archive-client";
 import { useArchiveTask } from "../lib/use-archive-task";
 import { PreviewAudio } from "../lib/preview-audio";
 import { renderFrame } from "../lib/scene-renderer";
 import {
   importMedia,
   importGlb,
-  verifyMedia,
   validateProjectTextures,
 } from "../lib/project-files";
 
@@ -748,17 +744,10 @@ export default function DirectorEditor({
     });
   const importProject = async (file: File) =>
     act("Åbner projektpakke …", async () => {
-      if (file.size > 100 * 1024 * 1024)
-        throw Error("Projektet må højst være 100 MB");
-      const next = file.name.toLowerCase().endsWith(".zip")
-        ? await archive.run(async (options) =>
-            importProjectArchive(await file.arrayBuffer(), options),
-          )
-        : parseProject(JSON.parse(await file.text()));
-      if (file.size > 100 * 1024 * 1024) throw Error("Projektet er for stort");
-      if (file.name.toLowerCase().endsWith(".zip"))
-        await validateProjectTextures(next);
-      else await verifyMedia(next);
+      const next = await archive.run((options) =>
+        importProjectFile(file, options),
+      );
+      await validateProjectTextures(next);
       commit(
         () => next,
         "Projektet er åbnet. Din tidligere version kan gendannes med Fortryd.",

@@ -1,0 +1,84 @@
+{
+  "engine": "chromium",
+  "steps": [
+    {
+      "name": "initial film and actual >100 MiB file",
+      "at": "2026-10-17T02:00:15.752Z"
+    },
+    {
+      "name": "cancel completed native parse/hash work before committing; current film retained",
+      "at": "2026-10-17T02:00:23.327Z"
+    },
+    {
+      "name": "download full editor JSON and independently verify every original",
+      "at": "2026-10-17T02:00:25.743Z"
+    },
+    {
+      "name": "enforce each byte ceiling before File.arrayBuffer or worker creation",
+      "at": "2026-10-17T02:00:27.533Z"
+    },
+    {
+      "name": "malformed JSON, bad media hash and unavailable worker keep the good project",
+      "at": "2026-10-17T02:00:28.072Z"
+    },
+    {
+      "name": "library imports the same large backup as an independent film",
+      "at": "2026-10-17T02:00:29.686Z"
+    },
+    {
+      "name": "passed",
+      "at": "2026-10-17T02:00:34.557Z"
+    }
+  ],
+  "errors": [],
+  "accessibility": [
+    {
+      "name": "desktop",
+      "violations": []
+    },
+    {
+      "name": "tablet",
+      "violations": []
+    },
+    {
+      "name": "mobile",
+      "violations": []
+    }
+  ],
+  "inputBytes": 108074090,
+  "browser": "156.0.8078.4",
+  "importResponsiveness": {
+    "ticks": 84,
+    "maxGapMs": 318
+  },
+  "downloadBytes": 108084673,
+  "worker": {
+    "created": 6,
+    "terminated": 6,
+    "requests": [
+      "json",
+      "json",
+      null,
+      "json",
+      "json",
+      "json"
+    ],
+    "reads": [
+      "large-backup.json",
+      "large-backup.json",
+      "broken.json",
+      "bad-hash.json",
+      "blocked.json",
+      "large-backup.json"
+    ]
+  },
+  "checks": [
+    ">100 MiB raw JSON accepted in editor and library within 150 MiB budget",
+    "native worker parse/hash result cancelled before commit without data loss",
+    "actual JSON download exactly restores all semantic project fields and binary hashes",
+    "JSON and ZIP limits enforced before file reads",
+    "invalid JSON/hash and worker failure retain the previous film",
+    "separate library identity preserves the original",
+    "reload retains every media reference"
+  ]
+}

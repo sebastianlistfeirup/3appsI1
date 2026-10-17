@@ -24,8 +24,8 @@ import {
   type ProductionSummary,
 } from "../lib/productions";
 import DirectorEditor from "./DirectorEditor";
-import { verifyMedia, validateProjectTextures } from "../lib/project-files";
-import { importProjectArchive } from "../lib/archive-client";
+import { validateProjectTextures } from "../lib/project-files";
+import { importProjectFile } from "../lib/archive-client";
 import { useArchiveTask } from "../lib/use-archive-task";
 const pointer = "director-active-production";
 export default function DirectorWorkspace() {
@@ -140,16 +140,10 @@ export default function DirectorWorkspace() {
     });
   const importProject = (file: File) =>
     act("Validerer projektfil som en ny film …", async () => {
-      if (file.size > 100 * 1024 * 1024)
-        throw Error("Projektet må højst være 100 MB");
-      const project = file.name.toLowerCase().endsWith(".zip")
-        ? await archive.run(async (options) =>
-            importProjectArchive(await file.arrayBuffer(), options),
-          )
-        : parseProject(JSON.parse(await file.text()));
-      if (file.name.toLowerCase().endsWith(".zip"))
-        await validateProjectTextures(project);
-      else await verifyMedia(project);
+      const project = await archive.run((options) =>
+        importProjectFile(file, options),
+      );
+      await validateProjectTextures(project);
       const next = await createProduction(project.title, "sample", project);
       open(next.key);
     });

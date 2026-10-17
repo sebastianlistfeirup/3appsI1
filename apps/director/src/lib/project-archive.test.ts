@@ -5,6 +5,7 @@ import { createSampleProject, inspectGlb } from "@tre/scene-format";
 import {
   exportPackage,
   importPackage,
+  importProjectJsonBytes,
   ARCHIVE_LIMITS,
 } from "./project-archive";
 import { sha256 } from "./binary";
@@ -51,6 +52,29 @@ async function repack(
   return buffer(zipSync(files));
 }
 describe("Versioned deduplicated Director archives", () => {
+  it("validates raw JSON with the same scene/media guarantees as an archive", async () => {
+    const { project } = await withRepeatedModel();
+    expect(
+      await importProjectJsonBytes(buffer(strToU8(JSON.stringify(project)))),
+    ).toEqual(project);
+    project.draft.assets[0].sha256 = "f".repeat(64);
+    await expect(
+      importProjectJsonBytes(buffer(strToU8(JSON.stringify(project)))),
+    ).rejects.toThrow("checksum");
+  });
+  it("rejects raw JSON bytes above the expansion ceiling before decoding and rejects invalid UTF-8 or syntax", async () => {
+    await expect(
+      importProjectJsonBytes(
+        new ArrayBuffer(ARCHIVE_LIMITS.expandedProjectBytes + 1),
+      ),
+    ).rejects.toThrow("150 MiB");
+    await expect(
+      importProjectJsonBytes(buffer(new Uint8Array([255, 254]))),
+    ).rejects.toThrow("UTF-8 JSON");
+    await expect(
+      importProjectJsonBytes(buffer(strToU8('{"broken":'))),
+    ).rejects.toThrow("UTF-8 JSON");
+  });
   it("stores a real textured model once across immutable scene versions and restores every reference", async () => {
     const { project, bytes, asset } = await withRepeatedModel(),
       before = structuredClone(project);

@@ -1,11 +1,13 @@
 import type { Project } from "@tre/scene-format";
 import type { ArchiveProgress } from "./project-archive";
+import { ARCHIVE_LIMITS } from "./project-file-limits";
 export interface ArchiveOptions {
   signal?: AbortSignal;
   onProgress?: (value: ArchiveProgress) => void;
 }
 type Request =
-  { kind: "export"; project: Project } | { kind: "import"; bytes: ArrayBuffer };
+  | { kind: "export"; project: Project }
+  | { kind: "import" | "json"; bytes: ArrayBuffer };
 function run(
   request: Request,
   options: ArchiveOptions = {},
@@ -17,10 +19,20 @@ function run(
         "AbortError",
       );
     if (options.signal?.aborted) return reject(aborted());
-    const worker = new Worker(
-      new URL("../workers/archive.worker.ts", import.meta.url),
-      { type: "module" },
-    );
+    let worker: Worker;
+    try {
+      worker = new Worker(
+        new URL("../workers/archive.worker.ts", import.meta.url),
+        { type: "module" },
+      );
+    } catch {
+      reject(
+        Error(
+          "Browseren kunne ikke starte projektarbejdet i baggrunden. Din film er bevaret.",
+        ),
+      );
+      return;
+    }
     let finished = false;
     const cleanup = () => {
       if (finished) return false;
@@ -87,7 +99,7 @@ function run(
     try {
       worker.postMessage(
         request,
-        request.kind === "import" ? [request.bytes] : [],
+        request.kind !== "export" ? [request.bytes] : [],
       );
     } catch (error) {
       if (cleanup()) reject(error);
@@ -105,6 +117,24 @@ export async function importProjectArchive(
   options?: ArchiveOptions,
 ) {
   return (await run({ kind: "import", bytes }, options)) as Project;
+}
+/** Check the original File size before reading, then transfer parsing/hash checks to the worker. */
+export async function importProjectFile(file: File, options?: ArchiveOptions) {
+  const zip = file.name.toLowerCase().endsWith(".zip");
+  const limit = zip
+    ? ARCHIVE_LIMITS.archiveBytes
+    : ARCHIVE_LIMITS.expandedProjectBytes;
+  if (file.size > limit)
+    throw Error(
+      zip
+        ? "Projektpakken må højst være 100 MiB"
+        : "Projekt-JSON må højst være 150 MiB",
+    );
+  const bytes = await file.arrayBuffer();
+  return (await run(
+    { kind: zip ? "import" : "json", bytes },
+    options,
+  )) as Project;
 }
 export function archiveProgressLabel(value: ArchiveProgress) {
   if (value.phase === "packing") return "Pakker filmens originale filer …";

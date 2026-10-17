@@ -4,16 +4,8 @@ import { parseProject, type Project } from "@tre/scene-format";
 import { dataUrlBytes, sha256 } from "./binary";
 import { verifyProjectMedia } from "./project-validation";
 
-const MiB = 1024 * 1024;
-export const ARCHIVE_LIMITS = {
-  archiveBytes: 100 * MiB,
-  expandedProjectBytes: 150 * MiB,
-  totalExtractedBytes: 151 * MiB,
-  metadataBytes: 16 * MiB,
-  manifestBytes: MiB,
-  blobBytes: 50 * MiB,
-  blobs: 1250,
-};
+import { ARCHIVE_LIMITS } from "./project-file-limits";
+export { ARCHIVE_LIMITS } from "./project-file-limits";
 export type ArchiveProgress = {
   phase: "packing" | "unpacking" | "checking";
   completed: number;
@@ -93,6 +85,33 @@ function ensureExpanded(bytes: number) {
     throw Error(
       "Det udpakkede projekt må højst være 150 MB. Din film er bevaret; brug Projekt-JSON til en rå sikkerhedskopi.",
     );
+}
+/** Raw JSON uses the same reconstructed-project budget as a ZIP roundtrip. */
+export async function importProjectJsonBytes(
+  buffer: ArrayBuffer,
+  progress?: Progress,
+) {
+  if (buffer.byteLength > ARCHIVE_LIMITS.expandedProjectBytes)
+    throw Error("Projekt-JSON må højst være 150 MiB. Din film er bevaret.");
+  progress?.({ phase: "unpacking", completed: 0, total: 1 });
+  let value: unknown;
+  try {
+    value = JSON.parse(
+      new TextDecoder("utf-8", { fatal: true }).decode(buffer),
+    );
+  } catch {
+    throw Error(
+      "Projekt-JSON er ikke en gyldig UTF-8 JSON-fil. Din film er bevaret.",
+    );
+  }
+  const project = parseProject(value);
+  progress?.({
+    phase: "checking",
+    completed: 0,
+    total: project.media.length + project.scenes.length,
+  });
+  await verifyProjectMedia(project);
+  return project;
 }
 export async function exportPackage(project: Project, progress?: Progress) {
   const compact = parseProject(project),

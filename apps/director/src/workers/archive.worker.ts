@@ -2,6 +2,7 @@
 import {
   exportPackage,
   importPackage,
+  importProjectJsonBytes,
   type ArchiveProgress,
 } from "../lib/project-archive";
 import type { Project } from "@tre/scene-format";
@@ -9,7 +10,7 @@ declare const self: DedicatedWorkerGlobalScope;
 self.onmessage = async (
   event: MessageEvent<
     | { kind: "export"; project: Project }
-    | { kind: "import"; bytes: ArrayBuffer }
+    | { kind: "import" | "json"; bytes: ArrayBuffer }
   >,
 ) => {
   const progress = (progress: ArchiveProgress) =>
@@ -21,7 +22,9 @@ self.onmessage = async (
     } else
       self.postMessage({
         type: "imported",
-        project: await importPackage(event.data.bytes, progress),
+        project: await (
+          event.data.kind === "json" ? importProjectJsonBytes : importPackage
+        )(event.data.bytes, progress),
       });
   } catch (error) {
     self.postMessage({
