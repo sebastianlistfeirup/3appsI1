@@ -44,7 +44,7 @@ export function createReport(doc: FlowDocument): DecisionReport {
   if (!doc.comparison) throw new Error("Kør en sammenligning først.");
   if (!comparisonMatches(doc))
     throw new Error(
-      "Modellen eller det fælles seed er ændret siden den seneste sammenligning. Kør igen, før du eksporterer en rapport for de aktuelle input.",
+      "Modellen, det fælles seed eller motor-/PRNG-versionen er ændret siden den seneste sammenligning. Kør igen, før du eksporterer en rapport for de aktuelle input.",
     );
   assertReportReady(doc.comparison);
   const sourceDataset = holdoutDataset(doc);

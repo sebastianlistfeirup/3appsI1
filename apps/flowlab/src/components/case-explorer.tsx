@@ -10,13 +10,12 @@ import {
   Waypoints,
 } from "lucide-react";
 import {
-  ENGINE_VERSION,
   describeEngineCode,
   type CaseEvidence,
   type Comparison,
 } from "@tre/flow-engine";
 import { downloadFile } from "@tre/persistence";
-import { formatNumber } from "../lib/document";
+import { formatNumber, comparisonUsesCurrentEngine } from "../lib/document";
 import {
   pairCases,
   caseStatus,
@@ -124,6 +123,10 @@ export default function CaseExplorer({
       );
     w.postMessage({
       engineVersion: comparison.engineVersion,
+      prngVersions: [
+        comparison.baselineRuns[0]?.prngVersion,
+        comparison.scenarioRuns[0]?.prngVersion,
+      ],
       baseline: comparison.baseline,
       scenario: comparison.scenario,
       seed: comparison.seeds[0],
@@ -156,10 +159,10 @@ export default function CaseExplorer({
         sag forklarer sit eget udfald; rapportens målinger samler alle{" "}
         {comparison.seeds.length} kørsler.
       </p>
-      {comparison.engineVersion !== ENGINE_VERSION ? (
+      {!comparisonUsesCurrentEngine(comparison) ? (
         <p className="notice-text">
-          Resultatet er fra en tidligere motorversion. Kør sammenligningen igen
-          for at undersøge hændelser med den samme motor.
+          Resultatet er fra en tidligere motorversion eller PRNG-version. Kør
+          sammenligningen igen for at undersøge hændelser med den samme motor.
         </p>
       ) : (
         <>

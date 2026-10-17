@@ -153,6 +153,33 @@ describe("FlowLab numerical contract", () => {
     comparison.metrics[0].baseline = 999;
     expect(() => assertReportReady(comparison)).toThrow();
   });
+  it("rejects mismatched PRNG versions in either scenario and any report replication", async () => {
+    const model = goldenModel();
+    const comparison = await compareModels(model, model);
+    for (const side of ["baselineRuns", "scenarioRuns"] as const) {
+      const invalid = structuredClone(comparison);
+      invalid[side][29].prngVersion = "unknown-prng";
+      expect(() =>
+        assembleComparison(
+          invalid.baseline,
+          invalid.scenario,
+          invalid.requestedSeeds,
+          invalid.baselineRuns,
+          invalid.scenarioRuns,
+        ),
+      ).toThrow("PRNG-version");
+      expect(() => assertReportReady(invalid)).toThrow("PRNG-version");
+    }
+    expect(() => assertReportReady(comparison)).not.toThrow();
+  });
+  it("does not trust a completed label when the requested seed plan has unfinished replications", async () => {
+    const model = goldenModel();
+    const comparison = await compareModels(model, model);
+    comparison.requestedSeeds = seedList(2026, 31);
+    expect(comparison.seeds).toHaveLength(30);
+    expect(comparison.status).toBe("completed");
+    expect(() => assertReportReady(comparison)).toThrow("fuldførte");
+  });
   it("keeps the baseline KPI when the alternative has no completed cases, with no fabricated paired delta", async () => {
     const a = goldenModel(),
       b = goldenModel();

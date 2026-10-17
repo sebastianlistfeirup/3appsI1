@@ -54,6 +54,11 @@ describe("Independent holdout contract", () => {
     expect(r.seeds).toHaveLength(30);
     expect(r.dataGaps).toEqual([]);
   });
+  it("rejects a baseline with an unknown PRNG before it can establish holdout quality", async () => {
+    const input = await setup();
+    input.runs[29].prngVersion = "unknown-prng";
+    expect(() => assessHoldout(input)).toThrow("aktuelle baseline");
+  });
   it("does not label the training data, unconfirmed completeness or unconfirmed independence as calibrated", async () => {
     const input = await setup();
     for (const change of [

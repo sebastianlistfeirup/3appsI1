@@ -2,6 +2,7 @@ import { z } from "zod";
 import { comparisonSchema, datasetSchema, holdoutSchema } from "./validation";
 import {
   ENGINE_VERSION,
+  PRNG_VERSION,
   inputDiff,
   membershipTemplate,
   modelSchema,
@@ -139,10 +140,30 @@ export const formatMetric = (key: string, n: number | null) =>
           : formatNumber(n, n % 1 ? 1 : 0);
 export const sameModel = (left: FlowModel, right: FlowModel) =>
   inputDiff(left, right).length === 0;
+/** Historical metrics stay readable, but replay/report/holdout must use the locked engine and PRNG. */
+export function comparisonUsesCurrentEngine(comparison: Comparison): boolean {
+  return (
+    comparison.engineVersion === ENGINE_VERSION &&
+    [...comparison.baselineRuns, ...comparison.scenarioRuns].every(
+      (run) =>
+        run.engineVersion === ENGINE_VERSION &&
+        run.prngVersion === PRNG_VERSION,
+    )
+  );
+}
 export function comparisonMatches(doc: FlowDocument) {
   return (
     !!doc.comparison &&
-    doc.comparison.engineVersion === ENGINE_VERSION &&
+    comparisonUsesCurrentEngine(doc.comparison) &&
+    doc.comparison.seeds.length === doc.comparison.requestedSeeds.length &&
+    doc.comparison.baselineRuns.length === doc.comparison.seeds.length &&
+    doc.comparison.scenarioRuns.length === doc.comparison.seeds.length &&
+    doc.comparison.seeds.every(
+      (seed, index) =>
+        seed === doc.comparison!.requestedSeeds[index] &&
+        seed === doc.comparison!.baselineRuns[index]?.seed &&
+        seed === doc.comparison!.scenarioRuns[index]?.seed,
+    ) &&
     (!doc.comparisonContext ||
       doc.comparisonContext.baseSeed === doc.baseSeed) &&
     seedList(doc.baseSeed, doc.comparison.requestedSeeds.length).every(

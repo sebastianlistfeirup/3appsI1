@@ -1,0 +1,34 @@
+{
+  "executedAt": "2026-10-17T02:12:54.891Z",
+  "browser": "firefox",
+  "results": [
+    {
+      "name": "desktop",
+      "checks": [
+        "Actual persisted30-pair run with one unknownPRNG stays historical and readable",
+        "Report and case replay blocked; holdout refuses unknownPRNG before assessment",
+        "Actual recomputation preserves metrics and restores30-pair report, correctPRNG and real case replay"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "tablet",
+      "checks": [
+        "Actual persisted30-pair run with one unknownPRNG stays historical and readable",
+        "Report and case replay blocked; holdout refuses unknownPRNG before assessment",
+        "Actual recomputation preserves metrics and restores30-pair report, correctPRNG and real case replay"
+      ],
+      "axeViolations": 0
+    },
+    {
+      "name": "mobile",
+      "checks": [
+        "Actual persisted30-pair run with one unknownPRNG stays historical and readable",
+        "Report and case replay blocked; holdout refuses unknownPRNG before assessment",
+        "Actual recomputation preserves metrics and restores30-pair report, correctPRNG and real case replay"
+      ],
+      "axeViolations": 0
+    }
+  ],
+  "errors": []
+}

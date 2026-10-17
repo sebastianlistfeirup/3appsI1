@@ -1,0 +1,160 @@
+Gå til indhold
+flowlab®
+S
+Sebastians laboratorium
+Personligt · Lokal demo
+ARBEJDSRUM
+Modelværksted
+Scenarier
+2
+Resultater
+Dataværksted
+Beslutningsrapport
+Modelbibliotek
+Sådan virker FlowLab
+✳
+Plads til bedre idéer.
+
+Test en tanke, før du ændrer hverdagen.
+
+Kom godt i gang
+Lokalt. Privat. Dit.
+Ingen cloud er tilkoblet
+Mit arbejdsrum
+Medlemsservice
+Gemt lokalt
+SL
+DIT BESLUTNINGSLABORATORIUM
+Eksempeldata
+Medlemsservice.
+
+Byg processen. Afprøv ændringen. Forstå konsekvensen.
+
+Eksportér rapport
+Kør sammenligning
+Baseline er ikke holdout-vurderet
+Model
+Scenarier
+2
+Resultater
+Dataværksted
+Rapport
+
+Modellen, det fælles seed eller motoren er opdateret. Resultater viser det senest fuldførte snapshot. Kør igen for at se effekten af dine nye antagelser og eksportere en aktuel rapport.
+
+En ekstra sagsbehandler
+
+En ekstra sagsbehandler reducerer ventetid og restkø. Den simulerede effekt skal vurderes op imod den ekstra lønkapacitet.
+
+Se antagelser
+Baseline
+Alternativ
+5 trin · 2 ressourcepuljer · 8 t model
+v1
+30 %
+70 %
+Ankomst
+01
+Nye henvendelser
+Gns. 4,8 min mellem nye sager
+Loft 250 nye · 0 i startrestkø
+Aktivitet
+02
+Sagsbehandling
+Typisk 16,0 min · 4 medarbejdere
+Beslutning
+03
+Kvalitetstjek?
+Eksplicit routing
+Aktivitet
+04
+Kvalitetskontrol
+Typisk 5,0 min · 1 medarbejder
+Afslutning
+05
+Afsluttet sag
+Unikke afsluttede sager
+React Flow
+Tilføj trin
+Modellen er klar til at blive kørt
+Gem version
+Indstillinger
+Aktivitet · Alternativ
+Sagsbehandling
+
+Felter anvendes med Enter eller når du forlader dem. Escape annullerer en igangværende indtastning.
+
+Navn
+Varighed
+Typisk 16,0 min · 4 medarbejdere
+Trekantet fordeling
+Rediger varighed
+Ressourcepool
+Opret ressourcepuljeAdministrér alle puljer
+Poolens navn
+Medarbejdere i puljen
+−
++
+Lønkapacitet (kr. pr. time)
+Arbejdsplan
+Variabel pris pr. besøg (kr.)
+Næste trin
+Forbindelse til næste trin
+Fjern trin
+Syntetiske antagelser. Holdout vurderer baseline særskilt.
+En ændring, der kan mærkes.
+Se hele analysen
+Afsluttede sager
+91,9
+75,3
++16,7
+vs. baseline
+Gennemløbstid
+32,0 min
+70,9 min
+-38,9 min
+vs. baseline
+Restkø
+8
+24,7
+-16,7
+vs. baseline
+Omkostning
+11.600 kr.
+9.320 kr.
++2.280 kr.
+vs. baseline
+Hvordan udvikler køen sig?
+
+Ventende sager gennem simulationsperioden
+
+Seed 1670256963
+Baseline
+Alternativ
+071421280 t2 t4 t6 t8 t
+
+En repræsentation af første seed. Spredning på tværs af alle kørsler vises separat.
+
+Plads til at gøre arbejdet
+
+Udnyttelse af planlagt kapacitet
+
+Sagsbehandlere
+Baseline
+96,4 %
+Alternativ
+87,9 %
+Kvalitetsteam
+Baseline
+28,6 %
+Alternativ
+34,6 %
+
+Høj udnyttelse kan give lange køer ved variation i ankomst og behandling. — betyder, at puljen mangler eller ikke har planlagt kapacitet.
+
+i
+30 parrede replikationer · Middel af run-resultater · flow-des/1.3.0 · Simuleret effekt, ikke realiseret gevinst.
+
+Lokal demo · Sidst gemt 02.08
+Byg processen. Forstå forskellen.
+✳

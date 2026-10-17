@@ -769,6 +769,8 @@ export default function FlowLab() {
             <div className="heading-actions">
               <button
                 className="button secondary export-button"
+                // Firefox can restore a button's old disabled state across reloads.
+                {...{ autoComplete: "off" }}
                 disabled={!comparisonReady || exporting}
                 onClick={() => exportReport("pdf")}
               >

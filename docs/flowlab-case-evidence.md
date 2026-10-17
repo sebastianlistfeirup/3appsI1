@@ -21,3 +21,7 @@ Ved et afskåret arbejdsintervalspor er kalenderpausen ikke beregnelig og vises 
 Et `visitId` er nu en JSON-tuple `[caseId,nodeId,visitNumber]`. Kolonholdige case-/node-id’er kan derfor ikke skabe samme besøgs-id via tekstkonkatenering. Arbejdsintervaller får også dette besøgs-id, så genarbejde kan spores entydigt.
 
 `inspectCase` er en ren motorfunktion. Browseren har hverken en separat KPI-formel eller en syntetisk hændelsesgenerator. JSON indeholder begge modeller, motor-/PRNG-version, seed, valgte sagsresultater, faktiske hændelser, arbejdsintervaller og tidsregnskab.
+
+## Versionskontrol
+
+Ny rapport, holdout og genafspilning kræver både den låste motorversion og `mulberry32-fnv1a/2` på hver underliggende kørsel. Et historisk resultat med ukendt eller afvigende PRNG-version forbliver læsbart, men kan ikke bruges som et nyt aktuelt bevis. Kør sammenligningen igen. Case-workerens interne besked kontrollerer også begge første kørsels PRNG-versioner før genberegning.

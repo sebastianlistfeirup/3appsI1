@@ -218,7 +218,7 @@ describe("Decision report integrity", () => {
     const prior = doc.comparison;
     doc.scenario.resources[0].capacity++;
     expect(() => createReport(doc)).toThrow(
-      "Modellen eller det fælles seed er ændret",
+      "Modellen, det fælles seed eller motor-/PRNG-versionen er ændret",
     );
     expect(doc.comparison).toBe(prior);
     doc.comparison = await compareModels(doc.baseline, doc.scenario);

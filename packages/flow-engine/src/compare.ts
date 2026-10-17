@@ -1,4 +1,9 @@
-import { ENGINE_VERSION, parseModel, type FlowModel } from "./model";
+import {
+  ENGINE_VERSION,
+  PRNG_VERSION,
+  parseModel,
+  type FlowModel,
+} from "./model";
 import {
   percentile,
   simulate,
@@ -136,6 +141,7 @@ export function assembleComparison(
       runs.some(
         (r) =>
           r.engineVersion !== ENGINE_VERSION ||
+          r.prngVersion !== PRNG_VERSION ||
           r.modelId !== model.id ||
           r.modelRevision !== model.revision ||
           r.horizon !== model.horizon ||
@@ -143,7 +149,7 @@ export function assembleComparison(
       )
     )
       throw new Error(
-        "Kørslernes motorversion, modelversion og måleperiode skal passe til deres snapshot.",
+        "Kørslernes motorversion, PRNG-version, modelversion og måleperiode skal passe til deres snapshot.",
       );
   if (
     baseline.horizon !== scenario.horizon ||
@@ -299,6 +305,7 @@ export function assertReportReady(comparison: Comparison) {
     );
   if (
     comparison.status !== "completed" ||
+    verified.status !== "completed" ||
     comparison.seeds.length < 30 ||
     comparison.baselineRuns.some((r) => r.status !== "completed") ||
     comparison.scenarioRuns.some((r) => r.status !== "completed")

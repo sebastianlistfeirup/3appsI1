@@ -4,6 +4,7 @@ import {
   initialDocument,
   validateDocument,
   comparisonMatches,
+  comparisonUsesCurrentEngine,
   experimentContext,
 } from "./document";
 import {
@@ -45,6 +46,27 @@ describe("Experiment context and reproducibility", () => {
     const legacySnapshot = { ...snapshot, context: undefined };
     expect(restoreVersion(doc, legacySnapshot).baseSeed).toBe(0);
   });
+  it("retains incompatible historical results but blocks current report and replay until recomputation", async () => {
+    const doc = initialDocument();
+    doc.baseline = goldenModel();
+    doc.scenario = goldenModel();
+    doc.comparison = await compareModels(doc.baseline, doc.scenario);
+    for (const side of ["baselineRuns", "scenarioRuns"] as const) {
+      const changed = structuredClone(doc);
+      changed.comparison![side][29].prngVersion = "unknown-prng";
+      const retained = validateDocument(changed);
+      expect(retained.comparison!.metrics).toEqual(doc.comparison.metrics);
+      expect(comparisonMatches(retained)).toBe(false);
+      expect(comparisonUsesCurrentEngine(retained.comparison!)).toBe(false);
+      expect(() => createReport(retained)).toThrow("PRNG-versionen");
+      retained.comparison = await compareModels(
+        retained.baseline,
+        retained.scenario,
+      );
+      expect(comparisonMatches(retained)).toBe(true);
+      expect(() => createReport(retained)).not.toThrow();
+    }
+  });
   it("ties current reports to the persisted seed list and keeps the original hypothesis when the report text changes", async () => {
     const doc = initialDocument();
     doc.baseline = goldenModel();
@@ -80,6 +102,10 @@ describe("Experiment context and reproducibility", () => {
     doc.baseSeed = 12345;
     expect(comparisonMatches(doc)).toBe(true);
     doc.comparisonContext.baseSeed = 0;
+    expect(() => createReport(doc)).toThrow("fælles seed");
+    doc.comparisonContext.baseSeed = doc.baseSeed;
+    doc.comparison.requestedSeeds = seedList(doc.baseSeed, 31);
+    expect(comparisonMatches(doc)).toBe(false);
     expect(() => createReport(doc)).toThrow("fælles seed");
   });
 });

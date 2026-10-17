@@ -1,4 +1,9 @@
-import { ENGINE_VERSION, parseModel, type FlowModel } from "./model";
+import {
+  ENGINE_VERSION,
+  PRNG_VERSION,
+  parseModel,
+  type FlowModel,
+} from "./model";
 import { percentile, type SimulationResult } from "./engine";
 import { parseTimestamp, type CsvImport } from "./csv";
 export interface HoldoutMetric {
@@ -123,6 +128,7 @@ export function assessHoldout(input: {
       (r) =>
         r.status !== "completed" ||
         r.engineVersion !== ENGINE_VERSION ||
+        r.prngVersion !== PRNG_VERSION ||
         r.modelId !== model.id ||
         r.modelRevision !== model.revision ||
         r.horizon !== model.horizon ||

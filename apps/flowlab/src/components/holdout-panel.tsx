@@ -17,6 +17,7 @@ import {
 } from "@tre/flow-engine";
 import { downloadFile } from "@tre/persistence";
 import {
+  comparisonUsesCurrentEngine,
   formatMetric,
   formatNumber,
   sameModel,
@@ -81,6 +82,10 @@ export default function HoldoutPanel({
       if (!dataset) throw new Error("Gem et valideret holdout-datasæt først.");
       if (!comparison || !sameModel(comparison.baseline, baseline))
         throw new Error("Kør sammenligningen på den aktuelle baseline først.");
+      if (!comparisonUsesCurrentEngine(comparison))
+        throw new Error(
+          "Kør sammenligningen med den aktuelle motor- og PRNG-version først.",
+        );
       const periodStart = parseTimestamp(startValue, unit),
         periodEnd = parseTimestamp(end || defaultEnd, unit);
       if (periodStart === null || periodEnd === null)

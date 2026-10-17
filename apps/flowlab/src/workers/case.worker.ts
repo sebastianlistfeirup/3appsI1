@@ -1,7 +1,13 @@
-import { ENGINE_VERSION, inspectCase, type FlowModel } from "@tre/flow-engine";
+import {
+  ENGINE_VERSION,
+  PRNG_VERSION,
+  inspectCase,
+  type FlowModel,
+} from "@tre/flow-engine";
 self.onmessage = (
   event: MessageEvent<{
     engineVersion: string;
+    prngVersions: string[];
     baseline: FlowModel;
     scenario: FlowModel;
     seed: number;
@@ -10,9 +16,14 @@ self.onmessage = (
 ) => {
   const input = event.data;
   try {
-    if (input.engineVersion !== ENGINE_VERSION)
+    if (
+      input.engineVersion !== ENGINE_VERSION ||
+      !Array.isArray(input.prngVersions) ||
+      input.prngVersions.length !== 2 ||
+      input.prngVersions.some((version) => version !== PRNG_VERSION)
+    )
       throw new Error(
-        "Resultatet er fra en tidligere motorversion. Kør sammenligningen igen, før du undersøger hændelserne.",
+        "Resultatet er fra en tidligere motorversion eller PRNG-version. Kør sammenligningen igen, før du undersøger hændelserne.",
       );
     const baseline = inspectCase(input.baseline, input.seed, input.caseId),
       scenario = inspectCase(input.scenario, input.seed, input.caseId);
