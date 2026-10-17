@@ -69,7 +69,7 @@ Under Indstillinger kan flere projekter hentes som én [samlet lokal backup](doc
 
 En deterministisk diskret hændelsesmotor, proceseditor, ressourcepuljer, kalender, routing, CSV-kvalitet og baseline/scenarier med samme seeds. Resultater viser spredning og begrænsninger; PDF og JSON bruger samme beregninger. Diagrammet understøtter tastaturflytninger, fortryd og bevaret fokus. Et syntetisk udfald er en simulering, ikke dokumenteret forretningsgevinst.
 
-[Holdout-status](docs/flowlab-holdout.md) angiver præcis baseline, datakilde og periode. En tidligere vurdering bliver synligt historisk ved ændrede input; den godkender ikke automatisk alternativet.
+[Holdout-status](docs/flowlab-holdout.md) angiver præcis baseline, datakilde og periode. En tidligere vurdering bliver synligt historisk ved ændringer i baseline eller motorversionen; den godkender ikke automatisk alternativet.
 
 Den valgfrie [serverprofil](docs/flowlab-server-jobs.md) kører også motoren i en varig kø og kan genstarte en afbrudt beregning fra låste input. Browseren bruger fortsat lokal lagring; hosted login er ikke tilsluttet.
 

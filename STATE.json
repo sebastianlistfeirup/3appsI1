@@ -1,11 +1,8 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T02:57:25Z",
-  "status": "building",
-  "activeTasks": [
-    "final-source-ci",
-    "handoff"
-  ],
+  "updatedAt": "2026-10-17T03:28:42Z",
+  "status": "completed-session",
+  "activeTasks": [],
   "profile": "demo",
   "connectedIntegrations": [],
   "verifiedLocalServices": [
@@ -21,5 +18,18 @@
     "Durable HTTP uploads survive real Next SIGKILL and two-cluster restore before finalization",
     "Native bounded FlowLab worker, actual in-flight SIGKILL and natural pg-boss/app-lease recovery",
     "Production FlowLab HTTP → HTTPS JWKS → restricted DB → native 30-pair result"
+  ],
+  "finishedAt": "2026-10-17T03:28:42Z",
+  "verifiedSourceCommit": "9cc8ecd95d6fd280099a7b6c7559dbd1ee29a575",
+  "verificationRun": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38997529920",
+  "nextIntegration": "Hosted identity and one authenticated browser → API → private data → worker → result journey",
+  "remainingConnections": [
+    "Hosted identity/workspaces",
+    "Private cloud object storage and deployed worker supervision",
+    "Studio code/AI provider",
+    "FlowLab browser-to-server queue integration",
+    "Director generation providers",
+    "Payment provider and test-mode purchase/refund",
+    "Public production deployment"
   ]
 }

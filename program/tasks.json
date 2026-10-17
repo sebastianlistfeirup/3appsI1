@@ -201,9 +201,14 @@
         "D05"
       ],
       "verification": [
-        "pnpm check"
+        "pnpm typecheck",
+        "pnpm test",
+        "pnpm test:db",
+        "pnpm test:restore",
+        "pnpm test:browser",
+        "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38997529920"
       ],
-      "status": "in_progress",
+      "status": "verified-local-and-github",
       "allowed_paths": [
         "packages",
         "services",
@@ -217,7 +222,7 @@
         "Fresh CI jobs pass production builds and relevant domain, database, restore and browser gates; handoff names missing connections."
       ],
       "verification_profile": "real-local-integration-and-ci",
-      "checkpoint": "checkpoints/foundation-13-browser-partitions.md",
+      "checkpoint": "checkpoints/foundation-15-handoff.md",
       "attempts": null
     },
     {
@@ -1234,6 +1239,30 @@
       ],
       "verification_profile": "real-local-integration-and-ci",
       "checkpoint": "checkpoints/foundation-14-review-package-and-clean-build.md",
+      "attempts": null
+    },
+    {
+      "id": "D23",
+      "app": "director",
+      "goal": "Bundled caption font and safe native filter paths",
+      "dependencies": [
+        "D05"
+      ],
+      "verification": [
+        "node --import tsx apps/director/tests/render-profile-smoke.mjs",
+        "node --import tsx apps/director/tests/caption-render-smoke.mjs",
+        "node apps/director/tests/recovery-smoke.mjs"
+      ],
+      "status": "verified-local-and-github",
+      "allowed_paths": [
+        "apps/director"
+      ],
+      "priority": 540,
+      "acceptance": [
+        "The bundled font resolves from both app and root working directories; real captions render with spaces/apostrophes in paths, negative capabilities fail clearly, and previous exports remain readable."
+      ],
+      "verification_profile": "native-render-recovery-and-production-browser",
+      "checkpoint": "checkpoints/director-21-portable-font.md",
       "attempts": null
     }
   ],

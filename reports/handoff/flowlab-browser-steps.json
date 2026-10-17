@@ -1,0 +1,262 @@
+{
+  "app": "flowlab",
+  "engine": "chromium",
+  "evidence": [
+    {
+      "command": "pnpm test:http --app=flowlab",
+      "environment": {},
+      "started": "2026-10-17T03:13:38.837Z",
+      "elapsedMs": 9164,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/flowlab/tests/browser-check.mjs",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:13:48.974Z",
+      "elapsedMs": 8470,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/flowlab/tests/import-state-check.mjs",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:13:57.444Z",
+      "elapsedMs": 20143,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/flowlab/tests/workspace-check.mjs",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:14:17.588Z",
+      "elapsedMs": 7626,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/data-history-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:14:25.215Z",
+      "elapsedMs": 17716,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/experiment-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:14:42.931Z",
+      "elapsedMs": 25717,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/case-evidence-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:15:08.648Z",
+      "elapsedMs": 26943,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/run-distribution-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:15:35.593Z",
+      "elapsedMs": 22087,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/scenario-library-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:15:57.680Z",
+      "elapsedMs": 29694,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/csv-boundaries-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:16:27.375Z",
+      "elapsedMs": 19520,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/time-profile-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:16:46.896Z",
+      "elapsedMs": 26202,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/experiment-settings-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:17:13.098Z",
+      "elapsedMs": 33537,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/input-differences-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:17:46.636Z",
+      "elapsedMs": 20382,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/arrival-editor-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:18:07.018Z",
+      "elapsedMs": 26006,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/resource-editor-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:18:33.025Z",
+      "elapsedMs": 24675,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/cost-profile-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:18:57.700Z",
+      "elapsedMs": 14247,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/templates-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:19:11.948Z",
+      "elapsedMs": 17330,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/diagram-routing-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:19:29.279Z",
+      "elapsedMs": 12238,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/sla-profile-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:19:41.517Z",
+      "elapsedMs": 12928,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/duration-editor-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:19:54.445Z",
+      "elapsedMs": 13202,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/inspector-input-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:20:07.648Z",
+      "elapsedMs": 37540,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/flowlab/tests/touch-edit-check.mjs",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:20:45.188Z",
+      "elapsedMs": 4091,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/evidence-status-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:20:49.280Z",
+      "elapsedMs": 29910,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/prng-version-check.ts",
+      "environment": {
+        "FLOWLAB_BROWSER": "chromium"
+      },
+      "started": "2026-10-17T03:21:19.190Z",
+      "elapsedMs": 13324,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/flowlab/tests/journey-check.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:21:32.514Z",
+      "elapsedMs": 10513,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/flowlab/tests/canvas-check.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:21:43.028Z",
+      "elapsedMs": 2381,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/flowlab/tests/accessibility-check.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:21:45.409Z",
+      "elapsedMs": 8376,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/holdout-check.ts",
+      "environment": {},
+      "started": "2026-10-17T03:21:53.786Z",
+      "elapsedMs": 11673,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec tsx apps/flowlab/tests/report-layout-check.ts",
+      "environment": {},
+      "started": "2026-10-17T03:22:05.460Z",
+      "elapsedMs": 5613,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/flowlab/tests/edge-results-check.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:22:11.073Z",
+      "elapsedMs": 3274,
+      "outcome": "passed"
+    }
+  ]
+}

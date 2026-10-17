@@ -1,0 +1,19 @@
+{
+  "sourceCommit": "9cc8ecd95d6fd280099a7b6c7559dbd1ee29a575",
+  "workflowRun": 38997529920,
+  "jobId": 117294281779,
+  "jobUrl": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38997529920/job/117294281779",
+  "artifactId": 12088096441,
+  "artifactName": "verification-director-chromium-9cc8ecd95d6fd280099a7b6c7559dbd1ee29a575",
+  "artifactBytes": 45964942,
+  "artifactSha256": "cabc0dbbc3d5adb7635e3d96e8c1cda8369f6d9e2ffff75d7e1232956b8bbd94",
+  "artifactDigestVerified": true,
+  "extractedFiles": [
+    "director-browser-steps.json",
+    "director-render-profile.json",
+    "director-caption-render.json",
+    "director-recovery.json",
+    "director-render-history.json"
+  ],
+  "scope": "Actual native gates executed by the final Chromium job, including bundled font path cases, 276 decoded caption frames, independent loudness scan, SIGKILL recovery and original-hash archive downloads. Firefox/WebKit have their separate successful CI jobs."
+}

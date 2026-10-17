@@ -1,0 +1,159 @@
+{
+  "sourceCommit": "9cc8ecd95d6fd280099a7b6c7559dbd1ee29a575",
+  "profile": "fresh HTTPS clone of main, then fast-forward to final source commit; compare original binary assets and changed render source against authoring workspace",
+  "checkedFiles": [
+    {
+      "path": "pnpm-lock.yaml",
+      "bytes": 77305,
+      "sha256": "378337587595da9c771ba5bdcdddc4ad35588e3b7abe832062966e55eb2f2a27"
+    },
+    {
+      "path": "examples/foerste-gennemgang/tre-apps-review.zip",
+      "bytes": 1247105,
+      "sha256": "d5c5033fffaa9be76d638423a34d4655ccb790f87f81a5708d15abf93e02d63a"
+    },
+    {
+      "path": "examples/foerste-gennemgang/flowlab-modelpakke.json",
+      "bytes": 3823,
+      "sha256": "c0674476a6f0048174f1550527928feed9d943dd128889df224733bad8554976"
+    },
+    {
+      "path": "reports/director/sample-project.zip",
+      "bytes": 403277,
+      "sha256": "5fe02ed94370a99c31eda4aaa31b9163312b52ad8c3d234488afae1ee74ce4fb"
+    },
+    {
+      "path": "reports/director/det-sidste-signal-720p.mp4",
+      "bytes": 840149,
+      "sha256": "091784cdce6031a326c2e252a863470719041da3b7758f6fb413cb38a31b8fea"
+    },
+    {
+      "path": "reports/director/sample-storyboard.pdf",
+      "bytes": 452948,
+      "sha256": "3065989b1f26da39831c4be6f088b9fecac15cd9a6b04a4cb83109485581a23a"
+    },
+    {
+      "path": "apps/director/public/fonts/DejaVuSans.ttf",
+      "bytes": 759720,
+      "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+    },
+    {
+      "path": "apps/director/public/fonts/DejaVuSans-Bold.ttf",
+      "bytes": 708920,
+      "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+    },
+    {
+      "path": "apps/director/public/fonts/DejaVu-LICENSE.txt",
+      "bytes": 3859,
+      "sha256": "63d3ba759d12804c5b31a9d5940d855c1820d1f5999e6b0872eb1c7ff045fbc9"
+    },
+    {
+      "path": "apps/flowlab/public/fonts/manrope-bold.ttf",
+      "bytes": 94928,
+      "sha256": "b9584e099e0e7f1e1e914c3037aabb9010c50346a3ce8df5eeeeecc0563044d8"
+    },
+    {
+      "path": "apps/flowlab/public/fonts/DM-Sans-LICENSE.txt",
+      "bytes": 4482,
+      "sha256": "9af36190332437f5ecd09974de43c1f7c77a310a996cdd8ceb25628b458840e1"
+    },
+    {
+      "path": "apps/flowlab/public/fonts/dm-sans-latin.woff2",
+      "bytes": 36932,
+      "sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543"
+    },
+    {
+      "path": "apps/flowlab/public/fonts/Manrope-LICENSE.txt",
+      "bytes": 4387,
+      "sha256": "58172e0c0fac2cda8a37b348164bb55e44b0e69051e557e92b1d3f6910141f7b"
+    },
+    {
+      "path": "apps/flowlab/public/fonts/manrope-latin.woff2",
+      "bytes": 24836,
+      "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972"
+    },
+    {
+      "path": "apps/flowlab/public/fonts/dm-sans-regular.ttf",
+      "bytes": 48280,
+      "sha256": "b0ae3e89a7d3ef2b1838bb4b1ceb0b17cc3435af061eee809d76aa623ff116e9"
+    },
+    {
+      "path": "apps/studio/public/fonts/manrope-800.ttf",
+      "bytes": 95688,
+      "sha256": "b8f802f05b322a7345805f5b89f8bb976604cc719a91530918d5ce3c47160950"
+    },
+    {
+      "path": "apps/studio/public/fonts/dmsans-OFL.txt",
+      "bytes": 4482,
+      "sha256": "9af36190332437f5ecd09974de43c1f7c77a310a996cdd8ceb25628b458840e1"
+    },
+    {
+      "path": "apps/studio/public/fonts/dm-sans-600.ttf",
+      "bytes": 48280,
+      "sha256": "b79a2ea7a38f33fd96a282fadb9ce97626bb0724a44d21075859f0e50239993a"
+    },
+    {
+      "path": "apps/studio/public/fonts/dm-sans-700.ttf",
+      "bytes": 48200,
+      "sha256": "2a8e7f713ee79fbccdef3cef5c787aff47580299f7da60144961e7db2ec08211"
+    },
+    {
+      "path": "apps/studio/public/fonts/manrope-600.ttf",
+      "bytes": 95096,
+      "sha256": "6bad1a774228464cc88b8b0271555b266f7a3c64a7bedf15e165fdab4f6ac0ce"
+    },
+    {
+      "path": "apps/studio/public/fonts/manrope-700.ttf",
+      "bytes": 94928,
+      "sha256": "b9584e099e0e7f1e1e914c3037aabb9010c50346a3ce8df5eeeeecc0563044d8"
+    },
+    {
+      "path": "apps/studio/public/fonts/manrope-500.ttf",
+      "bytes": 95060,
+      "sha256": "f433e5d333be1128d8ec8a28b8aadd0314d10e14e4105406076666bc830fc15d"
+    },
+    {
+      "path": "apps/studio/public/fonts/dm-sans-500.ttf",
+      "bytes": 48308,
+      "sha256": "376427b5322148d8de1e03f263bcca4935a2d60ba71d9f94f4947ab664c711ae"
+    },
+    {
+      "path": "apps/studio/public/fonts/manrope-OFL.txt",
+      "bytes": 4387,
+      "sha256": "58172e0c0fac2cda8a37b348164bb55e44b0e69051e557e92b1d3f6910141f7b"
+    },
+    {
+      "path": "apps/studio/public/fonts/dm-sans-400.ttf",
+      "bytes": 48280,
+      "sha256": "b0ae3e89a7d3ef2b1838bb4b1ceb0b17cc3435af061eee809d76aa623ff116e9"
+    },
+    {
+      "path": "apps/studio/public/fonts/manrope-400.ttf",
+      "bytes": 94972,
+      "sha256": "a13d9b41b0a471ce58f0e46d377fa3cc76615e4632c3b15eb397caadf7a13f0a"
+    },
+    {
+      "path": "apps/director/src/lib/server/local-render.ts",
+      "bytes": 30038,
+      "sha256": "0df4ffec1d237d2760e2cbdb8275932a90d6037777b14123c3ae1135bc664e6a"
+    },
+    {
+      "path": "apps/director/src/lib/server/render-profile.ts",
+      "bytes": 9736,
+      "sha256": "29b042d8fd081fb0820db17ea7913bafe1471ed065bd295c206616750d43e141"
+    },
+    {
+      "path": "apps/director/tests/caption-render-smoke.mjs",
+      "bytes": 12560,
+      "sha256": "4848455faa332a84b31eed0c027cb1bf9d6cfd56e127b9450368383de18891bb"
+    },
+    {
+      "path": "apps/director/tests/render-profile-smoke.mjs",
+      "bytes": 5923,
+      "sha256": "67d7d929a0afdbc2926a31529b718461935a3cd7bf1fef7b2429d5372a925dd8"
+    }
+  ],
+  "workingTreeClean": true,
+  "cloneInitialCommit": "7a9d81e7f14a45234e42453a92093ad7a5a477ea",
+  "verifiedAt": "2026-10-17T03:07:54.128395+00:00"
+}

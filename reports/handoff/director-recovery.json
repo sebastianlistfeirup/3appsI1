@@ -1,0 +1,23 @@
+{
+  "test": "D-AT06: kill process after transcode and resume validated intermediates",
+  "jobId": "2a7b8cc2-4960-4474-8527-ebc014e84e04",
+  "killed": "SIGKILL",
+  "persistedBeforeKill": 2,
+  "reusedSegments": 2,
+  "unchangedFirstSegment": true,
+  "remoteProviderRequests": 0,
+  "expectedFrames": 1428,
+  "metadata": {
+    "duration": 59.5,
+    "width": 1280,
+    "height": 720,
+    "fps": 24,
+    "sha256": "bbbf8a362b8149aa9154739ced963cd6044ce16e3619501923f34b5757da3c9b",
+    "audioSampleRate": 48000,
+    "codec": "h264",
+    "audioCodec": "aac",
+    "loudnessLufs": -70,
+    "audioSilent": true
+  },
+  "verifiedAt": "2026-10-17T03:19:24.851Z"
+}

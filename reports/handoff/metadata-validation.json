@@ -1,0 +1,12 @@
+{
+  "verifiedAt": "2026-10-17T03:28:42.286955+00:00",
+  "documents": 55,
+  "localLinks": 157,
+  "missingLinks": 0,
+  "tasks": 54,
+  "taskReferencesValid": true,
+  "unresolvedTasks": [
+    "F05: no connected payment provider"
+  ],
+  "allHandoffJsonParsed": true
+}

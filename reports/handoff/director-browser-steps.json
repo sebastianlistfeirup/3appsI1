@@ -1,0 +1,236 @@
+{
+  "app": "director",
+  "engine": "chromium",
+  "evidence": [
+    {
+      "command": "node apps/director/tests/cross-browser.mjs",
+      "environment": {
+        "BROWSER_NAME": "chromium"
+      },
+      "started": "2026-10-17T03:14:02.205Z",
+      "elapsedMs": 15624,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/textured-glb-flow.mjs",
+      "environment": {
+        "GLB_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:14:17.830Z",
+      "elapsedMs": 13119,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/library-flow.mjs",
+      "environment": {
+        "LIBRARY_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:14:30.949Z",
+      "elapsedMs": 15375,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/large-library-flow.mjs",
+      "environment": {
+        "LIBRARY_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:14:46.325Z",
+      "elapsedMs": 12401,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/archive-flow.mjs",
+      "environment": {
+        "ARCHIVE_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:14:58.727Z",
+      "elapsedMs": 16362,
+      "outcome": "passed"
+    },
+    {
+      "command": "node --import tsx apps/director/tests/json-recovery-flow.mjs",
+      "environment": {
+        "JSON_RECOVERY_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:15:15.090Z",
+      "elapsedMs": 16161,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/storyboard-flow.mjs",
+      "environment": {
+        "STORYBOARD_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:15:31.251Z",
+      "elapsedMs": 8142,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/versions-flow.mjs",
+      "environment": {
+        "VERSIONS_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:15:39.394Z",
+      "elapsedMs": 13999,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/locations-flow.mjs",
+      "environment": {
+        "LOCATION_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:15:53.393Z",
+      "elapsedMs": 12838,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/continuity-flow.mjs",
+      "environment": {
+        "CONTINUITY_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:16:06.232Z",
+      "elapsedMs": 22133,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/audio-timeline-flow.mjs",
+      "environment": {
+        "AUDIO_TIMELINE_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:16:28.365Z",
+      "elapsedMs": 11678,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/plan-flow.mjs",
+      "environment": {
+        "PLAN_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:16:40.044Z",
+      "elapsedMs": 9927,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/media-lifecycle-flow.mjs",
+      "environment": {
+        "LIFECYCLE_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:16:49.971Z",
+      "elapsedMs": 26480,
+      "outcome": "passed"
+    },
+    {
+      "command": "node --import tsx apps/director/tests/render-history-ui-flow.mjs",
+      "environment": {
+        "HISTORY_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:17:16.452Z",
+      "elapsedMs": 26569,
+      "outcome": "passed"
+    },
+    {
+      "command": "node --import tsx apps/director/tests/captions-ui-flow.mjs",
+      "environment": {
+        "CAPTION_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:17:43.021Z",
+      "elapsedMs": 11925,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/render-profile-ui-flow.mjs",
+      "environment": {
+        "PROFILE_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:17:54.947Z",
+      "elapsedMs": 12499,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/media-ui-flow.mjs",
+      "environment": {
+        "MEDIA_ENGINE": "chromium"
+      },
+      "started": "2026-10-17T03:18:07.446Z",
+      "elapsedMs": 14167,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/editor-flow.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:18:21.614Z",
+      "elapsedMs": 13831,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/storage-recovery.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:18:35.445Z",
+      "elapsedMs": 7060,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/a11y-smoke.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:18:42.505Z",
+      "elapsedMs": 9253,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/render-smoke.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:18:51.758Z",
+      "elapsedMs": 19366,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/recovery-smoke.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:19:11.125Z",
+      "elapsedMs": 13730,
+      "outcome": "passed"
+    },
+    {
+      "command": "node --import tsx apps/director/tests/sequence-render-smoke.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:19:24.856Z",
+      "elapsedMs": 1828,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/clip-audio-smoke.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:19:26.684Z",
+      "elapsedMs": 2364,
+      "outcome": "passed"
+    },
+    {
+      "command": "node --import tsx apps/director/tests/caption-render-smoke.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:19:29.049Z",
+      "elapsedMs": 10656,
+      "outcome": "passed"
+    },
+    {
+      "command": "node apps/director/tests/cancellation-smoke.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:19:39.706Z",
+      "elapsedMs": 1184,
+      "outcome": "passed"
+    },
+    {
+      "command": "node --import tsx apps/director/tests/render-profile-smoke.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:19:40.890Z",
+      "elapsedMs": 2185,
+      "outcome": "passed"
+    },
+    {
+      "command": "node --import tsx apps/director/tests/render-history-smoke.mjs",
+      "environment": {},
+      "started": "2026-10-17T03:19:43.076Z",
+      "elapsedMs": 2163,
+      "outcome": "passed"
+    }
+  ]
+}

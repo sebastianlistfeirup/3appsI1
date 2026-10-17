@@ -1,0 +1,34 @@
+{
+  "app": "studio",
+  "engine": "all",
+  "evidence": [
+    {
+      "command": "pnpm exec tsx tools/backend/check-failure-exit.ts",
+      "environment": {},
+      "started": "2026-10-17T03:13:45.094Z",
+      "elapsedMs": 3782,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm test:http",
+      "environment": {},
+      "started": "2026-10-17T03:13:48.878Z",
+      "elapsedMs": 7866,
+      "outcome": "passed"
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e",
+      "environment": {},
+      "started": "2026-10-17T03:13:57.705Z",
+      "elapsedMs": 466135,
+      "outcome": "passed"
+    },
+    {
+      "command": "node tools/browser/studio-a11y.cjs",
+      "environment": {},
+      "started": "2026-10-17T03:21:43.840Z",
+      "elapsedMs": 3217,
+      "outcome": "passed"
+    }
+  ]
+}

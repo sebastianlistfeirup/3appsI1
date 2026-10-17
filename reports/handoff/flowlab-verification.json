@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "9cc8ecd95d6fd280099a7b6c7559dbd1ee29a575",
+  "workflowRun": 38997529920,
+  "jobId": 117294281789,
+  "jobUrl": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38997529920/job/117294281789",
+  "artifactId": 12087249010,
+  "artifactName": "verification-flowlab-chromium-9cc8ecd95d6fd280099a7b6c7559dbd1ee29a575",
+  "artifactBytes": 44820393,
+  "artifactSha256": "c4fc0073a459df1e29ce5c7632debb8febadf9bcb966bb901519bc197f450614",
+  "artifactDigestVerified": true,
+  "extractedFiles": [
+    "flowlab-browser-steps.json",
+    "flowlab-http-proof.json"
+  ],
+  "actualChromiumGateCommands": 30,
+  "actualHttpChecks": 22,
+  "scope": "Actual commands and production FlowLab HTTP proof from the final Chromium job; Firefox and WebKit have separate successful jobs in the same workflow."
+}

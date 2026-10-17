@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "requestedStart": "2026-10-16T19:30:28Z",
+  "requestedUntil": "2026-10-17T03:30:28Z",
+  "finishedAt": "2026-10-17T03:28:42Z",
+  "status": "completed-session",
+  "verifiedSourceCommit": "9cc8ecd95d6fd280099a7b6c7559dbd1ee29a575",
+  "workflow": {
+    "id": 38997529920,
+    "url": "https://github.com/sebastianlistfeirup/3appsI1/actions/runs/38997529920",
+    "conclusion": "success",
+    "successfulJobs": 8
+  },
+  "studio": {
+    "passed": 150,
+    "failed": 0,
+    "flaky": 0,
+    "skipped": 0,
+    "durationMilliseconds": 465036.223
+  },
+  "localUnitTests": 338,
+  "databaseIntegrationTests": 71,
+  "apps": [
+    "Studio One",
+    "FlowLab",
+    "Director"
+  ],
+  "profile": "local-demo/manual",
+  "nativeRenderPlatformsVerified": [
+    "Linux"
+  ],
+  "nativeRenderPipeline": "director-animatic-3.1",
+  "taskStatuses": {
+    "verified-local": 50,
+    "verified-local-and-github": 3,
+    "deferred-no-connected-billing-provider": 1
+  },
+  "sourceChangedAfterVerification": false,
+  "runtimeNote": "The requested wall-clock work window includes interruptions in the managed execution environment; no uninterrupted CPU-time or continuing background-agent claim.",
+  "hostedLoginConnected": false,
+  "publicProductionDeployment": false,
+  "paidProviderCallsEnabled": false,
+  "nextIntegration": "Hosted identity and one authenticated browser → API → private data → worker → result journey"
+}
