@@ -1,11 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T01:34:24.206229+00:00",
+  "updatedAt": "2026-10-17T01:45:20.477989+00:00",
   "status": "building",
   "activeTasks": [
-    "S16-exact-input-work-package",
-    "L24-numeric-input-verification",
-    "D20-shot-continuity-preview",
+    "S16-full-regression",
+    "S17-bounded-searchable-history",
+    "L25-holdout-evidence-labels",
+    "D21-audio-timeline-intervals",
     "remote-integration-followup"
   ],
   "profile": "demo",

@@ -23,7 +23,7 @@ pnpm dev
 
 Data gemmes i browserens IndexedDB. Hent en ZIP/JSON-kopi af arbejde, du vil beholde. To samtidige faner får en synlig versionskonflikt; den ene overskriver ikke stiltiende den anden. Ingen browserdata uploades automatisk til en server.
 
-Læs den korte [Studio-vejledning](docs/studio.md) eller [FlowLab-vejledning](docs/flowlab.md) for et samlet første arbejdsforløb.
+Læs den korte [Studio-vejledning](docs/studio.md), [FlowLab-vejledning](docs/flowlab.md) eller [Director-vejledning](docs/director.md) for et samlet første arbejdsforløb.
 
 ### Faktisk MP4 fra Director
 
@@ -46,6 +46,8 @@ Tryk **Eksportér → MP4**. Den lokale worker samler ægte 1280×720, 24 fps H.
 Bestilling, opgaver med afhængigheder, immutable filversioner, manuelle leveringer, før/efter-preview, review og ZIP med SHA-256-manifest. Hver opgave har sin [ansvarlige og egne færdigkrav](docs/studio-task-definitions.md), som låses sammen med leveringen. Uploadet HTML vises isoleret, uden scripts eller eksterne netværkskald. Et manuelt resultat bliver aldrig kaldt en verificeret ekstern build.
 
 Filinspektøren viser hver versions ophav, historik og konkrete anvendelser. Redigering bevarer licensoplysninger; afklaring af rettigheder bliver en ny version med samme indhold. Se [filversioner og ophav](docs/studio-artifacts.md).
+
+Vælg de præcise inputversioner før start, og hent en [arbejdspakke](docs/studio-work-packages.md) med den låste aftale, originalfiler og kontrolsummer. Den gør grundlaget flytbart til dine egne værktøjer. Rettelser tager udgangspunkt i de faktisk gennemgåede filer.
 
 Ufærdige manuelle leverancer gemmes som kladder og kan genoptages efter genåbning. Projektpakker bevarer hele historikken og kan åbnes som selvstændige kopier. Pakning kører i en browser-worker, og ugemte ændringer kan eksporteres ved lagerfejl. Se [pakkeformat, grænser og gendannelse](docs/studio-project-packages.md).
 
@@ -72,6 +74,8 @@ Den valgfrie [serverprofil](docs/flowlab-server-jobs.md) kører også motoren i 
 3D-scene og brugbar 2D-fallback, egne GLB-modeller, fem kameraer, immutable shotversioner, framebaseret tidslinje, egne medier og rigtige eksporter. MP4'en er en animatic med stillbilleder og klip; der loves ikke kontinuerlig karakteranimation. Et [projektbundet eksportarkiv](docs/director-export-archive.md) bevarer tidligere filer og deres kvalitetsrapporter.
 
 I [sceneplanen](docs/director-scene-plan.md) kan objekter, kamera og kameramål flyttes direkte med mus, berøring eller tastatur. Tidligere shots og sekvensversioner bevarer deres oprindelige scene.
+
+[Sammenlign før opdatering](docs/director-continuity-review.md) viser det låste shot ved siden af en faktisk kandidat fra arbejdsscenen. Godkend den konkrete ændring, mens tidligere versioner bliver bevaret.
 
 ## Kontroller arbejdet
 

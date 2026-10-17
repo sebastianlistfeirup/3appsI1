@@ -24,6 +24,10 @@ import {
   type DeliveryDraftFields,
 } from "../lib/model";
 import { taskSnapshotSchema } from "../lib/task-definition";
+import { initialRunInputs } from "../lib/run-inputs";
+import { inputSelectionIssue } from "../lib/input-selection";
+import { RunInputPicker } from "./run-input-picker";
+import { RunPackageButton } from "./run-package-button";
 import { Badge, Modal, Notice } from "./primitives";
 import type { ProjectActions } from "./studio-app";
 
@@ -61,6 +65,9 @@ export function DeliveryDialog({
   );
   const [runId, setRunId] = useState(existing?.id ?? "");
   const [requestId] = useState(() => uid("request"));
+  const [inputVersionIds, setInputVersionIds] = useState(() =>
+    initialRunInputs(project, task),
+  );
   const [acknowledgedBrief, setAcknowledgedBrief] = useState<number>();
   const currentBrief = latestBrief(project);
   const olderBrief = task.briefVersion !== currentBrief.version;
@@ -193,6 +200,7 @@ export function DeliveryDialog({
         taskId,
         requestId,
         acknowledgedBrief,
+        inputVersionIds,
       );
       const run = next.runs.find((r) => r.idempotencyKey === requestId)!;
       if (!update(() => saveDeliveryDraft(next, run.id, fields))) return;
@@ -282,7 +290,8 @@ export function DeliveryDialog({
                     ),
                 ).length
               }{" "}
-              aktuelle filversioner · 0 kr. i eksternt forbrug
+              tilgængelige filer · {inputVersionIds.length} valgt · 0 kr. i
+              eksternt forbrug
             </p>
             <strong>Færdig betyder</strong>
             <ul className="locked-task-criteria">
@@ -291,6 +300,12 @@ export function DeliveryDialog({
               ))}
             </ul>
           </div>
+          <RunInputPicker
+            project={project}
+            selected={inputVersionIds}
+            onChange={setInputVersionIds}
+            correction={Boolean(task.correctionOf)}
+          />
           {definitionIssue && (
             <Notice danger>
               {definitionIssue} Redigér opgaven, før du starter.
@@ -334,6 +349,7 @@ export function DeliveryDialog({
               disabled={
                 Boolean(project.archivedAt) ||
                 Boolean(definitionIssue) ||
+                Boolean(inputSelectionIssue(project, inputVersionIds)) ||
                 (olderBrief && acknowledgedBrief !== currentBrief.version)
               }
             >
@@ -372,6 +388,13 @@ export function DeliveryDialog({
             Du kan lukke dialogen og fortsætte senere. Kladden følger med
             projektpakken.
           </p>
+          <div className="run-package-help">
+            <RunPackageButton project={project} runId={runId} notify={notify} />
+            <p>
+              Tag den låste aftale og de valgte input med til dine egne
+              værktøjer. Aflevér resultatet her, når det er klar.
+            </p>
+          </div>
           {project.runs.find((run) => run.id === runId)?.taskSnapshot && (
             <details className="run-definition">
               <summary>Se opgavens låste færdigkrav</summary>

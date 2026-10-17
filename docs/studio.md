@@ -14,9 +14,9 @@ Data gemmes i IndexedDB. **Gemt lokalt** betyder, at browserens transaktion er g
 2. Skriv målet, målgruppen og konkrete acceptkrav under **Bestilling**. Gem en ny briefversion, når den er klar. En ufærdig [bestillingskladde](studio-brief-drafts.md) kan lukkes og genoptages.
 3. Tilføj input under **Filer & versioner**. Du kan oprette en tekstfil eller uploade en eksisterende fil. Angiv ophav og rettigheder; ukendt status bliver synlig, indtil du selv afklarer den.
 4. Opret en konkret **Opgave** med en ansvarlig og egne [færdigkrav](studio-task-definitions.md). Tilføj afhængigheder, hvis noget skal være accepteret først. En cirkulær afhængighed bliver afvist.
-5. Vælg **Levér**. Start det manuelle forløb, som låser de aktuelle inputversioner og briefversionen. Udfør ændringen i dine egne værktøjer. Indsæt et tekstresultat eller vælg en uploadet filversion, og beskriv resultatet og usikkerhederne.
+5. Vælg **Levér**. Vælg de præcise inputversioner, og lås det manuelle forløb. Hent en [arbejdspakke med aftale og originalfiler](studio-work-packages.md), og udfør ændringen i dine egne værktøjer. Indsæt et tekstresultat eller vælg en uploadet filversion, og beskriv resultatet og usikkerhederne.
 6. Gennemgå **Leverancer**. Sammenlign den låste tidligere version med den nye. Se hvert kontrolpunkts grundlag, afkryds de beståede krav, og skriv din vurdering. Manuel bekræftelse er ikke et bevis for, at en ekstern build er kørt.
-7. Vælg **Acceptér leverance** eller **Bed om ændring**. En rettelse bliver en ny opgave; det tidligere resultat og review bliver bevaret. Hent projektpakken, når du vil tage arbejdet med dig.
+7. Vælg **Acceptér leverance** eller **Bed om en rettelse**. En rettelse bliver en ny opgave; det tidligere resultat og review bliver bevaret. Hent projektpakken, når du vil tage arbejdet med dig.
 
 Realmread-eksemplet giver et færdigt lille forløb at undersøge: en menu får en questindikator. Både den tidligere og den nye HTML-version ligger som faktiske filer i projektet.
 

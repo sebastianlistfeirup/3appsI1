@@ -6,7 +6,9 @@
       "app": "foundation",
       "goal": "Monorepo, locked dependencies and source specification",
       "dependencies": [],
-      "verification": ["pnpm install --frozen-lockfile"],
+      "verification": [
+        "pnpm install --frozen-lockfile"
+      ],
       "status": "verified-local",
       "allowed_paths": [
         "packages",
@@ -21,56 +23,88 @@
       "id": "S01",
       "app": "studio",
       "goal": "Versioned local project, brief, artifact, review and export",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm --filter @tre/studio typecheck",
         "pnpm exec vitest run apps/studio/src/lib/model.test.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/studio"]
+      "allowed_paths": [
+        "apps/studio"
+      ]
     },
     {
       "id": "S09",
       "app": "studio",
       "goal": "Browser core flows, responsive and accessibility",
-      "dependencies": ["S01"],
-      "verification": ["pnpm exec playwright test tests/e2e/studio.spec.ts"],
+      "dependencies": [
+        "S01"
+      ],
+      "verification": [
+        "pnpm exec playwright test tests/e2e/studio.spec.ts"
+      ],
       "status": "verified-local",
-      "allowed_paths": ["apps/studio"]
+      "allowed_paths": [
+        "apps/studio"
+      ]
     },
     {
       "id": "L01",
       "app": "flowlab",
       "goal": "Correct reproducible simulation and editor",
-      "dependencies": ["F00"],
-      "verification": ["pnpm exec vitest run packages/flow-engine"],
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm exec vitest run packages/flow-engine"
+      ],
       "status": "verified-local",
-      "allowed_paths": ["apps/flowlab"]
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
     },
     {
       "id": "D01",
       "app": "director",
       "goal": "Versioned scene/cameras/shots",
-      "dependencies": ["F00"],
-      "verification": ["pnpm exec vitest run packages/scene-format"],
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm exec vitest run packages/scene-format"
+      ],
       "status": "verified-local",
-      "allowed_paths": ["apps/director"]
+      "allowed_paths": [
+        "apps/director"
+      ]
     },
     {
       "id": "D05",
       "app": "director",
       "goal": "Actual MP4/PDF and recovery",
-      "dependencies": ["D01"],
-      "verification": ["ffprobe validated output"],
+      "dependencies": [
+        "D01"
+      ],
+      "verification": [
+        "ffprobe validated output"
+      ],
       "status": "verified-local",
-      "allowed_paths": ["apps/director"]
+      "allowed_paths": [
+        "apps/director"
+      ]
     },
     {
       "id": "F03",
       "app": "foundation",
       "goal": "Postgres RLS, revision and transactional budget/job store",
-      "dependencies": ["F00"],
-      "verification": ["database integration suite"],
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "database integration suite"
+      ],
       "status": "verified-local",
       "allowed_paths": [
         "packages",
@@ -85,8 +119,12 @@
       "id": "F04",
       "app": "foundation",
       "goal": "Durable pg-boss worker, idempotency and recovery",
-      "dependencies": ["F03"],
-      "verification": ["worker kill/restart integration"],
+      "dependencies": [
+        "F03"
+      ],
+      "verification": [
+        "worker kill/restart integration"
+      ],
       "status": "verified-local",
       "allowed_paths": [
         "packages",
@@ -101,8 +139,14 @@
       "id": "F06",
       "app": "foundation",
       "goal": "CI, local runbook, handoff and gates",
-      "dependencies": ["S09", "L01", "D05"],
-      "verification": ["pnpm check"],
+      "dependencies": [
+        "S09",
+        "L01",
+        "D05"
+      ],
+      "verification": [
+        "pnpm check"
+      ],
       "status": "in_progress",
       "allowed_paths": [
         "packages",
@@ -117,8 +161,12 @@
       "id": "F05",
       "app": "foundation",
       "goal": "Billing webhook contracts and tests",
-      "dependencies": ["F03"],
-      "verification": ["billing signature/dedup fixtures"],
+      "dependencies": [
+        "F03"
+      ],
+      "verification": [
+        "billing signature/dedup fixtures"
+      ],
       "status": "ready",
       "allowed_paths": [
         "packages",
@@ -133,141 +181,224 @@
       "id": "S10",
       "app": "studio",
       "goal": "Durable manual delivery drafts and actual quota recovery",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm exec playwright test tests/e2e/studio-drafts.spec.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/studio"]
+      "allowed_paths": [
+        "apps/studio"
+      ]
     },
     {
       "id": "F07",
       "app": "foundation",
       "goal": "Actual database and immutable object restoration",
-      "dependencies": ["F00"],
-      "verification": ["pnpm test:restore"],
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm test:restore"
+      ],
       "status": "verified-local",
-      "allowed_paths": ["packages", "services", "tools", "docs", "reports"]
+      "allowed_paths": [
+        "packages",
+        "services",
+        "tools",
+        "docs",
+        "reports"
+      ]
     },
     {
       "id": "F08",
       "app": "foundation",
       "goal": "Worker survives actual idle database session loss",
-      "dependencies": ["F00"],
-      "verification": ["pnpm test:db tests/integration/worker-process.test.ts"],
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm test:db tests/integration/worker-process.test.ts"
+      ],
       "status": "verified-local",
-      "allowed_paths": ["packages", "services", "tools", "docs", "reports"]
+      "allowed_paths": [
+        "packages",
+        "services",
+        "tools",
+        "docs",
+        "reports"
+      ]
     },
     {
       "id": "L12",
       "app": "flowlab",
       "goal": "Named scenario library preserves changed drafts",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm exec tsx apps/flowlab/tests/scenario-library-check.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/flowlab"]
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
     },
     {
       "id": "L13",
       "app": "flowlab",
       "goal": "CSV raw field boundaries and complete wide mappings",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm exec tsx apps/flowlab/tests/csv-boundaries-check.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/flowlab"]
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
     },
     {
       "id": "D11",
       "app": "director",
       "goal": "Versioned real studio and courtyard locations",
-      "dependencies": ["F00"],
-      "verification": ["node apps/director/tests/locations-flow.mjs"],
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "node apps/director/tests/locations-flow.mjs"
+      ],
       "status": "verified-local",
-      "allowed_paths": ["apps/director"]
+      "allowed_paths": [
+        "apps/director"
+      ]
     },
     {
       "id": "F09",
       "app": "foundation",
       "goal": "Private immutable files and short signed read links with membership recheck",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm test:db tests/integration/artifact-download.test.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["packages", "apps/studio", "docs", "reports"]
+      "allowed_paths": [
+        "packages",
+        "apps/studio",
+        "docs",
+        "reports"
+      ]
     },
     {
       "id": "L14",
       "app": "flowlab",
       "goal": "Time-tail metrics with explicit observation counts and planned waiting",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm exec tsx apps/flowlab/tests/time-profile-check.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/flowlab"]
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
     },
     {
       "id": "D12",
       "app": "director",
       "goal": "Bounded sequential library thumbnails with cancellation",
-      "dependencies": ["F00"],
-      "verification": ["node apps/director/tests/large-library-flow.mjs"],
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "node apps/director/tests/large-library-flow.mjs"
+      ],
       "status": "verified-local",
-      "allowed_paths": ["apps/director"]
+      "allowed_paths": [
+        "apps/director"
+      ]
     },
     {
       "id": "S11",
       "app": "studio",
       "goal": "Preserve artifact source rights and show exact version uses",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm exec playwright test tests/e2e/studio-artifacts.spec.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/studio", "tests/e2e"]
+      "allowed_paths": [
+        "apps/studio",
+        "tests/e2e"
+      ]
     },
     {
       "id": "L15",
       "app": "flowlab",
       "goal": "Shared experiment bounds and finite monetary inputs",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm exec tsx apps/flowlab/tests/experiment-settings-check.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/flowlab"]
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
     },
     {
       "id": "L16",
       "app": "flowlab",
       "goal": "Bounded complete model differences with full export",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm exec tsx apps/flowlab/tests/input-differences-check.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/flowlab"]
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
     },
     {
       "id": "F10",
       "app": "foundation",
       "goal": "Production Next HTTP through actual TLS JWKS, RLS, worker and private download",
-      "dependencies": ["F09"],
-      "verification": ["pnpm test:http"],
+      "dependencies": [
+        "F09"
+      ],
+      "verification": [
+        "pnpm test:http"
+      ],
       "status": "verified-local",
-      "allowed_paths": ["tools", "docs", "reports"]
+      "allowed_paths": [
+        "tools",
+        "docs",
+        "reports"
+      ]
     },
     {
       "id": "F11",
       "app": "foundation",
       "goal": "Durable quota-bound private uploads, immutable finalization, crash and restore recovery",
-      "dependencies": ["F09", "F10"],
-      "verification": ["pnpm test:db", "pnpm test:http", "pnpm test:restore"],
+      "dependencies": [
+        "F09",
+        "F10"
+      ],
+      "verification": [
+        "pnpm test:db",
+        "pnpm test:http",
+        "pnpm test:restore"
+      ],
       "status": "verified-local",
       "allowed_paths": [
         "packages",
@@ -282,112 +413,163 @@
       "id": "L17",
       "app": "flowlab",
       "goal": "Manual arrival and case type editor with guarded drafts",
-      "dependencies": ["L15"],
+      "dependencies": [
+        "L15"
+      ],
       "verification": [
         "pnpm exec tsx apps/flowlab/tests/arrival-editor-check.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/flowlab"]
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
     },
     {
       "id": "D14",
       "app": "director",
       "goal": "Cancellable deduplicated project archive in actual browser workers",
-      "dependencies": ["D01"],
-      "verification": ["node apps/director/tests/archive-flow.mjs"],
+      "dependencies": [
+        "D01"
+      ],
+      "verification": [
+        "node apps/director/tests/archive-flow.mjs"
+      ],
       "status": "verified-local",
-      "allowed_paths": ["apps/director"]
+      "allowed_paths": [
+        "apps/director"
+      ]
     },
     {
       "id": "S12",
       "app": "studio",
       "goal": "Durable per-delivery review drafts and strict stale-input acknowledgment",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm exec playwright test tests/e2e/studio-review-drafts.spec.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/studio"]
+      "allowed_paths": [
+        "apps/studio"
+      ]
     },
     {
       "id": "L18",
       "app": "flowlab",
       "goal": "Resource pools, wages and atomic calendar editing",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm exec tsx apps/flowlab/tests/resource-editor-check.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/flowlab"]
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
     },
     {
       "id": "D15",
       "app": "director",
       "goal": "Complete timed captions and measured render quality",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "node --import tsx apps/director/tests/caption-render-smoke.mjs"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/director"]
+      "allowed_paths": [
+        "apps/director"
+      ]
     },
     {
       "id": "S13",
       "app": "studio",
       "goal": "Bounded workspace backup and additive import with actual quota recovery",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm exec playwright test tests/e2e/studio-workspace-backup.spec.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/studio"]
+      "allowed_paths": [
+        "apps/studio"
+      ]
     },
     {
       "id": "L19",
       "app": "flowlab",
       "goal": "Reconcile resource time and cost in result tables and actual reports",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm exec tsx apps/flowlab/tests/cost-profile-check.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/flowlab"]
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
     },
     {
       "id": "L20",
       "app": "flowlab",
       "goal": "Verified synthetic routing, rework and calendar examples",
-      "dependencies": ["F00"],
-      "verification": ["pnpm exec tsx apps/flowlab/tests/templates-check.ts"],
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/templates-check.ts"
+      ],
       "status": "verified-local",
-      "allowed_paths": ["apps/flowlab"]
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
     },
     {
       "id": "D16",
       "app": "director",
       "goal": "Actual local render capability and actionable setup failures",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "node --import tsx apps/director/tests/render-profile-smoke.mjs"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/director"]
+      "allowed_paths": [
+        "apps/director"
+      ]
     },
     {
       "id": "D17",
       "app": "director",
       "goal": "Cancel actual media import and release native resources",
-      "dependencies": ["F00"],
-      "verification": ["node apps/director/tests/media-lifecycle-flow.mjs"],
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "node apps/director/tests/media-lifecycle-flow.mjs"
+      ],
       "status": "verified-local",
-      "allowed_paths": ["apps/director"]
+      "allowed_paths": [
+        "apps/director"
+      ]
     },
     {
       "id": "F12",
       "app": "foundation",
       "goal": "Native bounded FlowLab jobs and actual in-flight crash recovery",
-      "dependencies": ["F00"],
-      "verification": ["pnpm test:db", "pnpm test:http --app=flowlab"],
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm test:db",
+        "pnpm test:http --app=flowlab"
+      ],
       "status": "verified-local",
       "allowed_paths": [
         "packages/flow-jobs",
@@ -401,23 +583,151 @@
       "id": "L21",
       "app": "flowlab",
       "goal": "Durable keyboard movement, focus and readable rework routing",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "pnpm exec tsx apps/flowlab/tests/diagram-routing-check.ts"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/flowlab"]
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
     },
     {
       "id": "D18",
       "app": "director",
       "goal": "Project-bound export archive and immutable report identity",
-      "dependencies": ["F00"],
+      "dependencies": [
+        "F00"
+      ],
       "verification": [
         "node --import tsx apps/director/tests/render-history-smoke.mjs"
       ],
       "status": "verified-local",
-      "allowed_paths": ["apps/director"]
+      "allowed_paths": [
+        "apps/director"
+      ]
+    },
+    {
+      "id": "S14",
+      "app": "studio",
+      "goal": "Persistent brief drafts and explicit historical publication",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm exec playwright test tests/e2e/studio-brief-drafts.spec.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/studio"
+      ]
+    },
+    {
+      "id": "S15",
+      "app": "studio",
+      "goal": "Exact per-task requirements, owner and immutable run definitions",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm exec playwright test tests/e2e/studio-task-definitions.spec.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/studio"
+      ]
+    },
+    {
+      "id": "S16",
+      "app": "studio",
+      "goal": "Explicit input versions and bounded portable work packages",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm exec playwright test tests/e2e/studio-work-package.spec.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/studio"
+      ]
+    },
+    {
+      "id": "L22",
+      "app": "flowlab",
+      "goal": "Explicit completed and backlog SLA evidence in UI and reports",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/sla-profile-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
+    },
+    {
+      "id": "L23",
+      "app": "flowlab",
+      "goal": "Precise bounded atomic duration editing",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/duration-editor-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
+    },
+    {
+      "id": "L24",
+      "app": "flowlab",
+      "goal": "Safe numeric drafts, one undo and actual storage commit",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/inspector-input-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
+    },
+    {
+      "id": "D19",
+      "app": "director",
+      "goal": "Interactive metric plan with actual rendered geometry",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "node apps/director/tests/plan-flow.mjs"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/director"
+      ]
+    },
+    {
+      "id": "D20",
+      "app": "director",
+      "goal": "Visual continuity review before immutable shot update",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "node apps/director/tests/continuity-flow.mjs"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/director"
+      ]
     }
   ]
 }

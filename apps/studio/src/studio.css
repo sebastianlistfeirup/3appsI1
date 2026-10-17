@@ -4941,7 +4941,9 @@ button {
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
-.task-definition-fields > label:first-child { margin-top: 0; }
+.task-definition-fields > label:first-child {
+  margin-top: 0;
+}
 .field-help,
 .task-definition-issue {
   font-size: 12px;
@@ -5006,4 +5008,115 @@ button {
   border-bottom: 1px solid var(--line);
   padding-bottom: 12px;
   margin-bottom: 12px;
+}
+.run-input-picker {
+  margin: 12px 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.run-input-picker summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+}
+.run-input-picker p {
+  font-size: 12px;
+  line-height: 1.55;
+  color: #62596c;
+  margin: 10px 0;
+}
+.run-input-tools {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.modal .run-input-tools label {
+  flex: 1 1 180px;
+  font-size: 12px;
+  display: grid;
+  gap: 5px;
+  margin: 0;
+}
+.run-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+.run-input-row .run-input-check {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  font-size: 12px;
+  margin: 0;
+  text-align: left;
+}
+.run-input-row .run-input-check input {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+}
+.run-input-check span {
+  overflow-wrap: anywhere;
+}
+.run-input-check small {
+  display: block;
+  color: #62596c;
+  margin-top: 4px;
+  font-size: 11px;
+}
+.run-input-row select {
+  width: 100%;
+  min-width: 0;
+  font-size: 12px;
+}
+.run-input-pages {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 11px;
+}
+.run-package-help {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.run-package-help p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #62596c;
+  margin: 8px 0 0;
+}
+.run-package-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.run-package-action > span {
+  font-size: 12px;
+  color: #62596c;
+}
+.run-card > .run-package-action {
+  margin: 12px 0;
+}
+@media (max-width: 500px) {
+  .run-input-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .run-input-pages {
+    flex-wrap: wrap;
+  }
 }

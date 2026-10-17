@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { initialRunInputs } from "./run-inputs";
+import { resolveInputVersions } from "./input-selection";
 import { assertProjectBudget, decodeUtf8 } from "./limits";
 import {
   taskDefinitionSchema,
@@ -885,6 +887,7 @@ export function beginManualRun(
   taskId: string,
   requestId: string,
   acknowledgedCurrentBriefVersion?: number,
+  inputVersionIds?: string[],
 ) {
   assertMutable(p);
   const repeated = p.runs.find((r) => r.idempotencyKey === requestId);
@@ -949,17 +952,15 @@ export function beginManualRun(
     throw new Error(
       "Angiv en ansvarlig og 1–30 forskellige, konkrete færdigkrav på højst 1.000 tegn, før du starter leveringen.",
     );
-  const latest = p.artifacts.filter(
-    (a) =>
-      !p.artifacts.some(
-        (b) => b.artifactId === a.artifactId && b.version > a.version,
-      ),
+  const inputs = resolveInputVersions(
+    p,
+    inputVersionIds ?? initialRunInputs(p, task),
   );
   const run = runSchema.parse({
     id: uid("run"),
     taskId,
     briefVersion: brief.version,
-    inputVersionIds: latest.map((a) => a.id),
+    inputVersionIds: inputs.map((a) => a.id),
     adapterId: "manual",
     idempotencyKey: requestId,
     state: "awaiting_upload",

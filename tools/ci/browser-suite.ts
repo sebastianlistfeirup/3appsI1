@@ -255,6 +255,11 @@ try {
         ["exec", "tsx", "apps/flowlab/tests/duration-editor-check.ts"],
         { FLOWLAB_BROWSER: browser },
       );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/inspector-input-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
     }
     if (selectedEngine === "all" || selectedEngine === "chromium") {
       await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
@@ -294,6 +299,12 @@ try {
       await run("node", ["apps/director/tests/locations-flow.mjs"], {
         LOCATION_ENGINE: browser,
       });
+      await run("node", ["apps/director/tests/continuity-flow.mjs"], {
+        CONTINUITY_ENGINE: browser,
+      });
+      await run("node", ["apps/director/tests/audio-timeline-flow.mjs"], {
+        AUDIO_TIMELINE_ENGINE: browser,
+      }, 240000);
       await run(
         "node",
         ["apps/director/tests/plan-flow.mjs"],

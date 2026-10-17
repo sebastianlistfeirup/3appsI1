@@ -1,4 +1,5 @@
 "use client";
+import { RunPackageButton } from "./run-package-button";
 import { useEffect, useRef, useState } from "react";
 import Link from "./local-link";
 import {
@@ -900,6 +901,11 @@ export function RunsPanel({
                       </small>
                     </details>
                   )}
+                  <RunPackageButton
+                    project={project}
+                    runId={run.id}
+                    notify={notify}
+                  />
                   {project.deliveryDrafts?.some(
                     (draft) => draft.runId === run.id,
                   ) && (
