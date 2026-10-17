@@ -1,0 +1,100 @@
+{
+  "engine": "chromium",
+  "browser": "156.0.8078.4",
+  "stages": [
+    {
+      "name": "locked frame and rendered candidate with no persistence side effect",
+      "at": "2026-10-17T01:35:37.980Z"
+    },
+    {
+      "name": "native canvas failure preserves locked frame; retry cleans GPU context",
+      "at": "2026-10-17T01:36:32.447Z"
+    },
+    {
+      "name": "approve only reviewed shot and preserve every previous version",
+      "at": "2026-10-17T01:36:38.388Z"
+    },
+    {
+      "name": "chosen preview mode is used for the actual committed frame",
+      "at": "2026-10-17T01:36:40.608Z"
+    },
+    {
+      "name": "real textured GLB preview cancellation and late resource disposal",
+      "at": "2026-10-17T01:36:44.759Z"
+    },
+    {
+      "name": "a late candidate cannot replace a newer cross-tab scene",
+      "at": "2026-10-17T01:36:49.110Z"
+    },
+    {
+      "name": "without WebGL the candidate is explicitly a 2D plan",
+      "at": "2026-10-17T01:36:55.035Z"
+    },
+    {
+      "name": "missing draft camera preserves the locked image and blocks approval",
+      "at": "2026-10-17T01:36:56.539Z"
+    },
+    {
+      "name": "passed",
+      "at": "2026-10-17T01:36:56.796Z"
+    }
+  ],
+  "scans": [
+    {
+      "name": "desktop",
+      "violations": []
+    },
+    {
+      "name": "tablet",
+      "violations": []
+    },
+    {
+      "name": "mobile",
+      "violations": []
+    },
+    {
+      "name": "conflict",
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "checks": [
+    "actual before/after rendered pixels",
+    "no persistence during preview",
+    "three responsive axe scans plus storage-conflict scan",
+    "native canvas failure/retry",
+    "exact approved 3D frame committed",
+    "only selected shot revised",
+    "chosen 2D mode preserved",
+    "textured GLB cancel/close releases native resources",
+    "late actual decoder cannot override explicitly reloaded cross-tab scene",
+    "recovery JSON contains the current tab snapshot",
+    "honest WebGL fallback",
+    "missing camera preserves existing frame and blocks approval"
+  ],
+  "native3d": true,
+  "accepted": {
+    "mode": "3d",
+    "renderer": "director-primitives-1.0",
+    "previewSha256": "325528c33d4dddaf3d384a541fdebccb1ddcaf70037026a38c5588a22b7bb313",
+    "acceptedSha256": "325528c33d4dddaf3d384a541fdebccb1ddcaf70037026a38c5588a22b7bb313",
+    "priorShot": "shot_8491f35c08cf475e9f078c6bb11dcd92",
+    "nextShot": "shot_364fd0b6cad241fba5832eed6f395bd2"
+  },
+  "editorResourceBaseline": {
+    "liveContexts": 1,
+    "openBitmaps": 1,
+    "urls": 0,
+    "held": 0
+  },
+  "crossTabAccepted": {
+    "previewSha256": "bed54854d4869c9e9b40ce0ad292a88f42fcb5bb84772aea3664002e694f6486",
+    "acceptedSha256": "bed54854d4869c9e9b40ce0ad292a88f42fcb5bb84772aea3664002e694f6486"
+  },
+  "resources": {
+    "liveContexts": 1,
+    "openBitmaps": 1,
+    "urls": 0,
+    "held": 0
+  }
+}

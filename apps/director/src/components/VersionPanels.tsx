@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { ContinuityComparison } from "./ContinuityComparison";
 import {
   ArrowRight,
   Check,
@@ -18,6 +19,7 @@ import {
   totalFrames,
   type Project,
   type Shot,
+  type SceneVersion,
 } from "@tre/scene-format";
 import { ShotFrame } from "./ShotFrame";
 
@@ -26,12 +28,27 @@ export function ContinuityPanel({
   busy,
   onCapture,
   onOpen,
+  saveIssue,
+  onCopy,
+  onReload,
 }: {
   project: Project;
   busy: boolean;
-  onCapture: (ids: string[]) => void;
+  saveIssue: string | null;
+  onCopy: () => void;
+  onReload: () => void;
+  onCapture: (
+    ids: string[],
+    reviewedScene?: SceneVersion,
+    reviewedMode?: "3d" | "2d",
+  ) => void;
   onOpen: (shot: Shot) => void;
 }) {
+  const [previewId, setPreviewId] = useState<string | null>(null),
+    previewTrigger = useRef<HTMLButtonElement | null>(null);
+  const previewShot = project.shots.find(
+    (shot) => shot.id === previewId && project.sequence.includes(shot.id),
+  );
   const shots = orderedShots(project),
     affected = affectedShots(project),
     eligible = (shot: Shot) =>
@@ -50,6 +67,38 @@ export function ContinuityPanel({
         Vælg de indstillinger, der skal følge arbejdsscenen. Egne billeder og
         klip følger deres mediekilde.
       </p>
+      {saveIssue && (
+        <div className="continuity-storage-note" role="alert">
+          <strong>Din lokale scene er bevaret</strong>
+          <p>{saveIssue}</p>
+          <div>
+            <button className="button subtle" onClick={onCopy} disabled={busy}>
+              Gem lokal kopi
+            </button>
+            <button
+              className="button subtle"
+              onClick={onReload}
+              disabled={busy}
+            >
+              Genindlæs gemt version
+            </button>
+          </div>
+        </div>
+      )}
+      {previewShot && (
+        <ContinuityComparison
+          key={previewShot.id}
+          project={project}
+          shot={previewShot}
+          busy={busy}
+          blocked={!!saveIssue}
+          onCapture={onCapture}
+          onClose={() => {
+            setPreviewId(null);
+            previewTrigger.current?.focus();
+          }}
+        />
+      )}
       <div className="version-summary">
         <span>
           <strong>v{project.draft.version}</strong>Arbejdsscene
@@ -82,7 +131,7 @@ export function ContinuityPanel({
               <input
                 type="checkbox"
                 checked={chosen.includes(shot.id)}
-                disabled={!eligible(shot) || busy}
+                disabled={!eligible(shot) || busy || !!saveIssue}
                 onChange={(e) =>
                   setSelected((ids) =>
                     e.target.checked
@@ -119,16 +168,31 @@ export function ContinuityPanel({
                   ? "Tidligere scene"
                   : "Matcher scenen"}
             </span>
-            <button className="button subtle" onClick={() => onOpen(shot)}>
-              Åbn
-            </button>
+            <div className="continuity-row-actions">
+              {!shot.mediaId && (
+                <button
+                  className="button subtle"
+                  aria-label={`Sammenlign shot ${index + 1}: ${shot.name}`}
+                  aria-pressed={previewId === shot.id}
+                  onClick={(event) => {
+                    previewTrigger.current = event.currentTarget;
+                    setPreviewId(shot.id);
+                  }}
+                >
+                  Sammenlign
+                </button>
+              )}
+              <button className="button subtle" onClick={() => onOpen(shot)}>
+                Åbn
+              </button>
+            </div>
           </div>
         ))}
       </div>
       <button
         className="button primary full-width"
         onClick={() => onCapture(chosen)}
-        disabled={!chosen.length || busy}
+        disabled={!chosen.length || busy || !!saveIssue}
       >
         <RefreshCw size={15} />
         Opdatér {chosen.length} valgte kamerashots

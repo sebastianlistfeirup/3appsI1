@@ -526,7 +526,9 @@ export async function renderFrame(
   version: SceneVersion,
   camera: Camera,
   mode: "3d" | "2d" = "3d",
+  signal?: AbortSignal,
 ): Promise<{ frame: string; mode: "3d" | "plan"; rendererVersion: string }> {
+  checkMediaAbort(signal);
   if (mode === "2d")
     return {
       frame: renderPlanFrame(version, camera),
@@ -543,10 +545,12 @@ export async function renderFrame(
       rendererVersion: PLAN_RENDERER_VERSION,
     };
   }
-  renderer.setSize(1280, 720);
-  const scene = buildScene(version);
+  let scene: THREE.Scene | undefined;
   try {
-    await loadSceneModels(scene, version);
+    renderer.setSize(1280, 720);
+    scene = buildScene(version);
+    await loadSceneModels(scene, version, undefined, signal);
+    checkMediaAbort(signal);
     renderer.render(scene, makeCamera(camera));
     return {
       frame: renderer.domElement.toDataURL("image/jpeg", 0.88),
@@ -554,7 +558,7 @@ export async function renderFrame(
       rendererVersion: RENDERER_VERSION,
     };
   } finally {
-    disposeScene(scene);
+    if (scene) disposeScene(scene);
     renderer.dispose();
     renderer.forceContextLoss();
   }

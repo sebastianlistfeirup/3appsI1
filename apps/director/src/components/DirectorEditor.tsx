@@ -623,6 +623,7 @@ export default function DirectorEditor({
     all = false,
     missingOnly = false,
     selectedIds?: string[],
+    renderMode: "3d" | "2d" = mode,
   ) =>
     act(all ? "Tager kameraframes …" : "Tager kameraframe …", async () => {
       const base = current.current;
@@ -657,7 +658,7 @@ export default function DirectorEditor({
           throw Error(
             `Kameraet til ${s.name} mangler i arbejdsscenen. Vælg et kamera og gem indstillingen enkeltvis.`,
           );
-        const captured = await renderFrame(scene, camera, mode);
+        const captured = await renderFrame(scene, camera, renderMode);
         next = reviseShot(next, s.id, {
           sceneVersionId: scene.id,
           cameraId: camera.id,
@@ -1399,6 +1400,13 @@ export default function DirectorEditor({
                 >
                   <MapPin size={15} />
                 </IconButton>
+                <button
+                  className="mobile-scene-versions"
+                  aria-label="Sceneversioner"
+                  onClick={() => setModal("versions")}
+                >
+                  <Layers3 size={15} /> Versioner
+                </button>
                 <span className="viewport-help">
                   {mode === "2d"
                     ? "X / Z · metrisk topvisning"
@@ -2818,10 +2826,32 @@ export default function DirectorEditor({
             ) : modal === "versions" ? (
               <ContinuityPanel
                 project={p}
-                busy={!!busy}
-                onCapture={(ids) => {
+                busy={!!busy || storage.saveState === "loading"}
+                saveIssue={
+                  storage.saveState === "conflict" ||
+                  storage.saveState === "error"
+                    ? storage.error || "Den lokale film kunne ikke gemmes."
+                    : null
+                }
+                onCopy={() => void exportFile("json")}
+                onReload={() => void storage.reload()}
+                onCapture={(ids, reviewedScene, reviewedMode) => {
+                  if (
+                    storage.saveState === "conflict" ||
+                    storage.saveState === "error"
+                  )
+                    return;
+                  if (
+                    reviewedScene &&
+                    current.current.draft !== reviewedScene
+                  ) {
+                    setError(
+                      "Arbejdsscenen ændrede sig efter forhåndsvisningen. Gennemse den nye kandidat først.",
+                    );
+                    return;
+                  }
                   setModal(null);
-                  void capture(true, false, ids);
+                  void capture(true, false, ids, reviewedMode ?? mode);
                 }}
                 onOpen={(selected) => {
                   selectShot(selected);
