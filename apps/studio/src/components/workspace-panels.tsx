@@ -52,6 +52,8 @@ import {
 } from "./primitives";
 import type { ProjectActions } from "./studio-app";
 import { TaskDetails } from "./task-details";
+import { TaskDefinitionFields } from "./task-definition-fields";
+import { taskCriteria, taskDefinitionIssue } from "../lib/task-definition";
 import { AssetInspector, AssetMetadataDialog } from "./asset-inspector";
 import { DeliveryDialog, type DraftStorage } from "./delivery-dialog";
 import { WorkspaceBackup } from "./workspace-backup";
@@ -96,6 +98,14 @@ export function TasksPanel({
   const [dependency, setDependency] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [owner, setOwner] = useState("Mig");
+  const [criteria, setCriteria] = useState("");
+  const [editDetail, setEditDetail] = useState(false);
+  function createTask() {
+    setOwner("Mig");
+    setCriteria(latestBrief(project).acceptance.join("\n"));
+    setCreating(true);
+  }
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [view, setView] = useState<"board" | "list">("board");
@@ -117,7 +127,11 @@ export function TasksPanel({
         title="Arbejdet finder sin form."
         text="Hold styr på det næste skridt — og hvad der skal være færdigt først."
       >
-        <button className="button primary" onClick={() => setCreating(true)}>
+        <button
+          className="button primary"
+          onClick={createTask}
+          disabled={Boolean(project.archivedAt)}
+        >
           <Plus size={16} /> Ny opgave
         </button>
       </PanelHeading>
@@ -150,7 +164,11 @@ export function TasksPanel({
           title="Del idéen op i gode skridt."
           text="Opret den første konkrete opgave. Hver opgave refererer til en præcis briefversion."
         >
-          <button className="button primary" onClick={() => setCreating(true)}>
+          <button
+            className="button primary"
+            onClick={createTask}
+            disabled={Boolean(project.archivedAt)}
+          >
             Opret første opgave
           </button>
         </Empty>
@@ -181,7 +199,10 @@ export function TasksPanel({
                       <article className="task-card" key={t.id}>
                         <button
                           className="task-card-main"
-                          onClick={() => setDetail(t.id)}
+                          onClick={() => {
+                            setEditDetail(false);
+                            setDetail(t.id);
+                          }}
                         >
                           <div className="task-id">
                             OPGAVE{" "}
@@ -208,7 +229,11 @@ export function TasksPanel({
                           </div>
                         )}
                         <div className="task-card-bottom">
-                          <span className="owner-chip">M</span>
+                          <span className="owner-chip" aria-hidden="true">
+                            {Array.from(t.owner.trim())[0]?.toLocaleUpperCase(
+                              "da",
+                            ) || "?"}
+                          </span>
                           <span>{t.owner}</span>
                           {["ready", "in_progress"].includes(t.state) && (
                             <button
@@ -274,7 +299,15 @@ export function TasksPanel({
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              if (!update((p) => addTask(p, title, description))) return;
+              if (
+                !update((p) =>
+                  addTask(p, title, description, {
+                    owner,
+                    acceptance: taskCriteria(criteria),
+                  }),
+                )
+              )
+                return;
               setTitle("");
               setDescription("");
               setCreating(false);
@@ -296,12 +329,24 @@ export function TasksPanel({
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                rows={4}
+                rows={3}
                 maxLength={10000}
               />
             </label>
+            <TaskDefinitionFields
+              owner={owner}
+              criteria={criteria}
+              briefCriteria={latestBrief(project).acceptance}
+              onOwner={setOwner}
+              onCriteria={setCriteria}
+            />
             <div className="modal-actions">
-              <button className="button primary">
+              <button
+                className="button primary"
+                disabled={
+                  !title.trim() || Boolean(taskDefinitionIssue(owner, criteria))
+                }
+              >
                 Opret opgave <Plus size={16} />
               </button>
             </div>
@@ -431,17 +476,26 @@ export function TasksPanel({
           update={update}
           notify={notify}
           onClose={() => setDeliverTask(null)}
+          onEditTask={() => {
+            setDetail(deliverTask);
+            setEditDetail(true);
+            setDeliverTask(null);
+          }}
         />
       )}{" "}
       {detail && project.tasks.some((task) => task.id === detail) && (
         <TaskDetails
           key={detail}
+          initialEditing={editDetail}
           project={project}
           taskId={detail}
           update={update}
           notify={notify}
           onClose={() => setDetail(null)}
-          onChooseTask={setDetail}
+          onChooseTask={(id) => {
+            setEditDetail(false);
+            setDetail(id);
+          }}
           onDeliver={(id) => {
             setDeliverTask(id);
             setDetail(null);
@@ -788,7 +842,8 @@ export function RunsPanel({
                     </span>
                     <div>
                       <h3>
-                        {project.tasks.find((t) => t.id === run.taskId)?.title}
+                        {run.taskSnapshot?.title ??
+                          project.tasks.find((t) => t.id === run.taskId)?.title}
                       </h3>
                       <code>{run.id.slice(0, 25)}</code>
                     </div>
@@ -824,6 +879,27 @@ export function RunsPanel({
                       <small>FORBRUG</small>0,00 kr.
                     </span>
                   </div>
+                  {run.taskSnapshot && (
+                    <details className="run-definition">
+                      <summary>
+                        Låst opgaveaftale · {run.taskSnapshot.owner} ·{" "}
+                        {run.taskSnapshot.acceptance.length} krav
+                      </summary>
+                      <p className="preserve-lines">
+                        {run.taskSnapshot.description ||
+                          "Ingen yderligere beskrivelse."}
+                      </p>
+                      <ul>
+                        {run.taskSnapshot.acceptance.map((criterion) => (
+                          <li key={criterion}>{criterion}</li>
+                        ))}
+                      </ul>
+                      <small>
+                        Opgaverevision {run.taskSnapshot.revision} ved start.
+                        Senere opgaver ændrer ikke denne aftale.
+                      </small>
+                    </details>
+                  )}
                   {project.deliveryDrafts?.some(
                     (draft) => draft.runId === run.id,
                   ) && (

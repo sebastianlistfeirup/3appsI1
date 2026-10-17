@@ -16,12 +16,14 @@ import {
   beginManualRun,
   deliveryDraftFieldsSchema,
   latestBrief,
+  runAcceptance,
   saveDeliveryDraft,
   submitDelivery,
   textArtifact,
   uid,
   type DeliveryDraftFields,
 } from "../lib/model";
+import { taskSnapshotSchema } from "../lib/task-definition";
 import { Badge, Modal, Notice } from "./primitives";
 import type { ProjectActions } from "./studio-app";
 
@@ -46,10 +48,12 @@ export function DeliveryDialog({
   notify,
   onClose,
   storage,
+  onEditTask,
 }: ProjectActions & {
   taskId: string;
   onClose: () => void;
   storage: DraftStorage;
+  onEditTask?: () => void;
 }) {
   const task = project.tasks.find((t) => t.id === taskId)!;
   const existing = project.runs.find(
@@ -57,6 +61,16 @@ export function DeliveryDialog({
   );
   const [runId, setRunId] = useState(existing?.id ?? "");
   const [requestId] = useState(() => uid("request"));
+  const [acknowledgedBrief, setAcknowledgedBrief] = useState<number>();
+  const currentBrief = latestBrief(project);
+  const olderBrief = task.briefVersion !== currentBrief.version;
+  const definitionIssue = taskSnapshotSchema.safeParse(task).success
+    ? undefined
+    : "Opgaven skal have en ansvarlig og 1–30 forskellige, konkrete færdigkrav på højst 1.000 tegn.";
+  useEffect(
+    () => setAcknowledgedBrief(undefined),
+    [currentBrief.version, task.briefVersion],
+  );
   const [fields, setFields] = useState<DeliveryDraftFields>(() => {
     const draft = project.deliveryDrafts?.find(
       (item) => item.runId === existing?.id,
@@ -174,7 +188,12 @@ export function DeliveryDialog({
   }
   function start() {
     try {
-      const next = beginManualRun(project, taskId, requestId);
+      const next = beginManualRun(
+        project,
+        taskId,
+        requestId,
+        acknowledgedBrief,
+      );
       const run = next.runs.find((r) => r.idempotencyKey === requestId)!;
       if (!update(() => saveDeliveryDraft(next, run.id, fields))) return;
       setRunId(run.id);
@@ -204,14 +223,11 @@ export function DeliveryDialog({
         const next = artifact ? addArtifact(current, artifact) : current;
         const run = next.runs.find((r) => r.id === runId);
         if (!run) throw new Error("Leveringsforløbet findes ikke længere.");
-        const brief = next.briefVersions.find(
-          (b) => b.version === run.briefVersion,
-        )!;
         return submitDelivery(next, runId, {
           title: fields.title,
           summary: fields.summary,
           outputVersionIds: [artifact?.id ?? fields.artifactId],
-          checks: brief.acceptance.map((label, i) => ({
+          checks: runAcceptance(next, run).map((label, i) => ({
             id: `criterion-${i}`,
             label,
             passed: !fields.risk,
@@ -252,7 +268,10 @@ export function DeliveryDialog({
         <>
           <div className="input-snapshot">
             <span className="small-label">DIT INPUTSNAPSHOT</span>
-            <h3>Bestilling v{latestBrief(project).version}</h3>
+            <h3>Bestilling v{task.briefVersion}</h3>
+            <p>
+              {task.owner} · opgaverevision {task.revision}
+            </p>
             <p>
               {
                 project.artifacts.filter(
@@ -265,13 +284,59 @@ export function DeliveryDialog({
               }{" "}
               aktuelle filversioner · 0 kr. i eksternt forbrug
             </p>
+            <strong>Færdig betyder</strong>
+            <ul className="locked-task-criteria">
+              {task.acceptance.map((criterion, i) => (
+                <li key={i}>{criterion}</li>
+              ))}
+            </ul>
           </div>
+          {definitionIssue && (
+            <Notice danger>
+              {definitionIssue} Redigér opgaven, før du starter.
+            </Notice>
+          )}
+          {olderBrief && (
+            <div className="task-brief-warning">
+              <Notice>
+                Der findes en nyere bestilling, v{currentBrief.version}. Opgaven
+                bruger fortsat v{task.briefVersion} og sine egne færdigkrav. Et
+                resultat herfra opfylder ikke automatisk den nyere bestilling.
+              </Notice>
+              <label className="task-brief-ack">
+                <input
+                  type="checkbox"
+                  checked={acknowledgedBrief === currentBrief.version}
+                  onChange={(event) =>
+                    setAcknowledgedBrief(
+                      event.target.checked ? currentBrief.version : undefined,
+                    )
+                  }
+                />
+                Jeg vil arbejde på opgavens bestilling v{task.briefVersion},
+                selv om v{currentBrief.version} findes.
+              </label>
+            </div>
+          )}
           <Notice>
             Dette starter en manuel levering. Studio One udfører ikke kode eller
             AI-arbejde i denne profil.
           </Notice>
           <div className="modal-actions">
-            <button className="button primary" onClick={start}>
+            {onEditTask && (
+              <button className="button secondary" onClick={onEditTask}>
+                Tilpas opgaven
+              </button>
+            )}
+            <button
+              className="button primary"
+              onClick={start}
+              disabled={
+                Boolean(project.archivedAt) ||
+                Boolean(definitionIssue) ||
+                (olderBrief && acknowledgedBrief !== currentBrief.version)
+              }
+            >
               Lås input og fortsæt <ArrowRight size={16} />
             </button>
           </div>
@@ -307,6 +372,19 @@ export function DeliveryDialog({
             Du kan lukke dialogen og fortsætte senere. Kladden følger med
             projektpakken.
           </p>
+          {project.runs.find((run) => run.id === runId)?.taskSnapshot && (
+            <details className="run-definition">
+              <summary>Se opgavens låste færdigkrav</summary>
+              <ul>
+                {runAcceptance(
+                  project,
+                  project.runs.find((run) => run.id === runId)!,
+                ).map((criterion) => (
+                  <li key={criterion}>{criterion}</li>
+                ))}
+              </ul>
+            </details>
+          )}
           <fieldset className="delivery-fields" disabled={busy}>
             <label>
               Leverancens titel

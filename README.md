@@ -43,7 +43,7 @@ Tryk **Eksportér → MP4**. Den lokale worker samler ægte 1280×720, 24 fps H.
 
 ![Studio One: versionsstyret produktion og review](reports/studio/overview-desktop.png)
 
-Bestilling, opgaver med afhængigheder, immutable filversioner, manuelle leveringer, før/efter-preview, review og ZIP med SHA-256-manifest. Uploadet HTML vises isoleret, uden scripts eller eksterne netværkskald. Et manuelt resultat bliver aldrig kaldt en verificeret ekstern build.
+Bestilling, opgaver med afhængigheder, immutable filversioner, manuelle leveringer, før/efter-preview, review og ZIP med SHA-256-manifest. Hver opgave har sin [ansvarlige og egne færdigkrav](docs/studio-task-definitions.md), som låses sammen med leveringen. Uploadet HTML vises isoleret, uden scripts eller eksterne netværkskald. Et manuelt resultat bliver aldrig kaldt en verificeret ekstern build.
 
 Filinspektøren viser hver versions ophav, historik og konkrete anvendelser. Redigering bevarer licensoplysninger; afklaring af rettigheder bliver en ny version med samme indhold. Se [filversioner og ophav](docs/studio-artifacts.md).
 

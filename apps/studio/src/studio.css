@@ -2718,15 +2718,16 @@ button {
   border: 1px solid #e6d8f1;
   border-radius: 10px;
   margin: 15px 0;
-  color: #a180b6;
+  color: #564069;
 }
 .input-snapshot h3 {
   margin: 12px 0 8px;
   font-size: 16px;
+  color: #44334f;
 }
 .input-snapshot p {
   font-size: 11px;
-  color: #b396c6;
+  color: #665173;
 }
 .code-input {
   font-family: monospace;
@@ -4934,4 +4935,75 @@ button {
   border-radius: 9px;
   font-size: 12px;
   line-height: 1.6;
+}
+.task-definition-fields {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.task-definition-fields > label:first-child { margin-top: 0; }
+.field-help,
+.task-definition-issue {
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 7px 0 16px;
+  color: var(--muted);
+}
+.task-definition-issue {
+  color: #8b3f17;
+}
+.task-definition-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.run-definition {
+  margin: 14px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #faf9fc;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.run-definition summary {
+  font-weight: 650;
+  cursor: pointer;
+}
+.run-definition small {
+  color: var(--muted);
+}
+.run-definition ul,
+.locked-task-criteria {
+  padding-left: 20px;
+}
+.locked-task-criteria {
+  line-height: 1.7;
+  font-size: 13px;
+  margin-bottom: 0;
+}
+.task-brief-ack {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 2px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.task-brief-ack input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin: 2px 0 0;
+  accent-color: #6448bf;
+}
+.review-task-definition {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
 }

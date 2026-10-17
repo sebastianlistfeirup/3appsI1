@@ -1,13 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T00:28:55.548534+00:00",
+  "updatedAt": "2026-10-17T01:34:24.206229+00:00",
   "status": "building",
   "activeTasks": [
-    "S14-full-regression",
-    "S15-task-specific-definition",
-    "L24-calendar-durability-verification",
+    "S16-exact-input-work-package",
+    "L24-numeric-input-verification",
     "D20-shot-continuity-preview",
-    "F12-remote-followup"
+    "remote-integration-followup"
   ],
   "profile": "demo",
   "connectedIntegrations": [],

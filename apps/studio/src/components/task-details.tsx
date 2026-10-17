@@ -2,7 +2,9 @@
 import { useState } from "react";
 import Link from "./local-link";
 import { ArrowRight, Check, Pause, Pencil, Play } from "lucide-react";
-import { editTask, setTaskState } from "../lib/model";
+import { editTask, latestBrief, setTaskState } from "../lib/model";
+import { taskCriteria, taskDefinitionIssue } from "../lib/task-definition";
+import { TaskDefinitionFields } from "./task-definition-fields";
 import { Badge, Modal, Notice } from "./primitives";
 import type { ProjectActions } from "./studio-app";
 
@@ -14,18 +16,29 @@ export function TaskDetails({
   onClose,
   onDeliver,
   onChooseTask,
+  initialEditing = false,
 }: ProjectActions & {
   taskId: string;
   onClose: () => void;
   onDeliver: (taskId: string) => void;
   onChooseTask: (taskId: string) => void;
+  initialEditing?: boolean;
 }) {
   const task = project.tasks.find((candidate) => candidate.id === taskId)!;
-  const [mode, setMode] = useState<"view" | "edit" | "block">("view");
+  const [mode, setMode] = useState<"view" | "edit" | "block">(
+    initialEditing ? "edit" : "view",
+  );
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [reason, setReason] = useState(task.blockedReason ?? "");
   const [editingRevision, setEditingRevision] = useState(task.revision);
+  const [owner, setOwner] = useState(task.owner);
+  const [criteria, setCriteria] = useState(task.acceptance.join("\n"));
+  const [briefVersion, setBriefVersion] = useState(task.briefVersion);
+  const currentBrief = latestBrief(project);
+  const selectedBrief =
+    project.briefVersions.find((brief) => brief.version === briefVersion) ??
+    currentBrief;
   const active = project.runs.find(
     (run) =>
       run.taskId === task.id &&
@@ -43,7 +56,10 @@ export function TaskDetails({
     (dependency) => dependency.state !== "done",
   );
   const canEdit =
-    !active && !task.replacedBy && ["ready", "blocked"].includes(task.state);
+    !project.archivedAt &&
+    !active &&
+    !task.replacedBy &&
+    ["ready", "blocked"].includes(task.state);
   const label = task.replacedBy
     ? "Erstattet · historik bevaret"
     : {
@@ -75,12 +91,16 @@ export function TaskDetails({
             event.preventDefault();
             if (
               !update((value) =>
-                editTask(value, task.id, title, description, editingRevision),
+                editTask(value, task.id, title, description, editingRevision, {
+                  owner,
+                  acceptance: taskCriteria(criteria),
+                  briefVersion,
+                }),
               )
             )
               return;
             setMode("view");
-            notify("Opgavens beskrivelse er opdateret.");
+            notify("Opgavens beskrivelse og færdigkrav er opdateret.");
           }}
         >
           <label>
@@ -102,6 +122,38 @@ export function TaskDetails({
               rows={5}
             />
           </label>
+          {currentBrief.version !== task.briefVersion && (
+            <label>
+              Opgavens briefversion
+              <select
+                value={briefVersion}
+                onChange={(event) =>
+                  setBriefVersion(Number(event.target.value))
+                }
+              >
+                <option value={task.briefVersion}>
+                  Behold v{task.briefVersion} · opgavens nuværende grundlag
+                </option>
+                <option value={currentBrief.version}>
+                  Brug v{currentBrief.version} · nyeste bestilling
+                </option>
+              </select>
+            </label>
+          )}
+          <TaskDefinitionFields
+            owner={owner}
+            criteria={criteria}
+            briefCriteria={selectedBrief.acceptance}
+            onOwner={setOwner}
+            onCriteria={setCriteria}
+          />
+          {briefVersion !== task.briefVersion && (
+            <Notice>
+              Opgaven får bestilling v{briefVersion} som grundlag. Gennemgå
+              færdigkravene; de bliver ikke erstattet automatisk. Tidligere
+              leveringer bevarer deres låste aftale.
+            </Notice>
+          )}
           <div className="modal-actions">
             <button
               type="button"
@@ -110,7 +162,14 @@ export function TaskDetails({
             >
               Fortryd redigering
             </button>
-            <button className="button primary" disabled={!title.trim()}>
+            <button
+              className="button primary"
+              disabled={
+                !canEdit ||
+                !title.trim() ||
+                Boolean(taskDefinitionIssue(owner, criteria))
+              }
+            >
               <Check size={15} />
               Gem opgave
             </button>
@@ -206,7 +265,7 @@ export function TaskDetails({
           )}
           {task.acceptance.length > 0 && (
             <section className="task-detail-section">
-              <h3>Acceptkrav · brief v{task.briefVersion}</h3>
+              <h3>Færdig betyder · brief v{task.briefVersion}</h3>
               <ul>
                 {task.acceptance.map((criterion, i) => (
                   <li key={i}>{criterion}</li>
@@ -248,7 +307,7 @@ export function TaskDetails({
               Se denne leverance <ArrowRight size={15} />
             </Link>
           )}
-          {!task.replacedBy && task.state !== "done" && (
+          {!project.archivedAt && !task.replacedBy && task.state !== "done" && (
             <div className="modal-actions task-detail-actions">
               {canEdit && (
                 <button
@@ -256,6 +315,9 @@ export function TaskDetails({
                   onClick={() => {
                     setTitle(task.title);
                     setDescription(task.description);
+                    setOwner(task.owner);
+                    setCriteria(task.acceptance.join("\n"));
+                    setBriefVersion(task.briefVersion);
                     setEditingRevision(task.revision);
                     setMode("edit");
                   }}

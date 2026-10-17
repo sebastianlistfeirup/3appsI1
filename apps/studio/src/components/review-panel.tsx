@@ -490,6 +490,23 @@ export function ReviewPanel({
             {showDetails && (
               <div>
                 <p>Bestilling v{run.briefVersion}</p>
+                {run.taskSnapshot && (
+                  <div className="review-task-definition">
+                    <strong>{run.taskSnapshot.title}</strong>
+                    <p>
+                      Ansvarlig: {run.taskSnapshot.owner} · opgaverevision{" "}
+                      {run.taskSnapshot.revision} ved start
+                    </p>
+                    <p className="preserve-lines">
+                      {run.taskSnapshot.description}
+                    </p>
+                    <small>
+                      Kontrolpunkterne er opgavens låste færdigkrav. Denne
+                      leverance godkender ikke andre opgaver eller hele
+                      projektet.
+                    </small>
+                  </div>
+                )}
                 {run.inputVersionIds.map((id) => {
                   const a = project.artifacts.find((x) => x.id === id);
                   return (

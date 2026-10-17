@@ -1,0 +1,11 @@
+# S15 — task-specific definition and immutable run context
+
+Tasks now have editable owners and their own 1–30 unique, bounded acceptance criteria. Starting a manual run no longer replaces task criteria with the entire brief. Every new run records the exact task title, description, owner, criteria and revision. Its delivery is checked against that snapshot. Legacy runs continue to use their original brief without invented historical metadata.
+
+A newer brief requires a fresh explicit acknowledgment at start, or an explicit task revision to the new brief. Revising the brief does not silently replace custom criteria. Cancelled runs retain their original definition after task edits and restart; activity and review show that historical definition. Active and completed task definitions are protected by the shared update validator. Corrections inherit their original brief, owner and unresolved task criteria while preserving earlier deliveries and reviews.
+
+Executed: eight domain fixtures, all71 Studio domain tests, all312 workspace tests in50 files, Studio typecheck/production build and tools typecheck. Four new real browser scenarios pass in Chromium, Firefox and WebKit. They cover custom creation/lock/review/ZIP/reload, cancellation/edit/restart with immutable history, older-brief acknowledgment reset and explicit revision, invalid form values and a partial correction. Fifteen new axe scans have zero violations. Actual desktop/tablet/mobile screenshots were inspected; the mobile creation form was shortened so its commit button remains visible at normal text length. The gate found and fixed inherited low-contrast text in the input snapshot.
+
+The fresh full Studio production regression passed all 129 scenarios across Chromium, Firefox and WebKit in 5.8 minutes. Evidence: `tests/e2e/studio-task-definitions.spec.ts`, `apps/studio/src/lib/task-definition.test.ts`, `reports/studio/*task-definition*`, `reports/studio/a11y/*task-definition*` and `docs/studio-task-definitions.md`.
+
+Names are local attribution, not invitations or authentication. Task edit forms are explicit-save forms; persistent drafts remain separately supported for briefs, deliveries and reviews. Manual evidence does not claim that an external build ran.

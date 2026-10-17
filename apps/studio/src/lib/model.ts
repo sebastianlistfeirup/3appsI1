@@ -1,5 +1,10 @@
 import { z } from "zod";
 import { assertProjectBudget, decodeUtf8 } from "./limits";
+import {
+  taskDefinitionSchema,
+  taskSnapshotSchema,
+  type TaskDefinition,
+} from "./task-definition";
 
 export const idSchema = z
   .string()
@@ -71,6 +76,7 @@ export const runSchema = z.object({
   startedAt: timestamp,
   completedAt: timestamp.nullable(),
   costMinor: z.literal(0),
+  taskSnapshot: taskSnapshotSchema.optional(),
 });
 export const deliverySchema = z.object({
   id: idSchema,
@@ -166,6 +172,7 @@ export type Studio = z.infer<typeof studioSchema>;
 export type Project = z.infer<typeof projectSchema>;
 export type Artifact = z.infer<typeof artifactSchema>;
 export type Task = z.infer<typeof taskSchema>;
+export type Run = z.infer<typeof runSchema>;
 export type Delivery = z.infer<typeof deliverySchema>;
 export type Review = z.infer<typeof reviewSchema>;
 export type Brief = z.infer<typeof briefSchema>;
@@ -302,16 +309,13 @@ export function assertProject(project: Project): Project {
       throw new Error("En leverance mangler sit run eller en filversion.");
   for (const delivery of project.deliveries) {
     const run = project.runs.find((r) => r.id === delivery.runId)!;
-    const brief = project.briefVersions.find(
-      (b) => b.version === run.briefVersion,
-    )!;
     if (
       duplicate(delivery.checks.map((c) => c.id)) ||
-      brief.acceptance.some(
+      runAcceptance(project, run).some(
         (label) => !delivery.checks.some((c) => c.label === label),
       )
     )
-      throw new Error("Leverancen mangler acceptkrav fra det låste brief.");
+      throw new Error("Leverancen mangler acceptkrav fra det låste arbejde.");
   }
   for (const review of project.reviews) {
     const delivery = project.deliveries.find((x) => x.id === review.deliveryId);
@@ -438,6 +442,24 @@ export function assertProjectUpdate(previous: Project, next: Project): void {
   }
   for (const prior of previous.tasks) {
     const retained = next.tasks.find((task) => task.id === prior.id);
+    if (
+      retained &&
+      (prior.state === "done" ||
+        prior.replacedBy ||
+        previous.runs.some(
+          (run) =>
+            run.taskId === prior.id &&
+            ["awaiting_upload", "review"].includes(run.state),
+        )) &&
+      ["title", "description", "owner", "acceptance", "briefVersion"].some(
+        (key) =>
+          JSON.stringify(prior[key as keyof Task]) !==
+          JSON.stringify(retained[key as keyof Task]),
+      )
+    )
+      throw new Error(
+        "Et igangværende eller afsluttet forløb bevarer sin låste opgaveaftale.",
+      );
     if (
       retained &&
       (retained.createdAt !== prior.createdAt ||
@@ -660,7 +682,12 @@ export function saveBrief(
     `Bestilling v${brief.version} gemt`,
   );
 }
-export function addTask(p: Project, title: string, description = "") {
+export function addTask(
+  p: Project,
+  title: string,
+  description = "",
+  definition?: TaskDefinition,
+) {
   assertMutable(p);
   const brief = latestBrief(p);
   const task = taskSchema.parse({
@@ -669,8 +696,9 @@ export function addTask(p: Project, title: string, description = "") {
     description,
     state: "ready",
     briefVersion: brief.version,
-    acceptance: brief.acceptance,
-    owner: "Mig",
+    ...(definition
+      ? taskDefinitionSchema.parse(definition)
+      : { acceptance: brief.acceptance, owner: "Mig" }),
     revision: 1,
     createdAt: now(),
   });
@@ -761,6 +789,7 @@ export function editTask(
   title: string,
   description: string,
   expectedRevision: number,
+  definition?: TaskDefinition & { briefVersion?: number },
 ) {
   assertMutable(p);
   const task = p.tasks.find((t) => t.id === id);
@@ -782,10 +811,14 @@ export function editTask(
     );
   const updated = taskSchema.parse({
     ...task,
+    ...(definition ? taskDefinitionSchema.parse(definition) : {}),
+    briefVersion: definition?.briefVersion ?? task.briefVersion,
     title: title.trim(),
     description,
     revision: task.revision + 1,
   });
+  if (!p.briefVersions.some((brief) => brief.version === updated.briefVersion))
+    throw new Error("Opgaven skal henvise til en kendt briefversion.");
   return event(
     { ...p, tasks: p.tasks.map((t) => (t.id === id ? updated : t)) },
     "task.edited",
@@ -840,7 +873,19 @@ export function removeDependency(p: Project, from: string, to: string) {
     "Afhængighed fjernet",
   );
 }
-export function beginManualRun(p: Project, taskId: string, requestId: string) {
+export function runAcceptance(p: Project, run: Run): string[] {
+  return (
+    run.taskSnapshot?.acceptance ??
+    p.briefVersions.find((brief) => brief.version === run.briefVersion)!
+      .acceptance
+  );
+}
+export function beginManualRun(
+  p: Project,
+  taskId: string,
+  requestId: string,
+  acknowledgedCurrentBriefVersion?: number,
+) {
   assertMutable(p);
   const repeated = p.runs.find((r) => r.idempotencyKey === requestId);
   if (repeated) {
@@ -879,10 +924,30 @@ export function beginManualRun(p: Project, taskId: string, requestId: string) {
     )
   )
     throw new Error("Afslut først de afhængige opgaver.");
-  const brief = latestBrief(p);
+  const brief = p.briefVersions.find(
+    (item) => item.version === task.briefVersion,
+  )!;
+  if (
+    brief.version !== latestBrief(p).version &&
+    acknowledgedCurrentBriefVersion !== latestBrief(p).version
+  )
+    throw new Error(
+      "Der findes en nyere bestilling. Tilpas opgaven, eller bekræft eksplicit dens tidligere briefversion før start.",
+    );
   if (!brief.goal.trim() || brief.acceptance.length === 0)
     throw new Error(
       "Beskriv målet og mindst ét acceptkrav, før du starter en levering.",
+    );
+  const snapshot = taskSnapshotSchema.safeParse({
+    title: task.title,
+    description: task.description,
+    owner: task.owner,
+    acceptance: task.acceptance,
+    revision: task.revision,
+  });
+  if (!snapshot.success)
+    throw new Error(
+      "Angiv en ansvarlig og 1–30 forskellige, konkrete færdigkrav på højst 1.000 tegn, før du starter leveringen.",
     );
   const latest = p.artifacts.filter(
     (a) =>
@@ -901,6 +966,7 @@ export function beginManualRun(p: Project, taskId: string, requestId: string) {
     startedAt: now(),
     completedAt: null,
     costMinor: 0,
+    taskSnapshot: snapshot.data,
   });
   return event(
     {
@@ -911,8 +977,6 @@ export function beginManualRun(p: Project, taskId: string, requestId: string) {
           ? {
               ...t,
               state: "in_progress",
-              briefVersion: brief.version,
-              acceptance: brief.acceptance,
               revision: t.revision + 1,
             }
           : t,
@@ -952,15 +1016,13 @@ export function submitDelivery(
     throw new Error(
       "Fjern først opgavens blokering, før du afleverer resultatet.",
     );
-  const criteria = p.briefVersions.find(
-    (b) => b.version === run.briefVersion,
-  )!.acceptance;
+  const criteria = runAcceptance(p, run);
   if (
     new Set(input.checks.map((c) => c.id)).size !== input.checks.length ||
     criteria.some((label) => !input.checks.some((c) => c.label === label))
   )
     throw new Error(
-      "Leverancen skal dokumentere alle acceptkrav fra det låste brief.",
+      "Leverancen skal dokumentere alle acceptkrav fra det låste arbejde.",
     );
   const delivery = deliverySchema.parse({
     ...input,
@@ -1142,11 +1204,28 @@ export function reviewDelivery(
   if (input.decision === "changes_requested") {
     next = addTask(next, `Rettelse: ${d.title}`.slice(0, 300), input.comment);
     const correction = next.tasks.at(-1)!;
+    const originalTask = p.tasks.find((task) => task.id === run.taskId)!;
+    const required = runAcceptance(p, run);
+    const unresolved = required.filter(
+      (criterion) =>
+        !d.checks.some(
+          (check) =>
+            check.label === criterion &&
+            check.passed &&
+            input.checkedCriteria.includes(check.id),
+        ),
+    );
     next = {
       ...next,
       tasks: next.tasks.map((task) =>
         task.id === correction.id
-          ? { ...task, correctionOf: run.taskId }
+          ? {
+              ...task,
+              correctionOf: run.taskId,
+              briefVersion: run.briefVersion,
+              owner: run.taskSnapshot?.owner ?? originalTask.owner,
+              acceptance: unresolved.length ? unresolved : required,
+            }
           : task.id === run.taskId
             ? {
                 ...task,
