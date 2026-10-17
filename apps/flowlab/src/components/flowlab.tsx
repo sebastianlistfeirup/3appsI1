@@ -72,6 +72,9 @@ import {
   versionBytes,
 } from "../lib/workspace";
 import Inspector from "./inspector";
+import EvidenceStatus from "./evidence-status";
+import { evidenceStatus } from "../lib/evidence-status";
+import { holdoutDataset } from "../lib/datasets";
 import { nodeIcons, nodeLabels } from "./model-canvas";
 import {
   MetricCards,
@@ -754,7 +757,7 @@ export default function FlowLab() {
                   <span />
                   {model.evidence === "synthetic"
                     ? "Eksempeldata"
-                    : "Importerede data · Ikke kalibreret"}
+                    : "Importeret grundlag"}
                 </span>
               </div>
               <h1>
@@ -791,6 +794,12 @@ export default function FlowLab() {
               )}
             </div>
           </div>
+          <EvidenceStatus
+            baseline={doc.baseline}
+            assessment={doc.holdout}
+            sourceAvailable={!!holdoutDataset(doc)}
+            onOpenData={() => setTab("data")}
+          />
           {storageError && (
             <div className="error-box" role="alert">
               <AlertTriangle size={18} />
@@ -1528,9 +1537,13 @@ export default function FlowLab() {
                         flowlab<span> / BESLUTNINGSRAPPORT</span>
                       </div>
                       <span className="eyebrow">
-                        {doc.baseline.evidence === "synthetic"
-                          ? "SYNTETISK GRUNDLAG · IKKE KALIBRERET"
-                          : "IMPORTERET GRUNDLAG · IKKE KALIBRERET"}
+                        {
+                          evidenceStatus(
+                            comparison?.baseline ?? doc.baseline,
+                            doc.holdout,
+                            comparison?.engineVersion ?? ENGINE_VERSION,
+                          ).reportLabel
+                        }
                       </span>
                       <h2>{comparison?.baseline.name ?? doc.baseline.name}</h2>
                       <p className="report-subtitle">

@@ -4,6 +4,7 @@ import { metricDefinitions } from "@tre/flow-engine";
 import { SLA_FIELDS, SLA_LABELS, slaProfile } from "./sla-profile";
 import { formatDifference, formatMetric, formatNumber } from "./document";
 import type { DecisionReport } from "./report";
+import { evidenceStatus, holdoutPeriod } from "./evidence-status";
 import {
   COST_FIELDS,
   COST_LABELS,
@@ -656,7 +657,15 @@ export async function renderReportPdf(
         : holdout.status === "outside_target"
           ? "Pilotmålet er ikke nået"
           : "Datagrundlaget er ikke tilstrækkeligt";
-    text(42, 132, status, 13, colors.teal, bold);
+    const quality = evidenceStatus(c.baseline, holdout, c.engineVersion);
+    text(
+      42,
+      132,
+      quality.current ? status : "Historisk holdout · tidligere vurdering",
+      13,
+      quality.tone === "met" ? colors.teal : colors.ink,
+      bold,
+    );
     paragraph(
       42,
       157,
@@ -709,11 +718,9 @@ export async function renderReportPdf(
       },
     );
     let holdoutY = 396;
-    const period =
-      holdout.source.unit === "iso"
-        ? `${new Date(holdout.source.periodStart).toISOString()} til ${new Date(holdout.source.periodEnd).toISOString()}`
-        : `${holdout.source.periodStart / 1000}–${holdout.source.periodEnd / 1000} sekunder`;
+    const period = holdoutPeriod(holdout);
     const lines = [
+      quality.detail,
       `Kilde: ${holdout.source.name}. ${holdout.source.rows} gyldige rækker; ${holdout.source.excludedRows} udeladt.`,
       `Periode: ${period}. Afsluttende aktivitet: ${holdout.source.completionActivity}.`,
       `SHA-256: ${holdout.source.sha256}`,
@@ -738,7 +745,7 @@ export async function renderReportPdf(
     text(
       42,
       811,
-      `${c.engineVersion} · Lokal model · ${report.dataBasis === "synthetic" ? "Eksempeldata" : "Ikke kalibreret"}`,
+      `${c.engineVersion} · ${report.dataBasis === "synthetic" ? "Eksempeldata" : "Importeret grundlag"} · ${evidenceStatus(c.baseline, report.holdout, c.engineVersion).footer}`,
       8,
       colors.muted,
     );

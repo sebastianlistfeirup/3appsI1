@@ -583,7 +583,12 @@ export default function Inspector({
         )}
       <div className="inspector-footnote">
         <span className="dot" />
-        Syntetiske antagelser. Ikke kalibreret.
+        <span>
+          {model.evidence === "synthetic"
+            ? "Syntetiske antagelser."
+            : "Importeret modelgrundlag."}{" "}
+          Holdout vurderer baseline særskilt.
+        </span>
       </div>
     </aside>
   );

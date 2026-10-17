@@ -1,0 +1,53 @@
+{
+  "checkedAt": "2026-10-17T01:58:08.283Z",
+  "outcomes": [
+    {
+      "viewport": "desktop",
+      "checks": [
+        "Explicit independent and complete window confirmations required.",
+        "Exact golden observed throughput, lead time, waiting and backlog.",
+        "Holdout preserved across reload; exact period, source, observed3 and30seeds shown.",
+        "Baseline edits invalidate status and remove green; undo restores exact assessment match.",
+        "Scenario edits leave baseline status but never transfer proof to alternative.",
+        "Actual ZIP/PDF and UI share matching baseline status.",
+        "Deleting the exact holdout source exposes missing data in collapsed status; undo restores source.",
+        "No page errors or overflow.",
+        "Axe WCAG2AA/21AA zero violations."
+      ],
+      "a11y": [],
+      "errors": []
+    },
+    {
+      "viewport": "tablet",
+      "checks": [
+        "Explicit independent and complete window confirmations required.",
+        "Exact golden observed throughput, lead time, waiting and backlog.",
+        "Holdout preserved across reload; exact period, source, observed3 and30seeds shown.",
+        "Baseline edits invalidate status and remove green; undo restores exact assessment match.",
+        "Scenario edits leave baseline status but never transfer proof to alternative.",
+        "Actual ZIP/PDF and UI share matching baseline status.",
+        "Deleting the exact holdout source exposes missing data in collapsed status; undo restores source.",
+        "No page errors or overflow.",
+        "Axe WCAG2AA/21AA zero violations."
+      ],
+      "a11y": [],
+      "errors": []
+    },
+    {
+      "viewport": "mobile",
+      "checks": [
+        "Explicit independent and complete window confirmations required.",
+        "Exact golden observed throughput, lead time, waiting and backlog.",
+        "Holdout preserved across reload; exact period, source, observed3 and30seeds shown.",
+        "Baseline edits invalidate status and remove green; undo restores exact assessment match.",
+        "Scenario edits leave baseline status but never transfer proof to alternative.",
+        "Actual ZIP/PDF and UI share matching baseline status.",
+        "Deleting the exact holdout source exposes missing data in collapsed status; undo restores source.",
+        "No page errors or overflow.",
+        "Axe WCAG2AA/21AA zero violations."
+      ],
+      "a11y": [],
+      "errors": []
+    }
+  ]
+}

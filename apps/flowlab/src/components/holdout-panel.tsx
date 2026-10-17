@@ -1,6 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import { ActivityPicker } from "./activity-picker";
+import { evidenceStatus } from "../lib/evidence-status";
 import {
   ArrowDownToLine,
   BadgeCheck,
@@ -73,10 +74,8 @@ export default function HoldoutPanel({
       [dataset],
     ),
     selected = completion || (activities.length === 1 ? activities[0] : "");
-  const stale =
-    assessment &&
-    (!sameModel(assessment.model, baseline) ||
-      assessment.engineVersion !== comparison?.engineVersion);
+  const quality = evidenceStatus(baseline, assessment);
+  const stale = !!assessment && !quality.current;
   const evaluate = () => {
     try {
       if (!dataset) throw new Error("Gem et valideret holdout-datasæt først.");
@@ -228,31 +227,33 @@ export default function HoldoutPanel({
             )}
           {stale && (
             <p className="notice-text">
-              Baseline er ændret siden denne vurdering. Nedenfor vises den gemte
-              modelversion {assessment.model.revision}. Vurdér igen for en
-              aktuel status.
+              Baseline eller motorversion er ændret siden denne vurdering.
+              Nedenfor vises den gemte modelversion {assessment.model.revision}.
+              Vurdér igen for en aktuel status.
             </p>
           )}
           <div
-            className={`holdout-status ${assessment.status === "target_met" ? "met" : "review"}`}
+            className={`holdout-status ${quality.tone === "met" ? "met" : "review"}`}
           >
-            {assessment.status === "target_met" ? (
+            {quality.tone === "met" ? (
               <BadgeCheck size={26} />
             ) : (
               <AlertTriangle size={25} />
             )}
             <div>
               <strong>
-                {assessment.status === "target_met"
-                  ? "Pilotmålet er nået for denne periode"
-                  : assessment.status === "outside_target"
-                    ? "Pilotmålet er ikke nået"
-                    : "Datagrundlaget er ikke tilstrækkeligt"}
+                {stale
+                  ? "Historisk vurdering · kontrollér den aktuelle baseline"
+                  : assessment.status === "target_met"
+                    ? "Pilotmålet er nået for denne periode"
+                    : assessment.status === "outside_target"
+                      ? "Pilotmålet er ikke nået"
+                      : "Datagrundlaget er ikke tilstrækkeligt"}
               </strong>
               <p>
-                {assessment.status === "target_met"
-                  ? "Throughput og median gennemløbstid afviger højst 15 %. Det dokumenterer denne holdout, ikke en garanti for fremtidig drift."
-                  : "Modellen er ikke kalibreret for denne periode. Brug afvigelser og datamangler til at undersøge antagelserne."}
+                {quality.detail}
+                {stale &&
+                  ` Tidligere resultat: ${assessment.status === "target_met" ? "pilotmålet var nået" : assessment.status === "outside_target" ? "pilotmålet var ikke nået" : "utilstrækkeligt datagrundlag"}.`}
               </p>
             </div>
           </div>
