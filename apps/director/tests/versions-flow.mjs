@@ -171,9 +171,13 @@ try {
   await page
     .getByRole("button", { name: "Sceneversioner", exact: true })
     .click();
-  await expect(page.getByRole("checkbox")).toHaveCount(5);
-  await expect(page.getByRole("checkbox").nth(4)).toBeDisabled();
-  await expect(page.locator('input[type="checkbox"]:checked')).toHaveCount(4);
+  await expect(page.getByRole("dialog").getByRole("checkbox")).toHaveCount(5);
+  await expect(
+    page.getByRole("dialog").getByRole("checkbox").nth(4),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("dialog").locator('input[type="checkbox"]:checked'),
+  ).toHaveCount(4);
   await page.getByRole("button", { name: "Fravælg alle", exact: true }).click();
   await page
     .getByRole("checkbox", {
