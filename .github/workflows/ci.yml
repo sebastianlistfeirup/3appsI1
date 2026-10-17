@@ -113,6 +113,9 @@ jobs:
         with:
           name: verification-${{ matrix.app }}-${{ matrix.engine }}-${{ github.sha }}
           path: |
-            reports/
+            reports/${{ matrix.app }}/
+            reports/ci/
+            reports/backend/
+            reports/e2e-results.json
             test-results/
           retention-days: 7
