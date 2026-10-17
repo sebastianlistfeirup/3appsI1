@@ -1,0 +1,761 @@
+--- /dev/null
++++ b/apps/studio/src/lib/web-demo-navigation.ts
+@@ -0,0 +1,46 @@
++"use client";
++
++import { useSyncExternalStore } from "react";
++const ROUTE_KEY = "view";
++const EVENT = "studio-web-demo-navigation";
++
++/** Keep static-demo bookmarks on the real index document, preserving query/hash. */
++export function webDemoHref(href: string): string {
++  if (!href.startsWith("/") || href.startsWith("//")) return href;
++  const url = new URL(href, "https://studio.invalid");
++  if (url.pathname !== "/") url.searchParams.set(ROUTE_KEY, url.pathname);
++  else url.searchParams.delete(ROUTE_KEY);
++  const search = url.searchParams.toString();
++  return "/" + (search ? "?" + search : "") + url.hash;
++}
++function navigate(href: string, replace = false) {
++  const target = webDemoHref(href);
++  if (replace) window.history.replaceState(null, "", target);
++  else window.history.pushState(null, "", target);
++  window.dispatchEvent(new Event(EVENT));
++  window.dispatchEvent(new HashChangeEvent("hashchange"));
++  if (!window.location.hash) window.scrollTo({ top: 0, behavior: "instant" });
++}
++const router = {
++  push: (href: string) => navigate(href),
++  replace: (href: string) => navigate(href, true),
++  back: () => window.history.back(),
++};
++export function useRouter() {
++  return router;
++}
++function subscribe(listener: () => void) {
++  window.addEventListener(EVENT, listener);
++  window.addEventListener("popstate", listener);
++  return () => {
++    window.removeEventListener(EVENT, listener);
++    window.removeEventListener("popstate", listener);
++  };
++}
++function snapshot() {
++  const path = new URLSearchParams(window.location.search).get(ROUTE_KEY);
++  return path?.startsWith("/") && !path.startsWith("//") ? path : "/";
++}
++export function usePathname() {
++  return useSyncExternalStore(subscribe, snapshot, () => "/");
++}
+--- a/apps/studio/src/components/local-link.tsx
++++ b/apps/studio/src/components/local-link.tsx
+@@ -1,10 +1,37 @@
+ "use client";
+ 
+-import NextLink from "next/link";
+-import type { ComponentProps } from "react";
++import type { AnchorHTMLAttributes } from "react";
++import { useRouter, webDemoHref } from "../lib/web-demo-navigation";
+ 
+-/** Every local section renders the same client workspace. Speculatively fetching
+- * its server shell provides no project data and races document reload in WebKit. */
+-export default function LocalLink(props: ComponentProps<typeof NextLink>) {
+-  return <NextLink {...props} prefetch={false} />;
++export default function LocalLink({
++  href,
++  onClick,
++  target,
++  ...props
++}: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) {
++  const router = useRouter();
++  return (
++    <a
++      {...props}
++      href={webDemoHref(href)}
++      target={target}
++      onClick={(event) => {
++        onClick?.(event);
++        if (
++          event.defaultPrevented ||
++          event.button !== 0 ||
++          event.metaKey ||
++          event.ctrlKey ||
++          event.shiftKey ||
++          event.altKey ||
++          (target && target !== "_self") ||
++          !href.startsWith("/") ||
++          href.startsWith("//")
++        )
++          return;
++        event.preventDefault();
++        router.push(href);
++      }}
++    />
++  );
+ }
+--- a/apps/studio/src/components/studio-app.tsx
++++ b/apps/studio/src/components/studio-app.tsx
+@@ -2,7 +2,7 @@
+ import { sandboxDocument } from "../lib/preview";
+ import { useEffect, useRef, useState } from "react";
+ import Link from "./local-link";
+-import { usePathname, useRouter } from "next/navigation";
++import { usePathname, useRouter } from "../lib/web-demo-navigation";
+ import {
+   ArrowDownToLine,
+   ArrowLeft,
+--- a/apps/studio/src/components/review-panel.tsx
++++ b/apps/studio/src/components/review-panel.tsx
+@@ -3,7 +3,7 @@
+ import type { SaveState } from "@tre/persistence";
+ import { sandboxDocument } from "../lib/preview";
+ import { useEffect, useMemo, useState } from "react";
+-import { useRouter } from "next/navigation";
++import { useRouter } from "../lib/web-demo-navigation";
+ import { compareText, comparisonInput, contextRows } from "../lib/comparison";
+ import Link from "./local-link";
+ import {
+--- /dev/null
++++ b/apps/studio/src/app/page.tsx
+@@ -0,0 +1,4 @@
++import { StudioApp } from "../components/studio-app";
++export default function Page() {
++  return <StudioApp />;
++}
+--- /dev/null
++++ b/apps/studio/src/app/proev/page.tsx
+@@ -0,0 +1,155 @@
++import type { Metadata } from "next";
++import {
++  ArrowUpRight,
++  Layers3,
++  Clapperboard,
++  Workflow,
++  Smartphone,
++  ArrowDownToLine,
++} from "lucide-react";
++import styles from "./page.module.css";
++
++export const metadata: Metadata = {
++  title: "Tre apps — fra tanke til virkelighed",
++  description: "Prøv Studio One, FlowLab og Director direkte på din telefon.",
++};
++
++const apps = [
++  {
++    name: "Studio One",
++    label: "Skab med overblik",
++    number: "01",
++    icon: Layers3,
++    theme: "studio",
++    href: "/",
++    description:
++      "Giv dine idéer retning. Saml brief, opgaver og leverancer ét sted, og følg projektet hele vejen.",
++    action: "Åbn Studio One",
++    start: "Åbn eksempelprojektet, redigér briefen, og prøv et review.",
++    detail: "Projekter · Briefs · Review",
++  },
++  {
++    name: "FlowLab",
++    label: "Find det bedre flow",
++    number: "02",
++    icon: Workflow,
++    theme: "flow",
++    href: "https://tre-apps-flowlab-sebastian.salty-venus-6590.chatgpt.site",
++    description:
++      "Se, hvad der sker, før du ændrer noget. Byg et flow, afprøv kapacitet, og sammenlign resultater.",
++    action: "Åbn FlowLab",
++    start: "Vælg et scenarie, ændr kapaciteten, og kør en sammenligning.",
++    detail: "Modeller · Simulering · Indsigt",
++  },
++  {
++    name: "Director",
++    label: "Gør historien synlig",
++    number: "03",
++    icon: Clapperboard,
++    theme: "director",
++    href: "https://tre-apps-director-sebastian.salty-venus-6590.chatgpt.site",
++    description:
++      "Find vinklen på din næste fortælling. Iscenesæt, indram, og saml dine shots til et storyboard.",
++    action: "Åbn Director",
++    start: "Flyt kameraet, gem et shot, og hent dit storyboard som PDF.",
++    detail: "Scener · Kameraer · Storyboards",
++  },
++];
++
++export default function TryApps() {
++  return (
++    <main className={styles.page}>
++      <header className={styles.header}>
++        <a
++          href="/proev/"
++          className={styles.wordmark}
++          aria-label="Tre apps, startside"
++        >
++          <span className={styles.mark} aria-hidden="true">
++            <i />
++            <i />
++            <i />
++          </span>
++          tre<span className={styles.wordmarkDot}>.</span>
++        </a>
++        <span className={styles.version}>
++          <span />
++          Din private prøveversion
++        </span>
++      </header>
++      <section className={styles.hero} aria-labelledby="intro">
++        <p className={styles.eyebrow}>TRE VÆRKTØJER. NYE MULIGHEDER.</p>
++        <h1 id="intro">
++          Fra tanke
++          <br />
++          til <span>virkelighed.</span>
++        </h1>
++        <p className={styles.lead}>
++          Et sted at skabe. Et sted at afprøve.
++          <br />
++          Et sted at fortælle. Vælg, hvor du vil begynde.
++        </p>
++        <div className={styles.phone}>
++          <Smartphone size={16} aria-hidden="true" />
++          Klar i din browser — også på telefonen
++        </div>
++        <div className={styles.orbit} aria-hidden="true">
++          <div />
++          <div />
++          <div />
++          <span>3</span>
++        </div>
++      </section>
++      <section className={styles.cards} aria-label="Vælg din app">
++        {apps.map((app) => (
++          <article
++            key={app.name}
++            className={`${styles.card} ${styles[app.theme]}`}
++          >
++            <div className={styles.cardTop}>
++              <span className={styles.icon}>
++                <app.icon size={26} strokeWidth={1.6} aria-hidden="true" />
++              </span>
++              <span className={styles.number}>{app.number}</span>
++            </div>
++            <p className={styles.cardLabel}>{app.label}</p>
++            <h2>{app.name}</h2>
++            <p className={styles.description}>{app.description}</p>
++            <p className={styles.detail}>{app.detail}</p>
++            <a href={app.href} className={styles.open}>
++              {app.action}
++              <ArrowUpRight size={20} aria-hidden="true" />
++            </a>
++            <p className={styles.try}>
++              <strong>Prøv først</strong>
++              {app.start}
++            </p>
++          </article>
++        ))}
++      </section>
++      <aside className={styles.note} aria-label="Godt at vide">
++        <span className={styles.noteIcon}>
++          <ArrowDownToLine size={22} aria-hidden="true" />
++        </span>
++        <div>
++          <h2>Dine idéer. Din browser.</h2>
++          <p>
++            Projekter gemmes lokalt i den browser, du bruger. Hent en
++            projektpakke som backup, og brug eksport/import til at flytte mellem
++            telefon og computer. Brug almindelig browsing, så arbejdet kan
++            gemmes.
++          </p>
++          <p className={styles.limits}>
++            Studio arbejder manuelt uden tilsluttede AI-agenter. Director kan
++            eksportere storyboard og projekt på telefonen; MP4-rendering kræver
++            computerudgaven.
++          </p>
++        </div>
++      </aside>
++      <footer className={styles.footer}>
++        <span>Bygget til idéer, der fortjener at blive til noget.</span>
++        <span>Studio One / FlowLab / Director</span>
++      </footer>
++    </main>
++  );
++}
+--- /dev/null
++++ b/apps/studio/src/app/proev/page.module.css
+@@ -0,0 +1,376 @@
++.page {
++  max-width: 1240px;
++  margin: auto;
++  padding: 0 48px 30px;
++  color: #242333;
++}
++.header {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  padding: 30px 0;
++  border-bottom: 1px solid #dfdee7;
++  gap: 16px;
++}
++.wordmark {
++  font-family: Manrope, sans-serif;
++  font-size: 36px;
++  font-weight: 800;
++  letter-spacing: -2px;
++  display: flex;
++  align-items: center;
++  min-height: 44px;
++}
++.wordmarkDot {
++  color: #7654d9;
++}
++.mark {
++  display: flex;
++  gap: 4px;
++  margin-right: 12px;
++  transform: rotate(-15deg);
++}
++.mark i {
++  display: block;
++  width: 5px;
++  height: 24px;
++  border-radius: 3px;
++  background: #7654d9;
++}
++.mark i:nth-child(2) {
++  height: 32px;
++  margin-top: -4px;
++}
++.mark i:last-child {
++  height: 18px;
++  margin-top: 3px;
++}
++.version {
++  display: flex;
++  align-items: center;
++  gap: 8px;
++  font-size: 12px;
++  color: #5e5b6e;
++}
++.version > span {
++  width: 6px;
++  height: 6px;
++  border-radius: 50%;
++  background: #3a826c;
++}
++.hero {
++  padding: 66px 0 54px;
++  position: relative;
++  isolation: isolate;
++  overflow: hidden;
++}
++.eyebrow {
++  font-size: 11px;
++  font-weight: 700;
++  letter-spacing: 2px;
++  color: #685980;
++  margin-bottom: 18px;
++}
++.hero h1 {
++  font-size: clamp(48px, 6.8vw, 82px);
++  font-weight: 700;
++  line-height: 1.07;
++  letter-spacing: -4px;
++  position: relative;
++  z-index: 1;
++}
++.hero h1 > span {
++  color: #7654d9;
++}
++.lead {
++  font-size: 17px;
++  line-height: 1.7;
++  color: #625f72;
++  margin: 23px 0;
++}
++.phone {
++  display: flex;
++  align-items: center;
++  gap: 8px;
++  font-size: 12px;
++  color: #625f72;
++}
++.orbit {
++  position: absolute;
++  right: 30px;
++  top: 32px;
++  width: 320px;
++  height: 320px;
++  z-index: -1;
++  transform: rotate(-24deg);
++}
++.orbit > div {
++  position: absolute;
++  inset: 12px;
++  border: 1px solid #d8cdee;
++  border-radius: 50%;
++  background: linear-gradient(140deg, #f0e8fc55, transparent);
++}
++.orbit > div:nth-child(2) {
++  inset: 48px -16px;
++  transform: rotate(60deg);
++}
++.orbit > div:nth-child(3) {
++  inset: -4px 74px;
++  transform: rotate(20deg);
++}
++.orbit > span {
++  display: grid;
++  place-items: center;
++  height: 100%;
++  font:
++    600 180px Manrope,
++    sans-serif;
++  color: #ded0f1;
++  transform: rotate(24deg);
++}
++.cards {
++  display: grid;
++  grid-template-columns: repeat(3, minmax(0, 1fr));
++  gap: 18px;
++}
++.card {
++  --cardAccent: #7050cb;
++  --cardSoft: #ece5fa;
++  border: 1px solid #e2dfea;
++  background: #fff;
++  border-radius: 20px;
++  padding: 26px;
++  display: flex;
++  flex-direction: column;
++  box-shadow: 0 6px 24px #24233304;
++}
++.flow {
++  --cardAccent: #276d59;
++  --cardSoft: #e1f0e9;
++}
++.director {
++  --cardAccent: #8a5b1b;
++  --cardSoft: #f6ecd9;
++}
++.cardTop {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  margin-bottom: 30px;
++}
++.icon {
++  display: grid;
++  place-items: center;
++  background: var(--cardSoft);
++  color: var(--cardAccent);
++  width: 54px;
++  height: 54px;
++  border-radius: 15px;
++}
++.number {
++  color: #777180;
++  font:
++    500 12px Manrope,
++    sans-serif;
++  letter-spacing: 1px;
++}
++.cardLabel {
++  font-size: 11px;
++  text-transform: uppercase;
++  letter-spacing: 1.4px;
++  font-weight: 700;
++  color: var(--cardAccent);
++  margin-bottom: 10px;
++}
++.card h2 {
++  font-size: 27px;
++  letter-spacing: -1px;
++  line-height: 1.3;
++}
++.description {
++  color: #656173;
++  font-size: 14px;
++  line-height: 1.75;
++  margin: 15px 0 20px;
++  flex: 1;
++}
++.detail {
++  font-size: 11px;
++  letter-spacing: 0.2px;
++  color: #6c6579;
++  margin-bottom: 24px;
++}
++.open {
++  background: var(--cardAccent);
++  color: #fff;
++  border-radius: 10px;
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  padding: 15px 17px;
++  min-height: 50px;
++  font-weight: 600;
++  font-size: 13px;
++  transition:
++    filter 0.15s,
++    transform 0.15s;
++}
++.open:hover {
++  filter: brightness(1.08);
++  transform: translateY(-2px);
++}
++.try {
++  border-top: 1px solid #ece9f0;
++  margin-top: 22px;
++  padding-top: 18px;
++  font-size: 12px;
++  line-height: 1.7;
++  color: #686274;
++}
++.try strong {
++  display: block;
++  color: #383241;
++  font-size: 11px;
++  margin-bottom: 5px;
++}
++.note {
++  margin-top: 28px;
++  padding: 25px 28px;
++  background: #eeecf3;
++  border: 1px solid #e2deeb;
++  border-radius: 15px;
++  display: flex;
++  gap: 18px;
++}
++.noteIcon {
++  color: #74628d;
++  margin-top: 2px;
++}
++.note h2 {
++  font-size: 15px;
++  letter-spacing: 0;
++  margin-bottom: 8px;
++}
++.note p {
++  font-size: 12px;
++  color: #605a70;
++  line-height: 1.75;
++  max-width: 900px;
++}
++.note .limits {
++  margin-top: 8px;
++}
++.footer {
++  display: flex;
++  justify-content: space-between;
++  gap: 20px;
++  color: #645c72;
++  font-size: 10px;
++  line-height: 1.6;
++  margin-top: 35px;
++}
++@media (max-width: 1050px) {
++  .page {
++    padding: 0 28px 28px;
++  }
++  .card {
++    padding: 22px;
++  }
++  .orbit {
++    right: -10px;
++    opacity: 0.7;
++  }
++  .description {
++    font-size: 13px;
++  }
++}
++@media (max-width: 760px) {
++  .page {
++    padding: 0 22px 24px;
++  }
++  .header {
++    padding: 20px 0;
++  }
++  .wordmark {
++    font-size: 31px;
++  }
++  .version {
++    font-size: 10px;
++    gap: 6px;
++  }
++  .hero {
++    padding: 43px 0 34px;
++  }
++  .hero h1 {
++    font-size: 51px;
++    letter-spacing: -2.6px;
++  }
++  .eyebrow {
++    font-size: 9px;
++    letter-spacing: 1.3px;
++  }
++  .lead {
++    font-size: 14px;
++    margin: 20px 0;
++    line-height: 1.8;
++  }
++  .phone {
++    font-size: 10px;
++  }
++  .orbit {
++    width: 200px;
++    height: 200px;
++    right: -90px;
++    top: 80px;
++    opacity: 0.42;
++  }
++  .orbit > span {
++    font-size: 110px;
++  }
++  .cards {
++    grid-template-columns: 1fr;
++    gap: 16px;
++  }
++  .card {
++    padding: 25px;
++  }
++  .cardTop {
++    margin-bottom: 22px;
++  }
++  .description {
++    font-size: 14px;
++    max-width: 430px;
++  }
++  .detail {
++    margin-bottom: 20px;
++  }
++  .try {
++    margin-top: 19px;
++    padding-top: 15px;
++  }
++  .note {
++    padding: 22px 19px;
++    gap: 12px;
++    margin-top: 22px;
++  }
++  .noteIcon {
++    flex-shrink: 0;
++  }
++  .note p {
++    font-size: 12px;
++  }
++  .footer {
++    flex-direction: column;
++    gap: 6px;
++    margin-top: 24px;
++  }
++}
++@media (prefers-reduced-motion: reduce) {
++  .open {
++    transition: none;
++  }
++  .open:hover {
++    transform: none;
++  }
++}
+--- a/apps/director/src/components/DirectorEditor.tsx
++++ b/apps/director/src/components/DirectorEditor.tsx
+@@ -4,7 +4,6 @@
+ import { useMediaTask } from "../lib/use-media-task";
+ import { checkMediaAbort } from "../lib/media-lifecycle";
+ import { useSnapshotHash } from "../lib/use-snapshot-hash";
+-import { RenderArchive } from "./RenderArchive";
+ import { AudioTimelineTrack } from "./AudioTimelineTrack";
+ import {
+   Camera,
+@@ -468,27 +467,10 @@
+     };
+   }, [modal]);
+   useEffect(() => {
+-    const controller = new AbortController();
+-    const choice = renderChoice.current;
+-    const id =
+-      localStorage.getItem(`director-last-render:${documentKey}`) ??
+-      (documentKey === "production"
+-        ? localStorage.getItem("director-last-render")
+-        : null);
+-    if (id && /^[a-f0-9-]{36}$/.test(id))
+-      fetch(`/api/exports/${id}`, { signal: controller.signal })
+-        .then((r) => {
+-          if (!r.ok) throw Error("Eksporten er ikke tilgængelig");
+-          return r.json();
+-        })
+-        .then((job) => {
+-          if (!controller.signal.aborted && renderChoice.current === choice)
+-            setRenderJob(job);
+-        })
+-        .catch(() => {});
++    // This static web profile has no render worker or server-side job archive.
++    // Do not restore stale native job IDs or attempt dynamic server requests.
+     void checkCapability();
+     return () => {
+-      controller.abort();
+       capabilityRequest.current?.abort();
+       capabilityRequest.current = null;
+     };
+@@ -2554,16 +2536,13 @@
+                         ? "Kontrollerer renderprofil …"
+                         : capability?.available
+                           ? "Eksportér animatic"
+-                          : "Lokal render er ikke klar"}
++                          : "MP4 kræver computerudgaven"}
+                     </button>
+                   )}
+                   {!capability?.available && (
+                     <p className="capability-note">
+-                      {capability?.reason}
+-                      {capability?.reason ? ". " : ""}
+-                      Storyboard og projektpakke virker i browseren. MP4 kræver
+-                      den lokale renderworker med FFmpeg; cloud-render er ikke
+-                      tilkoblet.
++                      {capability?.reason} Storyboard og projektpakke virker i
++                      browseren. Cloud-render er ikke tilkoblet.
+                     </p>
+                   )}
+                   <div className="render-capability" aria-live="polite">
+@@ -2585,19 +2564,22 @@
+                     </button>
+                   </div>
+                 </div>
+-                <RenderArchive
+-                  project={p}
+-                  current={renderJob}
+-                  snapshotHash={snapshot.hash}
+-                  onSelect={(job) => {
+-                    selectRender(job);
+-                    requestAnimationFrame(() =>
+-                      modalRef.current
+-                        ?.querySelector(".render-status")
+-                        ?.scrollIntoView({ block: "start" }),
+-                    );
+-                  }}
+-                />
++                <details className="render-archive">
++                  <summary>
++                    <span>
++                      Tidligere eksporter
++                      <small>MP4-arkivet findes i computerudgaven</small>
++                    </span>
++                  </summary>
++                  <div className="render-archive-body">
++                    <p>
++                      Denne webudgave har ikke et MP4-arkiv. Dine tidligere
++                      filmfiler ligger på den computer, hvor de blev renderet.
++                      Du kan hente storyboard og projektpakke her og fortsætte
++                      på computeren.
++                    </p>
++                  </div>
++                </details>
+                 {rightsWarnings(p).length > 0 && (
+                   <p className="rights-warning">
+                     <AlertTriangle size={14} /> Rettigheder mangler for:{" "}
+--- /dev/null
++++ b/apps/director/public/api/exports
+@@ -0,0 +1 @@
++{"available": false, "profile": "local-only", "cloudConnected": false, "reason": "MP4-rendering kører i den lokale computerudgave. Scene, shots og storyboard kan bruges her."}
