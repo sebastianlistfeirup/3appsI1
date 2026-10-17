@@ -88,6 +88,7 @@ export function StudioApp() {
     error: boolean;
   } | null>(null);
   const input = useRef<HTMLInputElement>(null);
+  const archiveController = useRef<AbortController | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -114,6 +115,8 @@ export function StudioApp() {
   useEffect(
     () => () => {
       if (toastTimer.current) clearTimeout(toastTimer.current);
+      archiveController.current?.abort();
+      archiveController.current = null;
     },
     [],
   );
@@ -137,11 +140,19 @@ export function StudioApp() {
     }
   };
   async function exportCurrent() {
-    if (!project || exporting || importing) return;
+    if (!project || !store.ready || archiveController.current) return;
+    const controller = new AbortController();
+    archiveController.current = controller;
     setExporting(true);
+    setToast(null);
     try {
-      setArchiveProgress(null);
-      const file = await exportProjectFile(project, setArchiveProgress);
+      setArchiveProgress({ phase: "packing", completed: 0, total: 0 });
+      const file = await exportProjectFile(
+        project,
+        setArchiveProgress,
+        controller.signal,
+      );
+      controller.signal.throwIfAborted();
       downloadFile(
         `${project.name.toLowerCase().replace(/[^a-z0-9-]/g, "-")}-v${project.revision}.zip`,
         file as Uint8Array<ArrayBuffer>,
@@ -153,14 +164,29 @@ export function StudioApp() {
           : "Din aktuelle lokale kopi er hentet. Browserlagringen er stadig ikke bekræftet.",
       );
     } catch (e) {
-      notify(e instanceof Error ? e.message : "Eksporten fejlede.", true);
+      if (archiveController.current === controller)
+        notify(
+          controller.signal.aborted
+            ? "Eksporten er afbrudt. Projektet er bevaret."
+            : e instanceof Error
+              ? e.message
+              : "Eksporten fejlede.",
+          !controller.signal.aborted,
+        );
     } finally {
-      setExporting(false);
+      if (archiveController.current === controller) {
+        archiveController.current = null;
+        setExporting(false);
+        setArchiveProgress(null);
+      }
     }
   }
   async function importZip(file?: File) {
-    if (!file || importing || exporting) return;
+    if (!file || !store.ready || archiveController.current) return;
+    const controller = new AbortController();
+    archiveController.current = controller;
     setImporting(true);
+    setToast(null);
     setArchiveProgress(null);
     try {
       if (file.size > MAX_ARCHIVE_BYTES)
@@ -168,7 +194,9 @@ export function StudioApp() {
       const imported = await importProjectFile(
         new Uint8Array(await file.arrayBuffer()),
         setArchiveProgress,
+        controller.signal,
       );
+      controller.signal.throwIfAborted();
       if (store.data.projects.some((p) => p.id === imported.id)) {
         setDuplicateImport(imported);
         return;
@@ -179,13 +207,22 @@ export function StudioApp() {
         "Projekt importeret. Alle filhashes og versionsreferencer er kontrolleret.",
       );
     } catch (e) {
-      notify(
-        e instanceof Error ? e.message : "Projektpakken kunne ikke læses.",
-        true,
-      );
+      if (archiveController.current === controller)
+        notify(
+          controller.signal.aborted
+            ? "Importen er afbrudt. Dine projekter er bevaret."
+            : e instanceof Error
+              ? e.message
+              : "Projektpakken kunne ikke læses.",
+          !controller.signal.aborted,
+        );
     } finally {
-      setImporting(false);
-      if (input.current) input.current.value = "";
+      if (archiveController.current === controller) {
+        archiveController.current = null;
+        setImporting(false);
+        setArchiveProgress(null);
+        if (input.current) input.current.value = "";
+      }
     }
   }
   const pending =
@@ -368,7 +405,15 @@ export function StudioApp() {
             <div className="archive-progress" role="status" aria-live="polite">
               <span className="loading-orbit" />
               {progressLabel(archiveProgress)}
-              <span>Du kan fortsætte med at se projektet.</span>
+              <span className="archive-progress-hint">
+                Du kan fortsætte med at se projektet.
+              </span>
+              <button
+                className="button secondary"
+                onClick={() => archiveController.current?.abort()}
+              >
+                Afbryd {importing ? "import" : "eksport"}
+              </button>
             </div>
           )}
           {store.error && (
@@ -538,6 +583,7 @@ export function StudioApp() {
         accept=".zip"
         className="sr-only"
         aria-label="Importér projektpakke"
+        disabled={!store.ready || importing || exporting}
         onChange={(e) => void importZip(e.target.files?.[0])}
       />
       {creating && (

@@ -206,3 +206,145 @@ test("uploaded UTF-8 with BOM survives preview, worker export and hash verificat
   expect(file.content).toBe(content);
   expect(file.sha256).toBe(await sha256(Buffer.from(content, "utf8")));
 });
+
+test("actual project workers can be cancelled after processing without late import or download, then retried", async ({
+  page,
+}, info) => {
+  await open(page);
+  const sourceBytes = await download(page, "Eksportér projekt");
+  const source = await importProject(sourceBytes);
+  const incoming = createProject("Import efter afbrydelse");
+  const bytes = await exportProject(incoming);
+  let downloads = 0;
+  page.on("download", () => downloads++);
+  await page.evaluate(() => {
+    const NativeWorker = window.Worker;
+    const stats = { created: 0, terminated: 0, completed: 0 };
+    let hold = true;
+    const queued: Array<() => void> = [];
+    const state = {
+      stats,
+      release: () => {
+        hold = false;
+        for (const deliver of queued.splice(0)) deliver();
+        hold = true;
+      },
+      restore: () => {
+        window.Worker = NativeWorker;
+      },
+    };
+    (
+      window as unknown as { projectWorkerProbe: typeof state }
+    ).projectWorkerProbe = state;
+    window.Worker = class extends NativeWorker {
+      stopped = false;
+      constructor(url: string | URL, options?: WorkerOptions) {
+        super(url, options);
+        stats.created++;
+        this.addEventListener("message", (event) => {
+          if (!hold) return;
+          event.stopImmediatePropagation();
+          if (["imported", "exported"].includes(event.data.type))
+            stats.completed++;
+          // Real worker parse/compression/hash work has finished. Hold only delivery
+          // to exercise cancellation and queued late replies deterministically.
+          queued.push(() =>
+            this.dispatchEvent(
+              new MessageEvent("message", { data: event.data }),
+            ),
+          );
+        });
+      }
+      override terminate() {
+        if (!this.stopped) stats.terminated++;
+        this.stopped = true;
+        super.terminate();
+      }
+    };
+  });
+  const stats = () =>
+    page.evaluate(
+      () =>
+        (
+          window as unknown as {
+            projectWorkerProbe: {
+              stats: { created: number; terminated: number; completed: number };
+            };
+          }
+        ).projectWorkerProbe.stats,
+    );
+  const release = () =>
+    page.evaluate(() =>
+      (
+        window as unknown as { projectWorkerProbe: { release: () => void } }
+      ).projectWorkerProbe.release(),
+    );
+  await page
+    .getByRole("button", { name: "Eksportér projekt", exact: true })
+    .click();
+  await expect.poll(async () => (await stats()).completed).toBe(1);
+  for (const [label, width, height] of [
+    ["desktop", 1440, 900],
+    ["tablet", 1024, 768],
+    ["mobile", 390, 844],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await expect(
+      page.getByRole("button", { name: "Afbryd eksport", exact: true }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await a11y(page, `${info.project.name}-project-cancel-${label}`);
+    await page.screenshot({
+      path: `reports/studio/${info.project.name}-project-cancel-${label}.png`,
+      fullPage: true,
+      animations: "disabled",
+    });
+  }
+  await page
+    .getByRole("button", { name: "Afbryd eksport", exact: true })
+    .click();
+  await expect(page.locator(".toast")).toContainText("Eksporten er afbrudt");
+  expect(await stats()).toEqual({ created: 1, terminated: 1, completed: 1 });
+  await release();
+  await expect(page.locator(".archive-progress")).toHaveCount(0);
+  expect(downloads).toBe(0);
+  await page.locator("input[type=file]").setInputFiles({
+    name: "annuller.zip",
+    mimeType: "application/zip",
+    buffer: Buffer.from(bytes),
+  });
+  await expect.poll(async () => (await stats()).completed).toBe(2);
+  await page
+    .getByRole("button", { name: "Afbryd import", exact: true })
+    .click();
+  await expect(page.locator(".toast")).toContainText("Importen er afbrudt");
+  expect(await stats()).toEqual({ created: 2, terminated: 2, completed: 2 });
+  await release();
+  await expect(page.getByRole("heading", { name: "Realmread." })).toBeVisible();
+  await page.evaluate(() =>
+    (
+      window as unknown as { projectWorkerProbe: { restore: () => void } }
+    ).projectWorkerProbe.restore(),
+  );
+  expect(
+    await importProject(await download(page, "Eksportér projekt")),
+  ).toEqual(source);
+  await page.locator("input[type=file]").setInputFiles({
+    name: "annuller.zip",
+    mimeType: "application/zip",
+    buffer: Buffer.from(bytes),
+  });
+  await expect(
+    page.getByRole("heading", { name: "Import efter afbrydelse." }),
+  ).toBeVisible();
+  await expect(page.getByText("Gemt lokalt", { exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("Gemt lokalt", { exact: true })).toBeVisible();
+  expect(
+    await importProject(await download(page, "Eksportér projekt")),
+  ).toEqual(incoming);
+});

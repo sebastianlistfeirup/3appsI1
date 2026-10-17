@@ -15,7 +15,7 @@ An imported project whose ID is already present opens a choice to create a separ
 - File versions total at most 48 MB per project; metadata at most 4 MB.
 - The upload dialog admits 2 MB per file. The portable schema accepts individual historic versions up to 10 MB.
 - ZIP input is capped at 64 MB, expanded contents at 60 MB, and entries at 510.
-- Packing, unpacking and hash checks run in a separate browser worker. The operation has a 60-second deadline and always releases the worker on completion or failure.
+- Packing, unpacking and hash checks run in a separate browser worker. The operation has a 60-second deadline and always releases the worker on completion, failure or cancellation. **Afbryd import/eksport** stops the worker; queued replies cannot apply a late import or start a download. You can retry immediately. Ordinary in-app navigation keeps the operation available in its progress banner; leaving the application releases it. A native file read already started by the browser can finish before cancellation is observed, but no worker is started or project admitted after that cancellation.
 - New edits enforce the project budget. Previously saved data can still be read, including legacy documents that exceed the new budget; individual files remain downloadable if a legacy project is too large for a portable ZIP.
 
 If the browser refuses a save or another tab has a newer revision, **Eksportér lokal kopi** packages the current in-memory project. It does not require the failed save to succeed. The message distinguishes the downloaded copy from data confirmed in browser storage. **Genindlæs gemt version** deliberately reloads the persisted version; export unsaved changes first.
@@ -24,7 +24,7 @@ UTF-8 files preserve a leading BOM, Danish characters and emoji through upload, 
 
 ## Verification
 
-`apps/studio/src/lib/archive.test.ts` covers v1/v2 compatibility, actual incompressible multi-megabyte data, metadata tampering, invalid ZIPs, budget rejection, independent copies and exact UTF-8 hashes. `tests/e2e/studio-archive.spec.ts` exercises actual browser workers, an 11.2 MB binary project, forced IndexedDB quota failure and duplicate import at desktop, tablet and mobile sizes. Each browser path runs in Chromium, Firefox and WebKit; accessibility results and screenshots are retained under `reports/studio`.
+`apps/studio/src/lib/archive.test.ts` covers v1/v2 compatibility, actual incompressible multi-megabyte data, metadata tampering, invalid ZIPs, budget rejection, independent copies and exact UTF-8 hashes. `tests/e2e/studio-archive.spec.ts` exercises actual browser workers, an 11.2 MB binary project, forced IndexedDB quota failure, cancellation after actual compression/parse/hash work (including late replies and retry), and duplicate import at desktop, tablet and mobile sizes. Each browser path runs in Chromium, Firefox and WebKit; accessibility results and screenshots are retained under `reports/studio`.
 
 These packages provide local portability. They do not demonstrate a hosted backup, encrypted object store or recovery of files after the browser's data has already been removed.
 

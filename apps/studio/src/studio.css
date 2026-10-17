@@ -4355,7 +4355,7 @@ button {
   margin: 0;
   border-width: 2px;
 }
-.archive-progress > span:last-child {
+.archive-progress .archive-progress-hint {
   margin-left: auto;
   color: var(--muted);
   font-size: 12px;
@@ -4364,7 +4364,7 @@ button {
   .archive-progress {
     flex-wrap: wrap;
   }
-  .archive-progress > span:last-child {
+  .archive-progress .archive-progress-hint {
     width: 100%;
     margin-left: 30px;
   }
