@@ -23,6 +23,8 @@ pnpm dev
 
 Data gemmes i browserens IndexedDB. Hent en ZIP/JSON-kopi af arbejde, du vil beholde. To samtidige faner får en synlig versionskonflikt; den ene overskriver ikke stiltiende den anden. Ingen browserdata uploades automatisk til en server.
 
+Vil du begynde med konkrete resultater, så hent [prøvepakken med en rigtig analyse, film og to reviews](examples/foerste-gennemgang/README.md). Den kan importeres i Studio og kræver ingen nøgler.
+
 Læs den korte [Studio-vejledning](docs/studio.md), [FlowLab-vejledning](docs/flowlab.md) eller [Director-vejledning](docs/director.md) for et samlet første arbejdsforløb.
 
 ### Faktisk MP4 fra Director

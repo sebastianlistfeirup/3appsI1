@@ -1,0 +1,91 @@
+{
+  "generatedAt": "2026-10-17T02:23:48.385Z",
+  "profile": "synthetic-local-manual-review",
+  "generator": "tools/demo/create-review-package.ts",
+  "archive": {
+    "path": "tre-apps-review.zip",
+    "bytes": 1247028,
+    "sha256": "e55c90101f7f6f8a2519527b973bda4521abe5f7fa9a4cb48867e8be71010dac"
+  },
+  "projectId": "project-0a441c12-3694-4d23-8262-2e1a37b4ca37",
+  "reviewDecisions": 0,
+  "flow": {
+    "engine": "flow-des/1.3.0",
+    "prng": "mulberry32-fnv1a/2",
+    "pairedSeeds": [
+      1670256963,
+      1477666837,
+      1671784842,
+      3714445914,
+      2325941002,
+      1813369949,
+      3373746645,
+      3814432474,
+      1296732853,
+      500503850,
+      3994470940,
+      1287640573,
+      1654237366,
+      3166369257,
+      65902710,
+      2458038775,
+      3358878965,
+      2719995175,
+      806742138,
+      2751558103,
+      4152500234,
+      2697133492,
+      2199855493,
+      439716845,
+      1455616600,
+      965144649,
+      3265244039,
+      142003906,
+      1639947343,
+      692490573
+    ],
+    "holdout": false
+  },
+  "director": {
+    "width": 1280,
+    "height": 720,
+    "fps": "24/1",
+    "frames": 1440,
+    "duration": 60,
+    "video": "h264",
+    "audio": "aac",
+    "audioContent": "silent sample"
+  },
+  "files": [
+    {
+      "name": "LAES-MIG.md",
+      "bytes": 1032,
+      "sha256": "f43f69a9bc795f5c85a1d576e2bcc087d4ee2a3186783ababb967d05daa3bde5",
+      "provenance": "tools/demo/create-review-package.ts · dansk vejledning"
+    },
+    {
+      "name": "flowlab-rapport.pdf",
+      "bytes": 23655,
+      "sha256": "2753bc84dba4655d67d1b959f1f8ed4f33cd420073601d8abcdb27079d1b42a5",
+      "provenance": "Faktisk lokal 30-par beregning; flow-des/1.3.0, mulberry32-fnv1a/2; syntetisk Medlemsservice. Ingen holdout."
+    },
+    {
+      "name": "flowlab-grundlag.json",
+      "bytes": 1349996,
+      "sha256": "e7608bf1f584f4f6139fc4c657d5ccbd908580a202e0c52c4b027560d713f750",
+      "provenance": "Samme faktiske beregning som flowlab-rapport.pdf; låste modeller, seeds og resultater."
+    },
+    {
+      "name": "det-sidste-signal.mp4",
+      "bytes": 840149,
+      "sha256": "d238229bb0061d8aed7c343df3c8a26a4809a87499a76ff58540f013a82d3bd9",
+      "provenance": "Original verificeret lokal FFmpeg-eksport fra reports/director/det-sidste-signal-720p.mp4; syntetisk animatic med stillbilleder og stille AAC-spor."
+    },
+    {
+      "name": "det-sidste-signal-storyboard.pdf",
+      "bytes": 452865,
+      "sha256": "efb1944273dd36e894d011eef717a2d19621d76eb6e2e94320091407e8b50782",
+      "provenance": "Original reports/director/sample-storyboard.pdf; syntetisk storyboard fra Director."
+    }
+  ]
+}

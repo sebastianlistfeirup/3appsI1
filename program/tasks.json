@@ -838,6 +838,29 @@
         "apps/flowlab",
         "packages/flow-engine"
       ]
+    },
+    {
+      "id": "F14",
+      "app": "foundation",
+      "goal": "Actual cross-app manual review package and clean-checkout production builds",
+      "dependencies": [
+        "S18",
+        "L26",
+        "D22"
+      ],
+      "verification": [
+        "pnpm exec tsx tools/demo/create-review-package.ts",
+        "pnpm exec playwright test tests/e2e/studio-demo-package.spec.ts",
+        "fresh-checkout pnpm install --frozen-lockfile --offline && pnpm build"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "tools/demo",
+        "examples",
+        "tests/e2e",
+        "docs",
+        "reports"
+      ]
     }
   ]
 }
