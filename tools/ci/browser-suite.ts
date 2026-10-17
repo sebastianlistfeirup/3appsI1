@@ -154,6 +154,8 @@ try {
     await run("node", ["tools/browser/studio-a11y.cjs"]);
   }
   if (enabled("flowlab")) {
+    if (selectedEngine === "all" || selectedEngine === "chromium")
+      await run("pnpm", ["test:http", "--app=flowlab"]);
     await start("flowlab", 3001);
     for (const browser of selectedEngine === "all"
       ? ["chromium", "firefox", "webkit"]
@@ -236,6 +238,11 @@ try {
         ["exec", "tsx", "apps/flowlab/tests/templates-check.ts"],
         { FLOWLAB_BROWSER: browser },
       );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/diagram-routing-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
     }
     if (selectedEngine === "all" || selectedEngine === "chromium") {
       await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
@@ -280,6 +287,11 @@ try {
       });
       await run(
         "node",
+        ["--import", "tsx", "apps/director/tests/render-history-ui-flow.mjs"],
+        { HISTORY_ENGINE: browser },
+      );
+      await run(
+        "node",
         ["--import", "tsx", "apps/director/tests/captions-ui-flow.mjs"],
         {
           CAPTION_ENGINE: browser,
@@ -321,6 +333,12 @@ try {
       ["--import", "tsx", "apps/director/tests/render-profile-smoke.mjs"],
       {},
       120000,
+    );
+    await run(
+      "node",
+      ["--import", "tsx", "apps/director/tests/render-history-smoke.mjs"],
+      {},
+      180000,
     );
   }
 } finally {

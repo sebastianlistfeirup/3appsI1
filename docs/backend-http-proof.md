@@ -2,6 +2,8 @@
 
 `pnpm test:http` exercises the built Studio server over real TCP HTTP, with real HTTPS key discovery, real PostgreSQL and the separate production worker entry point. It uses disposable synthetic local services. It does not contact a hosted Supabase project or claim a deployed customer integration.
 
+`pnpm test:http --app=flowlab` runs the same real boundary against a current FlowLab build. Its job is a native 30-seed paired simulation, whose exact input/result hashes are checked over HTTP. Duplicate seeds, a client-supplied price and unsupported adapters are rejected. It retains the real upload/Next-SIGKILL/restart/download checks and writes a separate `reports/backend/flowlab-http-proof.json`. CI runs this variant once in the FlowLab Chromium job. Do not build the selected app while its proof is running.
+
 Prerequisites: the locked dependencies, OpenSSL, and a current `pnpm --filter @tre/studio build`. Node 24 and the bundled PostgreSQL 17 fixture are used. Existing app servers can remain running because the proof chooses its own loopback ports. Do not run a Studio build concurrently with this proof.
 
 The runner creates an ephemeral certificate with explicit localhost/IP SANs and an ES256 keypair. The production Next process trusts only that additional fixture certificate through `NODE_EXTRA_CA_CERTS`; normal TLS validation remains enabled. An actual HTTPS JWKS endpoint serves only the public signing key. No bearer identity can be supplied through a request body.

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T23:51:47.843959+00:00",
+  "updatedAt": "2026-10-17T00:09:35.481999+00:00",
   "status": "building",
   "activeTasks": [
-    "F12-durable-flow-worker",
-    "L21-diagram-readability",
-    "D18-export-library",
-    "F06-fresh-remote-ci"
+    "F12-remote-verification",
+    "L22-backlog-sla-reporting",
+    "D19-direct-scene-placement",
+    "S14-next-studio-quality-pass"
   ],
   "profile": "demo",
   "connectedIntegrations": [],
@@ -20,6 +20,8 @@
     "Separate worker reconnect after actual idle session termination",
     "Private local immutable objects and signed links with current RLS membership",
     "Production Next HTTP → certificate-validated HTTPS JWKS → RLS → separate worker → signed private file",
-    "Durable HTTP uploads survive real Next SIGKILL and two-cluster restore before finalization"
+    "Durable HTTP uploads survive real Next SIGKILL and two-cluster restore before finalization",
+    "Native bounded FlowLab worker, actual in-flight SIGKILL and natural pg-boss/app-lease recovery",
+    "Production FlowLab HTTP → HTTPS JWKS → restricted DB → native 30-pair result"
   ]
 }

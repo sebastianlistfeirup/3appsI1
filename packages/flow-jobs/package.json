@@ -1,0 +1,20 @@
+{
+  "name": "@tre/flow-jobs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/executor.ts",
+    "./input": "./src/input.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tre/flow-engine": "workspace:*",
+    "@tre/jobs": "workspace:*",
+    "@tre/database": "workspace:*",
+    "tsx": "4.21.0",
+    "zod": "4.6.7"
+  }
+}

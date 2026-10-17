@@ -1,7 +1,7 @@
 {
-  "startedAt": "2026-10-16T23:13:00.183Z",
-  "verifiedAt": "2026-10-16T23:13:04.996Z",
-  "checkpointAt": "2026-10-16T23:13:02.328Z",
+  "startedAt": "2026-10-17T00:07:39.610Z",
+  "verifiedAt": "2026-10-17T00:07:40.995Z",
+  "checkpointAt": "2026-10-17T00:07:40.213Z",
   "profile": "two-disposable-local-clusters",
   "cloudConnected": false,
   "postgresVersion": "PostgreSQL 17.10 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit",
@@ -13,12 +13,13 @@
     "0001_foundation.sql",
     "0002_job_control.sql",
     "0003_archive_ordering.sql",
-    "0004_private_uploads.sql"
+    "0004_private_uploads.sql",
+    "0005_pure_flow_recovery.sql"
   ],
-  "dumpBytes": 138085,
-  "archiveSha256": "246348a1752e278325bed5d24159f6f40cb9337d9e32a8975dc3096e9e21775e",
-  "dumpMs": 465,
-  "recoveryMs": 1114,
+  "dumpBytes": 138464,
+  "archiveSha256": "d7a28ac50959c7ead4c6fcac9b3120df1071e1080a1a513e810240eacecd72fa",
+  "dumpMs": 88,
+  "recoveryMs": 251,
   "tableRowsAtCheckpoint": {
     "app.artifact_uploads": 1,
     "app.artifact_versions": 2,
@@ -41,8 +42,8 @@
     "queue.job_dependency": 0,
     "queue.queue": 1,
     "queue.queue_stats": 0,
-    "queue.queue_stats_20261016": 0,
     "queue.queue_stats_20261017": 0,
+    "queue.queue_stats_20261018": 0,
     "queue.schedule": 0,
     "queue.subscription": 0,
     "queue.version": 1,
@@ -67,7 +68,7 @@
     "Same idempotency key returns the original job",
     "No external provider call or payment"
   ],
-  "finishedAt": "2026-10-16T23:13:05.081Z",
+  "finishedAt": "2026-10-17T00:07:41.037Z",
   "exitCode": 0,
   "cleanupVerified": true,
   "poolErrors": 0

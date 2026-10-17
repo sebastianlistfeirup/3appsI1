@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto";
+import { setTimeout as delay } from "node:timers/promises";
 import { z } from "zod";
+import type { AppKey } from "@tre/contracts";
 import {
   Pool,
   withWorker,
@@ -22,10 +24,13 @@ export interface JobContext {
   signal: AbortSignal;
   idempotencyKey: string;
   recordProviderReference: (reference: string) => Promise<void>;
+  reportProgress?: (completed: number, total: number) => void;
 }
 export interface JobHandler {
   id: string;
   costModel: "free" | "metered";
+  /** Trusted implementation contract, never a client-provided permission. Must honor abort and settle only after native work stops. */
+  replay?: { appKey: AppKey; sideEffects: "none" };
   run: (input: Json, context: JobContext) => Promise<JobOutput>;
 }
 export class JobFault extends Error {
@@ -42,7 +47,13 @@ export interface ProcessorOptions {
   signal?: AbortSignal;
   leaseMs?: number;
   heartbeatMs?: number;
-  onEvent?: (event: { type: string; jobId: string; state?: string }) => void;
+  onEvent?: (event: {
+    type: string;
+    jobId: string;
+    state?: string;
+    completed?: number;
+    total?: number;
+  }) => void;
 }
 export type HandlerRegistry = ReadonlyMap<string, JobHandler>;
 /** Bounded local validator. It does not execute uploaded code or claim a build passed. */
@@ -130,7 +141,52 @@ export async function processJob(
     );
   const inTenant = <T>(fn: Parameters<typeof withWorker<T>>[2]) =>
     withWorker(pool, envelope.workspaceId, fn);
-  const claimed = await inTenant((c) => claimJob(c, envelope.jobId, leaseMs));
+  const replayable = [...handlers.values()]
+    .filter(
+      (handler) =>
+        handler.costModel === "free" && handler.replay?.sideEffects === "none",
+    )
+    .map((handler) => ({ kind: handler.id, appKey: handler.replay!.appKey }));
+  let candidate = await inTenant((c) =>
+    claimJob(c, envelope.jobId, leaseMs, replayable),
+  );
+  // Queue and app heartbeats run on different clocks. An early redelivery must
+  // not acknowledge a crashed pure job while its final app lease is still live.
+  const waitUntil = Date.now() + leaseMs + 1000;
+  while (!candidate && replayable.length) {
+    const active = await inTenant(
+      async (c) =>
+        (
+          await c.query<JobRow>("select * from app.jobs where id=$1", [
+            envelope.jobId,
+          ])
+        ).rows[0],
+    );
+    if (
+      !active ||
+      !replayable.some(
+        (entry) =>
+          entry.kind === active.kind && entry.appKey === active.app_key,
+      ) ||
+      !["running", "validating", "queued", "retry_wait"].includes(active.state)
+    )
+      break;
+    if (Date.now() >= waitUntil)
+      throw new JobFault(
+        "transient",
+        "Den tidligere workers lease er stadig aktiv. Køen skal prøve igen; jobbet er ikke kvitteret som færdigt.",
+        true,
+      );
+    await delay(100, undefined, { signal: options.signal });
+    if (
+      ["queued", "retry_wait"].includes(active.state) ||
+      (active.lease_until && active.lease_until.getTime() <= Date.now())
+    )
+      candidate = await inTenant((c) =>
+        claimJob(c, envelope.jobId, leaseMs, replayable),
+      );
+  }
+  const claimed = candidate;
   if (!claimed) return;
   const lease = claimed.lease_token!;
   let current: JobRow = claimed;
@@ -140,6 +196,10 @@ export async function processJob(
     : controller.signal;
   let knownOutput: JobOutput | undefined;
   const handler = handlers.get(claimed.kind);
+  const pure =
+    handler?.costModel === "free" &&
+    handler.replay?.sideEffects === "none" &&
+    handler.replay.appKey === claimed.app_key;
   const emit = (type: string, state?: string) =>
     options.onEvent?.({ type, jobId: claimed.id, state });
   let heartbeatRunning = false,
@@ -180,6 +240,8 @@ export async function processJob(
         "Ingen tilsluttet adapter kan udføre denne jobtype.",
         true,
       );
+    if (handler.replay && handler.replay.appKey !== claimed.app_key)
+      throw new JobFault("permanent", "Jobtypen tilhører en anden app.", true);
     // No metered adapter is enabled by this reference worker; paid calls require explicit deployment policy.
     if (handler.costModel !== "free")
       throw new JobFault(
@@ -190,18 +252,30 @@ export async function processJob(
     if (remaining <= 0)
       throw new JobFault("permanent", "Jobbets tidsfrist er udløbet.", true);
     signal.throwIfAborted();
-    const output = await abortable(
-      handler.run(claimed.input, {
-        signal,
-        idempotencyKey: claimed.id,
-        recordProviderReference: async (reference) => {
-          current = await inTenant((c) =>
-            recordProviderReference(c, claimed.id, lease, reference),
-          );
-        },
-      }),
+    const operation = handler.run(claimed.input, {
       signal,
-    );
+      idempotencyKey: claimed.id,
+      recordProviderReference: async (reference) => {
+        if (pure)
+          throw new JobFault(
+            "permanent",
+            "En ren beregning må ikke oprette et eksternt providerjob.",
+            true,
+          );
+        current = await inTenant((c) =>
+          recordProviderReference(c, claimed.id, lease, reference),
+        );
+      },
+      reportProgress: (completed, total) =>
+        options.onEvent?.({
+          type: "job.progress",
+          jobId: claimed.id,
+          completed,
+          total,
+        }),
+    });
+    // A pure handler owns bounded native teardown; do not settle its cancellation before terminate() completes.
+    const output = await (pure ? operation : abortable(operation, signal));
     knownOutput = output;
     if (heartbeatFailure) throw heartbeatFailure;
     current = await inTenant((c) => getJob(c, claimed.id));
@@ -228,7 +302,8 @@ export async function processJob(
       finishJob(c, claimed.id, lease, output.manifest, output.actualMinor),
     );
     emit("job.succeeded", "succeeded");
-  } catch (error) {
+  } catch (caught) {
+    let error = caught;
     current = await inTenant((c) => getJob(c, claimed.id));
     if (
       ["succeeded", "failed", "cancelled", "reconcile_required"].includes(
@@ -241,11 +316,28 @@ export async function processJob(
       !current.lease_until ||
       current.lease_until.getTime() <= Date.now()
     ) {
+      if (pure && !current.provider_ref) {
+        // Queue redelivery may reclaim only after the old lease expires. Never claim and abandon a new lease here.
+        emit("job.lease_lost");
+        throw new JobFault(
+          "transient",
+          "Simuleringens lease blev mistet; den varige kø kan genstarte det samme input.",
+          true,
+        );
+      }
       // claimJob is also the lease-expiry reconciliation gate. It never starts this active operation again.
       await inTenant((c) => claimJob(c, claimed.id, leaseMs));
       emit("job.reconciliation", "reconcile_required");
       return;
     }
+    if (pure && !current.provider_ref && !(error instanceof JobFault))
+      error = new JobFault(
+        "permanent",
+        signal.aborted
+          ? "Simuleringen blev afbrudt uden eksternt forbrug."
+          : "Den lokale simulering fejlede uden eksternt forbrug.",
+        true,
+      );
     if (current.cancel_requested && knownOutput) {
       const actualMinor = knownOutput.actualMinor;
       await inTenant((c) =>

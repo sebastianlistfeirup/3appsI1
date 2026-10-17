@@ -1,7 +1,8 @@
 {
-  "startedAt": "2026-10-16T23:15:41.928Z",
-  "finishedAt": "2026-10-16T23:15:48.074Z",
+  "startedAt": "2026-10-17T00:08:29.432Z",
+  "finishedAt": "2026-10-17T00:08:35.797Z",
   "profile": "isolated-production-http",
+  "app": "studio",
   "identity": "ephemeral HTTPS JWKS fixture; normal TLS validation",
   "hostedAuthConnected": false,
   "cloudConnected": false,
@@ -9,14 +10,15 @@
     "0001_foundation.sql",
     "0002_job_control.sql",
     "0003_archive_ordering.sql",
-    "0004_private_uploads.sql"
+    "0004_private_uploads.sql",
+    "0005_pure_flow_recovery.sql"
   ],
   "jwksRequests": 2,
   "checks": [
     "API response is not cached",
     "Unauthenticated request rejected before contacting identity server",
     "Next fetched real JWKS through certificate-validated HTTPS",
-    "Actual Studio document validator created the project",
+    "Actual studio document validator created the project",
     "Actual HTTP retries keep one logical job",
     "HTTP job response hides private worker fields",
     "Worker returned exact UTF-8 digest and explicit execution limits",

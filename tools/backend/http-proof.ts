@@ -19,8 +19,26 @@ import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import EmbeddedPostgres from "embedded-postgres";
 import { exportJWK, generateKeyPair, SignJWT } from "jose";
-import { Pool, withTrustedUser } from "../../packages/database/src/index";
+import {
+  Pool,
+  withTrustedUser,
+  hashJson,
+  type Json,
+} from "../../packages/database/src/index";
 import { installQueue } from "../../packages/jobs/src/queue";
+import {
+  membershipTemplate,
+  seedList,
+  ENGINE_VERSION,
+  PRNG_VERSION,
+} from "../../packages/flow-engine/src/index";
+import {
+  FLOW_JOB_PROFILE,
+  parseFlowJobInput,
+} from "../../packages/flow-jobs/src/input";
+const selectedApp = process.argv.includes("--app=flowlab")
+  ? "flowlab"
+  : "studio";
 const startedAt = new Date().toISOString(),
   repository = resolve(".");
 const root = await mkdtemp(join(tmpdir(), "tre-http-proof-"));
@@ -177,11 +195,17 @@ async function stop(child: ChildProcess, milliseconds: number) {
   });
 }
 try {
-  if (process.argv.slice(2).some((argument) => argument !== "--failure-probe"))
+  if (
+    process.argv
+      .slice(2)
+      .some(
+        (argument) => !["--failure-probe", "--app=flowlab"].includes(argument),
+      )
+  )
     throw new Error("Unknown HTTP proof argument.");
   if (process.env.NODE_TLS_REJECT_UNAUTHORIZED === "0")
     throw new Error("This proof requires normal TLS certificate validation.");
-  await access(join(repository, "apps/studio/.next/BUILD_ID"));
+  await access(join(repository, `apps/${selectedApp}/.next/BUILD_ID`));
   const dbPort = await port(),
     appPort = await port();
   const password = secret();
@@ -287,7 +311,7 @@ try {
     childProcess(
       process.execPath,
       [
-        join(repository, "apps/studio/node_modules/next/dist/bin/next"),
+        join(repository, `apps/${selectedApp}/node_modules/next/dist/bin/next`),
         "start",
         "--hostname",
         "127.0.0.1",
@@ -303,7 +327,7 @@ try {
         NODE_EXTRA_CA_CERTS: certificate,
         NEXT_TELEMETRY_DISABLED: "1",
       },
-      join(repository, "apps/studio"),
+      join(repository, `apps/${selectedApp}`),
     );
   let app = startApp();
   const waitForApp = () =>
@@ -419,8 +443,11 @@ try {
     })
   ).json();
   check(
-    project.app_key === "studio" && project.document.profile === "web",
-    "Actual Studio document validator created the project",
+    project.app_key === selectedApp &&
+      (selectedApp === "studio"
+        ? project.document.profile === "web"
+        : project.document.kind === "flow.models"),
+    `Actual ${selectedApp} document validator created the project`,
   );
   await (
     await api(`projects/${project.id}`, { token: strangerJwt, status: 404 })
@@ -467,11 +494,64 @@ try {
     throw new Error("Intentional failure after real services became ready.");
   const content = '{"message":"Æble · 東京 🌱","synthetic":true}\n',
     hash = digest(Buffer.from(content));
-  const input = {
-    idempotencyKey: randomUUID(),
-    kind: "manual.validate",
-    input: { text: content, mime: "application/json", expectedSha256: hash },
-  };
+  const baseline = membershipTemplate(),
+    scenario = structuredClone(baseline);
+  scenario.resources[0]!.capacity += 1;
+  const flowInput = parseFlowJobInput({
+    schemaVersion: 1,
+    profile: FLOW_JOB_PROFILE,
+    engineVersion: ENGINE_VERSION,
+    prngVersion: PRNG_VERSION,
+    baseline,
+    scenario,
+    seeds: seedList(2026, 30),
+  });
+  const input =
+    selectedApp === "studio"
+      ? {
+          idempotencyKey: randomUUID(),
+          kind: "manual.validate",
+          input: {
+            text: content,
+            mime: "application/json",
+            expectedSha256: hash,
+          },
+        }
+      : {
+          idempotencyKey: randomUUID(),
+          kind: "flow.compare",
+          input: flowInput,
+        };
+  if (selectedApp === "flowlab") {
+    await (
+      await api(`projects/${project.id}/jobs`, {
+        token: ownerJwt,
+        method: "POST",
+        body: { ...input, maximumMinor: 0 },
+        status: 400,
+      })
+    ).arrayBuffer();
+    await (
+      await api(`projects/${project.id}/jobs`, {
+        token: ownerJwt,
+        method: "POST",
+        body: { ...input, input: { ...flowInput, seeds: Array(30).fill(1) } },
+        status: 400,
+      })
+    ).arrayBuffer();
+    await (
+      await api(`projects/${project.id}/jobs`, {
+        token: ownerJwt,
+        method: "POST",
+        body: { ...input, kind: "paid.generate" },
+        status: 409,
+      })
+    ).arrayBuffer();
+    check(
+      true,
+      "FlowLab rejects client costs, duplicate seeds and unconnected paid adapters before enqueue",
+    );
+  }
   const { job } = await (
     await api(`projects/${project.id}/jobs`, {
       token: ownerJwt,
@@ -507,10 +587,19 @@ try {
     await api(`jobs/${job.id}/result`, { token: ownerJwt, status: 200 })
   ).json();
   check(
-    result.manifest.sha256 === hash &&
-      result.manifest.externalBuildVerified === false &&
-      result.manifest.codeExecuted === false,
-    "Worker returned exact UTF-8 digest and explicit execution limits",
+    selectedApp === "studio"
+      ? result.manifest.sha256 === hash &&
+          result.manifest.externalBuildVerified === false &&
+          result.manifest.codeExecuted === false
+      : result.manifest.inputSha256 ===
+          hashJson(flowInput as unknown as Json) &&
+          result.manifest.resultSha256 ===
+            hashJson(result.manifest.comparison) &&
+          result.manifest.comparison.seeds.length === 30 &&
+          result.manifest.paidProviderCalled === false,
+    selectedApp === "studio"
+      ? "Worker returned exact UTF-8 digest and explicit execution limits"
+      : "Native worker completed all 30 seedpairs with verified immutable input/result hashes and zero external calls",
   );
   const accounting = (
     await admin.query(
@@ -714,6 +803,7 @@ try {
     startedAt,
     finishedAt: new Date().toISOString(),
     profile: "isolated-production-http",
+    app: selectedApp,
     identity: "ephemeral HTTPS JWKS fixture; normal TLS validation",
     hostedAuthConnected: false,
     cloudConnected: false,
@@ -768,7 +858,7 @@ try {
 try {
   await mkdir("reports/backend", { recursive: true });
   await writeFile(
-    `reports/backend/http-proof${failureProbe ? "-failure-probe" : ""}.json`,
+    `reports/backend/${selectedApp === "flowlab" ? "flowlab-" : ""}http-proof${failureProbe ? "-failure-probe" : ""}.json`,
     JSON.stringify(
       {
         ...evidence,

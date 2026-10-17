@@ -297,22 +297,80 @@ export async function claimJob(
   client: PoolClient,
   id: string,
   leaseMs = 120000,
+  replayable: ReadonlyArray<{ kind: string; appKey: AppKey }> = [],
 ): Promise<JobRow | null> {
   uuid.parse(id);
   z.number().int().min(100).max(600000).parse(leaseMs);
+  const visible = (
+    await client.query<JobRow>("select * from app.jobs where id=$1", [id])
+  ).rows[0];
+  if (!visible) return null;
+  const replayConfigured = replayable.some(
+    (entry) => entry.kind === visible.kind && entry.appKey === visible.app_key,
+  );
+  // Recovery may settle a zero-cost cancellation. Preserve budget → job lock order.
+  if (replayConfigured)
+    await client.query(
+      "select workspace_id from app.workspace_budgets where workspace_id=$1 for update",
+      [visible.workspace_id],
+    );
   const result = await client.query<JobRow>(
     "select * from app.jobs where id=$1 for update",
     [id],
   );
-  const job = result.rows[0];
+  let job = result.rows[0];
   if (!job) return null;
   if (["running", "validating"].includes(job.state)) {
-    if (job.lease_until && job.lease_until.getTime() <= Date.now())
+    if (!job.lease_until || job.lease_until.getTime() > Date.now()) return null;
+    const reservation =
+      replayConfigured && !job.provider_ref
+        ? (
+            await client.query<{ reserved_minor: string; state: string }>(
+              "select reserved_minor,state from app.budget_reservations where job_id=$1",
+              [id],
+            )
+          ).rows[0]
+        : undefined;
+    if (
+      !reservation ||
+      Number(reservation.reserved_minor) !== 0 ||
+      reservation.state !== "held"
+    ) {
       await transitionJob(client, job, "reconcile_required", {
         error:
           "Arbejderens lease udløb. Kontrollér eksisterende providerjob før genbestilling.",
       });
-    return null;
+      return null;
+    }
+    if (
+      job.cancel_requested ||
+      job.attempt >= 3 ||
+      job.deadline_at.getTime() <= Date.now()
+    ) {
+      const recoveryLease = randomUUID();
+      job = (
+        await client.query<JobRow>(
+          "update app.jobs set revision=revision+1,lease_token=$2,lease_until=now()+($3*interval '1 millisecond'),updated_at=now() where id=$1 returning *",
+          [id, recoveryLease, leaseMs],
+        )
+      ).rows[0]!;
+      await recordJobEvent(client, job, "job.pure_recovery");
+      await settleUnsuccessfulJob(
+        client,
+        id,
+        recoveryLease,
+        job.cancel_requested ? "cancelled" : "failed",
+        0,
+        job.cancel_requested
+          ? "Den afbrudte simulering blev annulleret uden eksternt forbrug."
+          : "Den afbrudte simulering nåede sin forsøgsgrænse eller tidsfrist. Opret et nyt job med en mindre model.",
+      );
+      return null;
+    }
+    job = await transitionJob(client, job, "retry_wait", {
+      error:
+        "Den afbrudte, rene beregning genstartes fra det samme låste input uden eksterne kald.",
+    });
   }
   if (
     !["queued", "retry_wait"].includes(job.state) ||

@@ -9,8 +9,20 @@ import {
   createWorkspace,
   createProject,
   requestJob,
+  hashJson,
+  type Json,
 } from "../../packages/database/src/index";
 import { installQueue } from "../../packages/jobs/src/queue";
+import {
+  membershipTemplate,
+  ENGINE_VERSION,
+  PRNG_VERSION,
+  seedList,
+} from "../../packages/flow-engine/src/index";
+import {
+  FLOW_JOB_PROFILE,
+  parseFlowJobInput,
+} from "../../packages/flow-jobs/src/input";
 const admin = new Pool({ connectionString: process.env.TEST_DATABASE_URL });
 const databaseName = `worker_${randomUUID().replaceAll("-", "")}`;
 const databaseUrl = new URL(process.env.TEST_DATABASE_URL!);
@@ -52,7 +64,9 @@ afterAll(async () => {
   await admin.query(`drop database if exists ${databaseName} with (force)`);
   await admin.end();
 });
-async function startWorker() {
+async function startWorker(
+  onEvent?: (event: Record<string, unknown>, child: ChildProcess) => void,
+) {
   const child = spawn(
     process.execPath,
     ["--import", "tsx", "services/worker/src/main.ts"],
@@ -60,7 +74,8 @@ async function startWorker() {
   );
   children.add(child);
   let log = "",
-    error = "";
+    error = "",
+    pending = "";
   child.stdout!.setEncoding("utf8");
   child.stderr!.setEncoding("utf8");
   child.stderr!.on("data", (chunk) => (error += chunk));
@@ -71,6 +86,16 @@ async function startWorker() {
     );
     child.stdout!.on("data", (chunk) => {
       log += chunk;
+      pending += chunk;
+      const lines = pending.split("\n");
+      pending = lines.pop()!;
+      for (const line of lines) {
+        try {
+          onEvent?.(JSON.parse(line), child);
+        } catch {
+          /* Non-JSON startup diagnostics are retained in log. */
+        }
+      }
       if (log.includes("worker.ready")) {
         clearTimeout(timer);
         resolve();
@@ -95,8 +120,8 @@ async function stopWorker(child: ChildProcess, signal: NodeJS.Signals) {
   children.delete(child);
   return { code, signal: actualSignal };
 }
-async function succeeded(id: string) {
-  const deadline = Date.now() + 10000;
+async function succeeded(id: string, timeoutMs = 10000) {
+  const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     const job = (
       await pool.query(
@@ -288,3 +313,159 @@ it("keeps the worker alive after actual idle database connections are terminated
     ),
   );
 }, 30000);
+
+it("recovers an actual in-flight FlowLab calculation after SIGKILL and natural queue/lease expiry without duplicating results", async () => {
+  const owner = randomUUID(),
+    baseline = membershipTemplate(),
+    scenario = structuredClone(baseline);
+  scenario.resources[0]!.capacity += 1;
+  const input = parseFlowJobInput({
+    schemaVersion: 1,
+    profile: FLOW_JOB_PROFILE,
+    engineVersion: ENGINE_VERSION,
+    prngVersion: PRNG_VERSION,
+    baseline,
+    scenario,
+    seeds: seedList(2026, 30),
+  }) as unknown as Json;
+  const f = await withTrustedUser(pool, owner, async (c) => {
+    const workspace = await createWorkspace(
+      c,
+      "In-flight native worker recovery",
+    );
+    const project = await createProject(c, {
+      workspaceId: workspace.id,
+      appKey: "flowlab",
+      name: "Real 30 seed recovery",
+    });
+    return { workspace, project };
+  });
+  let target = "",
+    completedBeforeKill = 0,
+    killedAt = 0;
+  const first = await startWorker((event, child) => {
+    if (event.type === "job.progress" && event.jobId === target && !killedAt) {
+      completedBeforeKill = Number(event.completed);
+      killedAt = Date.now();
+      child.kill("SIGKILL");
+    }
+  });
+  const request = {
+    workspaceId: f.workspace.id,
+    projectId: f.project.id,
+    appKey: "flowlab" as const,
+    kind: "flow.compare",
+    idempotencyKey: randomUUID(),
+    input,
+    maximumMinor: 0,
+  };
+  const job = await withTrustedUser(pool, owner, (c) => requestJob(c, request));
+  target = job.id;
+  const killed = await Promise.race([
+    once(first.child, "exit"),
+    new Promise<never>((_resolve, reject) => {
+      const timer = setTimeout(
+        () =>
+          reject(
+            new Error(
+              "No real simulation progress was observed before kill deadline",
+            ),
+          ),
+        15000,
+      );
+      timer.unref();
+    }),
+  ]);
+  expect(killed[1]).toBe("SIGKILL");
+  expect(completedBeforeKill).toBeGreaterThan(0);
+  expect(completedBeforeKill).toBeLessThan(30);
+  const interrupted = (
+    await pool.query(
+      "select state,attempt,input_hash,lease_until from app.jobs where id=$1",
+      [job.id],
+    )
+  ).rows[0];
+  expect(interrupted).toMatchObject({
+    state: "running",
+    attempt: 1,
+    input_hash: job.input_hash,
+  });
+  expect(
+    (
+      await pool.query(
+        "select count(*)::int count from app.job_results where job_id=$1",
+        [job.id],
+      )
+    ).rows[0].count,
+  ).toBe(0);
+  const restarted = await startWorker();
+  expect(restarted.child.pid).not.toBe(first.child.pid);
+  // No SQL timestamp edits or manual redelivery: real pg-boss heartbeat supervision and app lease expiry.
+  await succeeded(job.id, 240000);
+  const finished = (
+    await pool.query(
+      "select state,attempt,input_hash,result_version from app.jobs where id=$1",
+      [job.id],
+    )
+  ).rows[0];
+  expect(finished).toMatchObject({
+    state: "succeeded",
+    attempt: 2,
+    input_hash: job.input_hash,
+  });
+  const result = (
+    await pool.query(
+      "select manifest,sha256 from app.job_results where job_id=$1",
+      [job.id],
+    )
+  ).rows[0];
+  expect(result.manifest.comparison.seeds).toEqual(seedList(2026, 30));
+  expect(result.manifest.inputSha256).toBe(hashJson(input));
+  expect(result.manifest.resultSha256).toBe(
+    hashJson(result.manifest.comparison),
+  );
+  expect(result.sha256).toBe(hashJson(result.manifest));
+  const repeated = await withTrustedUser(pool, owner, (c) =>
+    requestJob(c, request),
+  );
+  expect(repeated.id).toBe(job.id);
+  expect(repeated.result_version).toBe(finished.result_version);
+  const counts = (
+    await pool.query(
+      "select (select count(*)::int from app.job_results where job_id=$1) results,(select count(*)::int from app.usage_events where job_id=$1) usage,(select sum(amount_minor)::int from app.usage_events where job_id=$1) cost",
+      [job.id],
+    )
+  ).rows[0];
+  expect(counts).toEqual({ results: 1, usage: 1, cost: 0 });
+  const elapsedMs = Date.now() - killedAt;
+  expect(elapsedMs).toBeGreaterThan(110000);
+  expect(await stopWorker(restarted.child, "SIGTERM")).toEqual({
+    code: 0,
+    signal: null,
+  });
+  await mkdir("reports/database", { recursive: true });
+  await writeFile(
+    "reports/database/flow-worker-crash-recovery.json",
+    JSON.stringify(
+      {
+        verifiedAt: new Date().toISOString(),
+        profile: "real-postgres-pgboss-native-flow-thread",
+        cloudConnected: false,
+        actualSignal: "SIGKILL",
+        completedSeedPairsBeforeKill: completedBeforeKill,
+        naturalQueueAndLeaseExpiry: true,
+        sqlExpiryEdited: false,
+        restartCompletedAfterMs: elapsedMs,
+        attempts: finished.attempt,
+        completedSeedPairs: 30,
+        inputAndResultHashesVerified: true,
+        counts,
+        cleanShutdown: true,
+        limits:
+          "Pure free calculation restarts all 30 pairs from immutable input; partial progress is not a checkpoint. Unknown provider work remains held for reconciliation.",
+      },
+      null,
+      2,
+    ),
+  );
+}, 270000);

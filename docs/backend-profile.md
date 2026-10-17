@@ -8,9 +8,9 @@ The three browser products run without credentials in explicitly labeled local d
 
 Application tables live in `app`. pg-boss 12.38.0 owns `queue`; its jobs carry only workspace/job UUIDs. A durable outbox connects these schemas (and can connect separate databases) without assuming a distributed transaction. If a process dies after queue send but before acknowledgement, the same queue job UUID is reused. Application leases and final states prevent a second logical execution.
 
-A job reserves its maximum cost under a workspace lock, and settles an immutable usage event with its result. An unknown outcome enters `reconcile_required`; its reservation remains held. Known no-charge transient failures receive at most three attempts. The queue applies exponential backoff and jitter, while application attempts/deadlines remain the final bound. Heartbeat is 30 seconds, lease 120 seconds, default deadline 20 minutes. Cancellation of an active operation retains the reservation until the outcome is known.
+A job reserves its maximum cost under a workspace lock, and settles an immutable usage event with its result. An unknown outcome enters `reconcile_required`; its reservation remains held. Known no-charge transient failures receive at most three attempts. The queue applies exponential backoff and jitter, while application attempts/deadlines remain the final bound. The supplied process renews app leases every second; its lease lasts 120 seconds and the default job deadline is 20 minutes. pg-boss separately renews its 120-second heartbeat every 30 seconds. Cancellation of an active operation retains the reservation until the outcome is known.
 
-The supplied worker only enables `manual.validate`: bounded text/JSON syntax and SHA-256 validation. It does **not** execute customer code, verify an external build, or call a paid provider. Unconfigured job types appear as `blocked_credentials`. Director's working FFmpeg renderer has its own opt-in local execution profile; see [director-local-render.md](director-local-render.md).
+The supplied worker enables `manual.validate` (bounded text/JSON syntax and SHA-256 validation) and [`flow.compare`](flowlab-server-jobs.md) (30 paired seeds in a bounded native thread using the bundled engine). It does **not** execute customer code, verify an external build, or call a paid provider. Unconfigured job types appear as `blocked_credentials`. Director's working FFmpeg renderer has its own opt-in local execution profile; see [director-local-render.md](director-local-render.md).
 
 ## Roles and deployment responsibilities
 
@@ -33,7 +33,7 @@ The tests use actual PostgreSQL and the actual pg-boss package. Simulated networ
 
 ## Optional API and process proof
 
-Studio includes an opt-in [authenticated server API](backend-api.md), disabled by default. Its tests use real asymmetric test tokens and an actual restricted PostgreSQL login. Archive/reservation ordering is serialized in migration 0003; direct archival writes are revoked so cancellation cannot be bypassed. The worker checks all three principals at startup and explicitly enters the queue role even when its login uses NOINHERIT.
+Studio and FlowLab include an opt-in [authenticated server API](backend-api.md), disabled by default. Its tests use real asymmetric test tokens and an actual restricted PostgreSQL login. Archive/reservation ordering is serialized in migration 0003; direct archival writes are revoked so cancellation cannot be bypassed. The worker checks all three principals at startup and explicitly enters the queue role even when its login uses NOINHERIT.
 
 The actual worker entry point is launched as a separate Node process in `tests/integration/worker-process.test.ts`, using a dedicated fixture database and three restricted logins. The test verifies a real result, SIGKILL, new work queued during downtime, restart without a duplicate result/usage event, and graceful SIGTERM. Other fixtures exercise an unknown in-flight outcome and retained reservation. These are separate claims; a restart after a completed job does not prove a paid provider can be retried safely.
 
@@ -54,3 +54,5 @@ The optional API now supports [private local artifacts and one-minute download l
 ## Full production HTTP boundary
 
 [The actual HTTP proof](backend-http-proof.md) starts the built Next server, an HTTPS JWKS fixture and the separate worker against real restricted PostgreSQL logins. It verifies the whole request-to-result path and signed private download over actual sockets, with normal TLS verification. The identity service is explicitly synthetic and local; hosted login and browser cloud synchronization remain separate work.
+
+The [FlowLab crash proof](flowlab-server-jobs.md#nedbrud-og-genstart) also kills a real calculation after a completed seedpair and waits for natural queue/lease expiry. Only the trusted pure zero-cost handler can restart its immutable input; partial pairs are recomputed, and provider uncertainty remains held.

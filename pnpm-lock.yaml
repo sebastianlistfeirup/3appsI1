@@ -101,15 +101,30 @@ importers:
       '@pdf-lib/fontkit':
         specifier: 1.1.1
         version: 1.1.1
+      '@tre/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@tre/backend':
+        specifier: workspace:*
+        version: link:../../packages/backend
       '@tre/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@tre/database':
+        specifier: workspace:*
+        version: link:../../packages/database
       '@tre/flow-engine':
         specifier: workspace:*
         version: link:../../packages/flow-engine
+      '@tre/flow-jobs':
+        specifier: workspace:*
+        version: link:../../packages/flow-jobs
       '@tre/persistence':
         specifier: workspace:*
         version: link:../../packages/persistence
+      '@tre/storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
       '@tre/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -240,6 +255,24 @@ importers:
         specifier: 4.6.7
         version: 4.6.7
 
+  packages/flow-jobs:
+    dependencies:
+      '@tre/database':
+        specifier: workspace:*
+        version: link:../database
+      '@tre/flow-engine':
+        specifier: workspace:*
+        version: link:../flow-engine
+      '@tre/jobs':
+        specifier: workspace:*
+        version: link:../jobs
+      tsx:
+        specifier: 4.21.0
+        version: 4.21.0
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
+
   packages/jobs:
     dependencies:
       '@tre/contracts':
@@ -296,6 +329,9 @@ importers:
       '@tre/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@tre/flow-jobs':
+        specifier: workspace:*
+        version: link:../../packages/flow-jobs
       '@tre/jobs':
         specifier: workspace:*
         version: link:../../packages/jobs

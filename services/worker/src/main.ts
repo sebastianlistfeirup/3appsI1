@@ -1,4 +1,5 @@
 import { Pool, assertRuntimePrincipal } from "@tre/database";
+import { flowComparisonHandler } from "@tre/flow-jobs";
 import {
   startQueue,
   dispatchOutbox,
@@ -7,6 +8,10 @@ import {
   envelopeSchema,
   localHandlers,
 } from "@tre/jobs";
+const handlers = new Map([
+  ...localHandlers,
+  [flowComparisonHandler.id, flowComparisonHandler],
+]);
 const log = (event: object) =>
   process.stdout.write(
     `${JSON.stringify({ at: new Date().toISOString(), ...event })}\n`,
@@ -103,8 +108,9 @@ await boss.work(
   async (jobs) => {
     for (const job of jobs) {
       const envelope = envelopeSchema.parse(job.data);
-      await processJob(appPool, envelope, localHandlers, {
+      await processJob(appPool, envelope, handlers, {
         signal: job.signal,
+        heartbeatMs: 1000,
         onEvent: (event) => log(event),
       });
     }
@@ -115,7 +121,7 @@ const timer = setInterval(dispatch, 2000);
 log({
   event: "worker.ready",
   profile: "local-free-handlers",
-  handlers: [...localHandlers.keys()],
+  handlers: [...handlers.keys()],
   paidProvidersEnabled: false,
 });
 async function stop() {

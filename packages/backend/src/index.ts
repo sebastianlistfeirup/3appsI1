@@ -33,6 +33,8 @@ export interface BackendConfig {
   validateDocument: (value: unknown) => Json;
   createDocument: (name: string) => Json;
   validateUpdate?: (previous: Json, next: Json) => void;
+  /** Optional app-owned, free-only job allowlist. Server estimates always remain zero. */
+  validateJob?: (kind: string, input: unknown) => Json;
   storage?: { store: PrivateObjectStore; signer: ArtifactDownloadSigner };
   log?: (event: {
     requestId: string;
@@ -75,8 +77,8 @@ const manualSchema = z
 const jobSchema = z
   .object({
     idempotencyKey: z.string().min(1).max(200),
-    kind: z.literal("manual.validate"),
-    input: manualSchema,
+    kind: z.string().min(1).max(100),
+    input: z.json(),
   })
   .strict();
 export async function readJson(
@@ -441,13 +443,24 @@ export function createBackendHandler(config: BackendConfig) {
                 requestId,
               );
             if (method === "POST") {
-              if (config.app !== "studio")
+              if (config.app !== "studio" && !config.validateJob)
                 throw new DomainError(
                   "CAPABILITY_NOT_CONNECTED",
                   "Denne app har endnu ingen tilsluttet serveradapter.",
                   409,
                 );
               const input = jobSchema.parse(body);
+              const jobInput = config.validateJob
+                ? config.validateJob(input.kind, input.input)
+                : (() => {
+                    if (input.kind !== "manual.validate")
+                      throw new DomainError(
+                        "INVALID_INPUT",
+                        "Denne jobtype er ikke tilsluttet.",
+                        400,
+                      );
+                    return manualSchema.parse(input.input);
+                  })();
               const project = await getProject(c, projectId, config.app);
               // Estimate is server-owned. Clients cannot submit prices or activate paid adapters.
               return response(
@@ -459,7 +472,7 @@ export function createBackendHandler(config: BackendConfig) {
                       appKey: config.app,
                       kind: input.kind,
                       idempotencyKey: input.idempotencyKey,
-                      input: input.input,
+                      input: jobInput,
                       maximumMinor: 0,
                     }),
                   ),

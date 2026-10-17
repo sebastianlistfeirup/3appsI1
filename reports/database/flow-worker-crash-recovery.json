@@ -1,0 +1,20 @@
+{
+  "verifiedAt": "2026-10-17T00:07:33.307Z",
+  "profile": "real-postgres-pgboss-native-flow-thread",
+  "cloudConnected": false,
+  "actualSignal": "SIGKILL",
+  "completedSeedPairsBeforeKill": 1,
+  "naturalQueueAndLeaseExpiry": true,
+  "sqlExpiryEdited": false,
+  "restartCompletedAfterMs": 125638,
+  "attempts": 2,
+  "completedSeedPairs": 30,
+  "inputAndResultHashesVerified": true,
+  "counts": {
+    "results": 1,
+    "usage": 1,
+    "cost": 0
+  },
+  "cleanShutdown": true,
+  "limits": "Pure free calculation restarts all 30 pairs from immutable input; partial progress is not a checkpoint. Unknown provider work remains held for reconciliation."
+}

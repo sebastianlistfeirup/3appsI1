@@ -381,6 +381,43 @@
       "verification": ["node apps/director/tests/media-lifecycle-flow.mjs"],
       "status": "verified-local",
       "allowed_paths": ["apps/director"]
+    },
+    {
+      "id": "F12",
+      "app": "foundation",
+      "goal": "Native bounded FlowLab jobs and actual in-flight crash recovery",
+      "dependencies": ["F00"],
+      "verification": ["pnpm test:db", "pnpm test:http --app=flowlab"],
+      "status": "verified-local",
+      "allowed_paths": [
+        "packages/flow-jobs",
+        "packages/jobs",
+        "packages/database",
+        "apps/flowlab/src/server",
+        "tools/backend"
+      ]
+    },
+    {
+      "id": "L21",
+      "app": "flowlab",
+      "goal": "Durable keyboard movement, focus and readable rework routing",
+      "dependencies": ["F00"],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/diagram-routing-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/flowlab"]
+    },
+    {
+      "id": "D18",
+      "app": "director",
+      "goal": "Project-bound export archive and immutable report identity",
+      "dependencies": ["F00"],
+      "verification": [
+        "node --import tsx apps/director/tests/render-history-smoke.mjs"
+      ],
+      "status": "verified-local",
+      "allowed_paths": ["apps/director"]
     }
   ]
 }

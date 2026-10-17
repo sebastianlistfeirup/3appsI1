@@ -1,6 +1,6 @@
 {
-  "startedAt": "2026-10-16T23:15:39.385Z",
-  "finishedAt": "2026-10-16T23:15:41.040Z",
+  "startedAt": "2026-10-17T00:08:29.509Z",
+  "finishedAt": "2026-10-17T00:08:31.314Z",
   "status": "failed",
   "failureProbe": true,
   "failureReason": "Intentional failure after real services became ready.",
@@ -8,7 +8,7 @@
     "API response is not cached",
     "Unauthenticated request rejected before contacting identity server",
     "Next fetched real JWKS through certificate-validated HTTPS",
-    "Actual Studio document validator created the project"
+    "Actual studio document validator created the project"
   ],
   "cleanup": "completed",
   "poolErrors": 0,

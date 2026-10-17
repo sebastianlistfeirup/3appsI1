@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tre/flow-jobs": "workspace:*",
     "@tre/jobs": "workspace:*",
     "@tre/database": "workspace:*",
     "@tre/contracts": "workspace:*",

@@ -1,6 +1,6 @@
-# Optional Studio server API
+# Optional Studio and FlowLab server API
 
-The browser apps open in local **DEMO / MANUAL** mode. The Studio server also contains an opt-in API at `/api/backend/*`; it is disabled with a `503 BACKEND_NOT_CONNECTED` response by default. No browser document is uploaded automatically, and this milestone does not provide a hosted login or cloud-sync screen.
+The browser apps open in local **DEMO / MANUAL** mode. Studio and FlowLab also contain an opt-in API at `/api/backend/*`; it is disabled with a `503 BACKEND_NOT_CONNECTED` response by default. No browser document is uploaded automatically, and this milestone does not provide a hosted login or cloud-sync screen. The Studio document/job contract is described below; FlowLab's model format and `flow.compare` adapter are in [FlowLab server jobs](flowlab-server-jobs.md). Project and job IDs remain isolated by app.
 
 Enable the separate server profile only with `TRE_BACKEND_ENABLED=1`, `APP_DATABASE_URL` and `SUPABASE_URL` in server environment variables. `SUPABASE_URL` must be an HTTPS origin with asymmetric JWKS. The runtime database login must be a non-owning, non-superuser, non-BYPASSRLS principal with only `authenticated` membership. The gateway refuses administrator credentials, dangerous inherited roles and mixed worker/web roles. Use the numbered migrations with a separate migration administrator first.
 

@@ -55,13 +55,15 @@ Under Indstillinger kan flere projekter hentes som én [samlet lokal backup](doc
 
 ![FlowLab: model, kapacitet og målte scenarier](reports/flowlab/desktop-model.png)
 
-En deterministisk diskret hændelsesmotor, proceseditor, ressourcepuljer, kalender, routing, CSV-kvalitet og baseline/scenarier med samme seeds. Resultater viser spredning og begrænsninger; PDF og JSON bruger samme beregninger. Et syntetisk udfald er en simulering, ikke dokumenteret forretningsgevinst.
+En deterministisk diskret hændelsesmotor, proceseditor, ressourcepuljer, kalender, routing, CSV-kvalitet og baseline/scenarier med samme seeds. Resultater viser spredning og begrænsninger; PDF og JSON bruger samme beregninger. Diagrammet understøtter tastaturflytninger, fortryd og bevaret fokus. Et syntetisk udfald er en simulering, ikke dokumenteret forretningsgevinst.
+
+Den valgfrie [serverprofil](docs/flowlab-server-jobs.md) kører også motoren i en varig kø og kan genstarte en afbrudt beregning fra låste input. Browseren bruger fortsat lokal lagring; hosted login er ikke tilsluttet.
 
 ### Director
 
 ![Director: faktisk 3D-scene, kameraer og shots](reports/director/desktop-scene.png)
 
-3D-scene og brugbar 2D-fallback, egne GLB-modeller, fem kameraer, immutable shotversioner, framebaseret tidslinje, egne medier og rigtige eksporter. MP4'en er en animatic med stillbilleder og klip; der loves ikke kontinuerlig karakteranimation.
+3D-scene og brugbar 2D-fallback, egne GLB-modeller, fem kameraer, immutable shotversioner, framebaseret tidslinje, egne medier og rigtige eksporter. MP4'en er en animatic med stillbilleder og klip; der loves ikke kontinuerlig karakteranimation. Et [projektbundet eksportarkiv](docs/director-export-archive.md) bevarer tidligere filer og deres kvalitetsrapporter.
 
 ## Kontroller arbejdet
 
@@ -74,6 +76,7 @@ pnpm test:restore
 pnpm build
 # Faktisk HTTP/TLS/JWT/worker/upload, servergenstart og fildownload:
 pnpm test:http
+pnpm test:http --app=flowlab
 pnpm exec playwright install --with-deps chromium firefox webkit
 pnpm test:browser
 ```
