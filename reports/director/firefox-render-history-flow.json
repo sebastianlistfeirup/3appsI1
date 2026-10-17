@@ -1,0 +1,104 @@
+{
+  "engine": "firefox",
+  "phases": [
+    {
+      "name": "first actual movie and exact snapshot comparison",
+      "at": "2026-10-17T00:02:39.350Z"
+    },
+    {
+      "name": "same-ID same-revision import is correctly detected as different content",
+      "at": "2026-10-17T00:02:42.077Z"
+    },
+    {
+      "name": "late native job-status response cannot replace a deliberately selected old export",
+      "at": "2026-10-17T00:02:42.603Z"
+    },
+    {
+      "name": "project boundary and persisted selection survive reload",
+      "at": "2026-10-17T00:02:45.901Z"
+    },
+    {
+      "name": "interrupted history request and unavailable worker preserve old downloads",
+      "at": "2026-10-17T00:02:47.789Z"
+    },
+    {
+      "name": "passed",
+      "at": "2026-10-17T00:02:48.808Z"
+    }
+  ],
+  "checks": [
+    "actual MP4 has original hash and title/revision filename; worker matches exact immutable manifest",
+    "same revision number is insufficient; full project hash detects changed imported dialogue",
+    "real in-flight status response released after selection cannot overwrite chosen old job; project and original film remain unchanged",
+    "lost history connection keeps previous list; unavailable worker makes no exact-match claim, preserves download, and retries on reopen",
+    "history/project-bound download rejects wrong IDs and cross-site reads; selection persists; snapshot workers all terminate; retention is explicit"
+  ],
+  "scans": [
+    {
+      "name": "desktop",
+      "violations": []
+    },
+    {
+      "name": "tablet",
+      "violations": []
+    },
+    {
+      "name": "mobile",
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "jobs": [
+    {
+      "id": "034f08c8-0bc7-491d-b03e-fd653daa6560",
+      "manifestHash": "415334802435b211a3d4772d1f8808954f3100a4c2f574277fd66c48e8e571f1",
+      "metadata": {
+        "duration": 1,
+        "width": 1280,
+        "height": 720,
+        "fps": 24,
+        "sha256": "6a5ec8d9ff3d34e29a2674e29c541e7c20db435933c79e2e4a80fe1f0c4a6eb1",
+        "audioSampleRate": 48000,
+        "codec": "h264",
+        "audioCodec": "aac",
+        "loudnessLufs": -70,
+        "audioSilent": true
+      },
+      "source": {
+        "projectId": "archive_275d086c79344ed9add41b02ea694f10",
+        "title": "Arkivprøve Ærlig åben",
+        "revision": 1
+      }
+    },
+    {
+      "id": "d8370fda-3ad9-49cf-a203-b7d89f6bb391",
+      "manifestHash": "07e79806df04db886cd4a4552751c2e34ee38582821034f94f9a3ae57d1f0c28",
+      "metadata": {
+        "duration": 1,
+        "width": 1280,
+        "height": 720,
+        "fps": 24,
+        "sha256": "e66ec86aa7323ecaf7b493dc9a1666514a135d4d1bd8eaabf97b932ac54fbece",
+        "audioSampleRate": 48000,
+        "codec": "h264",
+        "audioCodec": "aac",
+        "loudnessLufs": -70,
+        "audioSilent": true
+      },
+      "source": {
+        "projectId": "archive_275d086c79344ed9add41b02ea694f10",
+        "title": "Arkivprøve Ærlig åben",
+        "revision": 1
+      }
+    }
+  ],
+  "firstDownload": {
+    "filename": "director-arkivproeve-aerlig-aaben-r1-034f08c8.mp4",
+    "sha256": "6a5ec8d9ff3d34e29a2674e29c541e7c20db435933c79e2e4a80fe1f0c4a6eb1",
+    "bytes": 42152
+  },
+  "workers": {
+    "created": 1,
+    "closed": 1
+  }
+}

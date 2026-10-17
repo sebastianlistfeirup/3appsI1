@@ -1,0 +1,40 @@
+{
+  "checks": [
+    "three actual MP4 renders; project-filtered newest-first history preserves distinct earlier movie hash",
+    "legacy statuses stay unlinked; corrupt, oversized, swapped-ID and symlink statuses are excluded; directory traversal rejected",
+    "archived film still requires its original SHA-256 on every download"
+  ],
+  "history": {
+    "jobs": [
+      {
+        "id": "b12dac02-dd3c-4163-a1f7-8cf555fe43af",
+        "source": {
+          "projectId": "archive_primary",
+          "title": "Det sidste signal",
+          "revision": 2
+        },
+        "manifestHash": "1153e3c3171f3fa0e1a5287e35d5d64c970a7d2f3ba4859f208ddfb66b136a55",
+        "movieHash": "f799ad498594354cdfdc46484c3c87cbdf54388e47f942c6bb0a75bae5a5ca25"
+      },
+      {
+        "id": "c9e5691a-3a10-4d7a-acf5-77819a5b5a14",
+        "source": {
+          "projectId": "archive_primary",
+          "title": "Det sidste signal",
+          "revision": 1
+        },
+        "manifestHash": "17f23af11fe43a2913837dc28e3318d557933c96c3f14c75c12efd4313969c99",
+        "movieHash": "3a39df38974f07dd8b6ef3358002faa67718bef232c7cad7c3f60f4ec9d51fd4"
+      }
+    ],
+    "legacyJobs": 1,
+    "unreadableJobs": 4,
+    "storage": {
+      "occupiedEntries": 8,
+      "maxJobs": 100,
+      "freeBytes": 9223696384,
+      "minimumFreeBytes": 536870912,
+      "automaticDeletion": false
+    }
+  }
+}

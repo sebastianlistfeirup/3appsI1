@@ -1,17 +1,25 @@
 import type { RenderState } from "../lib/server/local-render";
 import type { Project } from "@tre/scene-format";
+import { compareRenderSnapshot } from "../lib/render-state";
 const number = (value: number) =>
   value.toLocaleString("da-DK", { maximumFractionDigits: 1 });
 export function RenderQuality({
   job,
   project,
+  snapshotHash,
+  snapshotPending,
+  snapshotError,
 }: {
   job: RenderState;
   project: Project;
+  snapshotHash?: string;
+  snapshotPending?: boolean;
+  snapshotError?: string;
 }) {
   const audio = job.metadata;
   if (!audio) return null;
   const peakHigh = audio.truePeakDbfs !== undefined && audio.truePeakDbfs > -1;
+  const comparison = compareRenderSnapshot(job, project, snapshotHash);
   return (
     <div className="render-quality">
       <strong>Målt på den færdige MP4</strong>
@@ -20,14 +28,19 @@ export function RenderQuality({
           {job.source.title} · revision {job.source.revision}
         </small>
       )}
-      {job.source &&
-        (job.source.projectId !== project.id ||
-          job.source.revision !== project.revision) && (
-          <p className="caption-warning">
-            Du har ændret filmen siden denne eksport. Downloaden bevarer den
-            tidligere klipning.
-          </p>
-        )}
+      {comparison === "different" && (
+        <p className="caption-warning">
+          Du har ændret filmen siden denne eksport. Downloaden bevarer den
+          tidligere klipning.
+        </p>
+      )}
+      {comparison === "same" && (
+        <p className="snapshot-match">
+          Denne eksport matcher din aktuelle projektversion.
+        </p>
+      )}
+      {snapshotPending && <p>Kontrollerer projektversionen …</p>}
+      {snapshotError && <p className="caption-warning">{snapshotError}</p>}
       <dl>
         <div>
           <dt>Lydformat</dt>

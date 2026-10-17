@@ -1,6 +1,6 @@
 {
-  "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
-  "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers",
+  "ffmpeg": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "ffprobe": "ffprobe version 7.1.5-0+deb13u1 Copyright (c) 2007-2026 the FFmpeg developers",
   "checks": [
     "Actual 276-frame H.264/AAC output at 720p24/48kHz; full raw dialogue and every cue retained in hashed artifacts; subtitle files match the pinned project",
     "Every subtitle cue, including the previously truncated final sentence, is present in actual decoded MP4 pixels with >96% independent glyph-mask overlap",
@@ -10,147 +10,147 @@
   ],
   "pixelChecks": [
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_1",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_1",
       "frame": 0,
       "opacity": 1,
       "glyphOverlap": 0.9899382171226832,
       "text": "Først fortæller vi om rejsen gennem\nnatten. Vi holder sammen, også når"
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_1",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_1",
       "frame": 20,
       "opacity": 1,
       "glyphOverlap": 0.9899382171226832,
       "text": "Først fortæller vi om rejsen gennem\nnatten. Vi holder sammen, også når"
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_1",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_1",
       "frame": 39,
       "opacity": 1,
       "glyphOverlap": 0.9899382171226832,
       "text": "Først fortæller vi om rejsen gennem\nnatten. Vi holder sammen, også når"
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_2",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_2",
       "frame": 40,
       "opacity": 1,
       "glyphOverlap": 0.98864726574992,
       "text": "signalet forsvinder. Hver eneste replik\nskal findes i den færdige film, og ingen"
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_2",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_2",
       "frame": 63,
       "opacity": 1,
       "glyphOverlap": 0.9888107416879796,
       "text": "signalet forsvinder. Hver eneste replik\nskal findes i den færdige film, og ingen"
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_2",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_2",
       "frame": 85,
       "opacity": 1,
       "glyphOverlap": 0.9888107416879796,
       "text": "signalet forsvinder. Hver eneste replik\nskal findes i den færdige film, og ingen"
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_3",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_3",
       "frame": 86,
       "opacity": 1,
       "glyphOverlap": 0.9959502024898755,
       "text": "skjult grænse må skære historien væk.\nÆrlig tekst med Ελληνικά og Привет samt"
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_3",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_3",
       "frame": 108,
       "opacity": 1,
       "glyphOverlap": 0.9958008398320336,
       "text": "skjult grænse må skære historien væk.\nÆrlig tekst med Ελληνικά og Привет samt"
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_3",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_3",
       "frame": 129,
       "opacity": 1,
       "glyphOverlap": 0.9958008398320336,
       "text": "skjult grænse må skære historien væk.\nÆrlig tekst med Ελληνικά og Привет samt"
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_4",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_4",
       "frame": 130,
       "opacity": 1,
       "glyphOverlap": 0.9823966408268734,
       "text": "bogstavelige tegn: 100% {literal} \\n\n<b>ord</b>. Vi ser tilbage på vores valg"
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_4",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_4",
       "frame": 152,
       "opacity": 1,
       "glyphOverlap": 0.9848043970255416,
       "text": "bogstavelige tegn: 100% {literal} \\n\n<b>ord</b>. Vi ser tilbage på vores valg"
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_4",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_4",
       "frame": 173,
       "opacity": 1,
       "glyphOverlap": 0.9848043970255416,
       "text": "bogstavelige tegn: 100% {literal} \\n\n<b>ord</b>. Vi ser tilbage på vores valg"
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_5",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_5",
       "frame": 174,
       "opacity": 1,
       "glyphOverlap": 0.993371358100817,
       "text": "og lytter til den stemme, der stadig når\nos. Den sidste sætning er helt afgørende."
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_5",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_5",
       "frame": 197,
       "opacity": 1,
       "glyphOverlap": 0.9926062846580407,
       "text": "og lytter til den stemme, der stadig når\nos. Den sidste sætning er helt afgørende."
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_5",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_5",
       "frame": 220,
       "opacity": 1,
       "glyphOverlap": 0.9926062846580407,
       "text": "og lytter til den stemme, der stadig når\nos. Den sidste sætning er helt afgørende."
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_6",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_6",
       "frame": 221,
       "opacity": 1,
       "glyphOverlap": 0.9914337240757439,
       "text": "SIDSTE REPLIK BEVARET."
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_6",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_6",
       "frame": 227,
       "opacity": 1,
       "glyphOverlap": 0.9914337240757439,
       "text": "SIDSTE REPLIK BEVARET."
     },
     {
-      "cue": "shot_79e8002730d94ec8ae9b94bd0418654b_6",
+      "cue": "shot_dc36b7a41e9644c6a46e2a48b777e5ec_6",
       "frame": 233,
       "opacity": 0.5833333333333333,
       "glyphOverlap": 0.9916536254564423,
       "text": "SIDSTE REPLIK BEVARET."
     },
     {
-      "cue": "shot_1a5a0de8fb4e4518a06fe3f3b4a67373_1",
+      "cue": "shot_654c91ed6c7542f19211f9d55b1372cc_1",
       "frame": 234,
       "opacity": 0.5,
       "glyphOverlap": 0.9836893203883496,
       "text": "ANDET SHOT. Hele slutningen er bevaret."
     },
     {
-      "cue": "shot_1a5a0de8fb4e4518a06fe3f3b4a67373_1",
+      "cue": "shot_654c91ed6c7542f19211f9d55b1372cc_1",
       "frame": 255,
       "opacity": 1,
       "glyphOverlap": 0.988344291691572,
       "text": "ANDET SHOT. Hele slutningen er bevaret."
     },
     {
-      "cue": "shot_1a5a0de8fb4e4518a06fe3f3b4a67373_1",
+      "cue": "shot_654c91ed6c7542f19211f9d55b1372cc_1",
       "frame": 275,
       "opacity": 1,
       "glyphOverlap": 0.988344291691572,
@@ -160,35 +160,40 @@
   "measurement": {
     "loudnessLufs": -17.3,
     "truePeakDbtp": -16.6,
-    "summary": ".6 -16.6 dBFS\n[Parsed_ebur128_0 @ 0x55bed7b26b00] t: 11.5       TARGET:-23 LUFS    M: -19.5 S: -17.5     I: -17.3 LUFS       LRA:   0.0 LU  FTPK: -24.1 -24.1 dBFS  TPK: -16.6 -16.6 dBFS\n[out#0/null @ 0x55bed7b6b880] video:0kB audio:2160kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: unknown\nsize=N/A time=00:00:11.50 bitrate=N/A speed= 155x    \n[Parsed_ebur128_0 @ 0x55bed7b26b00] Summary:\n\n  Integrated loudness:\n    I:         -17.3 LUFS\n    Threshold: -27.3 LUFS\n\n  Loudness range:\n    LRA:         0.0 LU\n    Threshold: -37.3 LUFS\n    LRA low:   -17.3 LUFS\n    LRA high:  -17.3 LUFS\n\n  True peak:\n    Peak:      -16.6 dBFS\n"
+    "summary": "6.6 dBFS\n[Parsed_ebur128_0 @ 0x7fdae8002500] t: 11.499979  TARGET:-23 LUFS    M: -19.5 S: -17.5     I: -17.3 LUFS       LRA:   0.0 LU  FTPK: -24.1 -24.1 dBFS  TPK: -16.6 -16.6 dBFS\n[Parsed_ebur128_0 @ 0x7fdae8002500] Summary:\n\n  Integrated loudness:\n    I:         -17.3 LUFS\n    Threshold: -27.3 LUFS\n\n  Loudness range:\n    LRA:         0.0 LU\n    Threshold: -37.3 LUFS\n    LRA low:   -17.3 LUFS\n    LRA high:  -17.3 LUFS\n\n  True peak:\n    Peak:      -16.6 dBFS\n[out#0/null @ 0x55ddf5150340] video:0KiB audio:2160KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown\nsize=N/A time=00:00:11.52 bitrate=N/A speed= 188x    \n"
   },
   "result": {
-    "id": "f17f8510-4b87-4b45-9e62-0328cfcbfc40",
+    "id": "1c86b35e-75bf-424f-9dc8-4d812dd20357",
     "state": "succeeded",
     "phase": "MP4 er produceret og kontrolleret med ffprobe.",
-    "createdAt": "2026-10-16T23:16:29.993Z",
-    "updatedAt": "2026-10-16T23:16:34.018Z",
-    "manifestHash": "cea9a19a13c80b1a3b03421381c4f17ba352e83d63ac5c5c75d88a410a224fae",
+    "createdAt": "2026-10-17T00:00:34.404Z",
+    "updatedAt": "2026-10-17T00:00:38.856Z",
+    "manifestHash": "ff8099c5f51f823f8894e5556c2bbfe373ef8c3bdae0fe55563d280542aaac06",
     "expectedFrames": 276,
-    "captions": {
-      "burnedIn": true,
-      "cues": 7,
-      "warningShots": 2,
-      "errors": []
+    "source": {
+      "projectId": "station_07",
+      "title": "Hele replikken · faktisk caption- og lydkontrol",
+      "revision": 7
     },
-    "reusedSegments": 0,
     "metadata": {
       "duration": 11.5,
       "width": 1280,
       "height": 720,
       "fps": 24,
+      "sha256": "caa9245b87c6e8bdb8a1c025b08a3e123289876c2cd8466dce5ec3b6baaab221",
       "audioSampleRate": 48000,
       "codec": "h264",
       "audioCodec": "aac",
-      "sha256": "01daa397eafcf021364777bacc6af395cb25020858a8a0c044ce9c3b39b510bc",
+      "truePeakDbfs": -16.6,
       "loudnessLufs": -17.3,
-      "audioSilent": false,
-      "truePeakDbfs": -16.6
+      "audioSilent": false
+    },
+    "reusedSegments": 0,
+    "captions": {
+      "burnedIn": true,
+      "cues": 7,
+      "warningShots": 2,
+      "errors": []
     },
     "artifacts": {
       "captions.srt": {
@@ -196,18 +201,18 @@
         "bytes": 724
       },
       "captions.vtt": {
-        "sha256": "511e5474f829e375dc734f9c968b7e95a356ef40c5c893a403339a98b255809a",
+        "sha256": "69cc4f8bdf7d4a2dd8c11594e7812f5d536fd83d9f53d20d68d64733f1b3f9cf",
         "bytes": 998
       },
       "captions.json": {
-        "sha256": "33d7300fc8bae71e924d0ae6c67073d9988ba0023cbf4840d69abc9f2ef37523",
+        "sha256": "5740eed343526eb8b287f9a418957f93013e9f05139462de1ab09764823d0fe1",
         "bytes": 3030
       },
       "validation.json": {
-        "sha256": "e29be703669eff897609fadd68f13425c6623dc6d019520aefc0988d4d1b4e7b",
-        "bytes": 6521
+        "sha256": "18d088833abb0581c9ffa5543beb7971289714f85df0b254b8b06fa329a5447a",
+        "bytes": 6654
       }
     }
   },
-  "verifiedAt": "2026-10-16T23:16:42.011Z"
+  "verifiedAt": "2026-10-17T00:00:49.033Z"
 }

@@ -3,6 +3,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { RenderCapability } from "../lib/render-capability";
 import { useMediaTask } from "../lib/use-media-task";
 import { checkMediaAbort } from "../lib/media-lifecycle";
+import { useSnapshotHash } from "../lib/use-snapshot-hash";
+import { RenderArchive } from "./RenderArchive";
 import {
   Camera,
   Clapperboard,
@@ -234,6 +236,21 @@ export default function DirectorEditor({
     [capability, setCapability] = useState<RenderCapability | null>(null),
     [checkingCapability, setCheckingCapability] = useState(false);
   const capabilityRequest = useRef<AbortController | null>(null);
+  const renderChoice = useRef(0);
+  const selectRender = useCallback(
+    (job: RenderState | null) => {
+      renderChoice.current++;
+      setRenderJob(job);
+      if (job)
+        localStorage.setItem(`director-last-render:${documentKey}`, job.id);
+      else {
+        localStorage.removeItem(`director-last-render:${documentKey}`);
+        if (documentKey === "production")
+          localStorage.removeItem("director-last-render");
+      }
+    },
+    [documentKey],
+  );
   const history = useRef<Project[]>([]),
     future = useRef<Project[]>([]),
     [historyTick, setHistoryTick] = useState(0);
@@ -244,6 +261,7 @@ export default function DirectorEditor({
   const modalRef = useRef<HTMLDivElement>(null);
   const archive = useArchiveTask(setBusy);
   const mediaTask = useMediaTask();
+  const snapshot = useSnapshotHash(p, modal === "export");
   const mounted = useRef(true);
   useEffect(() => {
     mounted.current = true;
@@ -455,6 +473,7 @@ export default function DirectorEditor({
   }, [modal]);
   useEffect(() => {
     const controller = new AbortController();
+    const choice = renderChoice.current;
     const id =
       localStorage.getItem(`director-last-render:${documentKey}`) ??
       (documentKey === "production"
@@ -467,7 +486,8 @@ export default function DirectorEditor({
           return r.json();
         })
         .then((job) => {
-          if (!controller.signal.aborted) setRenderJob(job);
+          if (!controller.signal.aborted && renderChoice.current === choice)
+            setRenderJob(job);
         })
         .catch(() => {});
     void checkCapability();
@@ -502,16 +522,36 @@ export default function DirectorEditor({
       ["succeeded", "failed", "cancelled"].includes(renderJob.state)
     )
       return;
-    const interval = setInterval(() => {
-      fetch(`/api/exports/${renderJob.id}`)
-        .then((r) => {
-          if (!r.ok) throw Error("Status kunne ikke hentes");
-          return r.json();
-        })
-        .then(setRenderJob)
-        .catch(() => setError("Eksportstatus kunne ikke hentes. Prøv igen."));
-    }, 1200);
-    return () => clearInterval(interval);
+    const lifecycle = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const poll = async () => {
+      const request = new AbortController();
+      const cancel = () => request.abort();
+      lifecycle.signal.addEventListener("abort", cancel, { once: true });
+      const deadline = setTimeout(() => request.abort(), 10000);
+      try {
+        const response = await fetch(`/api/exports/${renderJob.id}`, {
+          signal: request.signal,
+        });
+        if (!response.ok) throw Error("Status kunne ikke hentes");
+        const state: RenderState = await response.json();
+        if (!lifecycle.signal.aborted) setRenderJob(state);
+      } catch {
+        if (!lifecycle.signal.aborted)
+          setError(
+            "Eksportstatus kunne ikke hentes. Forbindelsen forsøges igen; din eksport er bevaret.",
+          );
+      } finally {
+        clearTimeout(deadline);
+        lifecycle.signal.removeEventListener("abort", cancel);
+        if (!lifecycle.signal.aborted) timer = setTimeout(poll, 1200);
+      }
+    };
+    timer = setTimeout(poll, 1200);
+    return () => {
+      lifecycle.abort();
+      clearTimeout(timer);
+    };
   }, [renderJob?.id, renderJob?.state]);
   const selectShot = (s: Shot) => {
     setSelectedShot(s.id);
@@ -865,8 +905,7 @@ export default function DirectorEditor({
       const data = await response.json();
       if (!response.ok)
         throw Error(data.error ?? "Eksporten kunne ikke startes");
-      setRenderJob(data);
-      localStorage.setItem(`director-last-render:${documentKey}`, data.id);
+      selectRender(data);
     });
   if (!storage.ready)
     return (
@@ -2469,7 +2508,13 @@ export default function DirectorEditor({
                             {renderJob.metadata?.fps} fps ·{" "}
                             {renderJob.metadata?.duration.toFixed(3)} sek.
                           </small>
-                          <RenderQuality job={renderJob} project={p} />
+                          <RenderQuality
+                            job={renderJob}
+                            project={p}
+                            snapshotHash={snapshot.hash}
+                            snapshotPending={snapshot.pending}
+                            snapshotError={snapshot.error}
+                          />
                           <a
                             className="button primary"
                             href={`/api/exports/${renderJob.id}?download=1`}
@@ -2479,14 +2524,14 @@ export default function DirectorEditor({
                           </a>
                           <button
                             className="text-button"
-                            onClick={() => setRenderJob(null)}
+                            onClick={() => selectRender(null)}
                           >
                             Lav en ny eksport
                           </button>
                         </>
                       )}
                       {["failed", "cancelled"].includes(renderJob.state) && (
-                        <button onClick={() => setRenderJob(null)}>
+                        <button onClick={() => selectRender(null)}>
                           Prøv med et nyt manifest
                         </button>
                       )}
@@ -2497,13 +2542,16 @@ export default function DirectorEditor({
                           className="text-button"
                           onClick={() =>
                             act("Stopper eksport …", async () => {
+                              const choice = renderChoice.current;
                               const response = await fetch(
                                 `/api/exports/${renderJob.id}`,
                                 { method: "DELETE" },
                               );
                               if (!response.ok)
                                 throw Error("Eksporten kunne ikke stoppes");
-                              setRenderJob(await response.json());
+                              const state = await response.json();
+                              if (renderChoice.current === choice)
+                                setRenderJob(state);
                             })
                           }
                         >
@@ -2558,6 +2606,19 @@ export default function DirectorEditor({
                     </button>
                   </div>
                 </div>
+                <RenderArchive
+                  project={p}
+                  current={renderJob}
+                  snapshotHash={snapshot.hash}
+                  onSelect={(job) => {
+                    selectRender(job);
+                    requestAnimationFrame(() =>
+                      modalRef.current
+                        ?.querySelector(".render-status")
+                        ?.scrollIntoView({ block: "start" }),
+                    );
+                  }}
+                />
                 {rightsWarnings(p).length > 0 && (
                   <p className="rights-warning">
                     <AlertTriangle size={14} /> Rettigheder mangler for:{" "}

@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { promises as fs } from "node:fs";
+import { promises as fs, constants } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawn } from "node:child_process";
 import { AsyncLocalStorage } from "node:async_hooks";
@@ -17,40 +17,12 @@ import {
   type Shot,
 } from "@tre/scene-format";
 
-export type RenderState = {
-  id: string;
-  state:
-    "queued" | "running" | "validating" | "succeeded" | "failed" | "cancelled";
-  phase: string;
-  createdAt: string;
-  updatedAt: string;
-  manifestHash: string;
-  expectedFrames: number;
-  source?: { projectId: string; title: string; revision: number };
-  sequenceVersion?: { id: string; version: number; name: string };
-  error?: string;
-  metadata?: {
-    duration: number;
-    width: number;
-    height: number;
-    fps: number;
-    sha256: string;
-    audioSampleRate: number;
-    codec: string;
-    audioCodec: string;
-    truePeakDbfs?: number;
-    loudnessLufs?: number;
-    audioSilent?: boolean;
-  };
-  reusedSegments?: number;
-  captions?: {
-    burnedIn: boolean;
-    cues: number;
-    warningShots: number;
-    errors: string[];
-  };
-  artifacts?: Record<string, { sha256: string; bytes: number }>;
-};
+import {
+  renderStateSchema,
+  type RenderState,
+  type RenderHistory,
+} from "../render-state";
+export type { RenderState } from "../render-state";
 const PIPELINE_VERSION = "director-animatic-3.0";
 // Runtime data must not be traced into a deployment bundle.
 const ROOT = process.env.DIRECTOR_RENDER_DIR
@@ -110,8 +82,61 @@ async function atomic(path: string, value: unknown) {
   await fs.rename(temp, path);
 }
 export async function getRender(id: string): Promise<RenderState> {
-  return JSON.parse(await fs.readFile(join(dir(id), "status.json"), "utf8"));
+  const file = await fs.open(
+    join(dir(id), "status.json"),
+    constants.O_RDONLY | constants.O_NOFOLLOW,
+  );
+  try {
+    const bytes = Buffer.alloc(128 * 1024 + 1);
+    const { bytesRead } = await file.read(bytes, 0, bytes.length, 0);
+    if (bytesRead > 128 * 1024) throw Error("Eksportstatus er for stor");
+    const state = renderStateSchema.parse(
+      JSON.parse(bytes.subarray(0, bytesRead).toString("utf8")),
+    );
+    if (state.id !== id) throw Error("Eksportstatus matcher ikke job-id");
+    return state;
+  } finally {
+    await file.close();
+  }
 }
+export async function renderHistory(projectId: string): Promise<RenderHistory> {
+  if (!/^[a-zA-Z0-9_-]{1,100}$/.test(projectId))
+    throw Error("Ugyldigt projekt-id");
+  await fs.mkdir(ROOT, { recursive: true, mode: 0o700 });
+  const entries = await fs.readdir(/* turbopackIgnore: true */ ROOT, {
+    withFileTypes: true,
+  });
+  const disk = await fs.statfs(ROOT);
+  const result: RenderHistory = {
+    jobs: [],
+    legacyJobs: 0,
+    unreadableJobs: 0,
+    storage: {
+      occupiedEntries: entries.length,
+      maxJobs: 100,
+      freeBytes: Number(disk.bavail) * Number(disk.bsize),
+      minimumFreeBytes: 512 * 1024 * 1024,
+      automaticDeletion: false,
+    },
+  };
+  // The renderer admits at most 100 directory entries. Never read manifests/media to list jobs.
+  for (const entry of entries.slice(0, 100)) {
+    if (!entry.isDirectory() || !/^[a-f0-9-]{36}$/.test(entry.name)) continue;
+    try {
+      const state = await getRender(entry.name);
+      if (!state.source) result.legacyJobs++;
+      else if (state.source.projectId === projectId) result.jobs.push(state);
+    } catch {
+      result.unreadableJobs++;
+    }
+  }
+  result.jobs.sort(
+    (a, b) =>
+      b.createdAt.localeCompare(a.createdAt) || b.id.localeCompare(a.id),
+  );
+  return result;
+}
+
 async function update(id: string, patch: Partial<RenderState>) {
   const previous = await getRender(id);
   if (previous.state === "cancelled" && patch.state !== "cancelled")
@@ -748,7 +773,9 @@ export async function executeRender(id: string) {
         phase: "Måler codec, opløsning, varighed og lyd",
       });
       const metadata: NonNullable<RenderState["metadata"]> =
-        await validateMovie(output, totalFrames(p));
+        renderStateSchema.shape.metadata
+          .unwrap()
+          .parse(await validateMovie(output, totalFrames(p)));
       const loudness = await run(
         "ffmpeg",
         [
