@@ -462,10 +462,25 @@ try {
     timeout: 30000,
   });
   await saved();
+  // A fast 2D capture can finish within one React paint. The pre-existing
+  // saved label is not proof that its new IndexedDB shot version has arrived.
+  await expect
+    .poll(async () => (await read()).sequence[0])
+    .not.toBe(beforeCapture.sequence[0]);
   const captured = await read(),
     latest = captured.shots.find((shot) => shot.id === captured.sequence[0]);
+  assert.equal(
+    captured.scenes.find((scene) => scene.id === latest.sceneVersionId)
+      .objects[0].transform.position[0],
+    100,
+    "captured immutable scene contains the far object's new position",
+  );
   assert.equal(latest.frameMode, "plan");
   assert.equal(latest.frameRenderer, "director-plan-2.0");
+  await fs.writeFile(
+    `reports/director/${engine}-plan-far-frame.jpg`,
+    Buffer.from(latest.frame.split(",")[1], "base64"),
+  );
   const decoded = await page.evaluate(async (frame) => {
     const image = new Image();
     image.src = frame;
@@ -491,11 +506,24 @@ try {
     };
   }, latest.frame);
   assert.deepEqual([decoded.width, decoded.height], [1280, 720]);
-  assert.ok(decoded.farObjectPixels > 20, JSON.stringify(decoded));
   await fs.writeFile(
-    `reports/director/${engine}-plan-far-frame.jpg`,
-    Buffer.from(latest.frame.split(",")[1], "base64"),
+    `reports/director/${engine}-plan-frame-diagnostic.json`,
+    JSON.stringify(
+      {
+        decoded,
+        beforeCapture: beforeCapture.draft.objects.map((o) => ({
+          id: o.id,
+          color: o.color,
+          position: o.transform.position,
+        })),
+        sceneVersionId: latest.sceneVersionId,
+        frameRenderer: latest.frameRenderer,
+      },
+      null,
+      2,
+    ),
   );
+  assert.ok(decoded.farObjectPixels > 20, JSON.stringify(decoded));
   assert.notEqual(
     latest.frame,
     original.shots.find((shot) => shot.id === original.sequence[0]).frame,

@@ -1,0 +1,56 @@
+{
+  "decoded": {
+    "width": 1280,
+    "height": 720,
+    "farObjectPixels": 638
+  },
+  "beforeCapture": [
+    {
+      "id": "captain",
+      "color": "#c36536",
+      "position": [
+        100,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "engineer",
+      "color": "#a8b8ad",
+      "position": [
+        1.45,
+        0,
+        -1.1
+      ]
+    },
+    {
+      "id": "terminal",
+      "color": "#364846",
+      "position": [
+        0,
+        0,
+        -2.1
+      ]
+    },
+    {
+      "id": "cargo",
+      "color": "#817360",
+      "position": [
+        -3,
+        0,
+        1.3
+      ]
+    },
+    {
+      "id": "beacon",
+      "color": "#e8a363",
+      "position": [
+        3,
+        0,
+        -2.7
+      ]
+    }
+  ],
+  "sceneVersionId": "scene_6a8d2cf975d748bf99a4cd2f81bc4de9",
+  "frameRenderer": "director-plan-2.0"
+}

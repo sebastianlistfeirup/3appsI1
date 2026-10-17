@@ -413,7 +413,7 @@ try {
     buffer: zip,
   });
   await expect(page.locator(".library-error")).toContainText(
-    "Kontrolleret fejl",
+    "kunne ikke starte projektarbejdet i baggrunden",
   );
   await expect(page.locator(".production-card")).toHaveCount(2);
   await page.evaluate(() => {

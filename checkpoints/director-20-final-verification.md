@@ -1,0 +1,7 @@
+# Director checkpoint 20 — slutverificering
+
+Testskærpelse før samlet integration: 2D-planens optagelsestest venter nu på det faktiske nye shot-id i IndexedDB og kontrollerer den låste scenes X=100-position før sin eksisterende 1280×720/pixelkontrol. Det tidligere synlige "Gemt lokalt" kan stamme fra den foregående gemning, når en optagelse afsluttes meget hurtigt. En enkelt WebKit-kørsel under samtidig browserbelastning havde læst en frame uden den forventede figur; screenshot viste det nye shot korrekt. En separat native JPEG-decode-probe gav 200/200 korrekte frames. Der er derfor ikke indført nogen rendererændring på det grundlag. Den aktuelle JPEG og kompakt scene-/pixelmetadata gemmes nu før assertion, så fremtidige fejl bevarer direkte bevis.
+
+Den tidligere ZIP-gates kontrollerede worker-startfejl sammenlignes nu med appens forståelige danske fejltekst, som D22 tilføjede, frem for den syntetiske interne fejlstreng. Kontrol af bevaret projekt, native worker, oprydning, ZIP-v1/v2 og uændrede semantiske felter er bevaret.
+
+Verificeret: plan-forløb og ZIP-forløb er grønne i Chromium, Firefox og WebKit på produktionsbuildet med D22. Planerne indeholder det nye immutable shot og den flyttede figur; de aktuelle pixelmålinger ligger i reports/director/*-plan-frame-diagnostic.json. Hele Director-gaterækken køres efterfølgende på samme build, inklusive rigtige render-, PCM-, SIGKILL- og recoveryforløb. Den endelige gateoversigt tilføjes, når alle kommandoer er afsluttet.
