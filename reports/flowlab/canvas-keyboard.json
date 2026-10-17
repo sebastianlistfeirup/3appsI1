@@ -1,10 +1,10 @@
 {
-  "checkedAt": "2026-10-16T23:45:16.854Z",
+  "checkedAt": "2026-10-17T00:00:00.946Z",
   "checks": [
     "Real pointer drag updates diagram position.",
     "Position persists after reload.",
     "Arrow/Home/End switches and focuses tablist."
   ],
   "before": "z-index: 1000; transform: translate(230px, 145px); pointer-events: all; visibility: visible;",
-  "after": "z-index: 1000; transform: translate(262.24px, 91.68px); pointer-events: all; visibility: visible;"
+  "after": "z-index: 1000; transform: translate(266.227px, 83.6933px); pointer-events: all; visibility: visible;"
 }

@@ -1,0 +1,25 @@
+WebKit reproduction on the previous production build, before preserving measured dimensions.
+Captured focus before first arrow; tablet focus has fallen back to body after selecting the node.
+
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+desktop {
+  focus: '<div class="react-flow__node react-flow__node-process nopan selected selectable draggable" data-id="wait" data-testid="rf__node-wait" tabindex="0" role="group" aria-roledescription="node" aria-describedby="react-flow__node-desc-1" style="z-index: 1000; transform: translate(230px, 310px); pointer-events: all; visibility: hidden;"><div class="process-card kind-wait is-selected"><div data-handleid="t',
+  wait: 'z-index: 1000; transform: translate(230px, 310px); pointer-events: all; visibility: hidden;'
+}
+tablet {
+  focus: '<body><div hidden=""><!--$--><!--/$--></div><div class="app-shell"><a class="skip-link" href="#main">Gå til indhold</a><aside class="sidebar "><a class="brand" href="/" aria-label="FlowLab forside"><span class="brand-mark"><i></i><i></i><i></i></span><strong>flowlab<span>®</span></strong></a><div class="workspace-pill"><span class="workspace-avatar">S</span><span>Sebastians laboratorium<small>Pers',
+  wait: 'z-index: 1000; transform: translate(230px, 310px); pointer-events: all; visibility: visible;'
+}
+ExpectError: expect(locator).toHaveAttribute(expected) failed
+
+Locator: locator('.react-flow__node[data-id="wait"]')
+Expected pattern: /translate\(225px, 310px\)/
+Received string:  "z-index: 1000; transform: translate(230px, 310px); pointer-events: all; visibility: visible;"
+Timeout: 5000ms
+
+Call log:
+  - Expect "toHaveAttribute" locator('.react-flow__node[data-id="wait"]') with timeout 5000ms
+  - waiting for locator('.react-flow__node[data-id="wait"]')
+    14 × locator resolved to <div tabindex="0" role="group" data-id="wait" data-testid="rf__node-wait" aria-roledescription="node" aria-describedby="react-flow__node-desc-1" class="react-flow__node react-flow__node-process nopan selected selectable draggable">…</div>
+       - unexpected value "z-index: 1000; transform: translate(230px, 310px); pointer-events: all; visibility: visible;"
+

@@ -804,6 +804,14 @@ main {
   background: white !important;
   border: 1.3px solid #acc3b1 !important;
 }
+.react-flow__handle.routing-port {
+  visibility: hidden;
+  pointer-events: none;
+}
+.node-detail-secondary {
+  margin-top: 5px;
+  line-height: 1.45;
+}
 .react-flow__controls {
   box-shadow: 0 1px 5px #234b3110 !important;
   border: 1px solid var(--line);

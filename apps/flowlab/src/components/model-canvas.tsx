@@ -21,7 +21,7 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import { formatNumber } from "../lib/document";
+import { diagramHandles, diagramNodeDetail } from "../lib/diagram";
 import type { FlowModel, FlowNode } from "@tre/flow-engine";
 import "@xyflow/react/dist/style.css";
 export const nodeIcons: Record<FlowNode["kind"], LucideIcon> = {
@@ -41,29 +41,49 @@ export const nodeLabels: Record<FlowNode["kind"], string> = {
   sink: "Afslutning",
 };
 type ProcessNode = Node<
-  { node: FlowNode; detail: string; index: number },
+  {
+    node: FlowNode;
+    detail: { primary: string; secondary?: string };
+    index: number;
+  },
   "process"
 >;
-const nodeDuration = (n: FlowNode) => {
-  const ms =
-    n.duration?.type === "triangular"
-      ? n.duration.mode
-      : n.duration?.type === "fixed"
-        ? n.duration.value
-        : n.duration?.mean;
-  return ms === undefined
-    ? "—"
-    : ms < 60000
-      ? `${formatNumber(ms / 1000, 1)} sek`
-      : `${formatNumber(ms / 60000, 1)} min`;
-};
+const directions = [
+  Position.Left,
+  Position.Right,
+  Position.Top,
+  Position.Bottom,
+];
 function ProcessCard({ data, selected }: NodeProps<ProcessNode>) {
   const Icon = nodeIcons[data.node.kind];
   return (
     <div
       className={`process-card kind-${data.node.kind} ${selected ? "is-selected" : ""}`}
     >
-      <Handle type="target" position={Position.Left} />
+      {(["target", "source"] as const).flatMap((type) =>
+        directions.map((position) => {
+          const primary =
+            type === "target"
+              ? position === Position.Left
+              : position === Position.Right;
+          return (
+            <Handle
+              key={`${type}-${position}`}
+              id={`${type}-${position}`}
+              type={type}
+              position={position}
+              isConnectable={primary}
+              className={primary ? "primary-port" : "routing-port"}
+              aria-hidden={!primary}
+              title={
+                primary
+                  ? `${type === "source" ? "Forbind fra" : "Forbind til"} ${data.node.label}`
+                  : undefined
+              }
+            />
+          );
+        }),
+      )}
       <div className="node-eyebrow">
         <span className="node-icon">
           <Icon size={19} strokeWidth={1.7} />
@@ -74,8 +94,12 @@ function ProcessCard({ data, selected }: NodeProps<ProcessNode>) {
         </span>
       </div>
       <strong>{data.node.label}</strong>
-      <div className="node-detail">{data.detail}</div>
-      <Handle type="source" position={Position.Right} />
+      <div className="node-detail">{data.detail.primary}</div>
+      {data.detail.secondary && (
+        <div className="node-detail node-detail-secondary">
+          {data.detail.secondary}
+        </div>
+      )}
     </div>
   );
 }
@@ -100,35 +124,44 @@ export default function ModelCanvas({
         type: "process",
         position: n.position,
         selected: n.id === selected,
+        ariaLabel: `${nodeLabels[n.kind]}: ${n.label}`,
         data: {
           node: n,
           index,
-          detail:
-            n.kind === "source"
-              ? model.arrivals.type === "poisson"
-                ? `~${Math.round(model.horizon / model.arrivals.meanInterval)} sager / dag`
-                : `${model.arrivals.cases.length} kendte ankomster`
-              : n.kind === "activity"
-                ? `${nodeDuration(n)} · ${model.resources.find((r) => r.id === n.resourceId)?.capacity ?? 0} ${model.resources.find((r) => r.id === n.resourceId)?.capacity === 1 ? "medarbejder" : "medarbejdere"}`
-                : n.kind === "decision"
-                  ? "Eksplicit routing"
-                  : n.kind === "sink"
-                    ? "Unikke afsluttede sager"
-                    : n.kind === "rework"
-                      ? `Højst ${n.maxVisits} besøg`
-                      : "Uden ressourceforbrug",
+          detail: diagramNodeDetail(n, model),
         },
       })),
     [model, selected],
   );
   const [nodes, setNodes, onNodesChange] =
     useNodesState<ProcessNode>(modelNodes);
-  useEffect(() => setNodes(modelNodes), [modelNodes, setNodes]);
-  const edges = useMemo(
-    () =>
-      model.edges.map((e) => ({
-        ...e,
+  useEffect(() => {
+    // Retain React Flow's measured dimensions while applying model changes.
+    // Resetting them briefly hides the focused node and WebKit drops keyboard focus.
+    setNodes((current) => {
+      const prior = new Map(current.map((node) => [node.id, node]));
+      return modelNodes.map((node) => ({ ...prior.get(node.id), ...node }));
+    });
+  }, [modelNodes, setNodes]);
+  const edges = useMemo(() => {
+    // Follow live positions during a drag as well as persisted keyboard moves.
+    const positions = new Map(nodes.map((node) => [node.id, node.position]));
+    const names = new Map(model.nodes.map((node) => [node.id, node.label]));
+    return model.edges.map((edge) => {
+      const source = positions.get(edge.source),
+        target = positions.get(edge.target);
+      const label =
+        edge.caseType ??
+        (edge.weight !== undefined
+          ? `${Math.round(edge.weight * 100)} %`
+          : undefined);
+      return {
+        ...edge,
+        ...(source && target
+          ? diagramHandles(source, target, edge.source === edge.target)
+          : {}),
         type: "smoothstep",
+        pathOptions: { offset: 10 },
         markerEnd: {
           type: MarkerType.ArrowClosed,
           width: 14,
@@ -136,34 +169,32 @@ export default function ModelCanvas({
           color: "#789387",
         },
         style: { stroke: "#789387", strokeWidth: 1.7 },
-        label:
-          e.caseType ??
-          (e.weight !== undefined
-            ? `${Math.round(e.weight * 100)} %`
-            : undefined),
+        label,
+        ariaLabel: `Fra ${names.get(edge.source) ?? edge.source} til ${names.get(edge.target) ?? edge.target}${label ? `, ${label}` : ""}`,
         labelStyle: { fill: "#526966", fontSize: 14, fontWeight: 600 },
         labelBgStyle: { fill: "#f7f9f8" },
         labelBgPadding: [7, 5] as [number, number],
-      })),
-    [model.edges],
-  );
+      };
+    });
+  }, [model.edges, model.nodes, nodes]);
   return (
     <ReactFlow
       nodes={nodes}
       onNodesChange={(changes) => {
         onNodesChange(changes);
-        for (const change of changes)
+        for (const change of changes) {
+          if (change.type === "select" && change.selected) onSelect(change.id);
           if (
             change.type === "position" &&
             change.position &&
-            change.dragging === undefined
+            change.dragging !== true
           )
             onMove(change.id, change.position);
+        }
       }}
       edges={edges}
       nodeTypes={nodeTypes}
       onNodeClick={(_, n) => onSelect(n.id)}
-      onNodeDragStop={(_, n) => onMove(n.id, n.position)}
       onConnect={onConnect}
       ariaLabelConfig={{
         "controls.ariaLabel": "Diagramvisning",
@@ -172,6 +203,12 @@ export default function ModelCanvas({
         "controls.fitView.ariaLabel": "Vis hele modellen",
         "node.a11yDescription.default":
           "Tryk Enter eller mellemrum for at vælge en node. Brug piletasterne for at flytte den. Listeeditoren giver adgang til alle indstillinger.",
+        "node.a11yDescription.keyboardDisabled":
+          "Tryk Enter eller mellemrum for at vælge en node. Brug piletasterne for at flytte den. Listeeditoren giver adgang til alle indstillinger.",
+        "node.a11yDescription.ariaLiveMessage": ({ direction }) =>
+          `Den valgte node flyttes ${{ left: "mod venstre", right: "mod højre", up: "op", down: "ned" }[direction] ?? direction}.`,
+        "edge.a11yDescription.default":
+          "Forbindelsen kan ændres eller fjernes gennem nodens indstillinger i listeeditoren. Enter eller mellemrum vælger forbindelsen; Escape fjerner valget.",
       }}
       fitView
       fitViewOptions={{ padding: 0.14, maxZoom: 0.85 }}

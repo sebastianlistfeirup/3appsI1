@@ -1,0 +1,273 @@
+{
+  "executedAt": "2026-10-17T00:00:03.037Z",
+  "results": [
+    {
+      "viewport": "desktop",
+      "geometry": [
+        {
+          "id": "arrival-process",
+          "start": {
+            "x": 493.90625,
+            "y": 378.4734191894531
+          },
+          "end": {
+            "x": 512.65625,
+            "y": 375.62188720703125
+          },
+          "collisions": [],
+          "label": "Fra Nye ansøgninger til Behandl ansøgning"
+        },
+        {
+          "id": "process-route",
+          "start": {
+            "x": 673.59375,
+            "y": 375.62188720703125
+          },
+          "end": {
+            "x": 700.15625,
+            "y": 377.18438720703125
+          },
+          "collisions": [],
+          "label": "Fra Behandl ansøgning til Oplysninger på plads?"
+        },
+        {
+          "id": "accepted",
+          "start": {
+            "x": 861.09375,
+            "y": 377.18438720703125
+          },
+          "end": {
+            "x": 911.09375,
+            "y": 368.59063720703125
+          },
+          "collisions": [],
+          "label": "Fra Oplysninger på plads? til Afsluttet ansøgning, 90 %"
+        },
+        {
+          "id": "needs-rework",
+          "start": {
+            "x": 780.625,
+            "y": 438.51251220703125
+          },
+          "end": {
+            "x": 780.625,
+            "y": 495.54376220703125
+          },
+          "collisions": [],
+          "label": "Fra Oplysninger på plads? til Genarbejde · højst 20, 10 %"
+        },
+        {
+          "id": "rework-wait",
+          "start": {
+            "x": 700.15625,
+            "y": 548.2781372070312
+          },
+          "end": {
+            "x": 673.59375,
+            "y": 558.1609497070312
+          },
+          "collisions": [],
+          "label": "Fra Genarbejde · højst 20 til Afventer afklaring"
+        },
+        {
+          "id": "wait-process",
+          "start": {
+            "x": 593.125,
+            "y": 495.54376220703125
+          },
+          "end": {
+            "x": 593.125,
+            "y": 435.38751220703125
+          },
+          "collisions": [],
+          "label": "Fra Afventer afklaring til Behandl ansøgning"
+        }
+      ],
+      "violations": [],
+      "checks": [
+        "Measured SVG loop goes down, left and up without crossing node interiors",
+        "Input summaries reflect horizon, backlog and duration distribution",
+        "Keyboard move, undo/redo and durable reload pass; export preserves semantic graph"
+      ]
+    },
+    {
+      "viewport": "tablet",
+      "geometry": [
+        {
+          "id": "arrival-process",
+          "start": {
+            "x": 357.6829833984375,
+            "y": 340.24267578125
+          },
+          "end": {
+            "x": 370.2957458496094,
+            "y": 338.3244934082031
+          },
+          "collisions": [],
+          "label": "Fra Nye ansøgninger til Behandl ansøgning"
+        },
+        {
+          "id": "process-route",
+          "start": {
+            "x": 478.5552978515625,
+            "y": 338.3244934082031
+          },
+          "end": {
+            "x": 496.42340087890625,
+            "y": 339.37554931640625
+          },
+          "collisions": [],
+          "label": "Fra Behandl ansøgning til Oplysninger på plads?"
+        },
+        {
+          "id": "accepted",
+          "start": {
+            "x": 604.6829833984375,
+            "y": 339.37554931640625
+          },
+          "end": {
+            "x": 638.3170166015625,
+            "y": 333.5946960449219
+          },
+          "collisions": [],
+          "label": "Fra Oplysninger på plads? til Afsluttet ansøgning, 90 %"
+        },
+        {
+          "id": "needs-rework",
+          "start": {
+            "x": 550.5531616210938,
+            "y": 380.6297912597656
+          },
+          "end": {
+            "x": 550.5531616210938,
+            "y": 418.9936218261719
+          },
+          "collisions": [],
+          "label": "Fra Oplysninger på plads? til Genarbejde · højst 20, 10 %"
+        },
+        {
+          "id": "rework-wait",
+          "start": {
+            "x": 496.42340087890625,
+            "y": 454.467041015625
+          },
+          "end": {
+            "x": 478.5552978515625,
+            "y": 461.1150207519531
+          },
+          "collisions": [],
+          "label": "Fra Genarbejde · højst 20 til Afventer afklaring"
+        },
+        {
+          "id": "wait-process",
+          "start": {
+            "x": 424.425537109375,
+            "y": 418.9936218261719
+          },
+          "end": {
+            "x": 424.425537109375,
+            "y": 378.5276794433594
+          },
+          "collisions": [],
+          "label": "Fra Afventer afklaring til Behandl ansøgning"
+        }
+      ],
+      "violations": [],
+      "checks": [
+        "Measured SVG loop goes down, left and up without crossing node interiors",
+        "Input summaries reflect horizon, backlog and duration distribution",
+        "Keyboard move, undo/redo and durable reload pass; export preserves semantic graph"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "geometry": [
+        {
+          "id": "arrival-process",
+          "start": {
+            "x": 108.65106201171875,
+            "y": 401.890380859375
+          },
+          "end": {
+            "x": 116.41276550292969,
+            "y": 400.7099304199219
+          },
+          "collisions": [],
+          "label": "Fra Nye ansøgninger til Behandl ansøgning"
+        },
+        {
+          "id": "process-route",
+          "start": {
+            "x": 183.03404235839844,
+            "y": 400.7099304199219
+          },
+          "end": {
+            "x": 194.02978515625,
+            "y": 401.35675048828125
+          },
+          "collisions": [],
+          "label": "Fra Behandl ansøgning til Oplysninger på plads?"
+        },
+        {
+          "id": "accepted",
+          "start": {
+            "x": 260.65106201171875,
+            "y": 401.35675048828125
+          },
+          "end": {
+            "x": 281.34893798828125,
+            "y": 397.7992858886719
+          },
+          "collisions": [],
+          "label": "Fra Oplysninger på plads? til Afsluttet ansøgning, 90 %"
+        },
+        {
+          "id": "needs-rework",
+          "start": {
+            "x": 227.34042358398438,
+            "y": 426.7439880371094
+          },
+          "end": {
+            "x": 227.34042358398438,
+            "y": 450.35247802734375
+          },
+          "collisions": [],
+          "label": "Fra Oplysninger på plads? til Genarbejde · højst 20, 10 %"
+        },
+        {
+          "id": "rework-wait",
+          "start": {
+            "x": 194.02978515625,
+            "y": 472.1822814941406
+          },
+          "end": {
+            "x": 183.03404235839844,
+            "y": 476.2733459472656
+          },
+          "collisions": [],
+          "label": "Fra Genarbejde · højst 20 til Afventer afklaring"
+        },
+        {
+          "id": "wait-process",
+          "start": {
+            "x": 149.72340393066406,
+            "y": 450.35247802734375
+          },
+          "end": {
+            "x": 149.72340393066406,
+            "y": 425.4503479003906
+          },
+          "collisions": [],
+          "label": "Fra Afventer afklaring til Behandl ansøgning"
+        }
+      ],
+      "violations": [],
+      "checks": [
+        "Measured SVG loop goes down, left and up without crossing node interiors",
+        "Input summaries reflect horizon, backlog and duration distribution",
+        "Keyboard move, undo/redo and durable reload pass; export preserves semantic graph"
+      ]
+    }
+  ],
+  "errors": []
+}

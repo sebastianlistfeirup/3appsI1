@@ -2,11 +2,11 @@
  RUN  v5.0.5 /workspace/3apps-flowlab
 
 
- Test Files  18 passed (18)
-      Tests  119 passed (119)
-   Start at  23:39:17
-   Duration  4.22s (tests 82%, import 14%, transform 3%, worker 1%)
+ Test Files  19 passed (19)
+      Tests  122 passed (122)
+   Start at  23:58:53
+   Duration  4.52s (tests 81%, import 16%, transform 2%, worker 1%)
 
-    Isolate  18 workers spawned · ~103ms startup each (spawn + environment, per file)
-             at least ~516ms faster with isolate: false — reuses workers across files instead of one per file
+    Isolate  19 workers spawned · ~121ms startup each (spawn + environment, per file)
+             at least ~645ms faster with isolate: false — reuses workers across files instead of one per file
 
