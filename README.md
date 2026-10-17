@@ -49,6 +49,8 @@ Filinspektøren viser hver versions ophav, historik og konkrete anvendelser. Red
 
 Vælg de præcise inputversioner før start, og hent en [arbejdspakke](docs/studio-work-packages.md) med den låste aftale, originalfiler og kontrolsummer. Den gør grundlaget flytbart til dine egne værktøjer. Rettelser tager udgangspunkt i de faktisk gennemgåede filer.
 
+[Aktivitetshistorikken](docs/studio-history.md) har søgning, statusfilter og sider, også i et projekt med 1.000 forløb og 10.000 hændelser. Links til tidligere afleveringer åbner den relevante side.
+
 Ufærdige manuelle leverancer gemmes som kladder og kan genoptages efter genåbning. Projektpakker bevarer hele historikken og kan åbnes som selvstændige kopier. Pakning kører i en browser-worker, og ugemte ændringer kan eksporteres ved lagerfejl. Se [pakkeformat, grænser og gendannelse](docs/studio-project-packages.md).
 
 Også [ufærdige reviews](docs/studio-review-drafts.md) bevarer kommentarer og afkrydsninger. En kladde godkender aldrig automatisk en levering eller forældet input.

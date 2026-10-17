@@ -149,6 +149,9 @@ test("line-ending changes are visible and oversized comparisons keep downloads a
   await expect(page.locator(".diff-eol")).toHaveCount(0);
   await page.getByLabel("Vis linjeskift", { exact: true }).check();
   await page.goto("/projects");
+  // setInputFiles can target SSR markup before its change handler is hydrated.
+  // The loaded/saved workspace is the actual interactive readiness signal.
+  await expect(page.getByText("Gemt lokalt", { exact: true })).toBeVisible();
   await page.locator("input[type=file]").setInputFiles({
     name: "large.zip",
     mimeType: "application/zip",

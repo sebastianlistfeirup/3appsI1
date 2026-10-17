@@ -36,6 +36,8 @@ HTML og SVG vises i en sandbox uden scripts, formularafsendelse eller eksterne n
 
 Et review binder beslutning, kommentar, kontrollerede krav og de præcise outputversioner sammen. Under **Aktivitet** kan du åbne det tilhørende forløb og se dets låste input. Lokal manuel levering har nul eksternt forbrug.
 
+[Store historikker](studio-history.md) er opdelt i sider med søgning og statusfilter. Direkte links åbner det præcise gamle forløb; en fuld projektpakke bevarer stadig hele historikken.
+
 ## Eksport, import og arkiv
 
 **Eksportér projekt** giver en [ZIP med historik og SHA-256-manifest](studio-project-packages.md). Hver filversion bevarer originale bytes. Pakning og kontrol kører i baggrundsworkers; en pakke med ugyldige hashes eller referencer bliver afvist før oprettelse. Ved samme projekt-id tilbyder appen en selvstændig kopi.

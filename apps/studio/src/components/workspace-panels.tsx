@@ -1,5 +1,6 @@
 "use client";
 import { RunPackageButton } from "./run-package-button";
+import { RunHistory, ActivityHistory } from "./run-history";
 import { useEffect, useRef, useState } from "react";
 import Link from "./local-link";
 import {
@@ -12,7 +13,6 @@ import {
   FileCode2,
   FileText,
   GitBranch,
-  History,
   Layers3,
   ListChecks,
   Pause,
@@ -832,160 +832,168 @@ export function RunsPanel({
             <span>{project.runs.length} forløb</span>
           </div>
           {project.runs.length ? (
-            project.runs
-              .slice()
-              .reverse()
-              .map((run) => (
-                <article className="run-card" id={`run-${run.id}`} key={run.id}>
-                  <div className="run-card-heading">
-                    <span className="file-icon">
-                      <FileCode2 size={20} />
-                    </span>
-                    <div>
-                      <h3>
-                        {run.taskSnapshot?.title ??
-                          project.tasks.find((t) => t.id === run.taskId)?.title}
-                      </h3>
-                      <code>{run.id.slice(0, 25)}</code>
-                    </div>
-                    <Badge
-                      kind={
-                        run.state === "succeeded"
-                          ? "success"
-                          : run.state === "failed"
-                            ? "warning"
-                            : "purple"
-                      }
-                    >
-                      {
-                        {
-                          awaiting_upload: "Afventer fil",
-                          review: "Til review",
-                          failed: "Rettelse ønsket",
-                          cancelled: "Annulleret",
-                          succeeded: "Accepteret",
-                        }[run.state]
-                      }
-                    </Badge>
-                  </div>
-                  <div className="run-metadata">
-                    <span>
-                      <small>INPUT</small>Brief v{run.briefVersion} ·{" "}
-                      {run.inputVersionIds.length} filer
-                    </span>
-                    <span>
-                      <small>ADAPTER</small>Manuel aflevering
-                    </span>
-                    <span>
-                      <small>FORBRUG</small>0,00 kr.
-                    </span>
-                  </div>
-                  {run.taskSnapshot && (
-                    <details className="run-definition">
-                      <summary>
-                        Låst opgaveaftale · {run.taskSnapshot.owner} ·{" "}
-                        {run.taskSnapshot.acceptance.length} krav
-                      </summary>
-                      <p className="preserve-lines">
-                        {run.taskSnapshot.description ||
-                          "Ingen yderligere beskrivelse."}
-                      </p>
-                      <ul>
-                        {run.taskSnapshot.acceptance.map((criterion) => (
-                          <li key={criterion}>{criterion}</li>
-                        ))}
-                      </ul>
-                      <small>
-                        Opgaverevision {run.taskSnapshot.revision} ved start.
-                        Senere opgaver ændrer ikke denne aftale.
-                      </small>
-                    </details>
-                  )}
-                  <RunPackageButton
-                    project={project}
-                    runId={run.id}
-                    notify={notify}
-                  />
-                  {project.deliveryDrafts?.some(
-                    (draft) => draft.runId === run.id,
-                  ) && (
-                    <div className="run-draft-note">
-                      <span>
-                        {run.state === "cancelled"
-                          ? "Kladden er bevaret fra det annullerede forløb."
-                          : "En kladde venter. Fortsæt, hvor du slap."}
+            <RunHistory key={project.id} project={project}>
+              {(runs) =>
+                runs.map((run) => (
+                  <article
+                    className="run-card"
+                    id={`run-${run.id}`}
+                    key={run.id}
+                    tabIndex={-1}
+                  >
+                    <div className="run-card-heading">
+                      <span className="file-icon">
+                        <FileCode2 size={20} />
                       </span>
-                      <button
-                        className="text-button"
-                        onClick={() => {
-                          const draft = project.deliveryDrafts!.find(
-                            (item) => item.runId === run.id,
-                          )!;
-                          downloadFile(
-                            `afleveringskladde-${run.id}.json`,
-                            JSON.stringify(
-                              {
-                                app: "studio-delivery-draft",
-                                schemaVersion: 1,
-                                projectId: project.id,
-                                runId: run.id,
-                                fields: deliveryDraftFieldsSchema.parse(draft),
-                              },
-                              null,
-                              2,
-                            ),
-                          );
-                        }}
-                      >
-                        Hent kladde <ArrowDownToLine size={14} />
-                      </button>
-                    </div>
-                  )}
-                  <div className="run-footer">
-                    <span>{formatDate(run.startedAt)}</span>
-                    {run.state === "awaiting_upload" ? (
                       <div>
+                        <h3>
+                          {run.taskSnapshot?.title ??
+                            project.tasks.find((t) => t.id === run.taskId)
+                              ?.title}
+                        </h3>
+                        <code>{run.id.slice(0, 25)}</code>
+                      </div>
+                      <Badge
+                        kind={
+                          run.state === "succeeded"
+                            ? "success"
+                            : run.state === "failed"
+                              ? "warning"
+                              : "purple"
+                        }
+                      >
+                        {
+                          {
+                            awaiting_upload: "Afventer fil",
+                            review: "Til review",
+                            failed: "Rettelse ønsket",
+                            cancelled: "Annulleret",
+                            succeeded: "Accepteret",
+                          }[run.state]
+                        }
+                      </Badge>
+                    </div>
+                    <div className="run-metadata">
+                      <span>
+                        <small>INPUT</small>Brief v{run.briefVersion} ·{" "}
+                        {run.inputVersionIds.length} filer
+                      </span>
+                      <span>
+                        <small>ADAPTER</small>Manuel aflevering
+                      </span>
+                      <span>
+                        <small>FORBRUG</small>0,00 kr.
+                      </span>
+                    </div>
+                    {run.taskSnapshot && (
+                      <details className="run-definition">
+                        <summary>
+                          Låst opgaveaftale · {run.taskSnapshot.owner} ·{" "}
+                          {run.taskSnapshot.acceptance.length} krav
+                        </summary>
+                        <p className="preserve-lines">
+                          {run.taskSnapshot.description ||
+                            "Ingen yderligere beskrivelse."}
+                        </p>
+                        <ul>
+                          {run.taskSnapshot.acceptance.map((criterion) => (
+                            <li key={criterion}>{criterion}</li>
+                          ))}
+                        </ul>
+                        <small>
+                          Opgaverevision {run.taskSnapshot.revision} ved start.
+                          Senere opgaver ændrer ikke denne aftale.
+                        </small>
+                      </details>
+                    )}
+                    <RunPackageButton
+                      project={project}
+                      runId={run.id}
+                      notify={notify}
+                    />
+                    {project.deliveryDrafts?.some(
+                      (draft) => draft.runId === run.id,
+                    ) && (
+                      <div className="run-draft-note">
+                        <span>
+                          {run.state === "cancelled"
+                            ? "Kladden er bevaret fra det annullerede forløb."
+                            : "En kladde venter. Fortsæt, hvor du slap."}
+                        </span>
                         <button
                           className="text-button"
                           onClick={() => {
-                            if (!update((p) => cancelRun(p, run.id))) return;
-                            notify(
-                              "Manuel levering annulleret. Input er bevaret.",
+                            const draft = project.deliveryDrafts!.find(
+                              (item) => item.runId === run.id,
+                            )!;
+                            downloadFile(
+                              `afleveringskladde-${run.id}.json`,
+                              JSON.stringify(
+                                {
+                                  app: "studio-delivery-draft",
+                                  schemaVersion: 1,
+                                  projectId: project.id,
+                                  runId: run.id,
+                                  fields:
+                                    deliveryDraftFieldsSchema.parse(draft),
+                                },
+                                null,
+                                2,
+                              ),
                             );
                           }}
                         >
-                          Annuller
+                          Hent kladde <ArrowDownToLine size={14} />
                         </button>
-                        {project.tasks.find((task) => task.id === run.taskId)
-                          ?.state === "blocked" ? (
-                          <Link
-                            className="button secondary small"
-                            href={`/projects/${project.id}/tasks`}
-                          >
-                            Opgaven er blokeret <Pause size={14} />
-                          </Link>
-                        ) : (
-                          <button
-                            className="button primary small"
-                            onClick={() => setTaskId(run.taskId)}
-                          >
-                            Aflevér resultat <Upload size={14} />
-                          </button>
-                        )}
                       </div>
-                    ) : (
-                      run.state !== "cancelled" && (
-                        <Link
-                          className="text-button"
-                          href={`/projects/${project.id}/review/${project.deliveries.find((d) => d.runId === run.id)?.id ?? ""}`}
-                        >
-                          Se leverance <ArrowRight size={14} />
-                        </Link>
-                      )
                     )}
-                  </div>
-                </article>
-              ))
+                    <div className="run-footer">
+                      <span>{formatDate(run.startedAt)}</span>
+                      {run.state === "awaiting_upload" ? (
+                        <div>
+                          <button
+                            className="text-button"
+                            onClick={() => {
+                              if (!update((p) => cancelRun(p, run.id))) return;
+                              notify(
+                                "Manuel levering annulleret. Input er bevaret.",
+                              );
+                            }}
+                          >
+                            Annuller
+                          </button>
+                          {project.tasks.find((task) => task.id === run.taskId)
+                            ?.state === "blocked" ? (
+                            <Link
+                              className="button secondary small"
+                              href={`/projects/${project.id}/tasks`}
+                            >
+                              Opgaven er blokeret <Pause size={14} />
+                            </Link>
+                          ) : (
+                            <button
+                              className="button primary small"
+                              onClick={() => setTaskId(run.taskId)}
+                            >
+                              Aflevér resultat <Upload size={14} />
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        run.state !== "cancelled" && (
+                          <Link
+                            className="text-button"
+                            href={`/projects/${project.id}/review/${project.deliveries.find((d) => d.runId === run.id)?.id ?? ""}`}
+                          >
+                            Se leverance <ArrowRight size={14} />
+                          </Link>
+                        )
+                      )}
+                    </div>
+                  </article>
+                ))
+              }
+            </RunHistory>
           ) : (
             <Empty
               icon={<Clock3 />}
@@ -994,25 +1002,7 @@ export function RunsPanel({
             />
           )}
         </section>
-        <aside className="activity-card full-activity">
-          <div className="section-heading">
-            <h2>Aktivitetslog</h2>
-            <History size={16} />
-          </div>
-          <div className="activity-list">
-            {[...project.activity].reverse().map((a, i) => (
-              <div key={a.id}>
-                <span className={`activity-dot ${i === 0 ? "recent" : ""}`} />
-                <div>
-                  <p>{a.title}</p>
-                  <small>
-                    {formatDate(a.createdAt)} · rev {a.revision}
-                  </small>
-                </div>
-              </div>
-            ))}
-          </div>
-        </aside>
+        <ActivityHistory key={project.id} project={project} />
       </div>
       {taskId && (
         <DeliveryDialog
