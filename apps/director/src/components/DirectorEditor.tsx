@@ -5,6 +5,7 @@ import { useMediaTask } from "../lib/use-media-task";
 import { checkMediaAbort } from "../lib/media-lifecycle";
 import { useSnapshotHash } from "../lib/use-snapshot-hash";
 import { RenderArchive } from "./RenderArchive";
+import { AudioTimelineTrack } from "./AudioTimelineTrack";
 import {
   Camera,
   Clapperboard,
@@ -2207,72 +2208,29 @@ export default function DirectorEditor({
                 ))}
               </div>
               {(["voice", "music"] as const).map((track) => (
-                <div
-                  className={`audio-track ${p[track] ? "has-audio" : ""}`}
+                <AudioTimelineTrack
                   key={track}
-                >
-                  {p[track] ? (
-                    <>
-                      <button
-                        className="audio-name"
-                        onClick={() => {
-                          setMediaTarget(track);
-                          setModal("import");
-                        }}
-                      >
-                        {track === "voice" ? (
-                          <Volume2 size={13} />
-                        ) : (
-                          <Music2 size={13} />
-                        )}{" "}
-                        {p.media.find((m) => m.id === p[track]?.mediaId)?.name}
-                      </button>
-                      <label>
-                        <span>Niveau</span>
-                        <input
-                          aria-label={`${track === "voice" ? "Voiceover" : "Musik"} niveau`}
-                          type="range"
-                          min="0"
-                          max="1"
-                          step=".05"
-                          value={p[track]!.volume}
-                          onChange={(e) =>
-                            commit((next) => {
-                              next[track]!.volume = Number(e.target.value);
-                              next.revision++;
-                              return next;
-                            })
-                          }
-                        />
-                      </label>
-                      <button
-                        title={`Fjern ${track}`}
-                        aria-label={`Fjern ${track}`}
-                        onClick={() =>
-                          commit((next) => ({
-                            ...next,
-                            [track]: null,
-                            revision: next.revision + 1,
-                          }))
-                        }
-                      >
-                        <X size={12} />
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setMediaTarget(track);
-                        setModal("import");
-                      }}
-                    >
-                      <Plus size={11} />{" "}
-                      {track === "voice"
-                        ? "Importér din egen voiceover"
-                        : "Tilføj et musikspor"}
-                    </button>
-                  )}
-                </div>
+                  project={p}
+                  kind={track}
+                  onOpen={() => {
+                    setMediaTarget(track);
+                    setModal("import");
+                  }}
+                  onVolume={(volume) =>
+                    commit((next) => {
+                      if (next[track]) next[track]!.volume = volume;
+                      next.revision++;
+                      return next;
+                    })
+                  }
+                  onRemove={() =>
+                    commit((next) => ({
+                      ...next,
+                      [track]: null,
+                      revision: next.revision + 1,
+                    }))
+                  }
+                />
               ))}
               <input
                 className="scrub-range"

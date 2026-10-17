@@ -1,0 +1,134 @@
+{
+  "engine": "firefox",
+  "browser": "157.0",
+  "nativeWavDuration": 8,
+  "filmFrames": 456,
+  "measurements": [
+    {
+      "kind": "voice",
+      "start": 72,
+      "end": 216,
+      "left": 0.1578860546713718,
+      "width": 0.3157858687132277,
+      "path": "M 0 13 L 24 2 L 120 2 L 144 13"
+    },
+    {
+      "kind": "music",
+      "start": 408,
+      "end": 456,
+      "left": 0.8947288204479769,
+      "width": 0.10525736978091453,
+      "path": "M 0 13 L 24 2 L 24 2 L 48 13"
+    },
+    {
+      "kind": "voice",
+      "start": 72,
+      "end": 216,
+      "left": 0.1578860546713718,
+      "width": 0.3157858687132277,
+      "path": "M 0 13 L 24 2 L 120 2 L 144 13"
+    },
+    {
+      "kind": "music",
+      "start": 408,
+      "end": 456,
+      "left": 0.8947288204479769,
+      "width": 0.10525736978091453,
+      "path": "M 0 13 L 24 2 L 24 2 L 48 13"
+    },
+    {
+      "kind": "voice",
+      "start": 72,
+      "end": 216,
+      "left": 0.15789040470005408,
+      "width": 0.3157807905388114,
+      "path": "M 0 13 L 24 2 L 120 2 L 144 13"
+    },
+    {
+      "kind": "music",
+      "start": 408,
+      "end": 456,
+      "left": 0.8947259740275417,
+      "width": 0.10525341057512168,
+      "path": "M 0 13 L 24 2 L 24 2 L 48 13"
+    },
+    {
+      "kind": "voice",
+      "start": 72,
+      "end": 216,
+      "left": 0.1578461632361779,
+      "width": 0.31574359600360574,
+      "path": "M 0 13 L 24 2 L 120 2 L 144 13"
+    },
+    {
+      "kind": "music",
+      "start": 408,
+      "end": 456,
+      "left": 0.8947179236778846,
+      "width": 0.10523075984074519,
+      "path": "M 0 13 L 24 2 L 24 2 L 48 13"
+    },
+    {
+      "kind": "voice",
+      "start": 72,
+      "end": 96,
+      "left": 0.1578860546713718,
+      "width": 0.052628684890457265,
+      "path": "M 0 13 L 12 2 L 12 2 L 24 13"
+    },
+    {
+      "kind": "voice",
+      "start": 72,
+      "end": 96,
+      "left": 0.1578860546713718,
+      "width": 0.052628684890457265,
+      "path": "M 0 13 L 12 2 L 12 2 L 24 13"
+    },
+    {
+      "kind": "voice",
+      "start": 72,
+      "end": 96,
+      "left": 0.1578860546713718,
+      "width": 0.052628684890457265,
+      "path": "M 0 13 L 12 2 L 12 2 L 24 13"
+    },
+    {
+      "kind": "voice",
+      "start": 72,
+      "end": 96,
+      "left": 0.1578860546713718,
+      "width": 0.052628684890457265,
+      "path": "M 0 13 L 12 2 L 12 2 L 24 13"
+    }
+  ],
+  "scans": [
+    {
+      "name": "desktop",
+      "violations": []
+    },
+    {
+      "name": "tablet",
+      "violations": []
+    },
+    {
+      "name": "mobile",
+      "violations": []
+    },
+    {
+      "name": "outside-film",
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "checks": [
+    "actual CSS placement matches trimmed audio interval at all three widths",
+    "actual native WAV decode and source seek match the visible interval",
+    "crossfade-shortened film end and symmetric fade clamp",
+    "out-of-film track stays editable and has no fake segment",
+    "zero gain is labeled",
+    "remove and undo restore the track",
+    "saved immutable scene/shot/sequence history stays intact",
+    "reload retains exact project"
+  ],
+  "verifiedAt": "2026-10-17T01:44:46.992Z"
+}

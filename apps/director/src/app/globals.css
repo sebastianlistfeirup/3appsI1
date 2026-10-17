@@ -5243,3 +5243,114 @@ p.caption-warning {
     font-size: 12px;
   }
 }
+
+/* Audio bars use the same frame interval as actual browser playback. */
+.audio-track.audio-timed-track {
+  height: 66px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  background: #17242b;
+  overflow: hidden;
+}
+.audio-timed-track > button {
+  height: 100%;
+  color: #c6d6d7;
+}
+.audio-track-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 7px;
+  min-height: 47px;
+}
+.audio-track-controls > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  color: #d0e2d9;
+}
+.audio-track-controls > .audio-name {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
+  text-align: left;
+}
+.audio-name > svg {
+  flex-shrink: 0;
+}
+.audio-name > span {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+.audio-name strong {
+  font-size: 12px;
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.audio-name small {
+  font: 12px monospace;
+  color: #b8ccc9;
+}
+.audio-track-controls > button:last-child {
+  min-width: 30px;
+  flex-shrink: 0;
+}
+.audio-track-controls label {
+  flex-shrink: 0;
+}
+.audio-placement {
+  position: relative;
+  height: 16px;
+  background: #101c23;
+  margin: 0;
+  flex-shrink: 0;
+}
+.audio-interval {
+  position: absolute;
+  height: 100%;
+  background: #426b64;
+  border-left: 1px solid #b1d6c7;
+  border-right: 1px solid #b1d6c7;
+  overflow: hidden;
+}
+.audio-interval svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+.audio-interval path {
+  fill: none;
+  stroke: #d3ede0;
+  stroke-width: 1;
+}
+.audio-timed-track.outside-film {
+  border-color: #ac8c65;
+}
+.outside-film .audio-name small {
+  color: #efcea6;
+}
+.track-labels > span:not(:first-child) {
+  height: 66px;
+}
+@media (max-width: 600px) {
+  .audio-track-controls {
+    gap: 5px;
+    padding: 0 5px;
+  }
+  .audio-track-controls label > span {
+    display: none;
+  }
+  .audio-track-controls input[type="range"] {
+    width: 48px;
+  }
+  .audio-track-controls > button:last-child {
+    min-width: 28px;
+  }
+}

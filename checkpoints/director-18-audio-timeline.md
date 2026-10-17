@@ -1,0 +1,9 @@
+# Director checkpoint 18 — faktisk lydplacering på tidslinjen
+
+Skrevet: voiceover-/musikbjælker med rigtig start og slut efter kildetrim og filmens crossfades, symmetrisk begrænset fade, tydelige tidskoder, lydløs-markering ved niveau nul og en redigerbar tilstand for spor uden for filmen. Placering og browserafspilning bruger den samme rene audioInterval-beregning. Intet schema ændres, ingen ekstra mediedecode udføres, og der tegnes ingen falsk waveform. Den danske hverdagsvejledning er opdateret.
+
+Udført: to rigtige PCM-WAV-filer i en 19-sekunders klipning. Faktiske CSS-koordinater måles mod uafhængigt forventede start-/slutframes på desktop/tablet/mobil. Native browserdecode måler den otte sekunders kilde; paused preview søger til præcis tre kildesekunder ved en fire sekunders playhead med tre sekunders timeline-start og to sekunders kildetrim. Forløbet tester kilde-/filmbegrænsning, fade-halvering, start efter slut, flytning tilbage, niveau nul, fjern/fortryd og genindlæsning uden ændret historik eller mediehash.
+
+Verificeret: 81 units, Director-typecheck og produktionsbuild. Audio-timeline-gaten er kørt to gange i alle tre browsere; seneste 12 axe-scans har nul WCAG 2 A/AA/2.1 AA-fejl og ingen pageerrors. 9 screenshots uden toast-overlap samt 3 målerapporter ligger i reports/director/_audio-timeline_. Domænets eksisterende gain-/duckingtests forbliver grønne; ingen render-/gainadfærd er ændret af udtrækket af intervalberegningen.
+
+Tilkoblet: faktisk browser-Pointer/keyboard-betjening, native PCM-WAV-decode/seek og IndexedDB. Denne gate spiller ikke lyd gennem en højttaler og påstår ikke en ny loudness-/MP4-verifikation; de eksisterende medie-/rendergates dækker disse. CI: AUDIO_TIMELINE_ENGINE=<engine> node apps/director/tests/audio-timeline-flow.mjs, ydre4min; intern180sek og bounded cleanup. Ingen FFmpeg eller PulseAudio kræves her. Detaljer: docs/director-audio-timeline.md.

@@ -729,7 +729,12 @@ export { inspectGlb, type GlbInspection } from "./glb";
 
 /** Inspect dimensions before asking a browser/codec to allocate a decoded image. */
 export { inspectRaster } from "./raster";
-export { previewLayers, previewAudio, duckGain } from "./playback";
+export {
+  previewLayers,
+  previewAudio,
+  audioInterval,
+  duckGain,
+} from "./playback";
 export {
   matchingSequenceVersion,
   saveSequenceVersion,

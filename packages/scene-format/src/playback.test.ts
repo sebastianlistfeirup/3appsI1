@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { createSampleProject } from "./index";
-import { previewLayers, previewAudio, duckGain } from "./playback";
+import {
+  previewLayers,
+  previewAudio,
+  audioInterval,
+  duckGain,
+} from "./playback";
 describe("Frame based browser review", () => {
   it("shows both immutable shots during overlap with continuous incoming opacity", () => {
     const p = createSampleProject();
@@ -47,6 +52,85 @@ describe("Frame based browser review", () => {
     expect(previewAudio(p, "voice", 48)?.sourceFrame).toBe(48);
     expect(previewAudio(p, "voice", 132)?.gain).toBe(0.4);
     expect(previewAudio(p, "voice", 144)?.active).toBe(false);
+  });
+  it("clips the visible audio range to the actual crossfaded film and keeps fades within it", () => {
+    const p = createSampleProject();
+    p.sequence = p.sequence.slice(0, 2);
+    p.shots[0].durationFrames = 96;
+    p.shots[1].durationFrames = 96;
+    p.shots[1].transitionFrames = 24; // film ends at frame 168
+    p.media.push({
+      id: "voice",
+      name: "Voice",
+      kind: "audio",
+      mime: "audio/wav",
+      dataUrl: "data:audio/wav;base64,AA==",
+      bytes: 1,
+      sha256: "0".repeat(64),
+      durationFrames: 144,
+      source: "fixture",
+      rights: "owned",
+    });
+    p.voice = {
+      mediaId: "voice",
+      volume: 1,
+      startFrame: 144,
+      sourceIn: 24,
+      fadeFrames: 120,
+      duck: false,
+    };
+    expect(audioInterval(p, "voice")).toMatchObject({
+      startFrame: 144,
+      endFrame: 168,
+      durationFrames: 24,
+      sourceEndFrame: 48,
+      fadeFrames: 12,
+    });
+    expect(previewAudio(p, "voice", 143)?.active).toBe(false);
+    expect(previewAudio(p, "voice", 150)?.gain).toBe(0.5);
+    expect(previewAudio(p, "voice", 156)?.gain).toBe(1);
+    expect(previewAudio(p, "voice", 168)?.active).toBe(false);
+    p.voice.startFrame = 24;
+    p.voice.sourceIn = 120;
+    expect(audioInterval(p, "voice")).toMatchObject({
+      startFrame: 24,
+      endFrame: 48,
+      durationFrames: 24,
+      sourceEndFrame: 144,
+      fadeFrames: 12,
+    });
+  });
+  it("keeps an out-of-cut track available for editing while giving it no visible or audible duration", () => {
+    const p = createSampleProject();
+    p.media.push({
+      id: "music",
+      name: "Music",
+      kind: "audio",
+      mime: "audio/wav",
+      dataUrl: "data:audio/wav;base64,AA==",
+      bytes: 1,
+      sha256: "0".repeat(64),
+      durationFrames: 144,
+      source: "fixture",
+      rights: "owned",
+    });
+    p.music = {
+      mediaId: "music",
+      volume: 0.6,
+      startFrame: 1440,
+      sourceIn: 0,
+      fadeFrames: 24,
+      duck: true,
+    };
+    expect(audioInterval(p, "music")).toMatchObject({
+      durationFrames: 0,
+      fadeFrames: 0,
+      endFrame: 1440,
+    });
+    expect(previewAudio(p, "music", 1440)?.active).toBe(false);
+    p.sequence = [];
+    expect(audioInterval(p, "music")?.durationFrames).toBe(0);
+    expect(audioInterval(p, "voice")).toBeNull();
   });
   it("reduces music from actual voice energy only above threshold", () => {
     expect(duckGain(0)).toBe(1);

@@ -21,24 +21,44 @@ export function previewLayers(project: Project, frame: number) {
       };
     });
 }
+/** The exact playable range after source trim and the current cut's crossfades. */
+export function audioInterval(project: Project, key: "voice" | "music") {
+  const track = project[key];
+  if (!track) return null;
+  const media = project.media.find((m) => m.id === track.mediaId);
+  if (!media) return null;
+  const filmFrames = totalFrames(project);
+  const durationFrames = Math.max(
+    0,
+    Math.min(
+      filmFrames - track.startFrame,
+      (media.durationFrames ?? filmFrames) - track.sourceIn,
+    ),
+  );
+  return {
+    media,
+    track,
+    startFrame: track.startFrame,
+    endFrame: track.startFrame + durationFrames,
+    durationFrames,
+    sourceEndFrame: track.sourceIn + durationFrames,
+    fadeFrames: Math.min(track.fadeFrames, durationFrames / 2),
+  };
+}
 export function previewAudio(
   project: Project,
   key: "voice" | "music",
   frame: number,
 ) {
-  const track = project[key];
-  if (!track) return null;
-  const media = project.media.find((m) => m.id === track.mediaId);
-  if (!media) return null;
-  const available = Math.max(
-    0,
-    Math.min(
-      totalFrames(project) - track.startFrame,
-      (media.durationFrames ?? totalFrames(project)) - track.sourceIn,
-    ),
-  );
-  const elapsed = frame - track.startFrame,
-    fade = Math.min(track.fadeFrames, available / 2);
+  const interval = audioInterval(project, key);
+  if (!interval) return null;
+  const {
+    media,
+    track,
+    durationFrames: available,
+    fadeFrames: fade,
+  } = interval;
+  const elapsed = frame - track.startFrame;
   return {
     media,
     track,

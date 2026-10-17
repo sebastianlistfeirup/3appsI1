@@ -1,0 +1,13 @@
+# Director: læsbar lydplacering
+
+Voiceover og musik vises som faktiske tidsintervaller under deres navne og niveaukontrol. Bjælkens venstre kant er sporets start, bredden er den tilgængelige lyd efter kildetrim og filmens aktuelle slutning, inklusive crossfades. Rampen viser ind-/udfade; den påstår ikke at være en målt waveform. Den synlige tidskode og skærmlæserbeskrivelsen giver samme start/slut. Niveau 0 mærkes som lydløs. Start efter filmens slutning viser ingen falsk bjælke: sporet forbliver i projektet med en tydelig besked og kan åbnes og flyttes tilbage via sine eksisterende tidsfelter.
+
+`audioInterval` i scene-format er fælles for den visuelle placering og browserens `previewAudio`. Den eksisterende afspilningsberegning er uændret: tilgængelighed begrænses af kildens slutning og filmens slutning; fade begrænses til halvdelen af det anvendte udsnit. FFmpeg bruger samme frame-/tidsberegning i den eksisterende eksporter. Intet medie dekodes ekstra for at tegne bjælken, og der tilføjes hverken et nyt projektfelt eller migrationskrav. Lydniveau, start, trim, fade, fjernelse og Fortryd anvender fortsat de eksisterende lokale revisioner. Shot-, scene- og gemt sekvenshistorik ændres ikke af visningen.
+
+## Afprøvning
+
+`AUDIO_TIMELINE_ENGINE=chromium|firefox|webkit node apps/director/tests/audio-timeline-flow.mjs` bruger produktionsserveren på `DIRECTOR_TEST_URL` (standard localhost:3002). Gaten har 180 sekunders watchdog og fem sekunders browseroprydning; ydre CI-frist kan være fire minutter. Den kræver ikke FFmpeg eller PulseAudio: native lyddecode/seek kontrolleres i pauset browserpreview, og den eksisterende mediegate måler faktisk PCM-afspilning/ducking med lydserver.
+
+To rigtige syntetiske PCM-WAV-filer importeres med deres hashes i en klipning på 19 sekunder efter overlap. Faktiske CSS-bounding-boxes kontrolleres mod uafhængige frameværdier ved 1440×900, 1024×768 og 390×844. Browseren afkoder en otte sekunders kilde og søger til præcis tre sekunder, når playhead står ved fire sekunder, sporet starter ved tre og kildetrim er to. Source-end og film-end klipper hver sit spor; for lang fade forkortes symmetrisk. Gaten flytter et spor uden for filmen, tilbage igen, ændrer niveau til nul, fjerner/fortryder og genindlæser. Tidligere versioner og mediehashes bevares. Tolv axe-scans på tre motorer dækker de responsive layouts og advarslen.
+
+Rapporter og screenshots findes under `reports/director/*audio-timeline*`. Domænetests kontrollerer desuden den nøjagtige aktive slutgrænse, gain inde i de begrænsede fades samt et bevaret, uhørbart spor i en tom klipning.

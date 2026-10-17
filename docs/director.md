@@ -35,7 +35,7 @@ Vælg et shot i storyboardet eller tidslinjen. I shotpanelet ændrer du navn, va
 
 **Importér billede eller klip** tilføjer PNG/JPEG eller MP4/WebM til det valgte shot. Videoklippets start trimmes i **Klipstart i sekunder**, og shotvarigheden bestemmer det anvendte udsnit. **Brug klippets lyd** aktiverer dets originale lyd; indstillingen er slået fra som udgangspunkt.
 
-**Tilføj lyd** åbner import af din egen voiceover eller musik. Klik på lydsporets navn for at justere **Start på tidslinje**, **Start i lydfil** og fade ind/ud. Niveauet styres på tidslinjen. Musik kan automatisk sænkes under voiceover. Lyden slutter ved kildens eller filmens slutning. Der er ét voiceoverspor og ét musikspor; ingen optagelse eller talesyntese er tilkoblet.
+**Tilføj lyd** åbner import af din egen voiceover eller musik. Klik på lydsporets navn for at justere **Start på tidslinje**, **Start i lydfil** og fade ind/ud. Niveauet styres på tidslinjen. Lydsporets farvede bjælke viser den faktiske placering og længde efter trim og crossfade; rampen viser fade, ikke en målt lydbølge. Start/slut står også som tidskode. Hvis et spor starter efter filmens slutning, forbliver det redigerbart med en tydelig besked om, at det ikke høres. Musik kan automatisk sænkes under voiceover. Lyden slutter ved kildens eller filmens slutning. Der er ét voiceoverspor og ét musikspor; ingen optagelse eller talesyntese er tilkoblet.
 
 Angiv materialets rettigheder ved import. Hver fil må højst være 50 MiB, og browseren skal kunne afkode det valgte medie. Statiske GLB-modeller kan importeres med indlejret geometri og PNG/JPEG-teksturer op til 2K; rigs, animation, eksterne filer og kompression understøttes ikke i denne profil. [Se de præcise importgrænser](director-imports.md).
 
