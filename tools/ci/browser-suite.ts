@@ -268,6 +268,11 @@ try {
         ["exec", "tsx", "apps/flowlab/tests/evidence-status-check.ts"],
         { FLOWLAB_BROWSER: browser },
       );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/prng-version-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
     }
     if (selectedEngine === "all" || selectedEngine === "chromium") {
       await run("node", ["apps/flowlab/tests/journey-check.mjs"]);

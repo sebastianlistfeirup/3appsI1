@@ -167,7 +167,7 @@
       "verification": [
         "billing signature/dedup fixtures"
       ],
-      "status": "ready",
+      "status": "deferred-no-connected-billing-provider",
       "allowed_paths": [
         "packages",
         "services",
@@ -727,6 +727,116 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
+      ]
+    },
+    {
+      "id": "S17",
+      "app": "studio",
+      "goal": "Bounded searchable history and exact run deep links",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm exec playwright test tests/e2e/studio-history.spec.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/studio"
+      ]
+    },
+    {
+      "id": "S18",
+      "app": "studio",
+      "goal": "Cancellable actual project archive workers and safe retry",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm exec playwright test tests/e2e/studio-archive.spec.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/studio"
+      ]
+    },
+    {
+      "id": "L25",
+      "app": "flowlab",
+      "goal": "Baseline-specific holdout evidence in current and historical reports",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/evidence-status-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/flowlab"
+      ]
+    },
+    {
+      "id": "D21",
+      "app": "director",
+      "goal": "Exact audio intervals, trim and fade timeline",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "node apps/director/tests/audio-timeline-flow.mjs"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/director"
+      ]
+    },
+    {
+      "id": "D22",
+      "app": "director",
+      "goal": "Real bounded 108 MB JSON recovery and worker cancellation",
+      "dependencies": [
+        "F00"
+      ],
+      "verification": [
+        "node --import tsx apps/director/tests/json-recovery-flow.mjs"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/director"
+      ]
+    },
+    {
+      "id": "F13",
+      "app": "foundation",
+      "goal": "Independent Director browser gates and final integration",
+      "dependencies": [
+        "F06"
+      ],
+      "verification": [
+        "pnpm test:browser",
+        "GitHub Actions eight jobs"
+      ],
+      "status": "in_progress",
+      "allowed_paths": [
+        "tools/ci",
+        ".github",
+        "reports",
+        "docs"
+      ]
+    },
+    {
+      "id": "L26",
+      "app": "flowlab",
+      "goal": "Require exact PRNG identity and complete requested seed plan for reports and replay",
+      "dependencies": [
+        "L25"
+      ],
+      "verification": [
+        "pnpm exec tsx apps/flowlab/tests/prng-version-check.ts"
+      ],
+      "status": "verified-local",
+      "allowed_paths": [
+        "apps/flowlab",
+        "packages/flow-engine"
       ]
     }
   ]

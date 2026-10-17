@@ -2,7 +2,7 @@
 
 **Studio One**, **FlowLab** og **Director** er tre selvstændige Next.js-apps bygget efter den vedlagte Masterbibel. Denne udgave kan bruges lokalt uden API-nøgler. Den indeholder rigtige editorer, versionshistorik, beregninger og eksporter — med tydeligt mærkede, syntetiske eksempelprojekter.
 
-Udviklingen er i gang. Se [aktuel status](STATUS.md), [verifikationsbeviser](reports/) og [beslutninger](DECISIONS.md). Cloud-login, kundedata, betalt AI-generation og betaling er ikke aktiveret.
+Se [aktuel status og verificeret omfang](STATUS.md), [verifikationsbeviser](reports/) og [næste integrationsblok](docs/release-readiness.md). Cloud-login, betalt AI-generation og betaling er ikke aktiveret. De lokale produkter kan afprøves uden disse forbindelser.
 
 ## Start på din maskine
 
@@ -51,7 +51,7 @@ Vælg de præcise inputversioner før start, og hent en [arbejdspakke](docs/stud
 
 [Aktivitetshistorikken](docs/studio-history.md) har søgning, statusfilter og sider, også i et projekt med 1.000 forløb og 10.000 hændelser. Links til tidligere afleveringer åbner den relevante side.
 
-Ufærdige manuelle leverancer gemmes som kladder og kan genoptages efter genåbning. Projektpakker bevarer hele historikken og kan åbnes som selvstændige kopier. Pakning kører i en browser-worker, og ugemte ændringer kan eksporteres ved lagerfejl. Se [pakkeformat, grænser og gendannelse](docs/studio-project-packages.md).
+Ufærdige manuelle leverancer gemmes som kladder og kan genoptages efter genåbning. Projektpakker bevarer hele historikken og kan åbnes som selvstændige kopier. Pakning kører i en browser-worker og kan afbrydes. Ugemte ændringer kan eksporteres ved lagerfejl. Se [pakkeformat, grænser og gendannelse](docs/studio-project-packages.md).
 
 Også [ufærdige reviews](docs/studio-review-drafts.md) bevarer kommentarer og afkrydsninger. En kladde godkender aldrig automatisk en levering eller forældet input.
 
@@ -65,6 +65,8 @@ Under Indstillinger kan flere projekter hentes som én [samlet lokal backup](doc
 
 En deterministisk diskret hændelsesmotor, proceseditor, ressourcepuljer, kalender, routing, CSV-kvalitet og baseline/scenarier med samme seeds. Resultater viser spredning og begrænsninger; PDF og JSON bruger samme beregninger. Diagrammet understøtter tastaturflytninger, fortryd og bevaret fokus. Et syntetisk udfald er en simulering, ikke dokumenteret forretningsgevinst.
 
+[Holdout-status](docs/flowlab-holdout.md) angiver præcis baseline, datakilde og periode. En tidligere vurdering bliver synligt historisk ved ændrede input; den godkender ikke automatisk alternativet.
+
 Den valgfrie [serverprofil](docs/flowlab-server-jobs.md) kører også motoren i en varig kø og kan genstarte en afbrudt beregning fra låste input. Browseren bruger fortsat lokal lagring; hosted login er ikke tilsluttet.
 
 [Fristoverblikket](docs/flowlab-sla.md) skelner mellem afsluttede sager inden for fristen, forsinkede sager og den kendte del af restkøen. UI, CSV og PDF viser de samme antal og usikkerheder.
@@ -74,6 +76,8 @@ Den valgfrie [serverprofil](docs/flowlab-server-jobs.md) kører også motoren i 
 ![Director: faktisk 3D-scene, kameraer og shots](reports/director/desktop-scene.png)
 
 3D-scene og brugbar 2D-fallback, egne GLB-modeller, fem kameraer, immutable shotversioner, framebaseret tidslinje, egne medier og rigtige eksporter. MP4'en er en animatic med stillbilleder og klip; der loves ikke kontinuerlig karakteranimation. Et [projektbundet eksportarkiv](docs/director-export-archive.md) bevarer tidligere filer og deres kvalitetsrapporter.
+
+[Lydtidslinjen](docs/director-audio-timeline.md) viser faktisk start, trim, slutning og fades. Projektkopier kan gendannes i baggrunden, også som stor JSON med originale medier.
 
 I [sceneplanen](docs/director-scene-plan.md) kan objekter, kamera og kameramål flyttes direkte med mus, berøring eller tastatur. Tidligere shots og sekvensversioner bevarer deres oprindelige scene.
 

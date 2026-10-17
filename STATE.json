@@ -1,13 +1,11 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T01:45:20.477989+00:00",
+  "updatedAt": "2026-10-17T02:17:10Z",
   "status": "building",
   "activeTasks": [
-    "S16-full-regression",
-    "S17-bounded-searchable-history",
-    "L25-holdout-evidence-labels",
-    "D21-audio-timeline-intervals",
-    "remote-integration-followup"
+    "D22-complete-regression",
+    "F13-eight-job-remote-integration",
+    "handoff"
   ],
   "profile": "demo",
   "connectedIntegrations": [],
