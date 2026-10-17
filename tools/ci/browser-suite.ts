@@ -150,7 +150,9 @@ try {
     await run("pnpm", ["exec", "tsx", "tools/backend/check-failure-exit.ts"]);
     await run("pnpm", ["test:http"]);
     await start("studio", 3000);
-    await run("pnpm", ["exec", "playwright", "test", "tests/e2e"]);
+    // The complete Studio suite exercises three engines sequentially. Individual
+    // tests retain Playwright's own deadline; leave room for all of them on CI.
+    await run("pnpm", ["exec", "playwright", "test", "tests/e2e"], {}, 600000);
     await run("node", ["tools/browser/studio-a11y.cjs"]);
   }
   if (enabled("flowlab")) {
@@ -243,6 +245,16 @@ try {
         ["exec", "tsx", "apps/flowlab/tests/diagram-routing-check.ts"],
         { FLOWLAB_BROWSER: browser },
       );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/sla-profile-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/duration-editor-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
     }
     if (selectedEngine === "all" || selectedEngine === "chromium") {
       await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
@@ -282,6 +294,14 @@ try {
       await run("node", ["apps/director/tests/locations-flow.mjs"], {
         LOCATION_ENGINE: browser,
       });
+      await run(
+        "node",
+        ["apps/director/tests/plan-flow.mjs"],
+        {
+          PLAN_ENGINE: browser,
+        },
+        240000,
+      );
       await run("node", ["apps/director/tests/media-lifecycle-flow.mjs"], {
         LIFECYCLE_ENGINE: browser,
       });

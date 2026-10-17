@@ -30,6 +30,7 @@ import {
 import { downloadFile, usePersistentDocument } from "@tre/persistence";
 import {
   archiveProject,
+  artifactBytes,
   changeProject,
   createProject,
   latestBrief,
@@ -46,7 +47,7 @@ import {
   importProjectFile,
   progressLabel,
 } from "../lib/archive-client";
-import { MAX_ARCHIVE_BYTES } from "../lib/limits";
+import { MAX_ARCHIVE_BYTES, decodeUtf8 } from "../lib/limits";
 import {
   Badge,
   DeliveryStatus,
@@ -468,6 +469,8 @@ export function StudioApp() {
                     />
                   ) : section === "brief" ? (
                     <BriefPanel
+                      key={project.id}
+                      storage={{ saveState: store.saveState }}
                       project={project}
                       update={update}
                       notify={notify}
@@ -877,6 +880,15 @@ function Overview({
     p.artifacts.find(
       (a) => d.outputVersionIds.includes(a.id) && a.mime === "text/html",
     );
+  const previewHtml = preview
+    ? (() => {
+        try {
+          return decodeUtf8(artifactBytes(preview));
+        } catch {
+          return null;
+        }
+      })()
+    : null;
   return (
     <>
       <div className="page-heading">
@@ -957,16 +969,21 @@ function Overview({
           {d ? (
             <article className="featured-delivery">
               <div className="featured-preview">
-                {preview ? (
+                {previewHtml !== null ? (
                   <iframe
                     title="Preview af seneste leverance"
-                    srcDoc={sandboxDocument(preview.content)}
+                    srcDoc={sandboxDocument(previewHtml)}
                     sandbox=""
                     tabIndex={-1}
                   />
                 ) : (
                   <div className="abstract-preview">
                     <Layers3 size={70} />
+                    {preview && (
+                      <p>
+                        Teksten kunne ikke vises. Den originale fil er bevaret.
+                      </p>
+                    )}
                   </div>
                 )}
                 <span className="preview-chip">

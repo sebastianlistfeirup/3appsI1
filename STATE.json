@@ -1,12 +1,13 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T00:09:35.481999+00:00",
+  "updatedAt": "2026-10-17T00:28:55.548534+00:00",
   "status": "building",
   "activeTasks": [
-    "F12-remote-verification",
-    "L22-backlog-sla-reporting",
-    "D19-direct-scene-placement",
-    "S14-next-studio-quality-pass"
+    "S14-full-regression",
+    "S15-task-specific-definition",
+    "L24-calendar-durability-verification",
+    "D20-shot-continuity-preview",
+    "F12-remote-followup"
   ],
   "profile": "demo",
   "connectedIntegrations": [],

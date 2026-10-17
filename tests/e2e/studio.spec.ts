@@ -302,28 +302,27 @@ test("uploaded HTML preview blocks scripts and network subresources", async ({
   }
 });
 
-test("archived projects reject changes without closing the editor or showing false success", async ({
+test("archived projects keep briefs read-only and preserve all versions without showing false success", async ({
   page,
 }) => {
   await open(page, "/projects");
   await page.getByRole("button", { name: "Arkivér Realmread" }).click();
   await open(page, "/projects/realmread/brief");
   await expect(page.getByText(/Dette projekt er arkiveret/)).toBeVisible();
-  await page.getByRole("button", { name: "Ny briefversion" }).click();
-  await page
-    .getByLabel("Hvad vil du opnå?")
-    .fill("Må ikke overskrive et arkiv");
-  await page.getByRole("button", { name: "Gem ny version" }).click();
+  const before = await page.locator(".paper-card").innerText();
   await expect(
-    page.getByRole("alert").filter({ hasText: "Projektet er arkiveret" }),
-  ).toContainText("Projektet er arkiveret");
-  await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.getByLabel("Hvad vil du opnå?")).toHaveValue(
-    "Må ikke overskrive et arkiv",
-  );
-  await page.getByRole("button", { name: "Luk dialog" }).click();
-  await page.reload();
+    page.getByRole("button", { name: "Ny briefversion" }),
+  ).toBeDisabled();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(
-    page.getByText("Må ikke overskrive et arkiv", { exact: true }),
+    page.getByText("Ny briefversion oprettet.", { exact: true }),
   ).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByText("Gemt lokalt", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Ny briefversion" }),
+  ).toBeDisabled();
+  await expect(page.locator(".paper-card")).toHaveText(before, {
+    useInnerText: true,
+  });
 });

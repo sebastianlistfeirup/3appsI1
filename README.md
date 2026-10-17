@@ -23,6 +23,8 @@ pnpm dev
 
 Data gemmes i browserens IndexedDB. Hent en ZIP/JSON-kopi af arbejde, du vil beholde. To samtidige faner får en synlig versionskonflikt; den ene overskriver ikke stiltiende den anden. Ingen browserdata uploades automatisk til en server.
 
+Læs den korte [Studio-vejledning](docs/studio.md) eller [FlowLab-vejledning](docs/flowlab.md) for et samlet første arbejdsforløb.
+
 ### Faktisk MP4 fra Director
 
 Installér `ffmpeg` og `ffprobe` på din PATH. Start Director med den lokale renderprofil:
@@ -49,6 +51,8 @@ Ufærdige manuelle leverancer gemmes som kladder og kan genoptages efter genåbn
 
 Også [ufærdige reviews](docs/studio-review-drafts.md) bevarer kommentarer og afkrydsninger. En kladde godkender aldrig automatisk en levering eller forældet input.
 
+[Bestillingskladder](docs/studio-brief-drafts.md) bevarer også ufærdige og endnu ugyldige krav. Først en eksplicit udgivelse opretter en ny briefversion. En kladde baseret på et ældre brief kræver en ny bekræftelse.
+
 Under Indstillinger kan flere projekter hentes som én [samlet lokal backup](docs/studio-workspace-backup.md). Indlæsning kontrollerer indholdet og bevarer eksisterende projekter som selvstændige originaler.
 
 ### FlowLab
@@ -59,11 +63,15 @@ En deterministisk diskret hændelsesmotor, proceseditor, ressourcepuljer, kalend
 
 Den valgfrie [serverprofil](docs/flowlab-server-jobs.md) kører også motoren i en varig kø og kan genstarte en afbrudt beregning fra låste input. Browseren bruger fortsat lokal lagring; hosted login er ikke tilsluttet.
 
+[Fristoverblikket](docs/flowlab-sla.md) skelner mellem afsluttede sager inden for fristen, forsinkede sager og den kendte del af restkøen. UI, CSV og PDF viser de samme antal og usikkerheder.
+
 ### Director
 
 ![Director: faktisk 3D-scene, kameraer og shots](reports/director/desktop-scene.png)
 
 3D-scene og brugbar 2D-fallback, egne GLB-modeller, fem kameraer, immutable shotversioner, framebaseret tidslinje, egne medier og rigtige eksporter. MP4'en er en animatic med stillbilleder og klip; der loves ikke kontinuerlig karakteranimation. Et [projektbundet eksportarkiv](docs/director-export-archive.md) bevarer tidligere filer og deres kvalitetsrapporter.
+
+I [sceneplanen](docs/director-scene-plan.md) kan objekter, kamera og kameramål flyttes direkte med mus, berøring eller tastatur. Tidligere shots og sekvensversioner bevarer deres oprindelige scene.
 
 ## Kontroller arbejdet
 

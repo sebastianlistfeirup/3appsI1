@@ -1,0 +1,13 @@
+# S14 — recoverable brief drafts and explicit publication
+
+Bestilling now preserves incomplete goal, audience, constraints and raw acceptance text as a separate project draft. Closing or leaving the form flushes edits; normal editing debounces at 450 ms. Invalid or overlong criteria remain recoverable and cannot be published by silent truncation. Publication creates exactly one immutable brief and removes its draft atomically. Earlier briefs, tasks and runs remain unchanged.
+
+Draft JSON binds project, original brief ID and SHA-256 of that exact brief. Import validates before replacing the open text. A draft based on an older brief requires a fresh acknowledgment after every reopening; that acknowledgment is never persisted. A real IndexedDB quota error leaves the actual draft downloadable. Archived drafts remain readable/exportable, and an archived project without a draft disables creation. Long histories are searchable and bounded to eight displayed versions.
+
+Overview also decodes genuine base64 HTML before sandboxing it. Invalid UTF-8 produces a readable fallback while retaining the original file bytes. No script permission was added.
+
+Executed locally: five meaningful domain fixtures, Studio typecheck/production build, and six new browser scenarios in each of Chromium, Firefox and WebKit. The scenarios include actual quota failure, reload, ZIP roundtrip, hash mismatch, stale drafts, 31 criteria and 1,001-character criteria, archived recovery, 36-version history and actual base64 HTML. Eighteen new axe scans have zero violations; screenshots at desktop, tablet and mobile were inspected. The full Studio regression run passed 114 cases. Its three archive cases exposed an outdated assertion (first expecting the now-disabled editor to open, then comparing innerText with textContent). The corrected archive scenario passed separately in all three browsers: all 117 scenarios are now covered successfully across these runs. A fresh combined run will follow the task-definition change.
+
+Evidence: `tests/e2e/studio-brief-drafts.spec.ts`, `apps/studio/src/lib/brief-drafts.test.ts`, `reports/studio/*brief-draft*`, `reports/studio/a11y/*brief-draft*`, and `docs/studio-brief-drafts.md`. `docs/studio.md` is a complete Danish first-use guide.
+
+Remote run 38985106195 on 099e7d3 passed the actual database/worker crash recovery, both production HTTP profiles, FlowLab Firefox/WebKit, and all Director gates. Studio passed 94 tests before its outer five-minute suite deadline, which is now ten minutes; individual test deadlines remain unchanged. FlowLab Chromium exposed an unconfirmed-save reload race in the calendar test, which is under deterministic investigation. No failing check is reported as passed.

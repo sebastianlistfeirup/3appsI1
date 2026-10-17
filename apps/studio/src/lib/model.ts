@@ -112,6 +112,16 @@ export const reviewDraftSchema = reviewDraftFieldsSchema.extend({
   deliveryId: idSchema,
   updatedAt: timestamp,
 });
+export const briefDraftFieldsSchema = z.object({
+  goal: text,
+  audience: text,
+  constraints: text,
+  criteria: z.string().max(32000),
+});
+export const briefDraftSchema = briefDraftFieldsSchema.extend({
+  baseBriefId: idSchema,
+  updatedAt: timestamp,
+});
 export const projectSchema = z.object({
   id: idSchema,
   name: z.string().min(1).max(100),
@@ -129,6 +139,7 @@ export const projectSchema = z.object({
   reviews: z.array(reviewSchema).max(2000),
   deliveryDrafts: z.array(deliveryDraftSchema).max(1000).optional(),
   reviewDrafts: z.array(reviewDraftSchema).max(1000).optional(),
+  briefDraft: briefDraftSchema.optional(),
   activity: z
     .array(
       z.object({
@@ -160,6 +171,7 @@ export type Review = z.infer<typeof reviewSchema>;
 export type Brief = z.infer<typeof briefSchema>;
 export type DeliveryDraftFields = z.infer<typeof deliveryDraftFieldsSchema>;
 export type ReviewDraftFields = z.infer<typeof reviewDraftFieldsSchema>;
+export type BriefDraftFields = z.infer<typeof briefDraftFieldsSchema>;
 export const uid = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
 export const now = () => new Date().toISOString();
 
@@ -179,6 +191,15 @@ export function assertProject(project: Project): Project {
       throw new Error("Projektet indeholder dublerede id’er.");
   if (duplicate(project.briefVersions.map((x) => String(x.version))))
     throw new Error("Dubleret briefversion.");
+  if (
+    project.briefDraft &&
+    !project.briefVersions.some(
+      (brief) => brief.id === project.briefDraft!.baseBriefId,
+    )
+  )
+    throw new Error(
+      "Bestillingskladden skal henvise til en kendt briefversion.",
+    );
   if (duplicate(project.artifacts.map((x) => `${x.artifactId}:${x.version}`)))
     throw new Error("Dubleret filversion.");
   if (duplicate(project.runs.map((x) => x.idempotencyKey)))
@@ -367,6 +388,16 @@ function assertMutable(p: Project) {
 }
 
 export function assertProjectUpdate(previous: Project, next: Project): void {
+  if (
+    previous.briefDraft &&
+    !next.briefDraft &&
+    !next.briefVersions.some(
+      (brief) => !previous.briefVersions.some((prior) => prior.id === brief.id),
+    )
+  )
+    throw new Error(
+      "Bestillingskladden kan først fjernes, når en ny briefversion er oprettet.",
+    );
   for (const prior of previous.reviewDrafts ?? []) {
     if (
       !next.reviewDrafts?.some(
@@ -545,6 +576,73 @@ export function copyProject(source: Project): Project {
 }
 export const latestBrief = (p: Project) =>
   p.briefVersions.reduce((a, b) => (a.version > b.version ? a : b));
+export function briefDraftFields(brief: Brief): BriefDraftFields {
+  return {
+    goal: brief.goal,
+    audience: brief.audience,
+    constraints: brief.constraints,
+    criteria: brief.acceptance.join("\n"),
+  };
+}
+export function saveBriefDraft(
+  p: Project,
+  baseBriefId: string,
+  fields: BriefDraftFields,
+): Project {
+  assertMutable(p);
+  const next = {
+    ...p,
+    revision: p.revision + 1,
+    briefDraft: briefDraftSchema.parse({
+      ...fields,
+      baseBriefId,
+      updatedAt: now(),
+    }),
+  };
+  assertProject(next);
+  assertProjectBudget(next);
+  return next;
+}
+export function briefDraftIssue(fields: BriefDraftFields): string | null {
+  if (!fields.goal.trim()) return "Beskriv først, hvad du vil opnå.";
+  const criteria = fields.criteria
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (!criteria.length) return "Tilføj mindst ét konkret acceptkrav.";
+  if (criteria.length > 30)
+    return `Der er ${criteria.length} acceptkrav. En bestilling må højst have 30; kladden er bevaret uændret.`;
+  if (criteria.some((line) => line.length > 1000))
+    return "Hvert acceptkrav må højst fylde 1.000 tegn. Del det lange krav op; kladden er bevaret.";
+  return null;
+}
+export function publishBriefDraft(
+  p: Project,
+  baseBriefId: string,
+  value: BriefDraftFields,
+  acknowledgeNewerBrief = false,
+): Project {
+  assertMutable(p);
+  const fields = briefDraftFieldsSchema.parse(value);
+  if (!p.briefVersions.some((brief) => brief.id === baseBriefId))
+    throw new Error("Kladdens oprindelige briefversion findes ikke.");
+  if (latestBrief(p).id !== baseBriefId && !acknowledgeNewerBrief)
+    throw new Error(
+      "Der findes en nyere bestilling. Gennemgå den og bekræft eksplicit, før kladden bliver en ny version.",
+    );
+  const issue = briefDraftIssue(fields);
+  if (issue) throw new Error(issue);
+  const { briefDraft: _draft, ...next } = saveBrief(p, {
+    goal: fields.goal.trim(),
+    audience: fields.audience.trim(),
+    constraints: fields.constraints.trim(),
+    acceptance: fields.criteria
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean),
+  });
+  return next;
+}
 export function saveBrief(
   p: Project,
   input: Pick<Brief, "goal" | "audience" | "constraints" | "acceptance">,
