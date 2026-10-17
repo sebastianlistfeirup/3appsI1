@@ -101,6 +101,11 @@ const importProject = async (project) => {
     project.title,
   );
   await saved();
+  // Same-title and same-revision imports must be observed by actual content.
+  await expect
+    .poll(async () => sha(JSON.stringify(parseProject(await read()))))
+    .toBe(sha(JSON.stringify(parseProject(project))));
+  await expect(page.locator(".toast.working")).toHaveCount(0);
 };
 const exportPanel = () =>
   page.getByRole("button", { name: "Eksportér", exact: true }).click();

@@ -1020,6 +1020,7 @@ export default function DirectorEditor({
             </span>
             <button
               className="button primary"
+              disabled={!!busy}
               onClick={() => setModal("export")}
             >
               <Download size={15} />

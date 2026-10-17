@@ -59,7 +59,7 @@ DIRECTOR_LOCAL_RENDER=1 pnpm dev:director
 
 Serveren skal forblive bundet til localhost. Denne profil er ikke et offentligt renderendepunkt. Eksporten låser et projektsnapshot og validerer den færdige films opløsning, fps, varighed, lyd og hash. **Tidligere eksporter** viser samme produktions lokale jobs; en gammel film bliver ved med at høre til sin oprindelige klipning, selv efter nye ændringer. [Opsætning og recovery](director-local-render.md), [faktisk værktøjskontrol](director-render-profile.md) og [eksportarkiv](director-export-archive.md).
 
-Den aktuelle filmprofil er **1280×720, 24 fps, højst 30 shots og 120 sekunder**. MP4 er timede stillbilleder kombineret med egne videoklip og lyd. Bevægelser i 3D-editoren bliver ikke til kontinuerlig 3D-animation. Browserafspilning er en interaktiv gennemgang; den validerede MP4 er eksportresultatet. Loudness måles, men normaliseres ikke automatisk til en bestemt LUFS-værdi.
+Den aktuelle filmprofil er **1280×720, 24 fps, højst 30 shots og 120 sekunder**. Den samlede renderforespørgsel med indlejrede medier og versioner må højst være **64 MiB**; dette er en særskilt grænse fra projektimportens 150 MiB. En større projektbackup kan derfor åbnes og bevares uden at kunne MP4-eksporteres i denne profil. MP4 er timede stillbilleder kombineret med egne videoklip og lyd. Bevægelser i 3D-editoren bliver ikke til kontinuerlig 3D-animation. Browserafspilning er en interaktiv gennemgang; den validerede MP4 er eksportresultatet. Loudness måles, men normaliseres ikke automatisk til en bestemt LUFS-værdi.
 
 ## Hvis noget går galt
 

@@ -211,6 +211,9 @@ try {
   assert(
     (await page.evaluate(() => window.jsonProbe.requests)).includes("json"),
   );
+  await expect(
+    page.getByRole("button", { name: "Eksportér", exact: true }),
+  ).toBeDisabled();
   for (const [name, width, height] of [
     ["desktop", 1440, 900],
     ["tablet", 1024, 768],
@@ -243,6 +246,9 @@ try {
   await expect(page.locator(".toast.working")).toHaveCount(0);
   await saved();
   assert.deepEqual(await summary(), original);
+  await expect(
+    page.getByRole("button", { name: "Eksportér", exact: true }),
+  ).toBeEnabled();
   assert.equal(
     await page.evaluate(
       () => window.jsonProbe.created - window.jsonProbe.terminated,

@@ -3,31 +3,31 @@
   "steps": [
     {
       "name": "initial film and actual >100 MiB file",
-      "at": "2026-10-17T02:00:15.752Z"
+      "at": "2026-10-17T02:08:51.116Z"
     },
     {
       "name": "cancel completed native parse/hash work before committing; current film retained",
-      "at": "2026-10-17T02:00:23.327Z"
+      "at": "2026-10-17T02:09:06.084Z"
     },
     {
       "name": "download full editor JSON and independently verify every original",
-      "at": "2026-10-17T02:00:25.743Z"
+      "at": "2026-10-17T02:09:10.581Z"
     },
     {
       "name": "enforce each byte ceiling before File.arrayBuffer or worker creation",
-      "at": "2026-10-17T02:00:27.533Z"
+      "at": "2026-10-17T02:09:14.146Z"
     },
     {
       "name": "malformed JSON, bad media hash and unavailable worker keep the good project",
-      "at": "2026-10-17T02:00:28.072Z"
+      "at": "2026-10-17T02:09:15.013Z"
     },
     {
       "name": "library imports the same large backup as an independent film",
-      "at": "2026-10-17T02:00:29.686Z"
+      "at": "2026-10-17T02:09:18.466Z"
     },
     {
       "name": "passed",
-      "at": "2026-10-17T02:00:34.557Z"
+      "at": "2026-10-17T02:09:28.024Z"
     }
   ],
   "errors": [],
@@ -48,8 +48,8 @@
   "inputBytes": 108074090,
   "browser": "156.0.8078.4",
   "importResponsiveness": {
-    "ticks": 84,
-    "maxGapMs": 318
+    "ticks": 162,
+    "maxGapMs": 522
   },
   "downloadBytes": 108084673,
   "worker": {

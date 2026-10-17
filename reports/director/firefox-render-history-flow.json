@@ -3,27 +3,27 @@
   "phases": [
     {
       "name": "first actual movie and exact snapshot comparison",
-      "at": "2026-10-17T00:02:39.350Z"
+      "at": "2026-10-17T02:09:31.891Z"
     },
     {
       "name": "same-ID same-revision import is correctly detected as different content",
-      "at": "2026-10-17T00:02:42.077Z"
+      "at": "2026-10-17T02:09:38.457Z"
     },
     {
       "name": "late native job-status response cannot replace a deliberately selected old export",
-      "at": "2026-10-17T00:02:42.603Z"
+      "at": "2026-10-17T02:09:39.889Z"
     },
     {
       "name": "project boundary and persisted selection survive reload",
-      "at": "2026-10-17T00:02:45.901Z"
+      "at": "2026-10-17T02:09:44.005Z"
     },
     {
       "name": "interrupted history request and unavailable worker preserve old downloads",
-      "at": "2026-10-17T00:02:47.789Z"
+      "at": "2026-10-17T02:09:48.779Z"
     },
     {
       "name": "passed",
-      "at": "2026-10-17T00:02:48.808Z"
+      "at": "2026-10-17T02:09:51.499Z"
     }
   ],
   "checks": [
@@ -50,14 +50,14 @@
   "errors": [],
   "jobs": [
     {
-      "id": "034f08c8-0bc7-491d-b03e-fd653daa6560",
-      "manifestHash": "415334802435b211a3d4772d1f8808954f3100a4c2f574277fd66c48e8e571f1",
+      "id": "65f8a9b4-9857-4a33-8211-941b27cdd166",
+      "manifestHash": "e83a2ec71343e21988254f13a1790f77eaf40b0016d58fe381a4a6a170e2d24e",
       "metadata": {
         "duration": 1,
         "width": 1280,
         "height": 720,
         "fps": 24,
-        "sha256": "6a5ec8d9ff3d34e29a2674e29c541e7c20db435933c79e2e4a80fe1f0c4a6eb1",
+        "sha256": "78f48bf64ab1ad50a02ca7e8ed17196160dba7744939f548c7c98533ca603a89",
         "audioSampleRate": 48000,
         "codec": "h264",
         "audioCodec": "aac",
@@ -65,20 +65,20 @@
         "audioSilent": true
       },
       "source": {
-        "projectId": "archive_275d086c79344ed9add41b02ea694f10",
+        "projectId": "archive_2d9ff7c47d4f48b98dba3398378194ce",
         "title": "Arkivprøve Ærlig åben",
         "revision": 1
       }
     },
     {
-      "id": "d8370fda-3ad9-49cf-a203-b7d89f6bb391",
-      "manifestHash": "07e79806df04db886cd4a4552751c2e34ee38582821034f94f9a3ae57d1f0c28",
+      "id": "535f05a5-bf92-4c1e-b812-4567f59262f9",
+      "manifestHash": "937e9b7ace37403f48acda2abf3f11e2da8c5e4cc7f6c9411c8abb17b9b77103",
       "metadata": {
         "duration": 1,
         "width": 1280,
         "height": 720,
         "fps": 24,
-        "sha256": "e66ec86aa7323ecaf7b493dc9a1666514a135d4d1bd8eaabf97b932ac54fbece",
+        "sha256": "bf0a9be3584f5fed392642a685c7b3ab6ecdd4768976eb2c71ab9d24298d638c",
         "audioSampleRate": 48000,
         "codec": "h264",
         "audioCodec": "aac",
@@ -86,16 +86,16 @@
         "audioSilent": true
       },
       "source": {
-        "projectId": "archive_275d086c79344ed9add41b02ea694f10",
+        "projectId": "archive_2d9ff7c47d4f48b98dba3398378194ce",
         "title": "Arkivprøve Ærlig åben",
         "revision": 1
       }
     }
   ],
   "firstDownload": {
-    "filename": "director-arkivproeve-aerlig-aaben-r1-034f08c8.mp4",
-    "sha256": "6a5ec8d9ff3d34e29a2674e29c541e7c20db435933c79e2e4a80fe1f0c4a6eb1",
-    "bytes": 42152
+    "filename": "director-arkivproeve-aerlig-aaben-r1-65f8a9b4.mp4",
+    "sha256": "78f48bf64ab1ad50a02ca7e8ed17196160dba7744939f548c7c98533ca603a89",
+    "bytes": 34903
   },
   "workers": {
     "created": 1,
