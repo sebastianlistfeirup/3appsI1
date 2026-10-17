@@ -1,0 +1,34 @@
+[
+  {
+    "name": "load saved immutable camera frames",
+    "at": "2026-10-17T00:21:38.733Z"
+  },
+  {
+    "name": "native capture previews; single committed movement outside SVG",
+    "at": "2026-10-17T00:21:42.031Z"
+  },
+  {
+    "name": "keyboard repeat commits once; Escape and Ctrl-Z cancel active gesture",
+    "at": "2026-10-17T00:21:46.153Z"
+  },
+  {
+    "name": "pointercancel, capture loss and unmount discard preview",
+    "at": "2026-10-17T00:21:48.698Z"
+  },
+  {
+    "name": "camera placement and aim preserve locked scenes and shots",
+    "at": "2026-10-17T00:21:52.336Z"
+  },
+  {
+    "name": "view-only pan and zoom do not create edits",
+    "at": "2026-10-17T00:21:55.836Z"
+  },
+  {
+    "name": "desktop/tablet/phone readable handles, actual keyboard placement, WCAG",
+    "at": "2026-10-17T00:21:57.124Z"
+  },
+  {
+    "name": "far valid coordinates fit; new plan renderer profile keeps old frames intact",
+    "at": "2026-10-17T00:22:05.431Z"
+  }
+]

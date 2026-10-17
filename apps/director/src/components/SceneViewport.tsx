@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { PlanEditor } from "./PlanEditor";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import type { Camera, SceneVersion, Vector } from "@tre/scene-format";
@@ -20,6 +21,8 @@ export function SceneViewport({
   onMode,
   onCamera,
   onSelect,
+  onObject,
+  onSelectCamera,
 }: {
   scene: SceneVersion;
   camera: Camera;
@@ -29,6 +32,8 @@ export function SceneViewport({
   onMode: (v: "3d" | "2d") => void;
   onCamera: (p: Vector, t: Vector) => void;
   onSelect: (id: string) => void;
+  onObject: (id: string, position: Vector) => void;
+  onSelectCamera: () => void;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const callbacks = useRef({ onCamera, onSelect, onMode });
@@ -147,114 +152,17 @@ export function SceneViewport({
   }, [sceneKey, cameraKey, selectedId, grid, mode]);
   if (mode === "2d")
     return (
-      <div className="plan-view">
-        <svg
-          viewBox="0 0 800 450"
-          role="group"
-          aria-label={`2D-plan af ${scene.name} med objekter og kamera`}
-        >
-          <defs>
-            <pattern
-              id="plan-grid"
-              width="35"
-              height="35"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M 35 0 L 0 0 0 35"
-                fill="none"
-                stroke="#34404a"
-                strokeWidth=".7"
-              />
-            </pattern>
-          </defs>
-          <rect width="800" height="450" fill="#1c252d" />
-          <rect
-            x="166"
-            y="80"
-            width="468"
-            height="260"
-            rx="6"
-            fill="url(#plan-grid)"
-            stroke="#64706e"
-            strokeWidth="2"
-          />
-          <path d="M 210 80 H 590" stroke="#c5a476" strokeWidth="5" />
-          <text
-            x="400"
-            y="63"
-            fill="#aeb8b9"
-            textAnchor="middle"
-            fontSize="11"
-            letterSpacing="3"
-          >
-            {scene.environment.preset === "station"
-              ? "OBSERVATIONSVINDUE"
-              : scene.environment.preset === "studio"
-                ? "STUDIEBAGVÆG"
-                : "ÅBEN BUEGANG"}
-          </text>
-          {scene.objects.map((object) => {
-            const x = 400 + object.transform.position[0] * 26;
-            const y = 220 + object.transform.position[2] * 20;
-            return (
-              <g
-                key={object.id}
-                role="button"
-                tabIndex={0}
-                aria-label={`Vælg ${object.name}`}
-                aria-pressed={selectedId === object.id}
-                onClick={() => onSelect(object.id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    onSelect(object.id);
-                  }
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                <circle
-                  cx={x}
-                  cy={y}
-                  r={object.kind === "person" ? 13 : 19}
-                  fill={object.color}
-                  stroke={selectedId === object.id ? "#fff" : "#172026"}
-                  strokeWidth="3"
-                />
-                <text
-                  x={x}
-                  y={y + 34}
-                  textAnchor="middle"
-                  fill="#e4e7df"
-                  fontSize="12"
-                >
-                  {object.name}
-                </text>
-              </g>
-            );
-          })}
-          <path
-            d={`M ${400 + camera.position[0] * 26} ${220 + camera.position[2] * 20} L ${400 + camera.target[0] * 26} ${220 + camera.target[2] * 20}`}
-            stroke="#e5a476"
-            strokeWidth="2"
-            strokeDasharray="6 5"
-          />
-          <circle
-            cx={400 + camera.position[0] * 26}
-            cy={220 + camera.position[2] * 20}
-            r="10"
-            fill="#e5a476"
-          />
-          <text x="100" y="425" fill="#9fa9aa" fontSize="11">
-            Y op · meter · redigér position i objektpanelet
-          </text>
-        </svg>
-        {failed && (
-          <span className="fallback-note">
-            WebGL er ikke tilgængelig. Du kan fortsætte i 2D.
-          </span>
-        )}
-      </div>
+      <PlanEditor
+        scene={scene}
+        camera={camera}
+        selectedId={selectedId}
+        grid={grid}
+        failed={failed}
+        onSelect={onSelect}
+        onObject={onObject}
+        onCamera={onCamera}
+        onSelectCamera={onSelectCamera}
+      />
     );
   return (
     <canvas

@@ -1,7 +1,19 @@
 import { parseEmbeddedGlb, disposeModelResources } from "./glb-resources";
 import { checkMediaAbort } from "./media-lifecycle";
 import * as THREE from "three";
-import type { Camera, SceneObject, SceneVersion } from "@tre/scene-format";
+import {
+  RENDERER_VERSION,
+  type Camera,
+  type SceneObject,
+  type SceneVersion,
+  type Vector,
+} from "@tre/scene-format";
+import {
+  fitPlan,
+  planPoint,
+  planFloor,
+  PLAN_RENDERER_VERSION,
+} from "./plan-geometry";
 
 const mat = (color: string, metalness = 0.1, roughness = 0.65) =>
   new THREE.MeshStandardMaterial({ color, metalness, roughness });
@@ -436,43 +448,36 @@ export function renderPlanFrame(version: SceneVersion, camera: Camera) {
   ctx.scale(1.6, 1.6);
   ctx.fillStyle = "#18232c";
   ctx.fillRect(0, 0, 800, 450);
+  const size = { width: 800, height: 450 },
+    view = fitPlan(version, camera, size);
+  const point = (position: Vector) => planPoint(position, view, size);
+  const x = (value: number) => point([value, 0, 0])[0],
+    y = (value: number) => point([0, 0, value])[1];
+  const step = view.scale * (view.scale < 4 ? 10 : view.scale < 12 ? 5 : 1);
   ctx.strokeStyle = "#35434e";
   ctx.lineWidth = 0.7;
-  for (let x = 36; x < 800; x += 26) {
+  for (let px = ((x(0) % step) + step) % step; px < 800; px += step) {
     ctx.beginPath();
-    ctx.moveTo(x, 38);
-    ctx.lineTo(x, 412);
+    ctx.moveTo(px, 38);
+    ctx.lineTo(px, 412);
     ctx.stroke();
   }
-  for (let y = 40; y < 420; y += 20) {
+  for (let py = ((y(0) % step) + step) % step; py < 420; py += step) {
     ctx.beginPath();
-    ctx.moveTo(30, y);
-    ctx.lineTo(770, y);
+    ctx.moveTo(30, py);
+    ctx.lineTo(770, py);
     ctx.stroke();
   }
   ctx.strokeStyle = "#738380";
   ctx.lineWidth = 2;
-  ctx.strokeRect(166, 80, 468, 260);
-  ctx.strokeStyle = "#d7b48b";
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(210, 80);
-  ctx.lineTo(590, 80);
-  ctx.stroke();
-  ctx.fillStyle = "#d9d9cc";
-  ctx.font = "12px sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText(
-    version.environment.preset === "station"
-      ? "OBSERVATIONSVINDUE"
-      : version.environment.preset === "studio"
-        ? "STUDIEBAGVÆG"
-        : "ÅBEN BUEGANG",
-    400,
-    63,
+  const floor = planFloor(version);
+  ctx.strokeRect(
+    x(floor[0]),
+    y(floor[1]),
+    floor[2] * view.scale,
+    floor[3] * view.scale,
   );
-  const x = (v: number) => 400 + v * 26,
-    y = (v: number) => 220 + v * 20;
+  ctx.textAlign = "center";
   for (const object of version.objects) {
     const p = object.transform.position;
     ctx.beginPath();
@@ -521,14 +526,22 @@ export async function renderFrame(
   version: SceneVersion,
   camera: Camera,
   mode: "3d" | "2d" = "3d",
-): Promise<{ frame: string; mode: "3d" | "plan" }> {
+): Promise<{ frame: string; mode: "3d" | "plan"; rendererVersion: string }> {
   if (mode === "2d")
-    return { frame: renderPlanFrame(version, camera), mode: "plan" };
+    return {
+      frame: renderPlanFrame(version, camera),
+      mode: "plan",
+      rendererVersion: PLAN_RENDERER_VERSION,
+    };
   let renderer: THREE.WebGLRenderer;
   try {
     renderer = createRenderer();
   } catch {
-    return { frame: renderPlanFrame(version, camera), mode: "plan" };
+    return {
+      frame: renderPlanFrame(version, camera),
+      mode: "plan",
+      rendererVersion: PLAN_RENDERER_VERSION,
+    };
   }
   renderer.setSize(1280, 720);
   const scene = buildScene(version);
@@ -538,6 +551,7 @@ export async function renderFrame(
     return {
       frame: renderer.domElement.toDataURL("image/jpeg", 0.88),
       mode: "3d",
+      rendererVersion: RENDERER_VERSION,
     };
   } finally {
     disposeScene(scene);

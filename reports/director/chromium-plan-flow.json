@@ -1,0 +1,75 @@
+{
+  "engine": "chromium",
+  "browser": "156.0.8078.4",
+  "stages": [
+    {
+      "name": "load saved immutable camera frames",
+      "at": "2026-10-17T00:21:35.233Z"
+    },
+    {
+      "name": "native capture previews; single committed movement outside SVG",
+      "at": "2026-10-17T00:21:52.830Z"
+    },
+    {
+      "name": "keyboard repeat commits once; Escape and Ctrl-Z cancel active gesture",
+      "at": "2026-10-17T00:21:55.455Z"
+    },
+    {
+      "name": "pointercancel, capture loss and unmount discard preview",
+      "at": "2026-10-17T00:21:56.364Z"
+    },
+    {
+      "name": "camera placement and aim preserve locked scenes and shots",
+      "at": "2026-10-17T00:21:58.827Z"
+    },
+    {
+      "name": "view-only pan and zoom do not create edits",
+      "at": "2026-10-17T00:22:00.424Z"
+    },
+    {
+      "name": "desktop/tablet/phone readable handles, actual keyboard placement, WCAG",
+      "at": "2026-10-17T00:22:01.335Z"
+    },
+    {
+      "name": "trusted Chromium touch drag and native touchcancel",
+      "at": "2026-10-17T00:22:17.143Z"
+    },
+    {
+      "name": "far valid coordinates fit; new plan renderer profile keeps old frames intact",
+      "at": "2026-10-17T00:22:17.721Z"
+    }
+  ],
+  "assertions": [
+    "native pointer capture outside SVG",
+    "preview leaves persistence untouched",
+    "single undo per gesture",
+    "repeat-key coalescing",
+    "Escape/Ctrl-Z/cancel/lostcapture/unmount",
+    "camera position and quaternion",
+    "immutable scenes/shots/sequences",
+    "pan/zoom do not edit",
+    "44px handles at three sizes",
+    "far coordinates visible",
+    "versioned new plan frame"
+  ],
+  "scans": [
+    {
+      "name": "desktop",
+      "violations": []
+    },
+    {
+      "name": "tablet",
+      "violations": []
+    },
+    {
+      "name": "mobile",
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "decoded": {
+    "width": 1280,
+    "height": 720,
+    "farObjectPixels": 638
+  }
+}

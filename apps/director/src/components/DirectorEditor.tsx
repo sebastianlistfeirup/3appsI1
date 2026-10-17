@@ -63,7 +63,6 @@ import {
   clone,
   newId,
   lookAtQuaternion,
-  RENDERER_VERSION,
   rightsWarnings,
   duplicateShot,
   saveSequenceVersion,
@@ -664,7 +663,7 @@ export default function DirectorEditor({
           cameraId: camera.id,
           frame: captured.frame,
           frameMode: captured.mode,
-          frameRenderer: RENDERER_VERSION,
+          frameRenderer: captured.rendererVersion,
           mediaId: null,
           sourceIn: 0,
           clipAudio: false,
@@ -1315,6 +1314,28 @@ export default function DirectorEditor({
                     onCamera={(position, target) =>
                       patchCamera({ position, target })
                     }
+                    onSelectCamera={() => setInspector("camera")}
+                    onObject={(id, position) => {
+                      if (
+                        !current.current.draft.objects.some(
+                          (object) => object.id === id,
+                        )
+                      )
+                        return;
+                      commit((next) => {
+                        next.draft.objects = next.draft.objects.map((object) =>
+                          object.id === id
+                            ? {
+                                ...object,
+                                transform: { ...object.transform, position },
+                                assetVersion: object.assetVersion + 1,
+                              }
+                            : object,
+                        );
+                        next.revision++;
+                        return next;
+                      });
+                    }}
                     onSelect={(id) => {
                       setSelectedObject(id);
                       setInspector("object");
@@ -1379,7 +1400,9 @@ export default function DirectorEditor({
                   <MapPin size={15} />
                 </IconButton>
                 <span className="viewport-help">
-                  Træk for at dreje · scroll for zoom
+                  {mode === "2d"
+                    ? "X / Z · metrisk topvisning"
+                    : "Træk for at dreje · scroll for zoom"}
                 </span>
                 <button
                   className="button capture-button"
