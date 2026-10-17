@@ -1,0 +1,37 @@
+{
+  "profile": "browser-local-static-web-demo",
+  "sourceBaseCommit": "98764995dbe49591f521000baf97d7dcb01a454d",
+  "hub": "https://tre-apps-studio-sebastian.salty-venus-6590.chatgpt.site/proev/",
+  "audience": "owner-private",
+  "sourceCommits": {
+    "studio": "2b17c0e415d12f27a182a58e96294559aa0f06f3",
+    "flowlab": "da82caa94fd53e2aebd405f7928040ce792e5489",
+    "director": "b95b6bfdee5536cfc2635891b9d8f87b59f874c7"
+  },
+  "deployments": {
+    "studio": {
+      "project_id": "appgprj_6ad31ac400bc81919ab864692a427f49",
+      "deployment_id": "appgdep_6ad31dd05bac8191a72a0a4c16bb95d8",
+      "version_id": "appgprj_6ad31ac400bc81919ab864692a427f49~appgver_deb6fce56d608191af9d15124027c37d",
+      "status": "succeeded",
+      "url": "https://tre-apps-studio-sebastian.salty-venus-6590.chatgpt.site",
+      "updated_at": "2026-10-17T07:04:04.905302+00:00"
+    },
+    "flowlab": {
+      "project_id": "appgprj_6ad3196467848191a40b7bc209703f92",
+      "deployment_id": "appgdep_6ad31ab6fac48191986980b664f4e985",
+      "version_id": "appgprj_6ad3196467848191a40b7bc209703f92~appgver_bcdaf26a074c8191bdc1ffe56009fe70",
+      "status": "succeeded",
+      "url": "https://tre-apps-flowlab-sebastian.salty-venus-6590.chatgpt.site",
+      "updated_at": "2026-10-17T06:51:29.749106+00:00"
+    },
+    "director": {
+      "project_id": "appgprj_6ad31a7a97748191a275dcb65ac65fe2",
+      "deployment_id": "appgdep_6ad31c7df7008191b40aff666c087e9d",
+      "version_id": "appgprj_6ad31a7a97748191a275dcb65ac65fe2~appgver_ed6016cd92688191beff43a7bcc65742",
+      "status": "succeeded",
+      "url": "https://tre-apps-director-sebastian.salty-venus-6590.chatgpt.site",
+      "updated_at": "2026-10-17T06:58:31.660915+00:00"
+    }
+  }
+}

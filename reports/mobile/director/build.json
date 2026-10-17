@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "98764995dbe49591f521000baf97d7dcb01a454d",
+  "hostingManifestPreservedSha256": "e777bab6e0437503ea45bba09a7efc0eef1a7c71e69d6fe95b4bd57249db0b32",
+  "files": {
+    "package.json": "d6012db435786263b907e795faa1b198ba75f55af7834c5f2e58077957d734a6",
+    "scripts/package-static.mjs": "082ab08031dba515ed1ec6dd15484e62ecc8bf3494bea5659d7521d8d9da19a3",
+    "apps/director/next.config.ts": "bed08a5f681479a528ceb7e345d0a269975f45ea81dcd2058dc822b897e2a785",
+    "apps/director/src/components/DirectorEditor.tsx": "aa4bf8d33c12e67ef4973dda75c04ff5da3b2bd48bf969a32995b8a6a32c6a08",
+    "apps/director/public/api/exports": "b36cf174fc1853eb5175a8024ad8343ec341b3808acacce6d96c06e2bae2da6c"
+  },
+  "distFiles": 55,
+  "staticCapability": {
+    "available": false,
+    "profile": "local-only",
+    "cloudConnected": false,
+    "reason": "MP4-rendering kører i den lokale computerudgave. Scene, shots og storyboard kan bruges her."
+  },
+  "serverApisIncluded": false,
+  "localFilmRenderIncluded": false,
+  "buildCommand": "pnpm build",
+  "typecheckCommand": "pnpm --filter @tre/director typecheck"
+}

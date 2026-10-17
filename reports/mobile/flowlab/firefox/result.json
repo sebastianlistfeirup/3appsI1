@@ -1,0 +1,211 @@
+{
+  "status": "passed",
+  "testedAt": "2026-10-17T06:51:51.629Z",
+  "browser": "firefox",
+  "browserVersion": "157.0",
+  "url": "http://127.0.0.1:3021",
+  "sourceCommit": "98764995dbe49591f521000baf97d7dcb01a454d",
+  "staticLocalOnly": true,
+  "mobile": {
+    "viewport": "390x844",
+    "hasTouch": true,
+    "isMobile": false
+  },
+  "checks": [
+    "Static output boots and its real Web Worker completes initial 30 paired simulations.",
+    "Actual mobile touch commits draft5 then increments6; rerun yields 30 baseline +30 alternative runs for capacity6.",
+    "Actual PDF and ZIP downloads succeed on mobile; JSON contains60 correct-version seed-matched runs and all PDF baseline/scenario KPI values match actual JSON.",
+    "Fully closing and reopening the browser with its existing local profile preserves the edited model, exact30 seeds, metrics and report decision.",
+    "Six main screens at390×844,1440×900,1024×768 pass axe WCAG2A/AA/2.1AA with no horizontal overflow or runtime/network failures. Automated results do not replace real-device accessibility testing."
+  ],
+  "a11y": [
+    {
+      "viewport": "mobile",
+      "label": "initial-model",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "mobile",
+      "label": "Model",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "mobile",
+      "label": "Scenarier",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "mobile",
+      "label": "Resultater",
+      "violations": [],
+      "incompleteCount": 2,
+      "overflow": false
+    },
+    {
+      "viewport": "mobile",
+      "label": "Dataværksted",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "mobile",
+      "label": "Rapport",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "mobile",
+      "label": "Modelbibliotek",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "mobile",
+      "label": "reopened-report",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "desktop",
+      "label": "Model",
+      "violations": [],
+      "incompleteCount": 2,
+      "overflow": false
+    },
+    {
+      "viewport": "desktop",
+      "label": "Scenarier",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "desktop",
+      "label": "Resultater",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "desktop",
+      "label": "Dataværksted",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "desktop",
+      "label": "Rapport",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "desktop",
+      "label": "Modelbibliotek",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "tablet",
+      "label": "Model",
+      "violations": [],
+      "incompleteCount": 2,
+      "overflow": false
+    },
+    {
+      "viewport": "tablet",
+      "label": "Scenarier",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "tablet",
+      "label": "Resultater",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "tablet",
+      "label": "Dataværksted",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "tablet",
+      "label": "Rapport",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "tablet",
+      "label": "Modelbibliotek",
+      "violations": [],
+      "incompleteCount": 1,
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "failedResponses": [],
+  "report": {
+    "seeds": [
+      1670256963,
+      1477666837,
+      1671784842,
+      3714445914,
+      2325941002,
+      1813369949,
+      3373746645,
+      3814432474,
+      1296732853,
+      500503850,
+      3994470940,
+      1287640573,
+      1654237366,
+      3166369257,
+      65902710,
+      2458038775,
+      3358878965,
+      2719995175,
+      806742138,
+      2751558103,
+      4152500234,
+      2697133492,
+      2199855493,
+      439716845,
+      1455616600,
+      965144649,
+      3265244039,
+      142003906,
+      1639947343,
+      692490573
+    ],
+    "metricCount": 7,
+    "zipFiles": [
+      "rapport.pdf",
+      "report.json",
+      "metrics.csv",
+      "sla.csv",
+      "time-summaries.csv",
+      "costs.csv",
+      "resources.csv",
+      "models.json",
+      "LAES_MIG.txt"
+    ]
+  }
+}

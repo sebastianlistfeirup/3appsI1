@@ -1,0 +1,252 @@
+{
+  "sourceCommit": "98764995dbe49591f521000baf97d7dcb01a454d",
+  "profile": "browser-local-static-web-demo",
+  "startedAt": "2026-10-17T06:56:10.287Z",
+  "checks": [
+    {
+      "name": "static capability JSON",
+      "at": "2026-10-17T06:56:10.302Z",
+      "available": false,
+      "profile": "local-only",
+      "cloudConnected": false,
+      "reason": "MP4-rendering kører i den lokale computerudgave. Scene, shots og storyboard kan bruges her."
+    },
+    {
+      "name": "chromium: phone opens five actual shot images",
+      "at": "2026-10-17T06:56:12.672Z",
+      "browserVersion": "156.0.8078.4",
+      "frameModes": [
+        "3d"
+      ]
+    },
+    {
+      "name": "chromium: phone scene edit, immutable shot capture and IndexedDB reload",
+      "at": "2026-10-17T06:56:14.929Z",
+      "shotId": "shot_82e331ff9ba84d2b9022d990e302e699",
+      "sceneVersionId": "scene_8b728527df0a45a4851ebd3d45527ccb",
+      "revision": 8
+    },
+    {
+      "name": "chromium: real phone PDF download",
+      "at": "2026-10-17T06:56:16.803Z",
+      "bytes": 453286,
+      "sha256": "9310acf270fa1abdc4ebe41e9f69d3369ac473781095738127746db0bd2a19bd",
+      "pages": 6
+    },
+    {
+      "name": "chromium: real phone ZIP download",
+      "at": "2026-10-17T06:56:16.918Z",
+      "bytes": 489976,
+      "sha256": "46b0a6d8ed551a33652bbce801035bac472fde877d83ddadd78e3086825434dc",
+      "entries": [
+        "assets/838d528b50031213d771505827a9eb2bdb59980b521fb92cf32114b0eca48064",
+        "assets/74753f3d523b818752370268bc236f7c7cddcf6b1893ebd129e6c671a0bd4888",
+        "assets/fbfab500837a1943dc324002d4df62073be3c6f648d91226e5ee4ce86085e5a7",
+        "assets/5f88393575fb6c0cee3d2a98bc639eb3fbb24ee3e0629aed30daa1f12507a789",
+        "assets/7bb20ebbeec914f504a49c89c43b4162472638e1c025fc7d801ac581797b3a72",
+        "assets/7f8d51b5dbc2948726c1a8514dea63fa3061c47a393c50eaf7103a7e5ac69fe2",
+        "project.json",
+        "manifest.json"
+      ]
+    },
+    {
+      "name": "chromium: real phone JSON download",
+      "at": "2026-10-17T06:56:16.973Z",
+      "bytes": 672795,
+      "sha256": "54303456ce92068546bd0ab5e6a3ffd2f096be6b516a87e44ef999b8ffbfdea0"
+    },
+    {
+      "name": "chromium: ZIP imports into a fresh phone browser and survives reload",
+      "at": "2026-10-17T06:56:20.221Z"
+    },
+    {
+      "name": "chromium: tablet actual scene, no overflow, axe clear",
+      "at": "2026-10-17T06:56:23.032Z"
+    },
+    {
+      "name": "chromium: desktop actual scene, no overflow, axe clear",
+      "at": "2026-10-17T06:56:26.102Z"
+    },
+    {
+      "name": "chromium: forced no-WebGL fallback saves actual 2D shot",
+      "at": "2026-10-17T06:56:27.374Z"
+    },
+    {
+      "name": "webkit: phone opens five actual shot images",
+      "at": "2026-10-17T06:56:29.117Z",
+      "browserVersion": "27.2",
+      "frameModes": [
+        "3d"
+      ]
+    },
+    {
+      "name": "webkit: phone scene edit, immutable shot capture and IndexedDB reload",
+      "at": "2026-10-17T06:56:30.578Z",
+      "shotId": "shot_13b73bbd85b64db797a3cb7ab4a10ce7",
+      "sceneVersionId": "scene_a0d0cc7578974d26bb04db99636a8b07",
+      "revision": 8
+    },
+    {
+      "name": "webkit: real phone PDF download",
+      "at": "2026-10-17T06:56:31.599Z",
+      "bytes": 452700,
+      "sha256": "066c64e675816893e2bdca3cb2aae4cbef7562f37a58bacada0cb57c5c4e2c25",
+      "pages": 6
+    },
+    {
+      "name": "webkit: real phone ZIP download",
+      "at": "2026-10-17T06:56:31.739Z",
+      "bytes": 489610,
+      "sha256": "edd4471ca8434cff31d84834b5e768136f60f804c62b26a429000831b8547029",
+      "entries": [
+        "assets/42c291ddba7b739f3fb87a9ffe7b1063db9d90bcd59d11b101e0889ee90fdf47",
+        "assets/efdc9915ac98ab8717825946a0ec72f744d1d6701e1cf70cb2f49ff7f54aba19",
+        "assets/cf7d6e44c6c674354df91d4a3d0def3d8cb9bc3e5e10bd4e7c4895bf865badf2",
+        "assets/acb5ba520bfcf0dc07e5ac9ca7a34b6ca17d2ff7669291f78701a5a7f69ed17f",
+        "assets/b78707618b8729f179626cf6ee3f71a63f6b1fdc142f43284ee29b2525ee7446",
+        "assets/e091e2af91612d90156ff24fa72739e9f5ba6bd6736e0445eb0e757ef91db0ca",
+        "project.json",
+        "manifest.json"
+      ]
+    },
+    {
+      "name": "webkit: real phone JSON download",
+      "at": "2026-10-17T06:56:31.810Z",
+      "bytes": 672307,
+      "sha256": "98429dceb98c568c4c29fc4d8dc7fad69b299579b6fced8457c463547c1bb64b"
+    },
+    {
+      "name": "webkit: ZIP imports into a fresh phone browser and survives reload",
+      "at": "2026-10-17T06:56:34.184Z"
+    },
+    {
+      "name": "webkit: tablet actual scene, no overflow, axe clear",
+      "at": "2026-10-17T06:56:36.329Z"
+    },
+    {
+      "name": "webkit: desktop actual scene, no overflow, axe clear",
+      "at": "2026-10-17T06:56:38.479Z"
+    },
+    {
+      "name": "webkit: forced no-WebGL fallback saves actual 2D shot",
+      "at": "2026-10-17T06:56:40.071Z"
+    }
+  ],
+  "accessibility": [
+    {
+      "name": "chromium-phone-scene",
+      "violations": []
+    },
+    {
+      "name": "chromium-phone-export",
+      "violations": []
+    },
+    {
+      "name": "chromium-tablet-scene",
+      "violations": []
+    },
+    {
+      "name": "chromium-desktop-scene",
+      "violations": []
+    },
+    {
+      "name": "chromium-phone-fallback",
+      "violations": []
+    },
+    {
+      "name": "webkit-phone-scene",
+      "violations": []
+    },
+    {
+      "name": "webkit-phone-export",
+      "violations": []
+    },
+    {
+      "name": "webkit-tablet-scene",
+      "violations": []
+    },
+    {
+      "name": "webkit-desktop-scene",
+      "violations": []
+    },
+    {
+      "name": "webkit-phone-fallback",
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "engine": "chromium",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "chromium",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "chromium",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "chromium",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "chromium",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "chromium",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "chromium",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "webkit",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "webkit",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "webkit",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "webkit",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "webkit",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "webkit",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    },
+    {
+      "engine": "webkit",
+      "method": "GET",
+      "url": "http://127.0.0.1:3212/api/exports"
+    }
+  ],
+  "finishedAt": "2026-10-17T06:56:40.126Z",
+  "passed": true
+}

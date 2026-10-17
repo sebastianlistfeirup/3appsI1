@@ -1,10 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T03:28:42Z",
+  "updatedAt": "2026-10-17T07:05:23.876317+00:00",
   "status": "completed-session",
   "activeTasks": [],
   "profile": "demo",
-  "connectedIntegrations": [],
+  "connectedIntegrations": [
+    "Owner-private Sites HTTPS hosting (static browser demos; no product cloud identity or data sync)"
+  ],
   "verifiedLocalServices": [
     "PostgreSQL 17.10",
     "pg-boss 12.38.0",
@@ -31,5 +33,12 @@
     "Director generation providers",
     "Payment provider and test-mode purchase/refund",
     "Public production deployment"
-  ]
+  ],
+  "mobileDemo": {
+    "hub": "https://tre-apps-studio-sebastian.salty-venus-6590.chatgpt.site/proev/",
+    "profile": "browser-local-static-web-demo",
+    "audience": "owner-private",
+    "deploymentEvidence": "reports/mobile/deployments.json",
+    "guide": "docs/mobile-demo.md"
+  }
 }

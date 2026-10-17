@@ -1,0 +1,84 @@
+{
+  "origin": "https://tre-apps-director-sebastian.salty-venus-6590.chatgpt.site",
+  "sourceCommit": "b95b6bfdee5536cfc2635891b9d8f87b59f874c7",
+  "profile": "browser-local-static-web-demo",
+  "engine": "chromium",
+  "viewport": "390x844",
+  "hasTouch": true,
+  "isMobile": true,
+  "startedAt": "2026-10-17T07:00:48.880Z",
+  "checks": [
+    {
+      "name": "actual private origin and static capability JSON",
+      "at": "2026-10-17T07:00:52.307Z"
+    },
+    {
+      "name": "five real phone shot frames",
+      "at": "2026-10-17T07:00:52.325Z",
+      "frameModes": [
+        "3d"
+      ]
+    },
+    {
+      "name": "phone edit, immutable shot capture and actual-origin reload",
+      "at": "2026-10-17T07:00:55.385Z",
+      "shotId": "shot_109880d85d1145ac88bbf4389768befd",
+      "sceneVersionId": "scene_c1387627c5b6452284148b66b544b8fc",
+      "revision": 8
+    },
+    {
+      "name": "actual phone PDF download",
+      "at": "2026-10-17T07:00:57.703Z",
+      "bytes": 453167,
+      "sha256": "7628ac6d353e394a60d61bbed3f93e46ee41543639bd416fe2e5ce24ba00d7d0",
+      "pages": 6
+    },
+    {
+      "name": "actual phone ZIP download",
+      "at": "2026-10-17T07:00:58.535Z",
+      "bytes": 489977,
+      "sha256": "679924ef3b09d072bc5bbd0b54fdbff64223c0af1799af0e47c1594726b2d287",
+      "entryCount": 8
+    },
+    {
+      "name": "actual phone JSON download",
+      "at": "2026-10-17T07:00:58.607Z",
+      "bytes": 672795,
+      "sha256": "b02c7b73d314a928adfe0338463970f37d7b3ce20b92c22a3b6774959448c9a7"
+    },
+    {
+      "name": "honest disconnected MP4/archive, storyboard, no overflow or runtime/HTTP errors",
+      "at": "2026-10-17T07:00:59.128Z"
+    }
+  ],
+  "pageErrors": [],
+  "routeErrors": [],
+  "failedResponses": [],
+  "apiRequests": [
+    {
+      "method": "GET",
+      "url": "https://tre-apps-director-sebastian.salty-venus-6590.chatgpt.site/api/exports"
+    },
+    {
+      "method": "GET",
+      "url": "https://tre-apps-director-sebastian.salty-venus-6590.chatgpt.site/api/exports"
+    },
+    {
+      "method": "GET",
+      "url": "https://tre-apps-director-sebastian.salty-venus-6590.chatgpt.site/api/exports"
+    }
+  ],
+  "authenticatedRequestCount": 42,
+  "transport": {
+    "inheritedProxyConfigured": true,
+    "inheritedNodeCaConfigured": true,
+    "tlsVerificationEnabled": true
+  },
+  "limitations": [
+    "Emulated phone browser, not a physical device.",
+    "Browser-local storage; MP4 rendering, cloud sync and server film archives are disconnected."
+  ],
+  "browserVersion": "156.0.8078.4",
+  "status": "passed",
+  "finishedAt": "2026-10-17T07:00:59.129Z"
+}

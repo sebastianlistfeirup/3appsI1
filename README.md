@@ -4,6 +4,8 @@
 
 Se [aktuel status og verificeret omfang](STATUS.md), [verifikationsbeviser](reports/) og [næste integrationsblok](docs/release-readiness.md). Cloud-login, betalt AI-generation og betaling er ikke aktiveret. De lokale produkter kan afprøves uden disse forbindelser.
 
+**Prøv på telefonen:** [Åbn de tre apps](https://tre-apps-studio-sebastian.salty-venus-6590.chatgpt.site/proev/) i Safari eller Chrome, og log ind med ejerens ChatGPT-konto. De private webdemoer kræver ingen installation. [Mobilvejledning, backup og begrænsninger](docs/mobile-demo.md).
+
 ## Start på din maskine
 
 Krav: Node.js 24.19.0 og pnpm 11.25.0. Installér pnpm med `npm install -g pnpm@11.25.0`, hvis det mangler.

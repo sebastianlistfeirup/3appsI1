@@ -1,5 +1,7 @@
 # Tre apps — verificeret omfang
 
+**Opdatering 17. oktober 2026:** De tre browserprofiler er nu publiceret som private HTTPS-Sites med en [fælles mobilstartside](https://tre-apps-studio-sebastian.salty-venus-6590.chatgpt.site/proev/). Se [mobilvejledning og kontrolomfang](docs/mobile-demo.md) samt [faktiske deployments](reports/mobile/deployments.json). Webdemoerne gemmer data i den lokale browser. Sites-adgang med ejerens ChatGPT-konto er tilkoblet; produktets fælles identitet, clouddata og serverworkers er fortsat særskilte integrationsopgaver. MP4-rendering kræver computerprofilen. Det følgende beskriver den oprindelige otte-timers leverance; mobilopdateringen har sit eget [checkpoint](checkpoints/foundation-16-mobile-publication.md).
+
 Arbejdet følger den brugerleverede Masterbibel. Arbejdsperioden er 16. oktober 2026 kl. 19.30 UTC til 17. oktober kl. 03.30 UTC. Denne udgave har tre selvstændige lokale produkter med syntetiske eksempler og et særskilt serverfundament. Produktprofilerne er **DEMO/MANUAL**; ingen nye betalte leverandørkald er aktiveret.
 
 | Produkt | Kan bruges nu | Grænse for den aktuelle udgave |

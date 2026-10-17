@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-17T06:58:46.228Z",
+  "origin": "https://tre-apps-flowlab-sebastian.salty-venus-6590.chatgpt.site",
+  "credentialUsed": false,
+  "transport": "inherited HTTPS_PROXY with inherited NODE_EXTRA_CA_CERTS, TLS verification enabled",
+  "navigationStatus": 401,
+  "status": [
+    401,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "errors": [],
+  "expectedUnauthenticatedStatus": 401
+}

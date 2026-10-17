@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "checkedAt": "2026-10-17T06:59:57.353Z",
+  "origin": "https://tre-apps-flowlab-sebastian.salty-venus-6590.chatgpt.site",
+  "browser": "chromium",
+  "browserVersion": "156.0.8078.4",
+  "viewport": "390x844",
+  "hasTouch": true,
+  "isMobile": true,
+  "checks": [
+    "Private hosted page loads and its actual worker completes the initial30 paired simulations.",
+    "Mobile touch applies capacity6; an actual new30-pair worker calculation changes metrics and preserves the common seed list.",
+    "Hosted JSON, ZIP and PDF buttons download real files; all60 run versions, seed pairs, report decisions and rendered PDF KPI values match.",
+    "Reload of the actual hosted origin retains the edited model, full result and decision, with no horizontal overflow, page errors or HTTP failures."
+  ],
+  "authenticatedRequestCount": 41,
+  "transport": {
+    "inheritedProxyConfigured": true,
+    "inheritedNodeCaConfigured": true,
+    "tlsVerificationEnabled": true
+  },
+  "workerPaths": [
+    "https://tre-apps-flowlab-sebastian.salty-venus-6590.chatgpt.site/_next/static/chunks/turbopack-worker-1hrsqshz0gfey.js",
+    "https://tre-apps-flowlab-sebastian.salty-venus-6590.chatgpt.site/_next/static/chunks/turbopack-worker-1hrsqshz0gfey.js"
+  ],
+  "pairedSeeds": 30,
+  "pageErrors": [],
+  "failedResponses": [],
+  "routeErrors": [],
+  "limitations": [
+    "Browser emulation, not a physical phone.",
+    "Local browser storage; no cloud sync, account sharing or payment backend is tested."
+  ]
+}
