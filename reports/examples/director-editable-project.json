@@ -1,0 +1,38 @@
+{
+  "verifiedAt": "2026-10-17T02:56:48.281Z",
+  "appSourceCommit": "e2df9acadb56cf92f152371da02f55c87ffdebb8",
+  "serverProfile": "clean-checkout-production",
+  "manifestGeneratedAt": "2026-10-17T02:50:53.316Z",
+  "checks": [
+    {
+      "app": "director",
+      "engine": "chromium",
+      "importedActualPackage": true,
+      "independentProjectIdentity": true,
+      "scenesShotsMediaAndSequenceUnchanged": true,
+      "actualJsonDownload": true,
+      "reopened": true,
+      "pageErrors": []
+    },
+    {
+      "app": "director",
+      "engine": "firefox",
+      "importedActualPackage": true,
+      "independentProjectIdentity": true,
+      "scenesShotsMediaAndSequenceUnchanged": true,
+      "actualJsonDownload": true,
+      "reopened": true,
+      "pageErrors": []
+    },
+    {
+      "app": "director",
+      "engine": "webkit",
+      "importedActualPackage": true,
+      "independentProjectIdentity": true,
+      "scenesShotsMediaAndSequenceUnchanged": true,
+      "actualJsonDownload": true,
+      "reopened": true,
+      "pageErrors": []
+    }
+  ]
+}

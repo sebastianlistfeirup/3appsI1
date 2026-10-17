@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
+import { isDeepStrictEqual } from "node:util";
 import {
   compareModels,
   ENGINE_VERSION,
@@ -8,6 +9,12 @@ import {
 } from "../../packages/flow-engine/src/index";
 import * as flowDocumentModule from "../../apps/flowlab/src/lib/document";
 import * as flowReportModule from "../../apps/flowlab/src/lib/report";
+import * as flowWorkspaceModule from "../../apps/flowlab/src/lib/workspace";
+import * as directorArchiveModule from "../../apps/director/src/lib/project-archive";
+import {
+  parseProject,
+  totalFrames,
+} from "../../packages/scene-format/src/index";
 import * as studioModelModule from "../../apps/studio/src/lib/model";
 import * as studioLimitsModule from "../../apps/studio/src/lib/limits";
 import * as studioArchiveModule from "../../apps/studio/src/lib/archive";
@@ -18,6 +25,10 @@ function appModule<T>(module: T): T {
 }
 const { initialDocument } = appModule(flowDocumentModule);
 const { createReport, reportPdf } = appModule(flowReportModule);
+const { serializeWorkspace, importWorkspace } = appModule(flowWorkspaceModule);
+const { importPackage: importDirectorPackage } = appModule(
+  directorArchiveModule,
+);
 const {
   addArtifact,
   addDependency,
@@ -91,6 +102,35 @@ if (
 const storyboard = new Uint8Array(
   await readFile("reports/director/sample-storyboard.pdf"),
 );
+const flowWorkspace = new TextEncoder().encode(serializeWorkspace(doc));
+const restoredFlow = importWorkspace(new TextDecoder().decode(flowWorkspace));
+if (
+  !isDeepStrictEqual(restoredFlow.baseline, doc.baseline) ||
+  !isDeepStrictEqual(restoredFlow.scenario, doc.scenario) ||
+  restoredFlow.baseSeed !== doc.baseSeed ||
+  restoredFlow.comparison !== null ||
+  restoredFlow.holdout !== null
+)
+  throw new Error(
+    "The editable FlowLab model did not preserve its input contract.",
+  );
+const directorProjectPath = "reports/director/sample-project.zip";
+const directorProjectBytes = new Uint8Array(
+  await readFile(directorProjectPath),
+);
+const restoredDirector = await importDirectorPackage(
+  directorProjectBytes.buffer,
+);
+const renderedDirector = parseProject(
+  JSON.parse(await readFile("fixtures/director-sample-render.json", "utf8")),
+);
+if (
+  !isDeepStrictEqual(restoredDirector, renderedDirector) ||
+  totalFrames(restoredDirector) !== 1440
+)
+  throw new Error(
+    "The editable Director project differs from the actual render source.",
+  );
 for (const bytes of [pdf, storyboard])
   if (!new TextDecoder().decode(bytes.slice(0, 5)).startsWith("%PDF-"))
     throw new Error("Missing actual PDF.");
@@ -271,6 +311,7 @@ if (
 )
   throw new Error("Unexpected review fixture state.");
 await writeFile(`${directory}/tre-apps-review.zip`, zip);
+await writeFile(`${directory}/flowlab-modelpakke.json`, flowWorkspace);
 await writeFile(
   `${directory}/manifest.json`,
   JSON.stringify(
@@ -285,6 +326,22 @@ await writeFile(
       },
       projectId: project.id,
       reviewDecisions: 0,
+      editableProjects: {
+        flowlab: {
+          path: "flowlab-modelpakke.json",
+          bytes: flowWorkspace.length,
+          sha256: hash(flowWorkspace),
+          importedResults: false,
+          recalculationRequired: true,
+        },
+        director: {
+          path: "../../reports/director/sample-project.zip",
+          bytes: directorProjectBytes.length,
+          sha256: hash(directorProjectBytes),
+          renderSourceMatches: true,
+          frames: totalFrames(restoredDirector),
+        },
+      },
       flow: {
         engine: ENGINE_VERSION,
         prng: PRNG_VERSION,
@@ -320,5 +377,7 @@ console.log(
     seedPairs: report.comparison.seeds.length,
     reviews: restored.reviews.length,
     verifiedRoundtrip: true,
+    editableFlowModelBytes: flowWorkspace.length,
+    directorSourceVerified: true,
   }),
 );

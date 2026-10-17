@@ -9,7 +9,7 @@ Se [aktuel status og verificeret omfang](STATUS.md), [verifikationsbeviser](repo
 Krav: Node.js 24.19.0 og pnpm 11.25.0. Installér pnpm med `npm install -g pnpm@11.25.0`, hvis det mangler.
 
 ```bash
-git clone https://github.com/sebastianlistfeirup/3appsI1.git
+git clone --branch main https://github.com/sebastianlistfeirup/3appsI1.git
 cd 3appsI1
 pnpm install --frozen-lockfile
 pnpm dev

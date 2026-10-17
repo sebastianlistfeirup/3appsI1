@@ -1,0 +1,38 @@
+{
+  "verifiedAt": "2026-10-17T02:56:36.699Z",
+  "appSourceCommit": "e2df9acadb56cf92f152371da02f55c87ffdebb8",
+  "serverProfile": "clean-checkout-production",
+  "manifestGeneratedAt": "2026-10-17T02:50:53.316Z",
+  "checks": [
+    {
+      "app": "flowlab",
+      "engine": "chromium",
+      "importedActualPackage": true,
+      "recalculatedSeedPairs": 30,
+      "sourceModelsPreserved": true,
+      "reopened": true,
+      "downloadedReportSha256": "f8de35f9cbe8e8f452236f5d18a95da33ccb38c61589f7c2f00cfbd042a5e53b",
+      "pageErrors": []
+    },
+    {
+      "app": "flowlab",
+      "engine": "firefox",
+      "importedActualPackage": true,
+      "recalculatedSeedPairs": 30,
+      "sourceModelsPreserved": true,
+      "reopened": true,
+      "downloadedReportSha256": "b9c9dbb1ab2c207fe561c15ce2f28fc62046bd01b88b8d84b4a3229cbef6edb1",
+      "pageErrors": []
+    },
+    {
+      "app": "flowlab",
+      "engine": "webkit",
+      "importedActualPackage": true,
+      "recalculatedSeedPairs": 30,
+      "sourceModelsPreserved": true,
+      "reopened": true,
+      "downloadedReportSha256": "010e4857c623b94c4038dc24eff82ad6d705440ba97ffe74e21e29b958162f81",
+      "pageErrors": []
+    }
+  ]
+}

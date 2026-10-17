@@ -15,6 +15,8 @@ Denne leverance giver tre fungerende lokale produkter og et særskilt, afprøvet
 
 Den detaljerede [FlowLab-kontraktaudit](flowlab-audit.md) viser krav, konkrete fejl, rettelser og de fortsat manglende forbindelser.
 
+[Kortet over biblens acceptkrav](acceptance-map.md) forbinder også Studio- og Director-id'erne med konkrete tests og viser, hvor et lokalt bevis stadig mangler den tilsluttede kundesti.
+
 Se [arbejdsstatus](../STATUS.md), [CI](https://github.com/sebastianlistfeirup/3appsI1/actions), de konkrete [checkpoints](../checkpoints/) og [rapporter](../reports/) for tidspunkt, commit og testomfang. En grøn automatiseret tilgængelighedsscanning erstatter ikke test med hjælpemidler og rigtige brugere.
 
 ## Næste integrationsblok

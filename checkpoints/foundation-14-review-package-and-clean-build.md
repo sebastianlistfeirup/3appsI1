@@ -11,3 +11,11 @@ Executed on the production Studio build: the new browser journey passes in Chrom
 Evidence: `reports/studio/three-apps-demo-results.json`, `reports/studio/*three-apps-demo*`, matching a11y reports, and `examples/foerste-gennemgang/manifest.json`. The guide lives beside the archive.
 
 After integrating Director’s final evidence, the package was regenerated from its latest actual MP4/PDF (1,247,105 bytes). The same three browser journeys passed again in 31.5 seconds at 02:37 UTC, this time against the development server launched by Playwright because the earlier production server had stopped. The final main CI exercises the regenerated package against a fresh production build. The retained targeted JSON is this latest rerun; the prior production verification remains recorded above.
+
+## Editable originals
+
+The generator now also writes `flowlab-modelpakke.json` using the actual workspace serializer/importer. It preserves baseline, alternative, seed and decision text, while explicitly discarding computed results on import. The original `reports/director/sample-project.zip` is parsed and all fields compared with the actual render source in `fixtures/director-sample-render.json`; its timeline has 1,440 frames. Both companion files have sizes and SHA-256 in the example manifest.
+
+The regenerated Studio package passed its three browser journeys on the clean-checkout **production** server in 19.1 seconds. `tools/demo/check-editable-projects.mjs flowlab` and `director` additionally import the actual companion files in Chromium, Firefox and WebKit. FlowLab recalculates the exact 30-seed plan and exports real JSON; Director creates an independent film, preserves all scene/shot/media/sequence data, exports real JSON and reopens the original shots. The checks and screenshots are retained under `reports/examples`. These are separate actual example checks, not extra cases counted in Studio’s 150-case suite.
+
+Servers for this proof were the fresh production builds at `e2df9ac`, whose application source is unchanged in `92a02fc`; the checker records the explicitly supplied source/profile. Tools TypeScript and formatting checks pass. Commands run from the repository root after starting the respective local app; an optional `EXAMPLE_SERVER_COMMIT` records a known server revision instead of guessing it.

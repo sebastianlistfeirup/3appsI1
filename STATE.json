@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T02:38:03Z",
+  "updatedAt": "2026-10-17T02:57:25Z",
   "status": "building",
   "activeTasks": [
-    "F14-final-main-ci",
+    "final-source-ci",
     "handoff"
   ],
   "profile": "demo",

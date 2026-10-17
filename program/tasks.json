@@ -17,7 +17,14 @@
         "program",
         "docs",
         "reports"
-      ]
+      ],
+      "priority": 10,
+      "acceptance": [
+        "A fresh source checkout installs the pinned lockfile and builds three independent apps."
+      ],
+      "verification_profile": "real-local-integration-and-ci",
+      "checkpoint": "checkpoints/foundation-14-review-package-and-clean-build.md",
+      "attempts": null
     },
     {
       "id": "S01",
@@ -33,7 +40,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/studio"
-      ]
+      ],
+      "priority": 20,
+      "acceptance": [
+        "Project, brief, original file versions, explicit review and hash-checked export survive reopening."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/studio-01.md",
+      "attempts": null
     },
     {
       "id": "S09",
@@ -48,7 +62,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/studio"
-      ]
+      ],
+      "priority": 30,
+      "acceptance": [
+        "Actual core UI journeys work in three pinned browser engines and the required three viewports."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/studio-02.md",
+      "attempts": null
     },
     {
       "id": "L01",
@@ -63,7 +84,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 40,
+      "acceptance": [
+        "The deterministic simulation matches golden fixtures and reports paired results from actual runs."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L01.md",
+      "attempts": null
     },
     {
       "id": "D01",
@@ -78,7 +106,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 50,
+      "acceptance": [
+        "Scene, cameras and immutable captured shots persist, including a functional no-WebGL path."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-core.md",
+      "attempts": null
     },
     {
       "id": "D05",
@@ -93,7 +128,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 60,
+      "acceptance": [
+        "Actual PDF and H.264/AAC files match the locked scene timeline; interrupted local renders resume safely."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-core.md",
+      "attempts": null
     },
     {
       "id": "F03",
@@ -113,7 +155,14 @@
         "program",
         "docs",
         "reports"
-      ]
+      ],
+      "priority": 70,
+      "acceptance": [
+        "Restricted PostgreSQL roles enforce tenant isolation, revision checks and atomic budget reservations."
+      ],
+      "verification_profile": "real-local-integration-and-ci",
+      "checkpoint": "checkpoints/foundation-database.md",
+      "attempts": null
     },
     {
       "id": "F04",
@@ -133,7 +182,14 @@
         "program",
         "docs",
         "reports"
-      ]
+      ],
+      "priority": 80,
+      "acceptance": [
+        "A separate durable worker survives a real process restart without duplicate results or usage."
+      ],
+      "verification_profile": "real-local-integration-and-ci",
+      "checkpoint": "checkpoints/backend-api.md",
+      "attempts": null
     },
     {
       "id": "F06",
@@ -155,7 +211,14 @@
         "program",
         "docs",
         "reports"
-      ]
+      ],
+      "priority": 90,
+      "acceptance": [
+        "Fresh CI jobs pass production builds and relevant domain, database, restore and browser gates; handoff names missing connections."
+      ],
+      "verification_profile": "real-local-integration-and-ci",
+      "checkpoint": "checkpoints/foundation-13-browser-partitions.md",
+      "attempts": null
     },
     {
       "id": "F05",
@@ -175,7 +238,14 @@
         "program",
         "docs",
         "reports"
-      ]
+      ],
+      "priority": 100,
+      "acceptance": [
+        "A chosen billing provider passes signed webhook, duplicate-event, refund and test-mode checkout cases before live activation."
+      ],
+      "verification_profile": "not-connected",
+      "checkpoint": null,
+      "attempts": null
     },
     {
       "id": "S10",
@@ -190,7 +260,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/studio"
-      ]
+      ],
+      "priority": 110,
+      "acceptance": [
+        "An unfinished manual delivery reopens unchanged and remains downloadable after an actual IndexedDB quota failure."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/studio-06-delivery-drafts.md",
+      "attempts": null
     },
     {
       "id": "F07",
@@ -209,7 +286,14 @@
         "tools",
         "docs",
         "reports"
-      ]
+      ],
+      "priority": 120,
+      "acceptance": [
+        "A second real PostgreSQL instance and private file store restore data, isolation, hashes and held reservations."
+      ],
+      "verification_profile": "real-local-integration-and-ci",
+      "checkpoint": "checkpoints/foundation-07-restore.md",
+      "attempts": null
     },
     {
       "id": "F08",
@@ -228,7 +312,14 @@
         "tools",
         "docs",
         "reports"
-      ]
+      ],
+      "priority": 130,
+      "acceptance": [
+        "Terminating actual idle PostgreSQL sessions does not permanently stop worker dispatch or execution."
+      ],
+      "verification_profile": "real-local-integration-and-ci",
+      "checkpoint": "checkpoints/foundation-08-connection-recovery.md",
+      "attempts": null
     },
     {
       "id": "L12",
@@ -243,7 +334,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 140,
+      "acceptance": [
+        "Named scenarios preserve unsaved changes explicitly and retain each comparison’s actual input versions."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L12-scenario-library.md",
+      "attempts": null
     },
     {
       "id": "L13",
@@ -258,7 +356,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 150,
+      "acceptance": [
+        "Wide CSV mappings preserve raw field boundaries and explain invalid rows without silent unit conversions."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L13-csv-boundaries.md",
+      "attempts": null
     },
     {
       "id": "D11",
@@ -273,7 +378,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 160,
+      "acceptance": [
+        "Studio and courtyard have actual versioned geometry; old shots retain their captured scene."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-core.md",
+      "attempts": null
     },
     {
       "id": "F09",
@@ -291,7 +403,14 @@
         "apps/studio",
         "docs",
         "reports"
-      ]
+      ],
+      "priority": 170,
+      "acceptance": [
+        "Private immutable bytes are served only by short-lived signed links with current membership checks and exact hashes."
+      ],
+      "verification_profile": "real-local-integration-and-ci",
+      "checkpoint": "checkpoints/foundation-09-private-artifacts.md",
+      "attempts": null
     },
     {
       "id": "L14",
@@ -306,7 +425,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 180,
+      "acceptance": [
+        "Time-tail metrics retain observation counts and distinguish planned waiting from queue and processing time."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L14-case-time-profile.md",
+      "attempts": null
     },
     {
       "id": "D12",
@@ -321,7 +447,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 190,
+      "acceptance": [
+        "Large original media remain intact while thumbnails are generated sequentially with bounded cancellation."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-milestone-10.md",
+      "attempts": null
     },
     {
       "id": "S11",
@@ -337,7 +470,14 @@
       "allowed_paths": [
         "apps/studio",
         "tests/e2e"
-      ]
+      ],
+      "priority": 200,
+      "acceptance": [
+        "Editing preserves source rights, immutable version lineage and exact uses by runs and deliveries."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/studio-07-artifact-lineage.md",
+      "attempts": null
     },
     {
       "id": "L15",
@@ -352,7 +492,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 210,
+      "acceptance": [
+        "Both compared models use the same explicit experiment bounds; monetary inputs remain finite and validated."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L15-experiment-settings.md",
+      "attempts": null
     },
     {
       "id": "L16",
@@ -367,7 +514,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 220,
+      "acceptance": [
+        "Changed model input is fully represented in a bounded UI difference view and complete exported evidence."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L16-input-differences.md",
+      "attempts": null
     },
     {
       "id": "F10",
@@ -384,7 +538,14 @@
         "tools",
         "docs",
         "reports"
-      ]
+      ],
+      "priority": 230,
+      "acceptance": [
+        "Production Next routes exercise actual TLS JWKS, JWT, restricted RLS, a separate worker and private byte download."
+      ],
+      "verification_profile": "real-local-integration-and-ci",
+      "checkpoint": "checkpoints/foundation-10-production-http.md",
+      "attempts": null
     },
     {
       "id": "F11",
@@ -407,7 +568,14 @@
         "tests/integration",
         "docs",
         "reports"
-      ]
+      ],
+      "priority": 240,
+      "acceptance": [
+        "Reserved whole-file uploads survive a real server kill and restore; finalization remains immutable and idempotent."
+      ],
+      "verification_profile": "real-local-integration-and-ci",
+      "checkpoint": "checkpoints/foundation-11-durable-uploads.md",
+      "attempts": null
     },
     {
       "id": "L17",
@@ -422,7 +590,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 250,
+      "acceptance": [
+        "Manual arrivals and case types validate as an atomic draft without discarding unfinished input."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L17-arrival-editor.md",
+      "attempts": null
     },
     {
       "id": "D14",
@@ -437,7 +612,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 260,
+      "acceptance": [
+        "A real browser worker packs, deduplicates and cancels archive work while preserving original media and versions."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-milestone-11.md",
+      "attempts": null
     },
     {
       "id": "S12",
@@ -452,7 +634,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/studio"
-      ]
+      ],
+      "priority": 270,
+      "acceptance": [
+        "Review comments and criteria reopen, but neither acceptance nor stale-input approval is inferred from a draft."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/studio-08-review-drafts.md",
+      "attempts": null
     },
     {
       "id": "L18",
@@ -467,7 +656,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 280,
+      "acceptance": [
+        "Resource capacity, wages and calendar intervals apply atomically and remain durable through reload."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L18-resource-editor.md",
+      "attempts": null
     },
     {
       "id": "D15",
@@ -482,7 +678,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 290,
+      "acceptance": [
+        "Frame-accurate captions and actual render quality are measured from output pixels, audio and file metadata."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-milestone-12.md",
+      "attempts": null
     },
     {
       "id": "S13",
@@ -497,7 +700,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/studio"
-      ]
+      ],
+      "priority": 300,
+      "acceptance": [
+        "A bounded multi-project backup verifies hashes before additive import and preserves originals on quota failure."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/studio-09-workspace-backup.md",
+      "attempts": null
     },
     {
       "id": "L19",
@@ -512,7 +722,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 310,
+      "acceptance": [
+        "Resource and variable-cost totals reconcile across actual runs, UI tables and exported reports."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L19-cost-profile.md",
+      "attempts": null
     },
     {
       "id": "L20",
@@ -527,7 +744,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 320,
+      "acceptance": [
+        "Synthetic routing, rework and calendar examples use actual deterministic calculations and declare their assumptions."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L20-example-templates.md",
+      "attempts": null
     },
     {
       "id": "D16",
@@ -542,7 +766,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 330,
+      "acceptance": [
+        "The local render capability probes actual tools and filters and reports actionable failure before accepting unsupported work."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-13-render-profile.md",
+      "attempts": null
     },
     {
       "id": "D17",
@@ -557,7 +788,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 340,
+      "acceptance": [
+        "Cancelling a media import prevents stale application and releases native media, URL and audio resources."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-14-media-lifecycle.md",
+      "attempts": null
     },
     {
       "id": "F12",
@@ -577,7 +815,14 @@
         "packages/database",
         "apps/flowlab/src/server",
         "tools/backend"
-      ]
+      ],
+      "priority": 350,
+      "acceptance": [
+        "A bounded native 30-pair calculation survives real in-flight SIGKILL and natural queue/lease expiry with one result and usage event."
+      ],
+      "verification_profile": "real-local-integration-and-ci",
+      "checkpoint": "checkpoints/foundation-12-durable-flow-jobs.md",
+      "attempts": null
     },
     {
       "id": "L21",
@@ -592,7 +837,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 360,
+      "acceptance": [
+        "Keyboard diagram moves persist, preserve focus and leave routing labels readable in required viewports."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L21-diagram-keyboard.md",
+      "attempts": null
     },
     {
       "id": "D18",
@@ -607,7 +859,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 370,
+      "acceptance": [
+        "The project-bound render archive preserves immutable downloadable results and rejects foreign or stale identity."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-15-export-archive.md",
+      "attempts": null
     },
     {
       "id": "S14",
@@ -622,7 +881,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/studio"
-      ]
+      ],
+      "priority": 380,
+      "acceptance": [
+        "Raw unfinished brief text survives reload; only explicit valid publication creates a new immutable brief."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/studio-10-brief-drafts.md",
+      "attempts": null
     },
     {
       "id": "S15",
@@ -637,7 +903,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/studio"
-      ]
+      ],
+      "priority": 390,
+      "acceptance": [
+        "Each run locks the task owner, requirements and intended brief without inheriting unrelated later edits."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/studio-11-task-definitions.md",
+      "attempts": null
     },
     {
       "id": "S16",
@@ -652,7 +925,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/studio"
-      ]
+      ],
+      "priority": 400,
+      "acceptance": [
+        "Selected input versions and the locked task/brief export with original bytes, exact hashes and cancellable worker packing."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/studio-12-work-packages.md",
+      "attempts": null
     },
     {
       "id": "L22",
@@ -667,7 +947,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 410,
+      "acceptance": [
+        "Finished and pending SLA outcomes show known and unknown counts consistently in UI, CSV and PDF."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L22-sla-guide.md",
+      "attempts": null
     },
     {
       "id": "L23",
@@ -682,7 +969,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 420,
+      "acceptance": [
+        "Duration distributions validate units and bounds as one atomic edit; invalid drafts never silently clamp the model."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L23-duration-editor.md",
+      "attempts": null
     },
     {
       "id": "L24",
@@ -697,7 +991,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 430,
+      "acceptance": [
+        "Numeric drafts apply once with undo and actual persistence; touch actions commit the active draft before the next change."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L24-safe-inspector.md",
+      "attempts": null
     },
     {
       "id": "D19",
@@ -712,7 +1013,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 440,
+      "acceptance": [
+        "Mouse, touch and keyboard move actual scene/camera geometry while existing captured versions remain immutable."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-16-scene-plan.md",
+      "attempts": null
     },
     {
       "id": "D20",
@@ -727,7 +1035,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 450,
+      "acceptance": [
+        "A real candidate image and the locked shot are compared before an explicit immutable update; conflict or abort preserves the project."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-17-continuity-review.md",
+      "attempts": null
     },
     {
       "id": "S17",
@@ -742,7 +1057,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/studio"
-      ]
+      ],
+      "priority": 460,
+      "acceptance": [
+        "A 1000-run, 10000-event project remains searchable and paged; exact old-run links and full exports preserve history."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/studio-13-history.md",
+      "attempts": null
     },
     {
       "id": "S18",
@@ -757,7 +1079,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/studio"
-      ]
+      ],
+      "priority": 470,
+      "acceptance": [
+        "Actual archive workers terminate on cancel/unmount; late messages cannot apply a result and retry still succeeds."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/studio-14-cancellable-project-packages.md",
+      "attempts": null
     },
     {
       "id": "L25",
@@ -772,7 +1101,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/flowlab"
-      ]
+      ],
+      "priority": 480,
+      "acceptance": [
+        "Holdout is scoped to its exact baseline, source and period; stale evidence and unvalidated alternatives remain explicit."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L25-evidence-status.md",
+      "attempts": null
     },
     {
       "id": "D21",
@@ -787,7 +1123,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 490,
+      "acceptance": [
+        "The displayed start, trim, end and fade intervals match the actual playback timeline, including crossfade overlap."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-18-audio-timeline.md",
+      "attempts": null
     },
     {
       "id": "D22",
@@ -802,7 +1145,14 @@
       "status": "verified-local",
       "allowed_paths": [
         "apps/director"
-      ]
+      ],
+      "priority": 500,
+      "acceptance": [
+        "Actual 108 MB media JSON recovers in a cancellable worker; original hashes and usable project state survive abort and retry."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/director-19-json-recovery.md",
+      "attempts": null
     },
     {
       "id": "F13",
@@ -821,7 +1171,14 @@
         ".github",
         "reports",
         "docs"
-      ]
+      ],
+      "priority": 510,
+      "acceptance": [
+        "Eight independent CI jobs retain every existing assertion and the relevant logs, files and failure traces."
+      ],
+      "verification_profile": "real-local-integration-and-ci",
+      "checkpoint": "checkpoints/foundation-13-browser-partitions.md",
+      "attempts": null
     },
     {
       "id": "L26",
@@ -837,7 +1194,14 @@
       "allowed_paths": [
         "apps/flowlab",
         "packages/flow-engine"
-      ]
+      ],
+      "priority": 520,
+      "acceptance": [
+        "Reports, replay and holdout require the exact engine and PRNG plus the complete requested seed plan."
+      ],
+      "verification_profile": "three-browser-ui-and-domain",
+      "checkpoint": "checkpoints/flowlab-L26-prng-provenance.md",
+      "attempts": null
     },
     {
       "id": "F14",
@@ -851,7 +1215,9 @@
       "verification": [
         "pnpm exec tsx tools/demo/create-review-package.ts",
         "pnpm exec playwright test tests/e2e/studio-demo-package.spec.ts",
-        "fresh-checkout pnpm install --frozen-lockfile --offline && pnpm build"
+        "fresh-checkout pnpm install --frozen-lockfile --offline && pnpm build",
+        "node tools/demo/check-editable-projects.mjs flowlab",
+        "node tools/demo/check-editable-projects.mjs director"
       ],
       "status": "verified-local",
       "allowed_paths": [
@@ -860,7 +1226,20 @@
         "tests/e2e",
         "docs",
         "reports"
-      ]
+      ],
+      "priority": 530,
+      "acceptance": [
+        "A real cross-app package imports unchanged, requires two fresh explicit reviews and exports every original file byte.",
+        "Editable FlowLab and Director projects import, preserve source inputs and export/reopen in all three browsers; FlowLab recalculates its actual paired result."
+      ],
+      "verification_profile": "real-local-integration-and-ci",
+      "checkpoint": "checkpoints/foundation-14-review-package-and-clean-build.md",
+      "attempts": null
     }
-  ]
+  ],
+  "metadataNotes": {
+    "priority": "Lower numbers identify the recorded implementation order among available dependencies; this is not a severity rating. Completed work is not rescheduled.",
+    "attempts": "No complete per-task attempt ledger was recorded. Null means unknown, not zero. Individual executed commands and corrections are retained in reports and checkpoints.",
+    "verification_profile": "Describes the evidence scope; commands, results, limits and precise browser subsets live in the linked checkpoint. A profile is not an automatic connected-product certification."
+  }
 }

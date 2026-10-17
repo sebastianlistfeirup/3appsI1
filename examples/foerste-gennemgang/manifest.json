@@ -1,14 +1,30 @@
 {
-  "generatedAt": "2026-10-17T02:36:54.440Z",
+  "generatedAt": "2026-10-17T02:50:53.316Z",
   "profile": "synthetic-local-manual-review",
   "generator": "tools/demo/create-review-package.ts",
   "archive": {
     "path": "tre-apps-review.zip",
     "bytes": 1247105,
-    "sha256": "c57de4d63373be85959ac9b74c36e9745fd1031e64a969f81ad91be5da7c8346"
+    "sha256": "d5c5033fffaa9be76d638423a34d4655ccb790f87f81a5708d15abf93e02d63a"
   },
-  "projectId": "project-5058777d-20bb-44f6-8c71-4de5f0cb2387",
+  "projectId": "project-2dc8275c-192e-4036-a9b4-a9aa9950fc84",
   "reviewDecisions": 0,
+  "editableProjects": {
+    "flowlab": {
+      "path": "flowlab-modelpakke.json",
+      "bytes": 3823,
+      "sha256": "c0674476a6f0048174f1550527928feed9d943dd128889df224733bad8554976",
+      "importedResults": false,
+      "recalculationRequired": true
+    },
+    "director": {
+      "path": "../../reports/director/sample-project.zip",
+      "bytes": 403277,
+      "sha256": "5fe02ed94370a99c31eda4aaa31b9163312b52ad8c3d234488afae1ee74ce4fb",
+      "renderSourceMatches": true,
+      "frames": 1440
+    }
+  },
   "flow": {
     "engine": "flow-des/1.3.0",
     "prng": "mulberry32-fnv1a/2",
@@ -65,14 +81,14 @@
     },
     {
       "name": "flowlab-rapport.pdf",
-      "bytes": 23654,
-      "sha256": "35c7bcaf64fc9295ea97830a72af43e1f35311a50056dd2110802831405553cf",
+      "bytes": 23655,
+      "sha256": "72dac7bbb8900c975780cf600739781d1f6492e5ca4ad5089f00d471cf556d87",
       "provenance": "Faktisk lokal 30-par beregning; flow-des/1.3.0, mulberry32-fnv1a/2; syntetisk Medlemsservice. Ingen holdout."
     },
     {
       "name": "flowlab-grundlag.json",
       "bytes": 1349996,
-      "sha256": "743755cecac4b42b184d07ee386cc3eb1326300751cb0eb601c2e973e35dc44f",
+      "sha256": "e0d728d454ac5acf9c3850ceb468193836a09d1e2f33bf5ea05ef3e00888d19a",
       "provenance": "Samme faktiske beregning som flowlab-rapport.pdf; låste modeller, seeds og resultater."
     },
     {
