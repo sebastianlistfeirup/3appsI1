@@ -1,0 +1,36 @@
+{
+  "executedAt": "2026-10-17T00:10:28.811Z",
+  "results": [
+    {
+      "viewport": "desktop",
+      "violations": [],
+      "checks": [
+        "Exact completed/known/unknown counts on 30 real seeds; no-completion ratio stays unknown",
+        "Last seed selection and CSV match the downloaded report ZIP and page-five PDF",
+        "Changed limit is explicit; equality at the limit is not an already-exceeded backlog case",
+        "Empty period has zero counts and unknown ratio; no overflow or browser errors"
+      ]
+    },
+    {
+      "viewport": "tablet",
+      "violations": [],
+      "checks": [
+        "Exact completed/known/unknown counts on 30 real seeds; no-completion ratio stays unknown",
+        "Last seed selection and CSV match the downloaded report ZIP and page-five PDF",
+        "Changed limit is explicit; equality at the limit is not an already-exceeded backlog case",
+        "Empty period has zero counts and unknown ratio; no overflow or browser errors"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "violations": [],
+      "checks": [
+        "Exact completed/known/unknown counts on 30 real seeds; no-completion ratio stays unknown",
+        "Last seed selection and CSV match the downloaded report ZIP and page-five PDF",
+        "Changed limit is explicit; equality at the limit is not an already-exceeded backlog case",
+        "Empty period has zero counts and unknown ratio; no overflow or browser errors"
+      ]
+    }
+  ],
+  "errors": []
+}

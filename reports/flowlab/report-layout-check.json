@@ -1,7 +1,7 @@
 {
-  "executedAt": "2026-10-16T23:29:51.007Z",
-  "pages": 24,
-  "words": 3047,
+  "executedAt": "2026-10-17T00:11:39.811Z",
+  "pages": 25,
+  "words": 3264,
   "outside": [],
   "checks": [
     "200-character alternative name and 100-character model name retained in appendix",
@@ -9,6 +9,7 @@
     "Nearly 10,000-character unbroken Danish decision retained",
     "Every extracted word stays within printable page bounds",
     "Actual licensed embedded fonts and full 30 paired golden runs used",
-    "All 100 distinct pool IDs and maximum fixed cost survive the paginated resource ledger"
+    "All 100 distinct pool IDs and maximum fixed cost survive the paginated resource ledger",
+    "Different minimum/maximum SLA limits and full explanation remain inside page bounds"
   ]
 }

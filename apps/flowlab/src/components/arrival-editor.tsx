@@ -195,8 +195,11 @@ export default function ArrivalEditor({
           <div className="arrival-counts">
             <Clock3 size={18} />
             <span>
-              <b>{manual.length.toLocaleString("da-DK")} sager</b> ·{" "}
-              {counts.inPeriod.toLocaleString("da-DK")} ankommer før stop ved{" "}
+              <b>
+                {manual.length.toLocaleString("da-DK")}{" "}
+                {manual.length === 1 ? "sag" : "sager"}
+              </b>{" "}
+              · {counts.inPeriod.toLocaleString("da-DK")} ankommer før stop ved{" "}
               {formatCaseTime(model.horizon)}.{" "}
               {counts.outside.toLocaleString("da-DK")} ved eller efter stop.
             </span>

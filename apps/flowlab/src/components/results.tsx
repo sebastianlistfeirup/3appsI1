@@ -1,4 +1,5 @@
 "use client";
+import SlaProfile from "./sla-profile";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowDownRight,
@@ -373,37 +374,7 @@ export function ResultsPanel({
       </div>
       <RunDistribution comparison={comparison} />
       <TimeProfile comparison={comparison} />
-      <div className="panel">
-        <h3>Sagerne, du endnu ikke kan se hele udfaldet af</h3>
-        <div className="cohort-grid">
-          {(["baselineRuns", "scenarioRuns"] as const).map((field, i) => {
-            const runs = comparison[field],
-              avg = (
-                f: "slaKnownBacklogBreaches" | "slaUnknownBacklog" | "aborted",
-              ) =>
-                runs.reduce((s, r) => s + r.metrics[f], 0) / (runs.length || 1);
-            return (
-              <div key={field}>
-                <span className="eyebrow">
-                  {i === 0 ? "BASELINE" : "ALTERNATIV"}
-                </span>
-                <p>
-                  <b>{formatNumber(avg("slaKnownBacklogBreaches"), 1)}</b> sager
-                  i restkøen har allerede overskredet SLA.
-                </p>
-                <p>
-                  <b>{formatNumber(avg("slaUnknownBacklog"), 1)}</b> har endnu
-                  ukendt SLA-udfald.
-                </p>
-                <p>
-                  <b>{formatNumber(avg("aborted"), 1)}</b> er eksplicit afbrudt
-                  af motoren.
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <SlaProfile comparison={comparison} />
       <CaseExplorer comparison={comparison} />
     </>
   );

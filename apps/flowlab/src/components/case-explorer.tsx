@@ -237,7 +237,8 @@ export default function CaseExplorer({
           )}
           <div className="case-pagination">
             <span>
-              {formatNumber(filtered.length)} sager ·{" "}
+              {formatNumber(filtered.length)}{" "}
+              {filtered.length === 1 ? "sag" : "sager"} ·{" "}
               {filtered.length ? currentPage * 20 + 1 : 0}–
               {Math.min(filtered.length, (currentPage + 1) * 20)}
             </span>

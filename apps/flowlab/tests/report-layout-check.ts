@@ -8,6 +8,8 @@ async function main() {
   const doc = initialDocument();
   doc.baseline = goldenModel();
   doc.scenario = goldenModel();
+  doc.baseline.sla = 1;
+  doc.scenario.sla = 365 * 24 * 3600000;
   doc.baseline.name = "MODELSTART" + "W".repeat(81) + "MODELSLUT";
   doc.scenarioName = "ALTSTART" + "W".repeat(185) + "ALTSLUT";
   doc.hypothesis =
@@ -98,6 +100,14 @@ async function main() {
   );
   const pages = (bbox.match(/<page /g) ?? []).length;
   assert(pages > 2, "Full long text has a paginated appendix");
+  assert(
+    extracted.includes("Modellerne bruger forskellige SLA-grænser"),
+    "The SLA limit difference is explicit in the PDF",
+  );
+  assert(
+    extracted.includes("31.536.000.000"),
+    "The maximum SLA limit remains exact in milliseconds",
+  );
   const report = {
     executedAt: new Date().toISOString(),
     pages,
@@ -110,6 +120,7 @@ async function main() {
       "Every extracted word stays within printable page bounds",
       "Actual licensed embedded fonts and full 30 paired golden runs used",
       "All 100 distinct pool IDs and maximum fixed cost survive the paginated resource ledger",
+      "Different minimum/maximum SLA limits and full explanation remain inside page bounds",
     ],
   };
   await writeFile(

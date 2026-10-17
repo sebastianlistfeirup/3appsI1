@@ -1,7 +1,8 @@
 import { PDFDocument, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import { metricDefinitions } from "@tre/flow-engine";
-import { formatDifference, formatMetric } from "./document";
+import { SLA_FIELDS, SLA_LABELS, slaProfile } from "./sla-profile";
+import { formatDifference, formatMetric, formatNumber } from "./document";
 import type { DecisionReport } from "./report";
 import {
   COST_FIELDS,
@@ -507,6 +508,65 @@ export async function renderReportPdf(
     9,
     3,
   );
+  addPage();
+  text(42, 99, "SLA & de uafsluttede sager", 23, colors.ink, bold);
+  paragraph(
+    42,
+    128,
+    "En andel blandt afsluttede sager beskriver ikke restkøens endelige udfald. Se derfor altid de kendte og endnu ukendte brud sammen med andelen.",
+    511,
+    10,
+    3,
+  );
+  const slaA = slaProfile(c, "baseline"),
+    slaB = slaProfile(c, "scenario");
+  text(319, 191, "BASELINE", 8, colors.muted, bold);
+  text(446, 191, "ALTERNATIV", 8, colors.muted, bold);
+  const slaRows = [
+    [
+      "SLA-grænse fra ankomst (ms)",
+      formatNumber(slaA.threshold),
+      formatNumber(slaB.threshold),
+    ],
+    [
+      "Inden for SLA blandt afsluttede",
+      slaA.completedShare === null
+        ? "—"
+        : `${formatNumber(slaA.completedShare * 100, 1)} %`,
+      slaB.completedShare === null
+        ? "—"
+        : `${formatNumber(slaB.completedShare * 100, 1)} %`,
+    ],
+    ...SLA_FIELDS.map((field) => [
+      SLA_LABELS[field],
+      formatNumber(slaA.counts[field], 1),
+      formatNumber(slaB.counts[field], 1),
+    ]),
+    [
+      "Kørsler med kendt andel",
+      `${slaA.availableRates} af ${slaA.runs}`,
+      `${slaB.availableRates} af ${slaB.runs}`,
+    ],
+  ];
+  slaRows.forEach(([label, a, b], index) => {
+    const top = 221 + index * 27;
+    if (index % 2 === 0) rect(38, top - 17, 519, 25, rgb(0.97, 0.98, 0.97));
+    text(46, top, label, 10, colors.ink, regular, 260);
+    text(319, top, a, 10, colors.ink, regular, 114);
+    text(446, top, b, 10, colors.teal, bold, 107);
+  });
+  let slaY = 506;
+  for (const explanation of [
+    ...(slaA.threshold !== slaB.threshold
+      ? [
+          "Modellerne bruger forskellige SLA-grænser. En ændret andel kan skyldes selve grænsen; sammenlign også sagernes tider.",
+        ]
+      : []),
+    "Antal er gennemsnit pr. kørsel. Andelen er gennemsnittet af kørslernes andele, ikke én samlet andel af alle sager. En kørsel uden afsluttede sager har ukendt andel og indgår ikke som nul.",
+    "SLA måles fra oprindelig ankomst til afslutning, inklusive kø, planlagt vent og kalenderpause. Præcis på grænsen tæller som inden for SLA. Uafsluttede sager har et kendt brud, når forløbet tid er større end grænsen; ellers er udfaldet ukendt.",
+    "Afsluttede tælles i målevinduet. Restkøen er alle ankomne, uafsluttede sager ved stop, også fra før målestart. Afbrudte sager vises separat. Alle præcise tal og grænser findes i sla.csv og report.json.",
+  ])
+    slaY = paragraph(42, slaY, explanation, 511, 10, 4).end + 15;
   const longNames =
     bold.widthOfTextAtSize(report.title, 9) > 511 ||
     regular.widthOfTextAtSize(`Baseline vs. ${report.scenarioName}`, 9) > 511;

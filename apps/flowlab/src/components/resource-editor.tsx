@@ -144,7 +144,8 @@ export default function ResourceEditor({
         <div>
           <span>Uden tilknyttede trin</span>
           <strong>
-            {unused.length} af {drafts.length} puljer
+            {unused.length} af {drafts.length}{" "}
+            {drafts.length === 1 ? "pulje" : "puljer"}
           </strong>
           <small>Deres planlagte løn er med i beløbet.</small>
         </div>

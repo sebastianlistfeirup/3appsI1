@@ -319,7 +319,7 @@ export default function FlowLab() {
                 comparisonContext: context,
               });
               notify(
-                `${result.seeds.length} parrede kørsler er færdige. Resultatet er gemt lokalt.`,
+                `${result.seeds.length} parrede kørsler er færdige. Resultatet gemmes lokalt.`,
               );
             } else {
               setPartial(result);
@@ -1075,7 +1075,10 @@ export default function FlowLab() {
                             aria-label="Administrér ressourcepuljer"
                             onClick={() => setResourceEditor("")}
                           >
-                            {model.resources.length} ressourcepools
+                            {model.resources.length}{" "}
+                            {model.resources.length === 1
+                              ? "ressourcepulje"
+                              : "ressourcepuljer"}
                           </button>{" "}
                           <b>·</b> {formatCaseTime(model.horizon)} model
                         </span>

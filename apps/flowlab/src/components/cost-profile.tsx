@@ -209,7 +209,8 @@ export default function CostProfile({
         />
       </label>
       <p className="field-hint">
-        {filtered.length} af {ids.length} puljer. Højst {PAGE_SIZE} vises ad
+        {filtered.length} af {ids.length}{" "}
+        {ids.length === 1 ? "pulje" : "puljer"}. Højst {PAGE_SIZE} vises ad
         gangen. Samme pulje-id sammenlignes på tværs af modellerne.
       </p>
       <div

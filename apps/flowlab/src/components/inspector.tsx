@@ -357,7 +357,7 @@ export default function Inspector({
             }}
           >
             <Plus size={13} />
-            Opret ressourcepool
+            Opret ressourcepulje
           </button>
           <button
             className="text-button"
