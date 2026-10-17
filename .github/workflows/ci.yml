@@ -65,7 +65,11 @@ jobs:
           - app: flowlab
             engine: webkit
           - app: director
-            engine: all
+            engine: chromium
+          - app: director
+            engine: firefox
+          - app: director
+            engine: webkit
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:

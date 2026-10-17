@@ -9,10 +9,10 @@ const enabled = (app: string) => selected === "all" || selected === app;
 const selectedEngine = process.env.CI_BROWSER_ENGINE || "all";
 if (
   !["all", "chromium", "firefox", "webkit"].includes(selectedEngine) ||
-  (selectedEngine !== "all" && selected !== "flowlab")
+  (selectedEngine !== "all" && !["flowlab", "director"].includes(selected))
 )
   throw new Error(
-    "CI_BROWSER_ENGINE may select chromium, firefox or webkit only with CI_BROWSER_APP=flowlab.",
+    "CI_BROWSER_ENGINE may select chromium, firefox or webkit only with CI_BROWSER_APP=flowlab or director.",
   );
 const evidence: Array<{
   command: string;
@@ -152,7 +152,7 @@ try {
     await start("studio", 3000);
     // The complete Studio suite exercises three engines sequentially. Individual
     // tests retain Playwright's own deadline; leave room for all of them on CI.
-    await run("pnpm", ["exec", "playwright", "test", "tests/e2e"], {}, 600000);
+    await run("pnpm", ["exec", "playwright", "test", "tests/e2e"], {}, 720000);
     await run("node", ["tools/browser/studio-a11y.cjs"]);
   }
   if (enabled("flowlab")) {
@@ -260,6 +260,14 @@ try {
         ["exec", "tsx", "apps/flowlab/tests/inspector-input-check.ts"],
         { FLOWLAB_BROWSER: browser },
       );
+      await run("node", ["apps/flowlab/tests/touch-edit-check.mjs"], {
+        FLOWLAB_BROWSER: browser,
+      });
+      await run(
+        "pnpm",
+        ["exec", "tsx", "apps/flowlab/tests/evidence-status-check.ts"],
+        { FLOWLAB_BROWSER: browser },
+      );
     }
     if (selectedEngine === "all" || selectedEngine === "chromium") {
       await run("node", ["apps/flowlab/tests/journey-check.mjs"]);
@@ -276,8 +284,16 @@ try {
   }
   if (enabled("director")) {
     await start("director", 3002);
-    await run("node", ["apps/director/tests/cross-browser.mjs"]);
-    for (const browser of ["chromium", "firefox", "webkit"]) {
+    await run(
+      "node",
+      ["apps/director/tests/cross-browser.mjs"],
+      selectedEngine === "all" ? {} : { BROWSER_NAME: selectedEngine },
+    );
+    const directorBrowsers =
+      selectedEngine === "all"
+        ? ["chromium", "firefox", "webkit"]
+        : [selectedEngine];
+    for (const browser of directorBrowsers) {
       await run("node", ["apps/director/tests/textured-glb-flow.mjs"], {
         GLB_ENGINE: browser,
       });
@@ -290,6 +306,11 @@ try {
       await run("node", ["apps/director/tests/archive-flow.mjs"], {
         ARCHIVE_ENGINE: browser,
       });
+      await run(
+        "node",
+        ["--import", "tsx", "apps/director/tests/json-recovery-flow.mjs"],
+        { JSON_RECOVERY_ENGINE: browser },
+      );
       await run("node", ["apps/director/tests/storyboard-flow.mjs"], {
         STORYBOARD_ENGINE: browser,
       });
@@ -302,9 +323,14 @@ try {
       await run("node", ["apps/director/tests/continuity-flow.mjs"], {
         CONTINUITY_ENGINE: browser,
       });
-      await run("node", ["apps/director/tests/audio-timeline-flow.mjs"], {
-        AUDIO_TIMELINE_ENGINE: browser,
-      }, 240000);
+      await run(
+        "node",
+        ["apps/director/tests/audio-timeline-flow.mjs"],
+        {
+          AUDIO_TIMELINE_ENGINE: browser,
+        },
+        240000,
+      );
       await run(
         "node",
         ["apps/director/tests/plan-flow.mjs"],
@@ -334,43 +360,43 @@ try {
         { PROFILE_ENGINE: browser },
         240000,
       );
-    }
-    await run("node", ["apps/director/tests/editor-flow.mjs"]);
-    await run("node", ["apps/director/tests/storage-recovery.mjs"]);
-    await run("node", ["apps/director/tests/a11y-smoke.mjs"]);
-    await run("node", ["apps/director/tests/render-smoke.mjs"]);
-    await run("node", ["apps/director/tests/recovery-smoke.mjs"]);
-    await run("node", [
-      "--import",
-      "tsx",
-      "apps/director/tests/sequence-render-smoke.mjs",
-    ]);
-    await run("node", ["apps/director/tests/media-ui-flow.mjs"]);
-    for (const browser of ["firefox", "webkit"])
       await run("node", ["apps/director/tests/media-ui-flow.mjs"], {
         MEDIA_ENGINE: browser,
-        DIRECTOR_SKIP_RENDER: "1",
+        ...(browser === "chromium" ? {} : { DIRECTOR_SKIP_RENDER: "1" }),
       });
-    await run("node", ["apps/director/tests/clip-audio-smoke.mjs"]);
-    await run(
-      "node",
-      ["--import", "tsx", "apps/director/tests/caption-render-smoke.mjs"],
-      {},
-      360000,
-    );
-    await run("node", ["apps/director/tests/cancellation-smoke.mjs"]);
-    await run(
-      "node",
-      ["--import", "tsx", "apps/director/tests/render-profile-smoke.mjs"],
-      {},
-      120000,
-    );
-    await run(
-      "node",
-      ["--import", "tsx", "apps/director/tests/render-history-smoke.mjs"],
-      {},
-      180000,
-    );
+    }
+    if (selectedEngine === "all" || selectedEngine === "chromium") {
+      await run("node", ["apps/director/tests/editor-flow.mjs"]);
+      await run("node", ["apps/director/tests/storage-recovery.mjs"]);
+      await run("node", ["apps/director/tests/a11y-smoke.mjs"]);
+      await run("node", ["apps/director/tests/render-smoke.mjs"]);
+      await run("node", ["apps/director/tests/recovery-smoke.mjs"]);
+      await run("node", [
+        "--import",
+        "tsx",
+        "apps/director/tests/sequence-render-smoke.mjs",
+      ]);
+      await run("node", ["apps/director/tests/clip-audio-smoke.mjs"]);
+      await run(
+        "node",
+        ["--import", "tsx", "apps/director/tests/caption-render-smoke.mjs"],
+        {},
+        360000,
+      );
+      await run("node", ["apps/director/tests/cancellation-smoke.mjs"]);
+      await run(
+        "node",
+        ["--import", "tsx", "apps/director/tests/render-profile-smoke.mjs"],
+        {},
+        120000,
+      );
+      await run(
+        "node",
+        ["--import", "tsx", "apps/director/tests/render-history-smoke.mjs"],
+        {},
+        180000,
+      );
+    }
   }
 } finally {
   for (const server of servers) stop(server, "SIGTERM");

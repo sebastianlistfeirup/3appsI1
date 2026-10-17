@@ -1,0 +1,7 @@
+# F13 — retain Director gates in independent browser jobs
+
+The growing Director suite now accepts the existing `CI_BROWSER_ENGINE` selector with `CI_BROWSER_APP=director`. CI has independent Chromium, Firefox and WebKit jobs. Each launches the actual production build and its pinned browser. All three still run the core native/fallback journey, GLB, library, large media, archive, storyboard, versions, location geometry, continuity, audio timeline, interactive plan, lifecycle, render archive UI, captions UI, capability UI and media UI, plus the real 108 MB JSON recovery gate.
+
+Actual FFmpeg/render/recovery/cancellation/quality/history gates remain in the Chromium job, alongside the existing general editor, storage and accessibility checks. Firefox/WebKit media UI retain their existing explicit skip of the separate MP4 render, not of browser media decoding. Default local `pnpm test:browser` still runs every app and engine. No per-scenario deadline or assertion was weakened. Studio’s outer batch deadline is now twelve minutes for 147 sequential browser scenarios; each retains its own deadline.
+
+Studio's new work-package and history cases are discovered by its existing full Playwright gate. FlowLab's precise Inspector , actual-touch and precise holdout-evidence gates were added per engine. The matrix and runner pass tools TypeScript verification. Their actual remote execution is recorded with the integration checkpoint; source configuration alone is not a passed CI run.
