@@ -242,9 +242,40 @@ try {
       name: "2D-plan af Gårdrum med objekter og kamera",
     }),
   ).toBeVisible();
-  await expect(page.getByText("ÅBEN BUEGANG", { exact: true })).toBeVisible();
+  // Recover the actual SVG-to-world transform from rendered object centres.
+  // This checks the courtyard's 22 × 22 metre floor, independent of labels,
+  // viewport size, zoom and the helper that computes the production geometry.
+  const floor = await page.locator(".plan-view svg").evaluate((svg) => {
+    const markers = [...svg.querySelectorAll("[data-plan-object]")].map(
+      (el) => ({
+        position: el.dataset.position.split(",").map(Number),
+        matrix: el.transform.baseVal.consolidate().matrix,
+      }),
+    );
+    const first = markers[0],
+      other = markers.find((item) => item.position[0] !== first.position[0]);
+    if (!first || !other)
+      throw Error("Need two distinct X positions to measure floor");
+    const scale =
+      (other.matrix.e - first.matrix.e) /
+      (other.position[0] - first.position[0]);
+    const shape = svg.querySelector(":scope > rect[x][y]"),
+      x = Number(shape.getAttribute("x")),
+      y = Number(shape.getAttribute("y"));
+    return [
+      first.position[0] + (x - first.matrix.e) / scale,
+      first.position[2] + (y - first.matrix.f) / scale,
+      Number(shape.getAttribute("width")) / scale,
+      Number(shape.getAttribute("height")) / scale,
+    ].map((value) => Math.round(value * 1000) / 1000);
+  });
+  assert.deepEqual(
+    floor,
+    [-11, -11, 22, 22],
+    "actual courtyard floor in metres",
+  );
   const character = page.getByRole("button", {
-    name: "Vælg Tekniker Noa",
+    name: "Flyt Tekniker Noa",
     exact: true,
   });
   await character.focus();
