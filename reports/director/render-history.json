@@ -7,24 +7,24 @@
   "history": {
     "jobs": [
       {
-        "id": "b12dac02-dd3c-4163-a1f7-8cf555fe43af",
+        "id": "0e9e4078-1c3d-4753-8a2a-6ac848ad711b",
         "source": {
           "projectId": "archive_primary",
           "title": "Det sidste signal",
           "revision": 2
         },
-        "manifestHash": "1153e3c3171f3fa0e1a5287e35d5d64c970a7d2f3ba4859f208ddfb66b136a55",
-        "movieHash": "f799ad498594354cdfdc46484c3c87cbdf54388e47f942c6bb0a75bae5a5ca25"
+        "manifestHash": "07c2e086f4c489346c113991bbb6f1e493bc6aae99a2cc5af116e596ed2594b9",
+        "movieHash": "da01acadfdbfc18dcc729eadff80791938a10af66b594f958987ff3dc2ec1951"
       },
       {
-        "id": "c9e5691a-3a10-4d7a-acf5-77819a5b5a14",
+        "id": "de2f197c-91ef-41fa-8fa4-0d16f55b5f29",
         "source": {
           "projectId": "archive_primary",
           "title": "Det sidste signal",
           "revision": 1
         },
-        "manifestHash": "17f23af11fe43a2913837dc28e3318d557933c96c3f14c75c12efd4313969c99",
-        "movieHash": "3a39df38974f07dd8b6ef3358002faa67718bef232c7cad7c3f60f4ec9d51fd4"
+        "manifestHash": "0c5fd256a4c78fb6b9bba0d0f0ea06b4d62340aa6ae2910dd7eb7088fb034e1a",
+        "movieHash": "7507e23dbb3c30b5e5b4c73db52f755c62f5e9c6a5af0d62f272f0b560ae61ef"
       }
     ],
     "legacyJobs": 1,
@@ -32,7 +32,7 @@
     "storage": {
       "occupiedEntries": 8,
       "maxJobs": 100,
-      "freeBytes": 9223696384,
+      "freeBytes": 9138569216,
       "minimumFreeBytes": 536870912,
       "automaticDeletion": false
     }

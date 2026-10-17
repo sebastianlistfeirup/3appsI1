@@ -149,7 +149,7 @@
         "minor_version": "512",
         "compatible_brands": "isomiso2avc1mp41",
         "encoder": "Lavf61.7.103",
-        "comment": "Director animatic; manifest=d1150a6be2cb2f434b4af715b1c4b9da20fdf562c0403336e614df5496c2a11e"
+        "comment": "Director animatic; manifest=71fabf7694ec4dfd7226ef00a42addf53891416a060288aaad11ca8bb99dd490"
       }
     }
   },
@@ -172,5 +172,5 @@
     }
   ],
   "pageErrors": [],
-  "verifiedAt": "2026-10-16T23:46:53.303Z"
+  "verifiedAt": "2026-10-17T02:23:24.669Z"
 }

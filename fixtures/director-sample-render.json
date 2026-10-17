@@ -677,7 +677,7 @@
       ]
     },
     {
-      "id": "shot_33cb41fe424f4712a4668bb93e6d7013",
+      "id": "shot_13ffb0b6e9894018821d1a8d6b100d04",
       "version": 2,
       "previousShotId": "shot_01_v1",
       "name": "Det sidste signal",
@@ -698,7 +698,7 @@
       ]
     },
     {
-      "id": "shot_3210d5c373494f099ed9d55ba617a2c2",
+      "id": "shot_678503823ac04acf9ecccac68cd805b1",
       "version": 2,
       "previousShotId": "shot_02_v1",
       "name": "Noget derude",
@@ -719,7 +719,7 @@
       ]
     },
     {
-      "id": "shot_4416061c87a943599b291ae0e42ed33b",
+      "id": "shot_5865112cacb64f4fb6bdd2aa84b27b6c",
       "version": 2,
       "previousShotId": "shot_03_v1",
       "name": "En gammel frekvens",
@@ -740,7 +740,7 @@
       ]
     },
     {
-      "id": "shot_99a4c1e33b944eefb796963b887cd357",
+      "id": "shot_0e92959de1064b05be04e4129271a292",
       "version": 2,
       "previousShotId": "shot_04_v1",
       "name": "Vi er ikke alene",
@@ -761,7 +761,7 @@
       ]
     },
     {
-      "id": "shot_757d836cbac34a168358a110c460a248",
+      "id": "shot_1ab7e71309544bbd8971c0869c2fabfe",
       "version": 2,
       "previousShotId": "shot_05_v1",
       "name": "Sæt kursen",
@@ -783,11 +783,11 @@
     }
   ],
   "sequence": [
-    "shot_33cb41fe424f4712a4668bb93e6d7013",
-    "shot_3210d5c373494f099ed9d55ba617a2c2",
-    "shot_4416061c87a943599b291ae0e42ed33b",
-    "shot_99a4c1e33b944eefb796963b887cd357",
-    "shot_757d836cbac34a168358a110c460a248"
+    "shot_13ffb0b6e9894018821d1a8d6b100d04",
+    "shot_678503823ac04acf9ecccac68cd805b1",
+    "shot_5865112cacb64f4fb6bdd2aa84b27b6c",
+    "shot_0e92959de1064b05be04e4129271a292",
+    "shot_1ab7e71309544bbd8971c0869c2fabfe"
   ],
   "sequenceVersions": [],
   "media": [],

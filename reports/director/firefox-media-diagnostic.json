@@ -124,7 +124,7 @@
       }
     ],
     "format": {
-      "filename": "/tmp/director-ui-media-YK9w8e/Eget klip.mp4",
+      "filename": "/tmp/director-ui-media-EqHBlE/Eget klip.mp4",
       "nb_streams": 2,
       "nb_programs": 0,
       "nb_stream_groups": 0,
@@ -151,5 +151,5 @@
   },
   "mediaErrors": [],
   "failure": null,
-  "verifiedAt": "2026-10-16T23:47:09.151Z"
+  "verifiedAt": "2026-10-17T02:25:47.578Z"
 }

@@ -1,7 +1,7 @@
 {
   "test": "A running local export can be cancelled and never advertises a download",
-  "jobId": "112ab54b-a01f-4c9b-8827-a6e23c90e947",
+  "jobId": "851305ae-1375-42f8-aee9-3010a03b1af9",
   "state": "cancelled",
   "downloadStatus": 404,
-  "verifiedAt": "2026-10-17T00:00:59.092Z"
+  "verifiedAt": "2026-10-17T02:26:17.014Z"
 }

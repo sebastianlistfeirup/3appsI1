@@ -12,10 +12,10 @@
         "width": 1280,
         "height": 720,
         "fps": 24,
+        "sha256": "5617a61124bdc7320715e70f48691c901d5bb3c46116ab4a93c95193a73707e0",
         "audioSampleRate": 48000,
         "codec": "h264",
         "audioCodec": "aac",
-        "sha256": "a344ac3d9c1d2332e6709d09cde776b6bc1b0e9f1b8652d8e9d9e253a6222b29",
         "loudnessLufs": -21.3,
         "audioSilent": false,
         "truePeakDbfs": -20.5
@@ -29,14 +29,14 @@
         "width": 1280,
         "height": 720,
         "fps": 24,
+        "sha256": "19b94e65dfff96b925fa01a620dbce751eb1d369378040eb3df2dff8ffea1a9e",
         "audioSampleRate": 48000,
         "codec": "h264",
         "audioCodec": "aac",
-        "sha256": "be3a41ca13f3acb75974298b2465db67e981a78b1c15607221de748f874b6d0e",
         "loudnessLufs": -70,
         "audioSilent": true
       }
     }
   ],
-  "verifiedAt": "2026-10-16T23:21:33.450Z"
+  "verifiedAt": "2026-10-17T02:26:04.637Z"
 }

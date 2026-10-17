@@ -1,0 +1,922 @@
+{
+  "sourceCommit": "bf1f434",
+  "priorSuccessfulCommands": 53,
+  "interruptedCommand": {
+    "name": "media-ui-flow",
+    "env": {
+      "MEDIA_ENGINE": "firefox",
+      "DIRECTOR_SKIP_RENDER": "1"
+    },
+    "tsx": false,
+    "deadline": 300000,
+    "code": 1,
+    "signal": null,
+    "timeout": false,
+    "started": "2026-10-17T02:23:24.817Z",
+    "elapsedMs": 10364
+  },
+  "observedFailure": "Firefox AudioContext remained suspended; expected actual running PCM audio",
+  "environmentEvidence": [
+    "Old socket existed but pactl returned Connection refused",
+    "PulseAudio log reported module-native-protocol-unix could not load libprotocol-native.so",
+    "ldd independently reported libprotocol-native.so and libpulsecore-17.0.so not found"
+  ],
+  "repair": "Started a separate private PulseAudio null sink with the extracted module directory in LD_LIBRARY_PATH; product code and browser assertions unchanged",
+  "verifiedBackend": {
+    "server": "PulseAudio 17.0",
+    "protocolVersion": 35,
+    "sink": "director_final",
+    "sampleSpecification": "s16le 2ch 44100Hz",
+    "socket": "/tmp/director-final-pulse/native",
+    "networkListener": false
+  },
+  "resumption": "Resume at the failed Firefox media command, retaining the preceding green commands; no claim of one uninterrupted all-green process",
+  "resumedCommandsPassed": 7,
+  "finalSuccessfulCommands": 60,
+  "independentlyProbedMovies": {
+    "det-sidste-signal-720p.mp4": {
+      "bytes": 840149,
+      "sha256": "091784cdce6031a326c2e252a863470719041da3b7758f6fb413cb38a31b8fea",
+      "videoCodec": "h264",
+      "audioCodec": "aac",
+      "width": 1280,
+      "height": 720,
+      "fps": "24/1",
+      "frames": 1440,
+      "duration": 60.0,
+      "audioSampleRate": 48000
+    },
+    "crossfade-recovered-720p.mp4": {
+      "bytes": 945032,
+      "sha256": "34c683d17ffe5a4e21cf030ce46e87e84a249196218ed9ad0706431b5500aae7",
+      "videoCodec": "h264",
+      "audioCodec": "aac",
+      "width": 1280,
+      "height": 720,
+      "fps": "24/1",
+      "frames": 1428,
+      "duration": 59.5,
+      "audioSampleRate": 48000
+    }
+  },
+  "verifiedAt": "2026-10-17T02:26:22Z",
+  "productionBuild": "Passed before the full run; no product changes during environment repair",
+  "domainTests": 83,
+  "domainCommand": "pnpm exec vitest run apps/director/src/lib packages/scene-format/src",
+  "accessibility": {
+    "scanCount": 172,
+    "violationCount": 0,
+    "scans": [
+      {
+        "report": "chromium-archive-flow.json",
+        "view": "desktop-pending-archive",
+        "violations": 0
+      },
+      {
+        "report": "chromium-archive-flow.json",
+        "view": "tablet-pending-archive",
+        "violations": 0
+      },
+      {
+        "report": "chromium-archive-flow.json",
+        "view": "mobile-pending-archive",
+        "violations": 0
+      },
+      {
+        "report": "chromium-audio-timeline-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "chromium-audio-timeline-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "chromium-audio-timeline-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "chromium-audio-timeline-flow.json",
+        "view": "outside-film",
+        "violations": 0
+      },
+      {
+        "report": "chromium-captions-flow.json",
+        "view": "desktop-caption-options",
+        "violations": 0
+      },
+      {
+        "report": "chromium-captions-flow.json",
+        "view": "tablet-caption-options",
+        "violations": 0
+      },
+      {
+        "report": "chromium-captions-flow.json",
+        "view": "mobile-caption-options",
+        "violations": 0
+      },
+      {
+        "report": "chromium-captions-flow.json",
+        "view": "desktop-measured-quality",
+        "violations": 0
+      },
+      {
+        "report": "chromium-captions-flow.json",
+        "view": "tablet-measured-quality",
+        "violations": 0
+      },
+      {
+        "report": "chromium-captions-flow.json",
+        "view": "mobile-measured-quality",
+        "violations": 0
+      },
+      {
+        "report": "chromium-continuity-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "chromium-continuity-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "chromium-continuity-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "chromium-continuity-flow.json",
+        "view": "conflict",
+        "violations": 0
+      },
+      {
+        "report": "chromium-json-recovery-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "chromium-json-recovery-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "chromium-json-recovery-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "chromium-library-flow.json",
+        "view": "initial-library",
+        "violations": 0
+      },
+      {
+        "report": "chromium-library-flow.json",
+        "view": "desktop-library",
+        "violations": 0
+      },
+      {
+        "report": "chromium-library-flow.json",
+        "view": "tablet-library",
+        "violations": 0
+      },
+      {
+        "report": "chromium-library-flow.json",
+        "view": "mobile-library",
+        "violations": 0
+      },
+      {
+        "report": "chromium-library-flow.json",
+        "view": "mobile-no-results",
+        "violations": 0
+      },
+      {
+        "report": "chromium-library-flow.json",
+        "view": "mobile-quota-error",
+        "violations": 0
+      },
+      {
+        "report": "chromium-locations-flow.json",
+        "view": "desktop-locations",
+        "violations": 0
+      },
+      {
+        "report": "chromium-locations-flow.json",
+        "view": "tablet-locations",
+        "violations": 0
+      },
+      {
+        "report": "chromium-locations-flow.json",
+        "view": "mobile-locations",
+        "violations": 0
+      },
+      {
+        "report": "chromium-locations-flow.json",
+        "view": "studio-scene",
+        "violations": 0
+      },
+      {
+        "report": "chromium-locations-flow.json",
+        "view": "courtyard-scene",
+        "violations": 0
+      },
+      {
+        "report": "chromium-locations-flow.json",
+        "view": "interactive-2d-plan",
+        "violations": 0
+      },
+      {
+        "report": "chromium-media-lifecycle.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "chromium-media-lifecycle.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "chromium-media-lifecycle.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "chromium-media-ui-flow.json",
+        "view": "audio-dialog",
+        "violations": 0
+      },
+      {
+        "report": "chromium-media-ui-flow.json",
+        "view": "desktop-preview",
+        "violations": 0
+      },
+      {
+        "report": "chromium-media-ui-flow.json",
+        "view": "tablet-preview",
+        "violations": 0
+      },
+      {
+        "report": "chromium-media-ui-flow.json",
+        "view": "mobile-preview",
+        "violations": 0
+      },
+      {
+        "report": "chromium-plan-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "chromium-plan-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "chromium-plan-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "chromium-render-history-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "chromium-render-history-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "chromium-render-history-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "chromium-render-profile-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "chromium-render-profile-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "chromium-render-profile-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "chromium-versions-flow.json",
+        "view": "selective-continuity",
+        "violations": 0
+      },
+      {
+        "report": "chromium-versions-flow.json",
+        "view": "empty-sequence-history",
+        "violations": 0
+      },
+      {
+        "report": "chromium-versions-flow.json",
+        "view": "desktop-saved-cuts",
+        "violations": 0
+      },
+      {
+        "report": "chromium-versions-flow.json",
+        "view": "tablet-saved-cuts",
+        "violations": 0
+      },
+      {
+        "report": "chromium-versions-flow.json",
+        "view": "mobile-saved-cuts",
+        "violations": 0
+      },
+      {
+        "report": "chromium-versions-flow.json",
+        "view": "shot-comparison",
+        "violations": 0
+      },
+      {
+        "report": "firefox-archive-flow.json",
+        "view": "desktop-pending-archive",
+        "violations": 0
+      },
+      {
+        "report": "firefox-archive-flow.json",
+        "view": "tablet-pending-archive",
+        "violations": 0
+      },
+      {
+        "report": "firefox-archive-flow.json",
+        "view": "mobile-pending-archive",
+        "violations": 0
+      },
+      {
+        "report": "firefox-audio-timeline-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "firefox-audio-timeline-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "firefox-audio-timeline-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "firefox-audio-timeline-flow.json",
+        "view": "outside-film",
+        "violations": 0
+      },
+      {
+        "report": "firefox-captions-flow.json",
+        "view": "desktop-caption-options",
+        "violations": 0
+      },
+      {
+        "report": "firefox-captions-flow.json",
+        "view": "tablet-caption-options",
+        "violations": 0
+      },
+      {
+        "report": "firefox-captions-flow.json",
+        "view": "mobile-caption-options",
+        "violations": 0
+      },
+      {
+        "report": "firefox-captions-flow.json",
+        "view": "desktop-measured-quality",
+        "violations": 0
+      },
+      {
+        "report": "firefox-captions-flow.json",
+        "view": "tablet-measured-quality",
+        "violations": 0
+      },
+      {
+        "report": "firefox-captions-flow.json",
+        "view": "mobile-measured-quality",
+        "violations": 0
+      },
+      {
+        "report": "firefox-continuity-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "firefox-continuity-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "firefox-continuity-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "firefox-continuity-flow.json",
+        "view": "conflict",
+        "violations": 0
+      },
+      {
+        "report": "firefox-json-recovery-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "firefox-json-recovery-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "firefox-json-recovery-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "firefox-library-flow.json",
+        "view": "initial-library",
+        "violations": 0
+      },
+      {
+        "report": "firefox-library-flow.json",
+        "view": "desktop-library",
+        "violations": 0
+      },
+      {
+        "report": "firefox-library-flow.json",
+        "view": "tablet-library",
+        "violations": 0
+      },
+      {
+        "report": "firefox-library-flow.json",
+        "view": "mobile-library",
+        "violations": 0
+      },
+      {
+        "report": "firefox-library-flow.json",
+        "view": "mobile-no-results",
+        "violations": 0
+      },
+      {
+        "report": "firefox-library-flow.json",
+        "view": "mobile-quota-error",
+        "violations": 0
+      },
+      {
+        "report": "firefox-locations-flow.json",
+        "view": "desktop-locations",
+        "violations": 0
+      },
+      {
+        "report": "firefox-locations-flow.json",
+        "view": "tablet-locations",
+        "violations": 0
+      },
+      {
+        "report": "firefox-locations-flow.json",
+        "view": "mobile-locations",
+        "violations": 0
+      },
+      {
+        "report": "firefox-locations-flow.json",
+        "view": "studio-scene",
+        "violations": 0
+      },
+      {
+        "report": "firefox-locations-flow.json",
+        "view": "courtyard-scene",
+        "violations": 0
+      },
+      {
+        "report": "firefox-locations-flow.json",
+        "view": "interactive-2d-plan",
+        "violations": 0
+      },
+      {
+        "report": "firefox-media-lifecycle.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "firefox-media-lifecycle.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "firefox-media-lifecycle.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "firefox-media-ui-flow.json",
+        "view": "audio-dialog",
+        "violations": 0
+      },
+      {
+        "report": "firefox-media-ui-flow.json",
+        "view": "desktop-preview",
+        "violations": 0
+      },
+      {
+        "report": "firefox-media-ui-flow.json",
+        "view": "tablet-preview",
+        "violations": 0
+      },
+      {
+        "report": "firefox-media-ui-flow.json",
+        "view": "mobile-preview",
+        "violations": 0
+      },
+      {
+        "report": "firefox-plan-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "firefox-plan-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "firefox-plan-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "firefox-render-history-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "firefox-render-history-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "firefox-render-history-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "firefox-render-profile-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "firefox-render-profile-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "firefox-render-profile-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "firefox-versions-flow.json",
+        "view": "selective-continuity",
+        "violations": 0
+      },
+      {
+        "report": "firefox-versions-flow.json",
+        "view": "empty-sequence-history",
+        "violations": 0
+      },
+      {
+        "report": "firefox-versions-flow.json",
+        "view": "desktop-saved-cuts",
+        "violations": 0
+      },
+      {
+        "report": "firefox-versions-flow.json",
+        "view": "tablet-saved-cuts",
+        "violations": 0
+      },
+      {
+        "report": "firefox-versions-flow.json",
+        "view": "mobile-saved-cuts",
+        "violations": 0
+      },
+      {
+        "report": "firefox-versions-flow.json",
+        "view": "shot-comparison",
+        "violations": 0
+      },
+      {
+        "report": "webkit-archive-flow.json",
+        "view": "desktop-pending-archive",
+        "violations": 0
+      },
+      {
+        "report": "webkit-archive-flow.json",
+        "view": "tablet-pending-archive",
+        "violations": 0
+      },
+      {
+        "report": "webkit-archive-flow.json",
+        "view": "mobile-pending-archive",
+        "violations": 0
+      },
+      {
+        "report": "webkit-audio-timeline-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "webkit-audio-timeline-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "webkit-audio-timeline-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "webkit-audio-timeline-flow.json",
+        "view": "outside-film",
+        "violations": 0
+      },
+      {
+        "report": "webkit-captions-flow.json",
+        "view": "desktop-caption-options",
+        "violations": 0
+      },
+      {
+        "report": "webkit-captions-flow.json",
+        "view": "tablet-caption-options",
+        "violations": 0
+      },
+      {
+        "report": "webkit-captions-flow.json",
+        "view": "mobile-caption-options",
+        "violations": 0
+      },
+      {
+        "report": "webkit-captions-flow.json",
+        "view": "desktop-measured-quality",
+        "violations": 0
+      },
+      {
+        "report": "webkit-captions-flow.json",
+        "view": "tablet-measured-quality",
+        "violations": 0
+      },
+      {
+        "report": "webkit-captions-flow.json",
+        "view": "mobile-measured-quality",
+        "violations": 0
+      },
+      {
+        "report": "webkit-continuity-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "webkit-continuity-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "webkit-continuity-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "webkit-continuity-flow.json",
+        "view": "conflict",
+        "violations": 0
+      },
+      {
+        "report": "webkit-json-recovery-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "webkit-json-recovery-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "webkit-json-recovery-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "webkit-library-flow.json",
+        "view": "initial-library",
+        "violations": 0
+      },
+      {
+        "report": "webkit-library-flow.json",
+        "view": "desktop-library",
+        "violations": 0
+      },
+      {
+        "report": "webkit-library-flow.json",
+        "view": "tablet-library",
+        "violations": 0
+      },
+      {
+        "report": "webkit-library-flow.json",
+        "view": "mobile-library",
+        "violations": 0
+      },
+      {
+        "report": "webkit-library-flow.json",
+        "view": "mobile-no-results",
+        "violations": 0
+      },
+      {
+        "report": "webkit-library-flow.json",
+        "view": "mobile-quota-error",
+        "violations": 0
+      },
+      {
+        "report": "webkit-locations-flow.json",
+        "view": "desktop-locations",
+        "violations": 0
+      },
+      {
+        "report": "webkit-locations-flow.json",
+        "view": "tablet-locations",
+        "violations": 0
+      },
+      {
+        "report": "webkit-locations-flow.json",
+        "view": "mobile-locations",
+        "violations": 0
+      },
+      {
+        "report": "webkit-locations-flow.json",
+        "view": "studio-scene",
+        "violations": 0
+      },
+      {
+        "report": "webkit-locations-flow.json",
+        "view": "courtyard-scene",
+        "violations": 0
+      },
+      {
+        "report": "webkit-locations-flow.json",
+        "view": "interactive-2d-plan",
+        "violations": 0
+      },
+      {
+        "report": "webkit-media-lifecycle.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "webkit-media-lifecycle.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "webkit-media-lifecycle.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "webkit-media-ui-flow.json",
+        "view": "audio-dialog",
+        "violations": 0
+      },
+      {
+        "report": "webkit-media-ui-flow.json",
+        "view": "desktop-preview",
+        "violations": 0
+      },
+      {
+        "report": "webkit-media-ui-flow.json",
+        "view": "tablet-preview",
+        "violations": 0
+      },
+      {
+        "report": "webkit-media-ui-flow.json",
+        "view": "mobile-preview",
+        "violations": 0
+      },
+      {
+        "report": "webkit-plan-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "webkit-plan-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "webkit-plan-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "webkit-render-history-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "webkit-render-history-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "webkit-render-history-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "webkit-render-profile-flow.json",
+        "view": "desktop",
+        "violations": 0
+      },
+      {
+        "report": "webkit-render-profile-flow.json",
+        "view": "tablet",
+        "violations": 0
+      },
+      {
+        "report": "webkit-render-profile-flow.json",
+        "view": "mobile",
+        "violations": 0
+      },
+      {
+        "report": "webkit-versions-flow.json",
+        "view": "selective-continuity",
+        "violations": 0
+      },
+      {
+        "report": "webkit-versions-flow.json",
+        "view": "empty-sequence-history",
+        "violations": 0
+      },
+      {
+        "report": "webkit-versions-flow.json",
+        "view": "desktop-saved-cuts",
+        "violations": 0
+      },
+      {
+        "report": "webkit-versions-flow.json",
+        "view": "tablet-saved-cuts",
+        "violations": 0
+      },
+      {
+        "report": "webkit-versions-flow.json",
+        "view": "mobile-saved-cuts",
+        "violations": 0
+      },
+      {
+        "report": "webkit-versions-flow.json",
+        "view": "shot-comparison",
+        "violations": 0
+      },
+      {
+        "report": "a11y/desktop-export.json",
+        "violations": 0
+      },
+      {
+        "report": "a11y/desktop-import.json",
+        "violations": 0
+      },
+      {
+        "report": "a11y/desktop-scene.json",
+        "violations": 0
+      },
+      {
+        "report": "a11y/desktop-story.json",
+        "violations": 0
+      },
+      {
+        "report": "a11y/desktop-storyboard.json",
+        "violations": 0
+      },
+      {
+        "report": "a11y/mobile-export.json",
+        "violations": 0
+      },
+      {
+        "report": "a11y/mobile-import.json",
+        "violations": 0
+      },
+      {
+        "report": "a11y/mobile-scene.json",
+        "violations": 0
+      },
+      {
+        "report": "a11y/mobile-story.json",
+        "violations": 0
+      },
+      {
+        "report": "a11y/mobile-storyboard.json",
+        "violations": 0
+      }
+    ]
+  }
+}

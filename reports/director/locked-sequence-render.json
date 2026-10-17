@@ -7,30 +7,60 @@
     "manifest SHA remains unchanged after encoding"
   ],
   "result": {
-    "id": "e43dcf70-91c2-4ff8-91bd-9429963b303e",
+    "id": "c55dd026-5614-4c00-b1c6-ab7e86fbe962",
     "state": "succeeded",
     "phase": "MP4 er produceret og kontrolleret med ffprobe.",
-    "createdAt": "2026-10-16T21:59:32.671Z",
-    "updatedAt": "2026-10-16T21:59:35.284Z",
-    "manifestHash": "1e4a035ea2e83d914080c19ef1556218e1c93643a070402a657d6f85d69c166c",
+    "createdAt": "2026-10-17T02:23:10.052Z",
+    "updatedAt": "2026-10-17T02:23:11.338Z",
+    "manifestHash": "e76b0dee4133cf33242e11fad7f32352c39bb6f796207de7a3c67fe6c920dda5",
     "expectedFrames": 84,
+    "source": {
+      "projectId": "station_07",
+      "title": "Det sidste signal",
+      "revision": 9
+    },
     "sequenceVersion": {
-      "id": "sequence_7d29390b78094f7298b66bc1107c8db1",
+      "id": "sequence_e296c29e84424bf5940733eeb73fe65f",
       "version": 1,
       "name": "Godkendt klipning til eksport"
     },
-    "reusedSegments": 0,
     "metadata": {
       "duration": 3.5,
       "width": 1280,
       "height": 720,
       "fps": 24,
+      "sha256": "6d3ef2306951506625431bbf15ce7366d526eeedd3abfe34385cb73c5468dbb7",
       "audioSampleRate": 48000,
       "codec": "h264",
       "audioCodec": "aac",
-      "sha256": "2fb6477fe4c04d5ab909f33a3157f3c45885b8f85f778af6bd465d37115fd7a7",
-      "loudnessLufs": -70
+      "loudnessLufs": -70,
+      "audioSilent": true
+    },
+    "reusedSegments": 0,
+    "captions": {
+      "burnedIn": true,
+      "cues": 2,
+      "warningShots": 2,
+      "errors": []
+    },
+    "artifacts": {
+      "captions.srt": {
+        "sha256": "db856957636a090a665dcc3e66c46877a330ef00b95bbebbe2abfa0dcb77cf1b",
+        "bytes": 148
+      },
+      "captions.vtt": {
+        "sha256": "a71545bf9a06d9655f647abcd400dc6ed93a573f0c3f2d6ac7cb130aef1a0d63",
+        "bytes": 232
+      },
+      "captions.json": {
+        "sha256": "b90d18c6667df4dec8a114f523b893bf99553e9ce5845177b9f0fc19ea4ee327",
+        "bytes": 1279
+      },
+      "validation.json": {
+        "sha256": "79ed453ccd0fa336d8c5478d3c84d37601e1c042f06c7cd742d558d111bb96ad",
+        "bytes": 6591
+      }
     }
   },
-  "verifiedAt": "2026-10-16T21:59:35.292Z"
+  "verifiedAt": "2026-10-17T02:23:11.345Z"
 }
