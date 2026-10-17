@@ -51,9 +51,50 @@ async function main() {
             mimeType: "application/json",
             buffer: Buffer.from(JSON.stringify(doc)),
           });
+        // A previous import toast can still be visible while this worker is busy.
+        // Fixtures reuse the golden id, so wait for both complete model inputs,
+        // confirmed in the real document store, before navigating to the editor.
+        await expect
+          .poll(
+            () =>
+              page.evaluate(
+                () =>
+                  new Promise<unknown>((resolve, reject) => {
+                    const request = indexedDB.open("tre-apps-flowlab-v1", 1);
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => {
+                      const db = request.result;
+                      const transaction = db.transaction(
+                        "documents",
+                        "readonly",
+                      );
+                      const get = transaction
+                        .objectStore("documents")
+                        .get("workspace");
+                      get.onsuccess = () =>
+                        resolve({
+                          baseline: get.result?.data.baseline,
+                          scenario: get.result?.data.scenario,
+                        });
+                      get.onerror = () => reject(get.error);
+                      transaction.oncomplete = () => db.close();
+                      transaction.onabort = () => {
+                        db.close();
+                        reject(transaction.error);
+                      };
+                    };
+                  }),
+              ),
+            {
+              timeout: 20000,
+              message:
+                "The current imported baseline and alternative are persisted",
+            },
+          )
+          .toEqual({ baseline: doc.baseline, scenario: doc.scenario });
         await expect(
-          page.getByText("Modellen er importeret;", { exact: false }),
-        ).toBeVisible();
+          page.getByRole("button", { name: "Afbryd modelpakke", exact: true }),
+        ).toHaveCount(0);
         await page.getByRole("tab", { name: "Model", exact: true }).click();
         if (doc.baseline.maxEvents === 1)
           await expect(
