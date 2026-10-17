@@ -1,0 +1,19 @@
+{
+  "executedAt": "2026-10-17T01:50:07.577Z",
+  "browser": "webkit",
+  "viewport": "390x844",
+  "hasTouch": true,
+  "isMobile": true,
+  "checks": [
+    "Actual touch tap commits5 then increments to6; two undo restore5 then20",
+    "Actual touch decrements from current draft, two undo restore draft and original",
+    "Keyboard Tab then Space applies draft and increments exactly once",
+    "Touch switching baseline/alternative commits previous draft to correct model",
+    "Invalid empty draft keeps previous value before touch step",
+    "Touch opens and cancels duration modal",
+    "Touch closing inspector commits7 and reopening preserves it",
+    "Touch closing preserves text label too",
+    "Touch run with pending6 computes and exports real30-pair report with capacity6"
+  ],
+  "errors": []
+}

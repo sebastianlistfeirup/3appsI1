@@ -19,3 +19,5 @@ Komma og punktum er decimaltegn; undlad tusindtalsseparator og eksponentnotation
 ## Efterprøvet fejl
 
 Den tidligere hurtigeditor ændrede `4` medarbejdere til `0`, når feltet blev tømt, og `8` timers horisont til `1 ms`. `reports/flowlab/inspector-empty-field-reproduction.json` dokumenterer den gamle produktionsbuild. De nye domænetests og `inspector-input-check.ts` kontrollerer kladde, validering, undo, scenarieskift, faktisk beregning, eksport og genindlæsning efter bekræftet lagring.
+
+Touch er særskilt efterprøvet med faktiske berøringshændelser. Et tryk på plus/minus, en anden fane, lukning eller beregning afslutter først den aktive feltkladde, også i browsere hvor knapper ikke automatisk flytter inputfokus. `touch-edit-check.mjs` kontrollerer denne adfærd i Chromium, Firefox og WebKit inklusive den beregnede og eksporterede model.

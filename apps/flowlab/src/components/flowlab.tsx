@@ -611,6 +611,17 @@ export default function FlowLab() {
       onInputCapture={() => {
         draftRevision.current++;
       }}
+      onPointerDownCapture={(event) => {
+        // A touch button may activate without moving focus. Finish the active
+        // inspector edit before navigation, stepping or running reads the model.
+        const active = document.activeElement;
+        if (
+          active instanceof HTMLInputElement &&
+          active.dataset.inspectorDraft === "true" &&
+          event.target !== active
+        )
+          active.blur();
+      }}
     >
       <a className="skip-link" href="#main">
         Gå til indhold

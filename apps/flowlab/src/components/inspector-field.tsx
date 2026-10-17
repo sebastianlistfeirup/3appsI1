@@ -95,6 +95,7 @@ export default function InspectorField<T extends string | number>({
         {before}
         <input
           id={`${helpId}-input`}
+          data-inspector-draft="true"
           type="text"
           inputMode={inputMode}
           autoComplete="off"

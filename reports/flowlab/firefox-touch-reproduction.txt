@@ -1,0 +1,51 @@
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+ExpectError: expect(locator).toHaveValue(expected) failed
+
+Locator:  getByRole('textbox', { name: 'Antal medarbejdere', exact: true })
+Expected: "6"
+Received: "21"
+Timeout:  5000ms
+
+Call log:
+  - Expect "toHaveValue" getByRole('textbox', { name: 'Antal medarbejdere', exact: true }) with timeout 5000ms
+  - waiting for getByRole('textbox', { name: 'Antal medarbejdere', exact: true })
+    14 × locator resolved to <input value="21" type="text" maxlength="101" id="_r_2_-input" autocomplete="off" inputmode="numeric" aria-invalid="false" aria-label="Antal medarbejdere"/>
+       - unexpected value "21"
+
+    at captureRawStack (/workspace/3apps-flowlab/node_modules/.pnpm/playwright-core@1.64.1/node_modules/playwright-core/lib/coreBundle.js:9282:17)
+    at callMatcherAsStep (/workspace/3apps-flowlab/node_modules/.pnpm/playwright@1.64.1/node_modules/playwright/lib/matchers/expect.js:13316:57)
+    at Object.toHaveValue (/workspace/3apps-flowlab/node_modules/.pnpm/playwright@1.64.1/node_modules/playwright/lib/matchers/expect.js:13308:23)
+    at /workspace/3apps-flowlab/apps/flowlab/tests/touch-edit-check.mjs:15:26 {
+  matcherResult: {
+    name: 'toHaveValue',
+    expected: '6',
+    message: 'expect(locator).toHaveValue(expected) failed\n' +
+      '\n' +
+      "Locator:  getByRole('textbox', { name: 'Antal medarbejdere', exact: true })\n" +
+      'Expected: "6"\n' +
+      'Received: "21"\n' +
+      'Timeout:  5000ms\n' +
+      '\n' +
+      'Call log:\n' +
+      `  - Expect "toHaveValue" getByRole('textbox', { name: 'Antal medarbejdere', exact: true }) with timeout 5000ms\n` +
+      "  - waiting for getByRole('textbox', { name: 'Antal medarbejdere', exact: true })\n" +
+      '    14 × locator resolved to <input value="21" type="text" maxlength="101" id="_r_2_-input" autocomplete="off" inputmode="numeric" aria-invalid="false" aria-label="Antal medarbejdere"/>\n' +
+      '       - unexpected value "21"\n',
+    pass: false,
+    actual: '21',
+    log: [
+      `  - Expect "toHaveValue" getByRole('textbox', { name: 'Antal medarbejdere', exact: true }) with timeout 5000ms`,
+      "  - waiting for getByRole('textbox', { name: 'Antal medarbejdere', exact: true })",
+      '    14 × locator resolved to <input value="21" type="text" maxlength="101" id="_r_2_-input" autocomplete="off" inputmode="numeric" aria-invalid="false" aria-label="Antal medarbejdere"/>',
+      '       - unexpected value "21"'
+    ],
+    timeout: 5000,
+    ariaSnapshot: '- textbox "Antal medarbejdere": "21"'
+  }
+}
+
+Node.js v24.19.0
